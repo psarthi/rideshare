@@ -1,0 +1,39 @@
+package com.digitusrevolution.rideshare.user.domain;
+
+import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
+import com.digitusrevolution.rideshare.user.data.entity.core.VehicleEntity;
+
+public class VehicleDO {
+
+	private Vehicle vehicle;
+	private VehicleEntity vehicleEntity;
+	
+	public VehicleDO(){
+		vehicleEntity = new VehicleEntity();		
+	}
+
+	public Vehicle getVehicle() {
+		return vehicle;
+	}
+
+	public void setVehicle(Vehicle vehicle) {
+		this.vehicle = vehicle;
+		mapDomainModelToDataEntity();
+	}
+
+	public VehicleEntity getVehicleEntity() {
+		return vehicleEntity;
+	}
+
+	public void setVehicleEntity(VehicleEntity vehicleEntity) {
+		this.vehicleEntity = vehicleEntity;
+	}
+	
+	public void mapDomainModelToDataEntity(){
+		vehicleEntity.setId(vehicle.getId());
+		setVehicleEntity(vehicleEntity);
+	}
+
+	
+	
+}
