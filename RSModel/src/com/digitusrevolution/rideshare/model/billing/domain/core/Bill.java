@@ -1,7 +1,7 @@
 package com.digitusrevolution.rideshare.model.billing.domain.core;
 
-import com.digitusrevolution.rideshare.mode.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.user.domain.core.Driver;
 import com.digitusrevolution.rideshare.model.user.domain.core.Passenger;
 
