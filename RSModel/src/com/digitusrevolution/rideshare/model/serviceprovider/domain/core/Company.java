@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.mode.serviceprovider.domain.core;
+package com.digitusrevolution.rideshare.model.serviceprovider.domain.core;
 
 import java.util.List;
 
