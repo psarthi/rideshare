@@ -2,13 +2,18 @@ package com.digitusrevolution.rideshare.user.data.entity.core;
 
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 
+@Entity(name="USER")
 public class UserEntity {
 	
+	@Id
 	private int id;
 	private String firstName;
 	private String lastName;
