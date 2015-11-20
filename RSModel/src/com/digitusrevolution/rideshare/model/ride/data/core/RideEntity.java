@@ -7,6 +7,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -49,11 +50,13 @@ public class RideEntity {
 	private DriverEntity driver;
 	@ManyToMany
 	private List<PassengerEntity> passengers; 
-	@OneToMany
+	@OneToMany(mappedBy="ride")
 	private List<BillEntity> bills;
 	@OneToMany
+	@JoinTable(name="ride_rideRequest")
 	private List<RideRequestEntity> acceptedRideRequests;
 	@ManyToMany
+	@JoinTable(name="ride_rideRequest")
 	private List<RideRequestEntity> rejectedRideRequests;
 	
 	public int getId() {

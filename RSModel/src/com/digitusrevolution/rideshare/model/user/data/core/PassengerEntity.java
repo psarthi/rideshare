@@ -5,27 +5,22 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
-import com.digitusrevolution.rideshare.model.ride.data.PointEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 
 @Entity
 @Table(name="passenger")
 public class PassengerEntity extends UserEntity{
-	@OneToMany
+	@OneToMany(mappedBy="passenger")
 	private List<RideRequestEntity> rideRequests;
-	@OneToMany
+	@OneToMany(mappedBy="passenger")
 	private List<BillEntity> bills;
 	@ManyToMany(mappedBy="passengers")
 	private List<RideEntity> rides;
-	@OneToOne
-	private PointEntity pickupPoint;
-	@OneToOne
-	private PointEntity dropPoint;
+
 	public List<RideRequestEntity> getRideRequests() {
 		return rideRequests;
 	}
@@ -43,18 +38,6 @@ public class PassengerEntity extends UserEntity{
 	}
 	public void setRides(List<RideEntity> rides) {
 		this.rides = rides;
-	}
-	public PointEntity getPickupPoint() {
-		return pickupPoint;
-	}
-	public void setPickupPoint(PointEntity pickupPoint) {
-		this.pickupPoint = pickupPoint;
-	}
-	public PointEntity getDropPoint() {
-		return dropPoint;
-	}
-	public void setDropPoint(PointEntity dropPoint) {
-		this.dropPoint = dropPoint;
 	}
 	
 }

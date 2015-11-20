@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -16,6 +17,7 @@ public class VehicleCategoryEntity {
 	private int id;
 	private String name;
 	@OneToMany
+	@JoinTable(name="vehicle_category_subCategory")
 	private List<VehicleSubCategoryEntity> subCategories;
 
 	public int getId() {

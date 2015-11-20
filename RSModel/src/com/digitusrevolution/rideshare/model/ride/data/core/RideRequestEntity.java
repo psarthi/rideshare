@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -45,9 +46,14 @@ public class RideRequestEntity {
 	private PassengerEntity passenger;
 	private boolean ridePreference;
 	@ManyToMany
+	@JoinTable(name="ride_request_preferred_ride")
 	private List<RideEntity> preferredRides;
 	@ManyToOne
 	private RideEntity acceptedRide;
+	@OneToOne
+	private PointEntity ridePickupPoint;
+	@OneToOne
+	private PointEntity rideDropPoint;
 	
 	public int getId() {
 		return id;
@@ -150,6 +156,18 @@ public class RideRequestEntity {
 	}
 	public void setPassenger(PassengerEntity passenger) {
 		this.passenger = passenger;
+	}
+	public PointEntity getRidePickupPoint() {
+		return ridePickupPoint;
+	}
+	public void setRidePickupPoint(PointEntity ridePickupPoint) {
+		this.ridePickupPoint = ridePickupPoint;
+	}
+	public PointEntity getRideDropPoint() {
+		return rideDropPoint;
+	}
+	public void setRideDropPoint(PointEntity rideDropPoint) {
+		this.rideDropPoint = rideDropPoint;
 	}	
 
 }

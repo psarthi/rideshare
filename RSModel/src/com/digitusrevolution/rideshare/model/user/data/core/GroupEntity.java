@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -21,6 +22,7 @@ public class GroupEntity {
 	@OneToOne
 	private PhotoEntity photo;
 	@ManyToMany
+	@JoinTable(name="group_user")
 	private List<UserEntity> users;
 
 	public int getId() {

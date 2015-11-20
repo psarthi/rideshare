@@ -11,7 +11,7 @@ import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 @Entity
 @Table(name="driver")
 public class DriverEntity extends UserEntity{
-	@OneToMany
+	@OneToMany(mappedBy="driver")
 	private List<RideEntity> rides;
 
 	public List<RideEntity> getRides() {

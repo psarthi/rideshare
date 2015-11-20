@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.model.ride.domain.core;
 import java.util.Date;
 import java.util.List;
 
+import com.digitusrevolution.rideshare.model.ride.data.PointEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
@@ -29,6 +30,8 @@ public class RideRequest {
 	private boolean ridePreference;
 	private List<Ride> preferredRides;
 	private Ride acceptedRide;
+	private PointEntity ridePickupPoint;
+	private PointEntity rideDropPoint;
 	
 	public int getId() {
 		return id;
@@ -131,6 +134,18 @@ public class RideRequest {
 	}
 	public void setAcceptedRide(Ride acceptedRide) {
 		this.acceptedRide = acceptedRide;
+	}
+	public PointEntity getRidePickupPoint() {
+		return ridePickupPoint;
+	}
+	public void setRidePickupPoint(PointEntity ridePickupPoint) {
+		this.ridePickupPoint = ridePickupPoint;
+	}
+	public PointEntity getRideDropPoint() {
+		return rideDropPoint;
+	}
+	public void setRideDropPoint(PointEntity rideDropPoint) {
+		this.rideDropPoint = rideDropPoint;
 	}	
 
 }

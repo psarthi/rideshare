@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -39,12 +40,16 @@ public class UserEntity {
 	@ManyToMany(mappedBy="users")
 	private List<GroupEntity> groups;
 	@OneToMany
+	@JoinTable(name="user_vehicle")
 	private List<VehicleEntity> vehicles;
 	@ManyToMany
+	@JoinTable(name="user_friend")
 	private List<UserEntity> friends;
 	@ManyToMany
+	@JoinTable(name="user_role")
 	private List<RoleEntity> roles;
 	@OneToMany
+	@JoinTable(name="user_account")
 	private List<AccountEntity> accounts;
 	private int profileRating;
 	

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
@@ -18,10 +19,13 @@ public class TrustNetworkEntity {
 	@GeneratedValue
 	private int id;
 	@ManyToMany
+	@JoinTable(name="trust_network_category")
 	private List<TrustCategoryEntity> trustCategories;
 	@ManyToMany
+	@JoinTable(name="trust_network_friend")
 	private List<UserEntity> friends;
 	@ManyToMany
+	@JoinTable(name="trust_network_group")
 	private List<GroupEntity> groups;
 	
 	public int getId() {
