@@ -2,17 +2,20 @@ package com.digitusrevolution.rideshare.model.user.data.core;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
 
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
@@ -29,6 +32,7 @@ public class UserEntity {
 	private int id;
 	private String firstName;
 	private String lastName;
+	@Column(columnDefinition="varchar(255)")
 	private Sex sex;
 	private String mobileNumber;
 	private String email;
@@ -40,16 +44,16 @@ public class UserEntity {
 	@ManyToMany(mappedBy="users")
 	private List<GroupEntity> groups;
 	@OneToMany
-	@JoinTable(name="user_vehicle")
+	@JoinTable(name="user_vehicle",joinColumns=@JoinColumn(name="user_id"))
 	private List<VehicleEntity> vehicles;
 	@ManyToMany
-	@JoinTable(name="user_friend")
+	@JoinTable(name="user_friend",joinColumns=@JoinColumn(name="user_id"))
 	private List<UserEntity> friends;
 	@ManyToMany
-	@JoinTable(name="user_role")
+	@JoinTable(name="user_role",joinColumns=@JoinColumn(name="user_id"))
 	private List<RoleEntity> roles;
 	@OneToMany
-	@JoinTable(name="user_account")
+	@JoinTable(name="user_account",joinColumns=@JoinColumn(name="user_id"))
 	private List<AccountEntity> accounts;
 	private int profileRating;
 	

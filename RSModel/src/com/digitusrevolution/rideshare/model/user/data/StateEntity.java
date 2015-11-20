@@ -5,6 +5,8 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -17,6 +19,7 @@ public class StateEntity {
 	private int id;
 	private String name;
 	@OneToMany
+	@JoinTable(name="state_city",joinColumns=@JoinColumn(name="state_id"))
 	private List<CityEntity> cities;
 	
 	public int getId() {

@@ -7,6 +7,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -53,10 +54,10 @@ public class RideEntity {
 	@OneToMany(mappedBy="ride")
 	private List<BillEntity> bills;
 	@OneToMany
-	@JoinTable(name="ride_rideRequest")
+	@JoinTable(name="ride_rideRequest",joinColumns=@JoinColumn(name="ride_id"))
 	private List<RideRequestEntity> acceptedRideRequests;
 	@ManyToMany
-	@JoinTable(name="ride_rideRequest")
+	@JoinTable(name="ride_rideRequest",joinColumns=@JoinColumn(name="ride_id"))
 	private List<RideRequestEntity> rejectedRideRequests;
 	
 	public int getId() {

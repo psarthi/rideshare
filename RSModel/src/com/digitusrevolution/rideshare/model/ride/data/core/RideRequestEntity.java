@@ -3,9 +3,11 @@ package com.digitusrevolution.rideshare.model.ride.data.core;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -36,6 +38,7 @@ public class RideRequestEntity {
 	private VehicleSubCategoryEntity vehicleSubCategory;
 	@OneToOne
 	private TrustNetworkEntity trustNetwork;
+	@Column(columnDefinition="varchar(255)")
 	private Sex sexPreference;
 	private int seatRequired;
 	private int luggageCapacityRequired;
@@ -46,7 +49,7 @@ public class RideRequestEntity {
 	private PassengerEntity passenger;
 	private boolean ridePreference;
 	@ManyToMany
-	@JoinTable(name="ride_request_preferred_ride")
+	@JoinTable(name="ride_request_preferred_ride",joinColumns=@JoinColumn(name="ride_request_id"))
 	private List<RideEntity> preferredRides;
 	@ManyToOne
 	private RideEntity acceptedRide;

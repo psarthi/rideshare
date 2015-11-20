@@ -5,6 +5,8 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -18,7 +20,12 @@ public class CompanyEntity {
 	@GeneratedValue
 	private int id;
 	private String name;
+	/**
+	 * Use inversJoinColumns to change the column name of other entity primary key
+	 * @JoinTable(name="company_account",joinColumns=@JoinColumn(name="company_id"),inverseJoinColumns=@JoinColumn(name="account_number"))
+	 */
 	@OneToMany
+	@JoinTable(name="company_account",joinColumns=@JoinColumn(name="company_id"))
 	private List<AccountEntity> accounts;
 	
 	public int getId() {

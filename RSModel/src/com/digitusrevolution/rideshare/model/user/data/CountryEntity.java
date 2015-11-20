@@ -6,6 +6,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -18,10 +19,11 @@ public class CountryEntity {
 	@Id
 	private String name;
 	@OneToMany
+	@JoinTable(name="country_state",joinColumns=@JoinColumn(name="country_name"))
 	private List<StateEntity> states;
 	@Embedded
 	@ElementCollection
-	@JoinTable(name="country_fuel")
+	@JoinTable(name="country_fuel",joinColumns=@JoinColumn(name="country_name"))
 	private List<FuelEntity> fuels;
 	@ManyToOne
 	private CurrencyEntity currency;
