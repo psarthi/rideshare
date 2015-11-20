@@ -4,8 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.user.data.impl.UserDAOImpl;
-import com.digitusrevolution.rideshare.user.data.inf.UserDAO;
+import com.digitusrevolution.rideshare.user.data.UserDAO;
 
 public class UserService {
 	
@@ -14,7 +13,7 @@ public class UserService {
 	private static final Logger logger = LogManager.getLogger(UserService.class.getName());
 	
 	public UserService(){
-		userDAO = new UserDAOImpl();
+		userDAO = new UserDAO();
 		userDO = new UserDO();
 	}
 	
@@ -25,19 +24,11 @@ public class UserService {
 	public void setUserDO(UserDO userDO) {
 		this.userDO = userDO;
 	}
-
-	public UserDAO getUserDAO() {
-		return userDAO;
-	}
-
-	public void setUserDAO(UserDAO userDAO) {
-		this.userDAO = userDAO;
-	}
 	
 	public void createUser(User user){
 		logger.entry();
 		userDO.setUser(user);
-		userDAO.createUser(userDO.getUserEntity());
+		userDAO.create(userDO.getUserEntity());
 		logger.debug("Creted User - " + userDO.getUserEntity().getId()+","+userDO.getUserEntity().getEmail());
 		logger.exit();
 	}

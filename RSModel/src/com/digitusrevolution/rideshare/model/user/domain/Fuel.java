@@ -2,16 +2,9 @@ package com.digitusrevolution.rideshare.model.user.domain;
 
 public class Fuel {
 	
-	private int id;
 	private String type;
 	private int price;
 	
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getType() {
 		return type;
 	}

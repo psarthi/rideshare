@@ -1,9 +1,9 @@
 package com.digitusrevolution.rideshare.user.data.impl;
 
-import com.digitusrevolution.rideshare.user.data.entity.core.UserEntity;
-import com.digitusrevolution.rideshare.user.data.inf.UserDAO;
+import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
+import com.digitusrevolution.rideshare.user.data.inf.IUserDAO;
 
-public class UserDAOImpl implements UserDAO {
+public class UserDAOImpl implements IUserDAO {
 	
 	@Override
 	public void createUser(UserEntity userEntity){

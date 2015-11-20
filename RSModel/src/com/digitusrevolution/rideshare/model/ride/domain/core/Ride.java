@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
-import com.digitusrevolution.rideshare.model.ride.domain.RecurringDetails;
+import com.digitusrevolution.rideshare.model.ride.domain.RecurringDetail;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.user.domain.core.Driver;
@@ -23,7 +23,7 @@ public class Ride {
 	private TrustNetwork trustNetwork;
 	private Route route;
 	private boolean recur;
-	private RecurringDetails recurringDetails;
+	private RecurringDetail recurringDetail;
 	private String status;
 	private Vehicle vehicle;
 	private Driver driver;
@@ -68,11 +68,11 @@ public class Ride {
 	public void setRecur(boolean recur) {
 		this.recur = recur;
 	}
-	public RecurringDetails getRecurringDetails() {
-		return recurringDetails;
+	public RecurringDetail getRecurringDetail() {
+		return recurringDetail;
 	}
-	public void setRecurringDetails(RecurringDetails recurringDetails) {
-		this.recurringDetails = recurringDetails;
+	public void setRecurringDetail(RecurringDetail recurringDetail) {
+		this.recurringDetail = recurringDetail;
 	}
 	public String getStatus() {
 		return status;

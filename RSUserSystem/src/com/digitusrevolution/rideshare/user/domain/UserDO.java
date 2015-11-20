@@ -1,8 +1,8 @@
 package com.digitusrevolution.rideshare.user.domain;
 
+import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
-import com.digitusrevolution.rideshare.user.data.entity.core.UserEntity;;
+import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;;
 
 public class UserDO {
 	

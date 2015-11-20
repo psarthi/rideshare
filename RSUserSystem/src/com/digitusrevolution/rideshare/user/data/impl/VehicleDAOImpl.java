@@ -1,9 +1,9 @@
 package com.digitusrevolution.rideshare.user.data.impl;
 
-import com.digitusrevolution.rideshare.user.data.entity.core.VehicleEntity;
-import com.digitusrevolution.rideshare.user.data.inf.VehicleDAO;
+import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
+import com.digitusrevolution.rideshare.user.data.inf.IVehicleDAO;
 
-public class VehicleDAOImpl implements VehicleDAO{
+public class VehicleDAOImpl implements IVehicleDAO{
 
 	@Override
 	public void createVehicle(VehicleEntity vehicleEntity) {

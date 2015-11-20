@@ -2,11 +2,11 @@ package com.digitusrevolution.rideshare.user.domain;
 
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.data.impl.VehicleDAOImpl;
-import com.digitusrevolution.rideshare.user.data.inf.VehicleDAO;
+import com.digitusrevolution.rideshare.user.data.inf.IVehicleDAO;
 
 public class VehicleService {
 
-	private VehicleDAO vehicleDAO;
+	private IVehicleDAO vehicleDAO;
 	private VehicleDO vehicleDO;
 	
 	public VehicleService(){

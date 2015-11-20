@@ -1,7 +1,13 @@
-package com.digitusrevolution.rideshare.model.user.domain.core;
+package com.digitusrevolution.rideshare.model.user.data.core;
 
-public class Account {
-	
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="account")
+public class AccountEntity {
+	@Id
 	private int number;
 	private int balance;
 	

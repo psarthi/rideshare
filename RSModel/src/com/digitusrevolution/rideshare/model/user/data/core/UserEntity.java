@@ -1,19 +1,30 @@
-package com.digitusrevolution.rideshare.user.data.entity.core;
+package com.digitusrevolution.rideshare.model.user.data.core;
 
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
-import com.digitusrevolution.rideshare.model.user.domain.City;
-import com.digitusrevolution.rideshare.model.user.domain.Photo;
-import com.digitusrevolution.rideshare.model.user.domain.Role;
+import com.digitusrevolution.rideshare.model.user.data.CityEntity;
+import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
+import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 
-@Entity(name="USER")
+@Entity
+@Table (name="user_detail")
+@Inheritance(strategy=InheritanceType.JOINED)
 public class UserEntity {
 	
 	@Id
+	@GeneratedValue
 	private int id;
 	private String firstName;
 	private String lastName;
@@ -21,12 +32,19 @@ public class UserEntity {
 	private String mobileNumber;
 	private String email;
 	private String password;
-	private City city;
-	private Photo photo;
+	@ManyToOne
+	private CityEntity city;
+	@OneToOne
+	private PhotoEntity photo;
+	@ManyToMany(mappedBy="users")
 	private List<GroupEntity> groups;
+	@OneToMany
 	private List<VehicleEntity> vehicles;
+	@ManyToMany
 	private List<UserEntity> friends;
-	private List<Role> roles;
+	@ManyToMany
+	private List<RoleEntity> roles;
+	@OneToMany
 	private List<AccountEntity> accounts;
 	private int profileRating;
 	
@@ -75,18 +93,6 @@ public class UserEntity {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public City getCity() {
-		return city;
-	}
-	public void setCity(City city) {
-		this.city = city;
-	}
-	public Photo getPhoto() {
-		return photo;
-	}
-	public void setPhoto(Photo photo) {
-		this.photo = photo;
-	}
 	public List<GroupEntity> getGroups() {
 		return groups;
 	}
@@ -105,12 +111,6 @@ public class UserEntity {
 	public void setFriends(List<UserEntity> friends) {
 		this.friends = friends;
 	}
-	public List<Role> getRoles() {
-		return roles;
-	}
-	public void setRoles(List<Role> roles) {
-		this.roles = roles;
-	}
 	public List<AccountEntity> getAccounts() {
 		return accounts;
 	}
@@ -122,6 +122,30 @@ public class UserEntity {
 	}
 	public void setProfileRating(int profileRating) {
 		this.profileRating = profileRating;
+	}
+
+	public CityEntity getCity() {
+		return city;
+	}
+
+	public void setCity(CityEntity city) {
+		this.city = city;
+	}
+
+	public PhotoEntity getPhoto() {
+		return photo;
+	}
+
+	public void setPhoto(PhotoEntity photo) {
+		this.photo = photo;
+	}
+
+	public List<RoleEntity> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<RoleEntity> roles) {
+		this.roles = roles;
 	}
 	
 }

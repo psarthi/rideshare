@@ -1,7 +1,7 @@
 package com.digitusrevolution.rideshare.user.domain;
 
+import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
-import com.digitusrevolution.rideshare.user.data.entity.core.VehicleEntity;
 
 public class VehicleDO {
 

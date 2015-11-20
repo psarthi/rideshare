@@ -64,6 +64,11 @@
 			<artifactId>RSModel</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.digitusrevolution.rideshare</groupId>
+			<artifactId>RSCommon</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 		<!-- RideShare Components End -->
 		<!-- Hibernate Start -->
 		<dependency>

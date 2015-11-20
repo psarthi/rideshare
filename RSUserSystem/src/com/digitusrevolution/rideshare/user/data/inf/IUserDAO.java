@@ -1,8 +1,8 @@
 package com.digitusrevolution.rideshare.user.data.inf;
 
-import com.digitusrevolution.rideshare.user.data.entity.core.UserEntity;
+import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
-public interface UserDAO {
+public interface IUserDAO {
 
 	void createUser(UserEntity userEntity);
 

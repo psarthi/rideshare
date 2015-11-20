@@ -1,8 +1,8 @@
-package com.digitusrevolution.rideshare.model.ride.domain;
+package com.digitusrevolution.rideshare.model.ride.data.core;
 
 import java.util.Date;
 
-public class RecurringDetails {
+public class RecurringDetail {
 	
 	private int id;
 	private Date startDate;

@@ -1,8 +1,8 @@
 package com.digitusrevolution.rideshare.user.data.inf;
 
-import com.digitusrevolution.rideshare.user.data.entity.core.VehicleEntity;
+import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 
-public interface VehicleDAO {
+public interface IVehicleDAO {
 
 	void createVehicle(VehicleEntity vehicleEntity);
 

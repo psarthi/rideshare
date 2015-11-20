@@ -7,18 +7,18 @@ import com.digitusrevolution.rideshare.model.user.domain.core.Passenger;
 
 public class Bill {
 	
-	private int billNumber;
+	private int number;
 	private Passenger passenger;
 	private Driver driver;
 	private Company company;
 	private Ride ride;
 	private int amount;
 	
-	public int getBillNumber() {
-		return billNumber;
+	public int getNumber() {
+		return number;
 	}
-	public void setBillNumber(int billNumber) {
-		this.billNumber = billNumber;
+	public void setNumber(int number) {
+		this.number = number;
 	}
 	public Passenger getPassenger() {
 		return passenger;

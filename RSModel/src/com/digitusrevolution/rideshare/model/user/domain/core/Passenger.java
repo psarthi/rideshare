@@ -9,19 +9,12 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 
 public class Passenger extends User{
 
-	private int passengerId;
 	private List<RideRequest> rideRequests;
 	private List<Bill> bills;
 	private List<Ride> rides;
 	private Point pickupPoint;
 	private Point dropPoint;
 	
-	public int getPassengerId() {
-		return passengerId;
-	}
-	public void setPassengerId(int passengerId) {
-		this.passengerId = passengerId;
-	}
 	public List<RideRequest> getRideRequests() {
 		return rideRequests;
 	}

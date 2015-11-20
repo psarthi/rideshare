@@ -1,7 +1,15 @@
-package com.digitusrevolution.rideshare.user.data.entity;
+package com.digitusrevolution.rideshare.model.user.data;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="photo")
 public class PhotoEntity {
-
+	@Id
+	@GeneratedValue
 	private int id;
 	private String imageLocation;
 	private String fileName;

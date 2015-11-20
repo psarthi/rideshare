@@ -1,7 +1,16 @@
-package com.digitusrevolution.rideshare.user.data.entity;
+package com.digitusrevolution.rideshare.model.user.data;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="vehicle_sub_category")
 public class VehicleSubCategoryEntity {
 	
+	@Id
+	@GeneratedValue
 	private int id;
 	private String name;
 	private Boolean airConditioner;

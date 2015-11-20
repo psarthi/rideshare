@@ -1,17 +1,13 @@
-package com.digitusrevolution.rideshare.user.data.entity;
+package com.digitusrevolution.rideshare.model.user.data;
 
+import javax.persistence.Embeddable;
+
+@Embeddable
 public class FuelEntity {
 	
-	private int id;
 	private String type;
 	private int price;
 	
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getType() {
 		return type;
 	}
