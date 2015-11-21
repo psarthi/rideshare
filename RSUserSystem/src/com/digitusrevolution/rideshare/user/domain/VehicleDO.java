@@ -9,6 +9,7 @@ public class VehicleDO {
 	private VehicleEntity vehicleEntity;
 	
 	public VehicleDO(){
+		vehicle = new Vehicle();
 		vehicleEntity = new VehicleEntity();		
 	}
 

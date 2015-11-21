@@ -10,6 +10,7 @@ public class UserDO {
 	private UserEntity userEntity;
 
 	public UserDO(){
+		user = new User();
 		userEntity = new UserEntity();
 	}
 	
@@ -28,17 +29,22 @@ public class UserDO {
 
 	public void setUserEntity(UserEntity userEntity) {
 		this.userEntity = userEntity;
+		mapDataEntityToDomainModel();
 	}
 
 	public void mapDomainModelToDataEntity(){	
 		userEntity.setId(user.getId());
+		userEntity.setFirstName(user.getFirstName());
 		userEntity.setEmail(user.getEmail());
-		setUserEntity(userEntity);
 	}
 	
+	public void mapDataEntityToDomainModel(){	
+		user.setId(userEntity.getId());
+		user.setFirstName(userEntity.getFirstName());
+		user.setEmail(userEntity.getEmail());		
+	}
 	public void addVehicle(Vehicle vehicle){
 		VehicleService vehicleService = new VehicleService();
 		vehicleService.createVehicle(vehicle);	
 	}
-
 }

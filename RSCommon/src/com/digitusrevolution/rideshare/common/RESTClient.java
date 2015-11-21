@@ -19,19 +19,19 @@ public class RESTClient {
 		
 		String webServiceURI = "http://localhost:8080/RSUserSystem/api/users";
 		RESTClient restClient = new RESTClient();
-		restClient.getData(webServiceURI);
 		User user = new User();
 		user.setId(1);
+		user.setFirstName("Partha from REST Client");
 		user.setEmail("partha.sarthi@gmail.com");
 		restClient.postData(webServiceURI, user);
-		
+		restClient.getData(webServiceURI);			
 	}
 	
 	public User getData(String webServiceURI){
 		
 		Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class));
 		//webtarget.path can be used to append into uri
-		WebTarget webTarget = client.target(webServiceURI).path("4");
+		WebTarget webTarget = client.target(webServiceURI).path("1");
 		
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 		Response response = invocationBuilder.get();

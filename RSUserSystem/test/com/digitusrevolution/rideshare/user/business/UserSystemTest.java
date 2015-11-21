@@ -12,15 +12,26 @@ public class UserSystemTest {
 
 	public static void main(String args[]){
 		
-		UserSystemExtService userSystemExtService = new UserSystemExtService();
-		User user = userSystemExtService.getUser(2);
-		System.out.println("User details - "+user.getId()+","+user.getFirstName()+","+user.getLastName()+","+user.getEmail());
-		
+		//create User
 		UserService userService = new UserService();
-		userService.createUser(user);
+		User user1 = new User();
+		user1.setId(1);
+		user1.setFirstName("Partha");
+		user1.setEmail("partha.sarthi@gmail.com");
+		userService.createUser(user1);
+
+		//Fetch from UserService
+		User user2 = userService.getUser(1);
+		System.out.println("User details Fetch from UserService- "+user2.getId()+","+user2.getFirstName()+","+user2.getEmail());
 		
+		//Fetch User from REST
+		UserSystemExtService userSystemExtService = new UserSystemExtService();
+		User user3 = userSystemExtService.getUser(1);
+		System.out.println("User details Fetch from REST- "+user3.getId()+","+user3.getFirstName()+","+user3.getEmail());
+		
+		//Add vehicle
 		Vehicle vehicle = new Vehicle();
-		vehicle.setId(10);
+		vehicle.setId(1);
 		UserDO userDO = new UserDO();
 		userDO.addVehicle(vehicle);
 		
