@@ -9,7 +9,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.user.ext.domain.service.UserExtService;
+import com.digitusrevolution.rideshare.user.domain.UserService;
 
 
 @Path("/users")
@@ -17,18 +17,18 @@ import com.digitusrevolution.rideshare.user.ext.domain.service.UserExtService;
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserExtResource {
 	
-	private UserExtService userSystemExtService = new UserExtService();
+	private UserService userService = new UserService();
 	
 	@GET
 	@Path("/{userId}")
 	public User getUser(@PathParam("userId") int userId){
 		System.out.println("Web Service - getUser");
-		return userSystemExtService.getUser(userId);
+		return userService.getUser(userId);
 	}
 	
 	@POST
 	public void createUser(User user){
-		userSystemExtService.createUser(user);
+		userService.createUser(user);
 	}
 
 }

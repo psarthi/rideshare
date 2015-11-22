@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.user.business;
+package com.digitusrevolution.rideshare.user;
 
 
 
@@ -8,7 +8,6 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.domain.UserDO;
 import com.digitusrevolution.rideshare.user.domain.UserService;
-import com.digitusrevolution.rideshare.user.ext.domain.service.UserExtService;
 
 public class UserSystemTest {
 
@@ -33,7 +32,7 @@ public class UserSystemTest {
 		System.out.println("User Exist status partha.sarthi@gmail.com - "+userService.checkUserExist("partha.sarthi@gmail.com"));
 		System.out.println("User Exist status partha.sarthi@yahoo.com - "+userService.checkUserExist("partha.sarthi@yahoo.com"));
 		
-		//Fetch User from UserService
+		//Fetch User
 		User user2 = userService.getUser(1);
 		System.out.println("User details Fetch from UserService- "+user2.getId()+","+user2.getFirstName()+","+user2.getEmail());
 		
@@ -42,12 +41,7 @@ public class UserSystemTest {
 		for (User user : users) {
 			System.out.println("User details: "+"id: "+user.getId()+" Name: "+user.getFirstName()+" Email: "+user.getEmail());
 		}
-		
-		//Fetch User from REST
-		UserExtService userSystemExtService = new UserExtService();
-		User user3 = userSystemExtService.getUser(1);
-		System.out.println("User details Fetch from REST- "+user3.getId()+","+user3.getFirstName()+","+user3.getEmail());
-		
+				
 		//Add vehicle
 		Vehicle vehicle = new Vehicle();
 		vehicle.setId(1);
