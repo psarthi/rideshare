@@ -15,7 +15,7 @@ import com.digitusrevolution.rideshare.user.domain.UserService;
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class UserExtResource {
+public class UserResource {
 	
 	private UserService userService = new UserService();
 	
