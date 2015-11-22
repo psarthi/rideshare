@@ -25,6 +25,7 @@ import com.digitusrevolution.rideshare.model.user.domain.Sex;
 @Entity
 @Table (name="user_detail")
 @Inheritance(strategy=InheritanceType.JOINED)
+//@NamedQuery(name="UserEntity.byEmail", query="from UserEntity where email=:email")
 public class UserEntity {
 	
 	@Id

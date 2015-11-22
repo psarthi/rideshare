@@ -4,10 +4,11 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 
 import com.digitusrevolution.rideshare.common.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.HibernateUtil;
@@ -28,9 +29,14 @@ public class UserDAO extends GenericDAOImpl<UserEntity>{
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 			transation = session.beginTransaction();
-			Query query = session.createQuery("from UserEntity where email=:email_value")
-					.setParameter("email_value", email);
+
+/*			Query query = session.getNamedQuery("UserEntity.byEmail")
+								 .setParameter("email", email);
 			userEntities = (List<UserEntity>) query.list();
+*/
+			Criteria criteria = session.createCriteria(UserEntity.class)
+										.add(Restrictions.eq("email", email));	
+			userEntities = (List<UserEntity>) criteria.list();			
 			transation.commit();
 		} catch (HibernateException e) {
 			e.printStackTrace();
