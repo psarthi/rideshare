@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.user.ext.domain.resource;
+package com.digitusrevolution.rideshare.user.domain.resource;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
