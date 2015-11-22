@@ -17,10 +17,9 @@ public class RESTClient {
 	
 	public static void main (String args[]){
 		
-		String webServiceURI = "http://localhost:8080/RSUserSystem/api/users";
+		String webServiceURI = "http://localhost:8080/RSUserSystem/api/domain/users";
 		RESTClient restClient = new RESTClient();
 		User user = new User();
-		user.setId(1);
 		user.setFirstName("Partha from REST Client");
 		user.setEmail("partha.sarthi@gmail.com");
 		restClient.postData(webServiceURI, user);

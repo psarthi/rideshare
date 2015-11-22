@@ -12,7 +12,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.user.domain.UserService;
 
 
-@Path("/users")
+@Path("/domain/users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {

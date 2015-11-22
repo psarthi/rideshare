@@ -6,12 +6,21 @@ import java.util.List;
 
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
+import com.digitusrevolution.rideshare.user.business.UserRegistrationService;
 import com.digitusrevolution.rideshare.user.domain.UserDO;
 import com.digitusrevolution.rideshare.user.domain.UserService;
 
 public class UserSystemTest {
 
 	public static void main(String args[]){
+		
+		//create User from Business Service
+		UserRegistrationService userRegistrationService = new UserRegistrationService();
+		User user5 = new User();
+		user5.setFirstName("Partha from Business Service");
+		user5.setEmail("partha.sarthi@gmail.com");
+		userRegistrationService.registerUser(user5);
+
 		
 		//create User
 		UserService userService = new UserService();
