@@ -19,7 +19,7 @@ public class VehicleDO {
 
 	public void setVehicle(Vehicle vehicle) {
 		this.vehicle = vehicle;
-		mapDomainModelToDataEntity();
+		mapDomainModelToDataModel();
 	}
 
 	public VehicleEntity getVehicleEntity() {
@@ -30,7 +30,7 @@ public class VehicleDO {
 		this.vehicleEntity = vehicleEntity;
 	}
 	
-	public void mapDomainModelToDataEntity(){
+	public void mapDomainModelToDataModel(){
 		vehicleEntity.setId(vehicle.getId());
 		setVehicleEntity(vehicleEntity);
 	}

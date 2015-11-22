@@ -2,6 +2,8 @@ package com.digitusrevolution.rideshare.user.business;
 
 
 
+import java.util.List;
+
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.domain.UserDO;
@@ -19,10 +21,27 @@ public class UserSystemTest {
 		user1.setFirstName("Partha");
 		user1.setEmail("partha.sarthi@gmail.com");
 		userService.createUser(user1);
-
-		//Fetch from UserService
+	
+		//create User
+		User user4 = new User();
+		user4.setId(2);
+		user4.setFirstName("Puja");
+		user4.setEmail("puja.sarthi@gmail.com");
+		userService.createUser(user4);
+		
+		//Check User Exist
+		System.out.println("User Exist status partha.sarthi@gmail.com - "+userService.checkUserExist("partha.sarthi@gmail.com"));
+		System.out.println("User Exist status partha.sarthi@yahoo.com - "+userService.checkUserExist("partha.sarthi@yahoo.com"));
+		
+		//Fetch User from UserService
 		User user2 = userService.getUser(1);
 		System.out.println("User details Fetch from UserService- "+user2.getId()+","+user2.getFirstName()+","+user2.getEmail());
+		
+		//Fetch all Users
+		List<User> users = userService.getAllUser();
+		for (User user : users) {
+			System.out.println("User details: "+"id: "+user.getId()+" Name: "+user.getFirstName()+" Email: "+user.getEmail());
+		}
 		
 		//Fetch User from REST
 		UserSystemExtService userSystemExtService = new UserSystemExtService();

@@ -20,7 +20,7 @@ public class UserDO {
 
 	public void setUser(User user) {
 		this.user = user;
-		mapDomainModelToDataEntity();
+		mapDomainModelToDataModel();
 	}
 
 	public UserEntity getUserEntity() {
@@ -29,16 +29,16 @@ public class UserDO {
 
 	public void setUserEntity(UserEntity userEntity) {
 		this.userEntity = userEntity;
-		mapDataEntityToDomainModel();
+		mapDataModelToDomainModel();
 	}
 
-	public void mapDomainModelToDataEntity(){	
+	public void mapDomainModelToDataModel(){	
 		userEntity.setId(user.getId());
 		userEntity.setFirstName(user.getFirstName());
 		userEntity.setEmail(user.getEmail());
 	}
 	
-	public void mapDataEntityToDomainModel(){	
+	public void mapDataModelToDomainModel(){	
 		user.setId(userEntity.getId());
 		user.setFirstName(userEntity.getFirstName());
 		user.setEmail(userEntity.getEmail());		

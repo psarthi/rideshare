@@ -1,5 +1,8 @@
 package com.digitusrevolution.rideshare.user.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,8 +28,10 @@ public class UserService {
 	}
 
 	public boolean checkUserExist(String userEmail){
-		userDAO.getUserByEmail(userEmail);
-		return false;
+		if (userDAO.getUserByEmail(userEmail)==null){
+			return false;			
+		}
+		return true;
 	}
 	
 	public User getUser(int userId){
@@ -35,6 +40,18 @@ public class UserService {
 		userEntity = userDAO.get(userId);
 		userDO.setUserEntity(userEntity);
 		return userDO.getUser();
+	}
+	
+	public List<User> getAllUser(){
+		List<UserEntity> userEntities = new ArrayList<>();
+		List<User> users = new ArrayList<>();
+		userEntities = userDAO.getAll();
+		for (UserEntity userEntity : userEntities) {
+			UserDO userDO = new UserDO();
+			userDO.setUserEntity(userEntity);
+			users.add(userDO.getUser());
+		}
+		return users;
 	}
 	
 }
