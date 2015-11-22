@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.user.ext.resource;
+package com.digitusrevolution.rideshare.user.ext.domain.resource;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -9,14 +9,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.user.ext.service.UserSystemExtService;
+import com.digitusrevolution.rideshare.user.ext.domain.service.UserExtService;
+
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class UserSystemExtResource {
+public class UserExtResource {
 	
-	private UserSystemExtService userSystemExtService = new UserSystemExtService();
+	private UserExtService userSystemExtService = new UserExtService();
 	
 	@GET
 	@Path("/{userId}")

@@ -1,6 +1,5 @@
 package com.digitusrevolution.rideshare.user.business;
 
-public class UserSystemBusinessService {
-	
+public class UserRegistrationService {
 
 }

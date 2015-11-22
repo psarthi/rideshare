@@ -8,7 +8,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.domain.UserDO;
 import com.digitusrevolution.rideshare.user.domain.UserService;
-import com.digitusrevolution.rideshare.user.ext.service.UserSystemExtService;
+import com.digitusrevolution.rideshare.user.ext.domain.service.UserExtService;
 
 public class UserSystemTest {
 
@@ -44,7 +44,7 @@ public class UserSystemTest {
 		}
 		
 		//Fetch User from REST
-		UserSystemExtService userSystemExtService = new UserSystemExtService();
+		UserExtService userSystemExtService = new UserExtService();
 		User user3 = userSystemExtService.getUser(1);
 		System.out.println("User details Fetch from REST- "+user3.getId()+","+user3.getFirstName()+","+user3.getEmail());
 		
