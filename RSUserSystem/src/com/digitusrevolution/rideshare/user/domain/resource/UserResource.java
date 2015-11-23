@@ -8,7 +8,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.user.domain.UserService;
@@ -23,18 +25,23 @@ public class UserResource {
 	
 	@GET
 	@Path("/{userId}")
-	public User getUser(@PathParam("userId") int userId){
-		return userService.getUser(userId);
+	public Response getUser(@PathParam("userId") int userId){
+		User user = userService.getUser(userId);
+		return Response.ok(user).build();
 	}
 	
 	@GET
-	public List<User> getAllUser(){
-		return userService.getAllUser();
+	public Response getAllUser(){
+		List<User> users = userService.getAllUser();
+		GenericEntity<List<User>> entity = new GenericEntity<List<User>>(users) {};
+		return Response.ok(entity).build();	
 	}
 
 	@POST
-	public void createUser(User user){
-		userService.createUser(user);
+	public Response createUser(User user){
+		int id = userService.createUser(user);
+		user.setId(id);
+		return Response.ok(user).build();
 	}
 
 }

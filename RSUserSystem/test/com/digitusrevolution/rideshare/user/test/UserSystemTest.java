@@ -1,8 +1,10 @@
-package com.digitusrevolution.rideshare.user;
+package com.digitusrevolution.rideshare.user.test;
 
 
 
 import java.util.List;
+
+import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
@@ -24,7 +26,8 @@ public class UserSystemTest {
 
 		//Fetch User from Domain Resource
 		UserResource userResource = new UserResource();
-		User user2 = userResource.getUser(1);
+		Response response = userResource.getUser(1);
+		User user2 = (User)response.getEntity();
 		System.out.println("User details Fetch from UserService- "+user2.getId()+","+user2.getFirstName()+","+user2.getEmail());
 
 		/*		
