@@ -1,5 +1,7 @@
 package com.digitusrevolution.rideshare.user.domain.resource;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -25,6 +27,11 @@ public class UserResource {
 		return userService.getUser(userId);
 	}
 	
+	@GET
+	public List<User> getAllUser(){
+		return userService.getAllUser();
+	}
+
 	@POST
 	public void createUser(User user){
 		userService.createUser(user);

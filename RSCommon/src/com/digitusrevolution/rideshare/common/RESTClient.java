@@ -58,6 +58,6 @@ public class RESTClient {
 		
 		String json = response.readEntity(String.class);
 		System.out.println("JSON is - " + json);
-		System.out.println("Resonse Details - " + response.getStatus() + response.getStatusInfo());		
+		System.out.println("Resonse Details - " + response.getStatus() +"/"+ response.getStatusInfo());		
 	}
 }

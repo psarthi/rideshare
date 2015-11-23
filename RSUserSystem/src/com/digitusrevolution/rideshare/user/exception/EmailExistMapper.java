@@ -21,7 +21,7 @@ public class EmailExistMapper implements ExceptionMapper<EmailExist>{
 	@Override
 	public Response toResponse(EmailExist exception) {
 		logger.debug("toResponse invoked");
-		ErrorMessage errorMessage = new ErrorMessage(exception.getMessage());
+		ErrorMessage errorMessage = new ErrorMessage(1, "EMAIL_ID_ALREADY_EXIST", exception.getMessage());
 		Response response = Response.status(Response.Status.CONFLICT).entity(errorMessage).build();
 		return response;
 	}
