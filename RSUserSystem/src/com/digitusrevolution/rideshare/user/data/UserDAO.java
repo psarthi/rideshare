@@ -22,6 +22,7 @@ public class UserDAO extends GenericDAOImpl<UserEntity>{
 		super(UserEntity.class);
 	}
 
+	@SuppressWarnings("unchecked")
 	public UserEntity getUserByEmail(String email){	
 		Session session = null;
 		Transaction transation = null;
@@ -36,7 +37,7 @@ public class UserDAO extends GenericDAOImpl<UserEntity>{
 */
 			Criteria criteria = session.createCriteria(UserEntity.class)
 										.add(Restrictions.eq("email", email));	
-			userEntities = (List<UserEntity>) criteria.list();			
+			userEntities = criteria.list();			
 			transation.commit();
 		} catch (HibernateException e) {
 			e.printStackTrace();
