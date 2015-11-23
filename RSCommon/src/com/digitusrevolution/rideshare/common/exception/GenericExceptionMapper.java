@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.common;
+package com.digitusrevolution.rideshare.common.exception;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;

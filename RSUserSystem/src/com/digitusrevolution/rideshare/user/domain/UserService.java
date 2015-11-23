@@ -3,6 +3,8 @@ package com.digitusrevolution.rideshare.user.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.NotFoundException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,6 +42,9 @@ public class UserService {
 		UserEntity userEntity = new UserEntity();
 		UserDO userDO = new UserDO();
 		userEntity = userDAO.get(userId);
+		if (userEntity == null){
+			throw new NotFoundException("No User found with id: "+userId);
+		}
 		userDO.setUserEntity(userEntity);
 		return userDO.getUser();
 	}
