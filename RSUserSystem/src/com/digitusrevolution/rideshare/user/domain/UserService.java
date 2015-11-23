@@ -19,12 +19,14 @@ public class UserService {
 		userDAO = new UserDAO();
 	}
 
-	public void createUser(User user){
+	public int createUser(User user){
+		int id;
 		logger.entry();
 		UserDO userDO = new UserDO();
 		userDO.setUser(user);
-		userDAO.create(userDO.getUserEntity());
+		id = userDAO.create(userDO.getUserEntity());
 		logger.exit();
+		return id;
 	}
 
 	public boolean checkUserExist(String userEmail){

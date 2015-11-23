@@ -22,7 +22,6 @@ public class UserResource {
 	@GET
 	@Path("/{userId}")
 	public User getUser(@PathParam("userId") int userId){
-		System.out.println("Web Service - getUser");
 		return userService.getUser(userId);
 	}
 	

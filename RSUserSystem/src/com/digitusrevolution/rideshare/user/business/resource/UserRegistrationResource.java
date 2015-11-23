@@ -19,6 +19,8 @@ public class UserRegistrationResource {
 	
 	@POST
 	public Response registerUser(User user){
-		return userRegistrationService.registerUser(user);
+		int id = userRegistrationService.registerUser(user);
+		user.setId(id);
+		return Response.ok().entity(user).build();
 	}
 }

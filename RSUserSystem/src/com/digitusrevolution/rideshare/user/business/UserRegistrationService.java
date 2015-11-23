@@ -1,23 +1,21 @@
 package com.digitusrevolution.rideshare.user.business;
 
-import javax.ws.rs.core.Response;
-
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.user.domain.UserService;
+import com.digitusrevolution.rideshare.user.exception.EmailExist;
 
 public class UserRegistrationService {
 	
-	public Response registerUser(User user){
+	public int registerUser(User user){
 		
 		boolean userExist;
 		UserService userService = new UserService();
 		userExist = userService.checkUserExist(user.getEmail());
 		if (userExist){
-			return Response.serverError().entity("Email id already exist").build();						
+			throw new EmailExist("Email id already exist :"+user.getEmail());					
 		} else {
-			userService.createUser(user);
-			return Response.ok().build();
-		}		
+			return userService.createUser(user);
+		}
 	}
 
 }

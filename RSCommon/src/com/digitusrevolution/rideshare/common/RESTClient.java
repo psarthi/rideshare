@@ -17,13 +17,14 @@ public class RESTClient {
 	
 	public static void main (String args[]){
 		
-		String webServiceURI = "http://localhost:8080/RSUserSystem/api/domain/users";
+		String webServiceBusinessURI = "http://localhost:8080/RSUserSystem/api/business/users";
+		String webServiceDomainURI = "http://localhost:8080/RSUserSystem/api/domain/users";
 		RESTClient restClient = new RESTClient();
 		User user = new User();
 		user.setFirstName("Partha from REST Client");
 		user.setEmail("partha.sarthi@gmail.com");
-		restClient.postData(webServiceURI, user);
-		restClient.getData(webServiceURI);			
+		restClient.postData(webServiceBusinessURI, user);
+		restClient.getData(webServiceDomainURI);			
 	}
 	
 	public User getData(String webServiceURI){
@@ -55,7 +56,9 @@ public class RESTClient {
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 		Response response = invocationBuilder.post(Entity.entity(user, MediaType.APPLICATION_JSON));		
 		
-		System.out.println("Response status -" + response.getStatus());
-		
+/*		String json = response.readEntity(String.class);
+		System.out.println("JSON is - " + json);
+		System.out.println("Resonse Details - " + response.getStatus() + response.getStatusInfo());
+*/		
 	}
 }

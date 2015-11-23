@@ -1,0 +1,30 @@
+package com.digitusrevolution.rideshare.user.exception;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.digitusrevolution.rideshare.common.CustomStatusType;
+import com.digitusrevolution.rideshare.common.HibernateUtil;
+import com.digitusrevolution.rideshare.model.common.ErrorMessage;
+
+@Provider
+public class EmailExistMapper implements ExceptionMapper<EmailExist>{
+
+	private static final Logger logger = LogManager.getLogger(HibernateUtil.class.getName());
+	
+	public EmailExistMapper() {
+		logger.debug("EmailExistMapper Invoked");
+	}
+	@Override
+	public Response toResponse(EmailExist exception) {
+		logger.debug("toResponse invoked");
+		ErrorMessage errorMessage = new ErrorMessage(exception.getMessage());
+		Response response = Response.status(new CustomStatusType(1001, "Email already exist")).entity(errorMessage).build();
+		return response;
+	}
+
+}

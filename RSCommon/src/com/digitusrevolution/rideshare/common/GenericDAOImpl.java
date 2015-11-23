@@ -20,13 +20,14 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
 	}
 	
 	@Override
-	public void create(T entity) {
+	public int create(T entity) {
 		Session session = null;
 		Transaction transation = null;
+		int id = 0;
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 			transation = session.beginTransaction();
-			session.save(entity);
+			id = (int) session.save(entity);
 			transation.commit();
 		} catch (HibernateException e) {
 			e.printStackTrace();
@@ -39,6 +40,7 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
 				session.close();
 			}
 		}
+		return id;
 	}
 
 	@Override
@@ -49,7 +51,7 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 			transation = session.beginTransaction();
-			logger.info("\n entityClass -"+ entityClass + "\n entityClass.getName() -" + entityClass.getName() + 
+			logger.debug("\n entityClass -"+ entityClass + "\n entityClass.getName() -" + entityClass.getName() + 
 					"\n entityClass.getClass() -"+entityClass.getClass() + "\n entityClass.getClass().getName() -"+entityClass.getClass().getName() +
 					"\n entityClass.getClass().getClass() -"+entityClass.getClass().getClass() + 
 					"\n entityClass.getClass().getClass().getName() -"+entityClass.getClass().getClass().getName());
