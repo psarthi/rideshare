@@ -22,7 +22,7 @@ public class RESTClient {
 		RESTClient restClient = new RESTClient();
 		User user = new User();
 		user.setFirstName("Partha from REST Client");
-		user.setEmail("partha.sarthi@gmail.com");
+		user.setEmail("partha.sarthi@gmail3.com");
 		restClient.postData(webServiceBusinessURI, user);
 		restClient.getData(webServiceDomainURI);			
 	}
@@ -56,9 +56,8 @@ public class RESTClient {
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 		Response response = invocationBuilder.post(Entity.entity(user, MediaType.APPLICATION_JSON));		
 		
-/*		String json = response.readEntity(String.class);
+		String json = response.readEntity(String.class);
 		System.out.println("JSON is - " + json);
-		System.out.println("Resonse Details - " + response.getStatus() + response.getStatusInfo());
-*/		
+		System.out.println("Resonse Details - " + response.getStatus() + response.getStatusInfo());		
 	}
 }

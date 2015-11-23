@@ -7,7 +7,6 @@ import javax.ws.rs.ext.Provider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.digitusrevolution.rideshare.common.CustomStatusType;
 import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.model.common.ErrorMessage;
 
@@ -23,7 +22,7 @@ public class EmailExistMapper implements ExceptionMapper<EmailExist>{
 	public Response toResponse(EmailExist exception) {
 		logger.debug("toResponse invoked");
 		ErrorMessage errorMessage = new ErrorMessage(exception.getMessage());
-		Response response = Response.status(new CustomStatusType(1001, "Email already exist")).entity(errorMessage).build();
+		Response response = Response.status(Response.Status.CONFLICT).entity(errorMessage).build();
 		return response;
 	}
 
