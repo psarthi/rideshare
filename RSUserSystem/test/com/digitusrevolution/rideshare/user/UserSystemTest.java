@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.user.test;
+package com.digitusrevolution.rideshare.user;
 
 
 
