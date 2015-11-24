@@ -24,11 +24,10 @@ public class UserDAO extends GenericDAOImpl<UserEntity>{
 
 	@SuppressWarnings("unchecked")
 	public UserEntity getUserByEmail(String email){	
-		Session session = null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		Transaction transation = null;
 		List<UserEntity> userEntities = null;
 		try {
-			session = HibernateUtil.getSessionFactory().openSession();
 			transation = session.beginTransaction();
 
 /*			Query query = session.getNamedQuery("UserEntity.byEmail")
@@ -40,10 +39,10 @@ public class UserDAO extends GenericDAOImpl<UserEntity>{
 			userEntities = criteria.list();			
 			transation.commit();
 		} catch (HibernateException e) {
-			e.printStackTrace();
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
+				throw e;
 			}
 		} finally {
 			if (session!=null){

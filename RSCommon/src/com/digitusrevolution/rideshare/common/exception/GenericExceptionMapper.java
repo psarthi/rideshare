@@ -12,8 +12,9 @@ public class GenericExceptionMapper implements ExceptionMapper<WebApplicationExc
 
 	@Override
 	public Response toResponse(WebApplicationException exception) {
-		ErrorMessage errorMessage = new ErrorMessage(500, "INTERNAL_SERVER_ERROR", exception.getMessage());
-		Response response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMessage).build();
+				
+		ErrorMessage errorMessage = new ErrorMessage(exception.getResponse().getStatus(), exception.getClass().getSimpleName(), exception.getMessage());
+		Response response = Response.status(exception.getResponse().getStatus()).entity(errorMessage).build();
 		return response;
 
 	}

@@ -1,10 +1,10 @@
 package com.digitusrevolution.rideshare.user.exception;
 
-public class EmailExist extends RuntimeException{
+public class EmailExistException extends RuntimeException{
 
 	private static final long serialVersionUID = 1L;
 
-	public EmailExist(String message) {
+	public EmailExistException(String message) {
 		super(message);
 	}
 

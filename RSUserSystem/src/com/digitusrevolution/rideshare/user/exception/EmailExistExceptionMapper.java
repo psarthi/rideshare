@@ -11,15 +11,15 @@ import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.model.common.ErrorMessage;
 
 @Provider
-public class EmailExistMapper implements ExceptionMapper<EmailExist>{
+public class EmailExistExceptionMapper implements ExceptionMapper<EmailExistException>{
 
 	private static final Logger logger = LogManager.getLogger(HibernateUtil.class.getName());
 	
-	public EmailExistMapper() {
+	public EmailExistExceptionMapper() {
 		logger.debug("EmailExistMapper Invoked");
 	}
 	@Override
-	public Response toResponse(EmailExist exception) {
+	public Response toResponse(EmailExistException exception) {
 		logger.debug("toResponse invoked");
 		ErrorMessage errorMessage = new ErrorMessage(1, "EMAIL_ID_ALREADY_EXIST", exception.getMessage());
 		Response response = Response.status(Response.Status.CONFLICT).entity(errorMessage).build();

@@ -20,19 +20,18 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
 	
 	@Override
 	public int create(T entity) {
-		Session session = null;
-		Transaction transation = null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		Transaction transation = null;	
 		int id = 0;
 		try {
-			session = HibernateUtil.getSessionFactory().openSession();
 			transation = session.beginTransaction();
 			id = (int) session.save(entity);
 			transation.commit();
 		} catch (HibernateException e) {
-			e.printStackTrace();
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
+				throw e;
 			}
 		} finally {
 			if (session!=null){
@@ -44,11 +43,10 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
 
 	@Override
 	public T get(int id) {
-		Session session = null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		Transaction transation = null;
 		T entity = null;
 		try {
-			session = HibernateUtil.getSessionFactory().openSession();
 			transation = session.beginTransaction();
 			logger.debug("\n entityClass -"+ entityClass + "\n entityClass.getName() -" + entityClass.getName() + 
 					"\n entityClass.getClass() -"+entityClass.getClass() + "\n entityClass.getClass().getName() -"+entityClass.getClass().getName() +
@@ -57,10 +55,10 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
 			entity = session.get(entityClass,id);
 			transation.commit();
 		} catch (HibernateException e) {
-			e.printStackTrace();
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
+				throw e;
 			}
 		} finally {
 			if (session!=null){
@@ -72,18 +70,17 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
 
 	@Override
 	public void update(T entity) {
-		Session session = null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		Transaction transation = null;
 		try {
-			session = HibernateUtil.getSessionFactory().openSession();
 			transation = session.beginTransaction();
 			session.update(entity);
 			transation.commit();
 		} catch (HibernateException e) {
-			e.printStackTrace();
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
+				throw e;
 			}
 		} finally {
 			if (session!=null){
@@ -94,18 +91,17 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
 
 	@Override
 	public void delete(T entity) {
-		Session session = null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		Transaction transation = null;
 		try {
-			session = HibernateUtil.getSessionFactory().openSession();
 			transation = session.beginTransaction();
 			session.delete(entity);
 			transation.commit();
 		} catch (HibernateException e) {
-			e.printStackTrace();
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
+				throw e;
 			}
 		} finally {
 			if (session!=null){
@@ -117,11 +113,10 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<T> getAll() {	
-		Session session = null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		Transaction transation = null;
 		List<T> entityList = null;
 		try {
-			session = HibernateUtil.getSessionFactory().openSession();
 			transation = session.beginTransaction();
 			
 /*			Query query = session.createQuery("from "+entityClass.getName());
@@ -131,10 +126,10 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
 			entityList = criteria.list();			
 			transation.commit();
 		} catch (HibernateException e) {
-			e.printStackTrace();
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
+				throw e;
 			}
 		} finally {
 			if (session!=null){
