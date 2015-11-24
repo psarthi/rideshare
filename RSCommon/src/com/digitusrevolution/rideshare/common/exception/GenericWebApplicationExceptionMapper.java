@@ -8,7 +8,7 @@ import javax.ws.rs.ext.Provider;
 import com.digitusrevolution.rideshare.model.common.ErrorMessage;
 
 @Provider
-public class GenericExceptionMapper implements ExceptionMapper<WebApplicationException> {
+public class GenericWebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
 
 	@Override
 	public Response toResponse(WebApplicationException exception) {
