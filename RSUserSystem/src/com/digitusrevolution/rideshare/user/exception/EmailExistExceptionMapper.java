@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.HibernateUtil;
-import com.digitusrevolution.rideshare.common.PropertiesCache;
+import com.digitusrevolution.rideshare.common.PropertyReader;
 import com.digitusrevolution.rideshare.model.common.ErrorMessage;
 
 @Provider
@@ -23,7 +23,7 @@ public class EmailExistExceptionMapper implements ExceptionMapper<EmailExistExce
 	public Response toResponse(EmailExistException exception) {
 		logger.debug("toResponse invoked");
 		String errorReason = "EMAIL_ID_ALREADY_EXIST";
-		int errorCode = Integer.parseInt(PropertiesCache.getInstance().getProperty(errorReason));
+		int errorCode = Integer.parseInt(PropertyReader.getInstance().getProperty(errorReason));
 		ErrorMessage errorMessage = new ErrorMessage(errorCode, errorReason, exception.getMessage());
 		Response response = Response.status(Response.Status.CONFLICT).entity(errorMessage).build();
 		return response;
