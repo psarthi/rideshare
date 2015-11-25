@@ -49,6 +49,20 @@ public class UserService {
 		return userDO.getUser();
 	}
 	
+	public User getUserFullDetail(int userId){
+
+		UserEntity userEntity = new UserEntity();
+		UserDO userDO = new UserDO();
+		userEntity = userDAO.get(userId);
+		if (userEntity == null){
+			throw new NotFoundException("No User found with id: "+userId);
+		}
+		userDO.setUserEntity(userEntity);
+		userDO.mapVehicleDataModelToDomainModel();
+		return userDO.getUser();
+
+	}
+	
 	public List<User> getAllUser(){
 		List<UserEntity> userEntities = new ArrayList<>();
 		List<User> users = new ArrayList<>();
@@ -64,6 +78,7 @@ public class UserService {
 	public void updateUser(User user){
 		UserDO userDO = new UserDO();
 		userDO.setUser(user);
+		userDO.mapVehicleDomainModelToDataModel();
 		userDAO.update(userDO.getUserEntity());
 	}
 

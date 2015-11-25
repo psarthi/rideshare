@@ -28,11 +28,15 @@ public class VehicleDO {
 
 	public void setVehicleEntity(VehicleEntity vehicleEntity) {
 		this.vehicleEntity = vehicleEntity;
+		mapDataModelToDomainModel();
 	}
 	
 	public void mapDomainModelToDataModel(){
-		vehicleEntity.setId(vehicle.getId());
-		setVehicleEntity(vehicleEntity);
+		vehicleEntity.setId(vehicle.getId());	
+	}
+	
+	public void mapDataModelToDomainModel(){
+		vehicle.setId(vehicleEntity.getId());
 	}
 
 	

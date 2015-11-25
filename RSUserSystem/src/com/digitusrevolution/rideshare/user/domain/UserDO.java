@@ -1,14 +1,11 @@
 package com.digitusrevolution.rideshare.user.domain;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
-import com.digitusrevolution.rideshare.user.data.UserDAO;;
 
 public class UserDO {
 	
@@ -38,10 +35,22 @@ public class UserDO {
 		mapDataModelToDomainModel();
 	}
 
-	public void mapDomainModelToDataModel(){	
+	public void mapDomainModelToDataModel(){
+		userEntity.setId(user.getId());
 		userEntity.setFirstName(user.getFirstName());
 		userEntity.setLastName(user.getLastName());
 		userEntity.setEmail(user.getEmail());
+	}
+	
+	public void mapDataModelToDomainModel(){	
+		user.setId(userEntity.getId());
+		user.setFirstName(userEntity.getFirstName());
+		user.setLastName(userEntity.getLastName());
+		user.setEmail(userEntity.getEmail());		
+		
+	}
+	
+	public void mapVehicleDomainModelToDataModel(){
 
 		Collection<Vehicle> vehicles = user.getVehicles();
 		Collection<VehicleEntity> vehicleEntities = userEntity.getVehicles();
@@ -55,12 +64,9 @@ public class UserDO {
 
 	}
 	
-	public void mapDataModelToDomainModel(){	
-		user.setId(userEntity.getId());
-		user.setFirstName(userEntity.getFirstName());
-		user.setLastName(userEntity.getLastName());
-		user.setEmail(userEntity.getEmail());		
 
+	public void mapVehicleDataModelToDomainModel(){
+		
 		Collection<Vehicle> vehicles = user.getVehicles();
 		Collection<VehicleEntity> vehicleEntities = userEntity.getVehicles();
 		for (VehicleEntity vehicleEntity : vehicleEntities) {
@@ -70,11 +76,13 @@ public class UserDO {
 		}
 		
 		user.setVehicles(vehicles);
-		
+
 	}
-	public Vehicle addVehicle(Vehicle vehicle){
-		VehicleService vehicleService = new VehicleService();
-		vehicle = vehicleService.createVehicle(vehicle);
-		return vehicle;
+	
+	public User addVehicle(Vehicle vehicle){
+		user.getVehicles().add(vehicle);
+		UserService userService = new UserService();
+		userService.updateUser(user);
+		return userService.getUserFullDetail(user.getId());
 	}
 }

@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.user.domain.resource;
+package com.digitusrevolution.rideshare.user.business.resource;
 
 import java.util.List;
 
@@ -29,6 +29,14 @@ public class UserResource {
 		User user = userService.getUser(userId);
 		return Response.ok(user).build();
 	}
+	
+	@GET
+	@Path("/fulldetail/{userId}")
+	public Response getUserFullDetails(@PathParam("userId") int userId){
+		User user = userService.getUserFullDetail(userId);
+		return Response.ok(user).build();
+	}
+
 	
 	@GET
 	public Response getAllUser(){

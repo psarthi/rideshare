@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.model.user.data.core;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -44,7 +45,7 @@ public class UserEntity {
 	private PhotoEntity photo;
 	@ManyToMany(mappedBy="users")
 	private Collection<GroupEntity> groups = new ArrayList<GroupEntity>();
-	@OneToMany
+	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="user_id")
 	private Collection<VehicleEntity> vehicles = new ArrayList<VehicleEntity>();
 	@ManyToMany

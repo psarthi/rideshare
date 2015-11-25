@@ -41,5 +41,6 @@ public class Vehicle {
 
 	public void setPhoto(Photo photo) {
 		this.photo = photo;
-	}	
+	}
+
 }
