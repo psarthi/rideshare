@@ -45,11 +45,6 @@ public class UserBusinessService {
 				transation.rollback();
 				throw e;
 			}
-		} finally {
-			if (session!=null){
-				logger.info(session.isOpen());
-		//		session.close();
-			}
 		}
 		return user;
 	}
@@ -69,10 +64,6 @@ public class UserBusinessService {
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
 				throw e;
-			}
-		} finally {
-			if (session!=null){
-	//			session.close();
 			}
 		}
 		return status;
@@ -95,10 +86,6 @@ public class UserBusinessService {
 				transation.rollback();
 				throw e;
 			}
-		} finally {
-			if (session!=null){
-	//			session.close();
-			}
 		}
 		return user;
 
@@ -119,10 +106,6 @@ public class UserBusinessService {
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
 				throw e;
-			}
-		} finally {
-			if (session!=null){
-		//		session.close();
 			}
 		}
 		return user;
@@ -145,10 +128,6 @@ public class UserBusinessService {
 				transation.rollback();
 				throw e;
 			}
-		} finally {
-			if (session!=null){
-//				session.close();
-			}
 		}
 
 		return users;
@@ -168,10 +147,6 @@ public class UserBusinessService {
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
 				throw e;
-			}
-		} finally {
-			if (session!=null){
-		//		session.close();
 			}
 		}
 
@@ -193,10 +168,6 @@ public class UserBusinessService {
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
 				throw e;
-			}
-		} finally {
-			if (session!=null){
-		//		session.close();
 			}
 		}
 		return user;
