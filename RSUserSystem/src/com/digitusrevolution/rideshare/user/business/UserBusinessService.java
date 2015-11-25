@@ -72,7 +72,7 @@ public class UserBusinessService {
 			}
 		} finally {
 			if (session!=null){
-				session.close();
+	//			session.close();
 			}
 		}
 		return status;
@@ -97,7 +97,7 @@ public class UserBusinessService {
 			}
 		} finally {
 			if (session!=null){
-				session.close();
+	//			session.close();
 			}
 		}
 		return user;
@@ -122,7 +122,7 @@ public class UserBusinessService {
 			}
 		} finally {
 			if (session!=null){
-				session.close();
+		//		session.close();
 			}
 		}
 		return user;
@@ -147,7 +147,7 @@ public class UserBusinessService {
 			}
 		} finally {
 			if (session!=null){
-				session.close();
+//				session.close();
 			}
 		}
 
@@ -171,7 +171,7 @@ public class UserBusinessService {
 			}
 		} finally {
 			if (session!=null){
-				session.close();
+		//		session.close();
 			}
 		}
 

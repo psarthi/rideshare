@@ -13,7 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.user.domain.UserService;
+import com.digitusrevolution.rideshare.user.business.UserBusinessService;
 
 
 @Path("/domain/users")
@@ -21,33 +21,33 @@ import com.digitusrevolution.rideshare.user.domain.UserService;
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
 	
-	private UserService userService = new UserService();
+	private UserBusinessService userBusinessService = new UserBusinessService();
 	
 	@GET
 	@Path("/{userId}")
 	public Response getUser(@PathParam("userId") int userId){
-		User user = userService.getUser(userId);
+		User user = userBusinessService.getUser(userId);
 		return Response.ok(user).build();
 	}
 	
 	@GET
 	@Path("/fulldetail/{userId}")
 	public Response getUserFullDetails(@PathParam("userId") int userId){
-		User user = userService.getUserFullDetail(userId);
+		User user = userBusinessService.getUserFullDetail(userId);
 		return Response.ok(user).build();
 	}
 
 	
 	@GET
 	public Response getAllUser(){
-		List<User> users = userService.getAllUser();
+		List<User> users = userBusinessService.getAllUser();
 		GenericEntity<List<User>> entity = new GenericEntity<List<User>>(users) {};
 		return Response.ok(entity).build();	
 	}
 
 	@POST
 	public Response createUser(User user){
-		User createdUser = userService.createUser(user);
+		User createdUser = userBusinessService.createUser(user);
 		return Response.ok(createdUser).build();
 	}
 

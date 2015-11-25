@@ -40,7 +40,7 @@ public class UserRegistrationService {
 			}
 		} finally {
 			if (session!=null){
-				session.close();
+		//		session.close();
 			}
 		}
 	
