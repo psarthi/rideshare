@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.model.ride.data;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
@@ -15,14 +16,15 @@ public class RouteEntity {
 	@Embedded
 	@ElementCollection
 	@JoinTable(name="route_point",joinColumns=@JoinColumn(name="ride_id"))
-	private List<RoutePointEntity> routePoints;
+	private Collection<RoutePointEntity> routePoints = new ArrayList<RoutePointEntity>();
 
-	public List<RoutePointEntity> getRoutePoints() {
+	public Collection<RoutePointEntity> getRoutePoints() {
 		return routePoints;
 	}
 
-	public void setRoutePoints(List<RoutePointEntity> routePoints) {
+	public void setRoutePoints(Collection<RoutePointEntity> routePoints) {
 		this.routePoints = routePoints;
 	}
+
 	
 }

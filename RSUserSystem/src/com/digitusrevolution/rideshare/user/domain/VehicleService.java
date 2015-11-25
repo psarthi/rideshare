@@ -15,9 +15,11 @@ public class VehicleService {
 		return false;
 	}
 		
-	public void createVehicle(Vehicle vehicle){
+	public Vehicle createVehicle(Vehicle vehicle){
 		VehicleDO vehicleDO = new VehicleDO();
 		vehicleDO.setVehicle(vehicle);
-		vehicleDAO.create(vehicleDO.getVehicleEntity());
+		int id = vehicleDAO.create(vehicleDO.getVehicleEntity());
+		vehicle.setId(id);
+		return vehicle;
 	}
 }

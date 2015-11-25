@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.model.user.domain.core;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
@@ -8,26 +9,28 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 
 public class Passenger extends User{
 
-	private List<RideRequest> rideRequests;
-	private List<Bill> bills;
-	private List<Ride> rides;
+	private Collection<RideRequest> rideRequests = new ArrayList<RideRequest>();
+	private Collection<Bill> bills = new ArrayList<Bill>();
+	private Collection<Ride> rides = new ArrayList<Ride>();
 	
-	public List<RideRequest> getRideRequests() {
+	public Collection<RideRequest> getRideRequests() {
 		return rideRequests;
 	}
-	public void setRideRequests(List<RideRequest> rideRequests) {
+	public void setRideRequests(Collection<RideRequest> rideRequests) {
 		this.rideRequests = rideRequests;
 	}
-	public List<Bill> getBills() {
+	public Collection<Bill> getBills() {
 		return bills;
 	}
-	public void setBills(List<Bill> bills) {
+	public void setBills(Collection<Bill> bills) {
 		this.bills = bills;
 	}
-	public List<Ride> getRides() {
+	public Collection<Ride> getRides() {
 		return rides;
 	}
-	public void setRides(List<Ride> rides) {
+	public void setRides(Collection<Ride> rides) {
 		this.rides = rides;
 	}
+	
+
 }

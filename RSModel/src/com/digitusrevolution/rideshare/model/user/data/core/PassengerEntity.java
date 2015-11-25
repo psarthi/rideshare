@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.model.user.data.core;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
@@ -15,29 +16,30 @@ import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 @Table(name="passenger")
 public class PassengerEntity extends UserEntity{
 	@OneToMany(mappedBy="passenger")
-	private List<RideRequestEntity> rideRequests;
+	private Collection<RideRequestEntity> rideRequests = new ArrayList<RideRequestEntity>();
 	@OneToMany(mappedBy="passenger")
-	private List<BillEntity> bills;
+	private Collection<BillEntity> bills = new ArrayList<BillEntity>();
 	@ManyToMany(mappedBy="passengers")
-	private List<RideEntity> rides;
-
-	public List<RideRequestEntity> getRideRequests() {
+	private Collection<RideEntity> rides = new ArrayList<RideEntity>();
+	
+	public Collection<RideRequestEntity> getRideRequests() {
 		return rideRequests;
 	}
-	public void setRideRequests(List<RideRequestEntity> rideRequests) {
+	public void setRideRequests(Collection<RideRequestEntity> rideRequests) {
 		this.rideRequests = rideRequests;
 	}
-	public List<BillEntity> getBills() {
+	public Collection<BillEntity> getBills() {
 		return bills;
 	}
-	public void setBills(List<BillEntity> bills) {
+	public void setBills(Collection<BillEntity> bills) {
 		this.bills = bills;
 	}
-	public List<RideEntity> getRides() {
+	public Collection<RideEntity> getRides() {
 		return rides;
 	}
-	public void setRides(List<RideEntity> rides) {
+	public void setRides(Collection<RideEntity> rides) {
 		this.rides = rides;
 	}
+
 	
 }

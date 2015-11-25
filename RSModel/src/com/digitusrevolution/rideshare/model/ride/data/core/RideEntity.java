@@ -1,7 +1,8 @@
 package com.digitusrevolution.rideshare.model.ride.data.core;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -50,15 +51,14 @@ public class RideEntity {
 	@ManyToOne
 	private DriverEntity driver;
 	@ManyToMany
-	private List<PassengerEntity> passengers; 
+	private Collection<PassengerEntity> passengers = new ArrayList<PassengerEntity>();
 	@OneToMany(mappedBy="ride")
-	private List<BillEntity> bills;
-	@OneToMany
-	@JoinTable(name="ride_rideRequest",joinColumns=@JoinColumn(name="ride_id"))
-	private List<RideRequestEntity> acceptedRideRequests;
+	private Collection<BillEntity> bills = new ArrayList<BillEntity>();
+	@OneToMany(mappedBy="acceptedRide")
+	private Collection<RideRequestEntity> acceptedRideRequests = new ArrayList<RideRequestEntity>();
 	@ManyToMany
 	@JoinTable(name="ride_rideRequest",joinColumns=@JoinColumn(name="ride_id"))
-	private List<RideRequestEntity> rejectedRideRequests;
+	private Collection<RideRequestEntity> rejectedRideRequests = new ArrayList<RideRequestEntity>();
 	
 	public int getId() {
 		return id;
@@ -95,18 +95,6 @@ public class RideEntity {
 	}
 	public void setStatus(String status) {
 		this.status = status;
-	}
-	public List<RideRequestEntity> getAcceptedRideRequests() {
-		return acceptedRideRequests;
-	}
-	public void setAcceptedRideRequests(List<RideRequestEntity> acceptedRideRequests) {
-		this.acceptedRideRequests = acceptedRideRequests;
-	}
-	public List<RideRequestEntity> getRejectedRideRequests() {
-		return rejectedRideRequests;
-	}
-	public void setRejectedRideRequests(List<RideRequestEntity> rejectedRideRequests) {
-		this.rejectedRideRequests = rejectedRideRequests;
 	}
 	public PointEntity getStartPoint() {
 		return startPoint;
@@ -150,17 +138,29 @@ public class RideEntity {
 	public void setDriver(DriverEntity driver) {
 		this.driver = driver;
 	}
-	public List<PassengerEntity> getPassengers() {
+	public Collection<PassengerEntity> getPassengers() {
 		return passengers;
 	}
-	public void setPassengers(List<PassengerEntity> passengers) {
+	public void setPassengers(Collection<PassengerEntity> passengers) {
 		this.passengers = passengers;
 	}
-	public List<BillEntity> getBills() {
+	public Collection<BillEntity> getBills() {
 		return bills;
 	}
-	public void setBills(List<BillEntity> bills) {
+	public void setBills(Collection<BillEntity> bills) {
 		this.bills = bills;
 	}
-	
+	public Collection<RideRequestEntity> getAcceptedRideRequests() {
+		return acceptedRideRequests;
+	}
+	public void setAcceptedRideRequests(Collection<RideRequestEntity> acceptedRideRequests) {
+		this.acceptedRideRequests = acceptedRideRequests;
+	}
+	public Collection<RideRequestEntity> getRejectedRideRequests() {
+		return rejectedRideRequests;
+	}
+	public void setRejectedRideRequests(Collection<RideRequestEntity> rejectedRideRequests) {
+		this.rejectedRideRequests = rejectedRideRequests;
+	}
+
 }

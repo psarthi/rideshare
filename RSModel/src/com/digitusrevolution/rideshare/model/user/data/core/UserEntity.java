@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.model.user.data.core;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,7 +16,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
 
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
@@ -43,19 +43,19 @@ public class UserEntity {
 	@OneToOne
 	private PhotoEntity photo;
 	@ManyToMany(mappedBy="users")
-	private List<GroupEntity> groups;
+	private Collection<GroupEntity> groups = new ArrayList<GroupEntity>();
 	@OneToMany
-	@JoinTable(name="user_vehicle",joinColumns=@JoinColumn(name="user_id"))
-	private List<VehicleEntity> vehicles;
+	@JoinColumn(name="user_id")
+	private Collection<VehicleEntity> vehicles = new ArrayList<VehicleEntity>();
 	@ManyToMany
 	@JoinTable(name="user_friend",joinColumns=@JoinColumn(name="user_id"))
-	private List<UserEntity> friends;
+	private Collection<UserEntity> friends = new ArrayList<UserEntity>();
 	@ManyToMany
 	@JoinTable(name="user_role",joinColumns=@JoinColumn(name="user_id"))
-	private List<RoleEntity> roles;
+	private Collection<RoleEntity> roles = new ArrayList<RoleEntity>();
 	@OneToMany
 	@JoinTable(name="user_account",joinColumns=@JoinColumn(name="user_id"))
-	private List<AccountEntity> accounts;
+	private Collection<AccountEntity> accounts = new ArrayList<AccountEntity>();
 	private int profileRating;
 	
 	
@@ -103,30 +103,7 @@ public class UserEntity {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public List<GroupEntity> getGroups() {
-		return groups;
-	}
-	public void setGroups(List<GroupEntity> groups) {
-		this.groups = groups;
-	}
-	public List<VehicleEntity> getVehicles() {
-		return vehicles;
-	}
-	public void setVehicles(List<VehicleEntity> vehicles) {
-		this.vehicles = vehicles;
-	}
-	public List<UserEntity> getFriends() {
-		return friends;
-	}
-	public void setFriends(List<UserEntity> friends) {
-		this.friends = friends;
-	}
-	public List<AccountEntity> getAccounts() {
-		return accounts;
-	}
-	public void setAccounts(List<AccountEntity> accounts) {
-		this.accounts = accounts;
-	}
+
 	public int getProfileRating() {
 		return profileRating;
 	}
@@ -150,12 +127,45 @@ public class UserEntity {
 		this.photo = photo;
 	}
 
-	public List<RoleEntity> getRoles() {
+	public Collection<GroupEntity> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(Collection<GroupEntity> groups) {
+		this.groups = groups;
+	}
+
+	public Collection<VehicleEntity> getVehicles() {
+		return vehicles;
+	}
+
+	public void setVehicles(Collection<VehicleEntity> vehicles) {
+		this.vehicles = vehicles;
+	}
+
+	public Collection<UserEntity> getFriends() {
+		return friends;
+	}
+
+	public void setFriends(Collection<UserEntity> friends) {
+		this.friends = friends;
+	}
+
+	public Collection<RoleEntity> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(List<RoleEntity> roles) {
+	public void setRoles(Collection<RoleEntity> roles) {
 		this.roles = roles;
 	}
+
+	public Collection<AccountEntity> getAccounts() {
+		return accounts;
+	}
+
+	public void setAccounts(Collection<AccountEntity> accounts) {
+		this.accounts = accounts;
+	}
+
 	
 }

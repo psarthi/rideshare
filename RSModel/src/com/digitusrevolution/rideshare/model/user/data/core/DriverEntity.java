@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.model.user.data.core;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -12,16 +13,13 @@ import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 @Table(name="driver")
 public class DriverEntity extends UserEntity{
 	@OneToMany(mappedBy="driver")
-	private List<RideEntity> rides;
+	private Collection<RideEntity> rides = new ArrayList<RideEntity>();
 
-	public List<RideEntity> getRides() {
+	public Collection<RideEntity> getRides() {
 		return rides;
 	}
-
-	public void setRides(List<RideEntity> rides) {
+	public void setRides(Collection<RideEntity> rides) {
 		this.rides = rides;
 	}
-
-
 
 }

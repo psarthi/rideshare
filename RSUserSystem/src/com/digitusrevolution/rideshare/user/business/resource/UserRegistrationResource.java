@@ -19,8 +19,12 @@ public class UserRegistrationResource {
 	
 	@POST
 	public Response registerUser(User user){
-		int id = userRegistrationService.registerUser(user);
-		user.setId(id);
+		user = userRegistrationService.registerUser(user);
 		return Response.ok().entity(user).build();
+	}
+	
+	@Path("/{userId}/vehicles")
+	public VehicleRegistrationResource getVehicleRegistrationResource(){
+		return new VehicleRegistrationResource();
 	}
 }

@@ -6,7 +6,7 @@ import com.digitusrevolution.rideshare.user.exception.EmailExistException;
 
 public class UserRegistrationService {
 	
-	public int registerUser(User user){
+	public User registerUser(User user){
 		
 		boolean userExist;
 		UserService userService = new UserService();

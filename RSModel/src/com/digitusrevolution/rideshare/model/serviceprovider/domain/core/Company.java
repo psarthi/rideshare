@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.model.serviceprovider.domain.core;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.digitusrevolution.rideshare.model.user.domain.core.Account;
 
@@ -8,7 +9,7 @@ public class Company {
 	
 	private int id;
 	private String name;
-	private List<Account> accounts;
+	private Collection<Account> accounts = new ArrayList<Account>();
 	
 	public int getId() {
 		return id;
@@ -22,10 +23,10 @@ public class Company {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public List<Account> getAccounts() {
+	public Collection<Account> getAccounts() {
 		return accounts;
 	}
-	public void setAccounts(List<Account> accounts) {
+	public void setAccounts(Collection<Account> accounts) {
 		this.accounts = accounts;
 	}
 

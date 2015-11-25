@@ -1,7 +1,8 @@
 package com.digitusrevolution.rideshare.model.ride.domain.core;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import com.digitusrevolution.rideshare.model.ride.data.PointEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
@@ -28,7 +29,7 @@ public class RideRequest {
 	private String status;
 	private Passenger passenger;
 	private boolean ridePreference;
-	private List<Ride> preferredRides;
+	private Collection<Ride> preferredRides = new ArrayList<Ride>();
 	private Ride acceptedRide;
 	private PointEntity ridePickupPoint;
 	private PointEntity rideDropPoint;
@@ -117,10 +118,10 @@ public class RideRequest {
 	public void setPassenger(Passenger passenger) {
 		this.passenger = passenger;
 	}
-	public List<Ride> getPreferredRides() {
+	public Collection<Ride> getPreferredRides() {
 		return preferredRides;
 	}
-	public void setPreferredRides(List<Ride> preferredRides) {
+	public void setPreferredRides(Collection<Ride> preferredRides) {
 		this.preferredRides = preferredRides;
 	}
 	public boolean isRidePreference() {

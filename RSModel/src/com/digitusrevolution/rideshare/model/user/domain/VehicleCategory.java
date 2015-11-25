@@ -1,12 +1,13 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class VehicleCategory {
 
 	private int id;
 	private String name;
-	private List<VehicleSubCategory> subCategories;
+	private Collection<VehicleSubCategory> subCategories = new ArrayList<VehicleSubCategory>();
 
 	public int getId() {
 		return id;
@@ -16,11 +17,11 @@ public class VehicleCategory {
 		this.id = id;
 	}
 
-	public List<VehicleSubCategory> getSubCategories() {
+	public Collection<VehicleSubCategory> getSubCategories() {
 		return subCategories;
 	}
 
-	public void setSubCategories(List<VehicleSubCategory> subCategories) {
+	public void setSubCategories(Collection<VehicleSubCategory> subCategories) {
 		this.subCategories = subCategories;
 	}
 

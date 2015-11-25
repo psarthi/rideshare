@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.model.serviceprovider.data.core;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,7 +27,7 @@ public class CompanyEntity {
 	 */
 	@OneToMany
 	@JoinTable(name="company_account",joinColumns=@JoinColumn(name="company_id"))
-	private List<AccountEntity> accounts;
+	private Collection<AccountEntity> accounts = new ArrayList<AccountEntity>();
 	
 	public int getId() {
 		return id;
@@ -40,10 +41,10 @@ public class CompanyEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public List<AccountEntity> getAccounts() {
+	public Collection<AccountEntity> getAccounts() {
 		return accounts;
 	}
-	public void setAccounts(List<AccountEntity> accounts) {
+	public void setAccounts(Collection<AccountEntity> accounts) {
 		this.accounts = accounts;
 	}
 

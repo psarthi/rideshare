@@ -39,9 +39,8 @@ public class UserResource {
 
 	@POST
 	public Response createUser(User user){
-		int id = userService.createUser(user);
-		user.setId(id);
-		return Response.ok(user).build();
+		User createdUser = userService.createUser(user);
+		return Response.ok(createdUser).build();
 	}
 
 }

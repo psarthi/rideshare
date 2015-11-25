@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.model.user.data;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
@@ -20,11 +21,11 @@ public class CountryEntity {
 	private String name;
 	@OneToMany
 	@JoinTable(name="country_state",joinColumns=@JoinColumn(name="country_name"))
-	private List<StateEntity> states;
+	private Collection<StateEntity> states = new ArrayList<StateEntity>();
 	@Embedded
 	@ElementCollection
 	@JoinTable(name="country_fuel",joinColumns=@JoinColumn(name="country_name"))
-	private List<FuelEntity> fuels;
+	private Collection<FuelEntity> fuels = new ArrayList<FuelEntity>();
 	@ManyToOne
 	private CurrencyEntity currency;
 	
@@ -34,23 +35,23 @@ public class CountryEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public List<StateEntity> getStates() {
-		return states;
-	}
-	public void setStates(List<StateEntity> states) {
-		this.states = states;
-	}
-	public List<FuelEntity> getFuels() {
-		return fuels;
-	}
-	public void setFuels(List<FuelEntity> fuels) {
-		this.fuels = fuels;
-	}
 	public CurrencyEntity getCurrency() {
 		return currency;
 	}
 	public void setCurrency(CurrencyEntity currency) {
 		this.currency = currency;
+	}
+	public Collection<StateEntity> getStates() {
+		return states;
+	}
+	public void setStates(Collection<StateEntity> states) {
+		this.states = states;
+	}
+	public Collection<FuelEntity> getFuels() {
+		return fuels;
+	}
+	public void setFuels(Collection<FuelEntity> fuels) {
+		this.fuels = fuels;
 	}
 	
 }

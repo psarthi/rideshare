@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.model.user.data;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,7 +20,7 @@ public class VehicleCategoryEntity {
 	private String name;
 	@OneToMany
 	@JoinTable(name="vehicle_category_subCategory",joinColumns=@JoinColumn(name="vehicle_category_id"))
-	private List<VehicleSubCategoryEntity> subCategories;
+	private Collection<VehicleSubCategoryEntity> subCategories = new ArrayList<VehicleSubCategoryEntity>();
 
 	public int getId() {
 		return id;
@@ -28,12 +29,12 @@ public class VehicleCategoryEntity {
 	public void setId(int id) {
 		this.id = id;
 	}
-
-	public List<VehicleSubCategoryEntity> getSubCategories() {
+	
+	public Collection<VehicleSubCategoryEntity> getSubCategories() {
 		return subCategories;
 	}
 
-	public void setSubCategories(List<VehicleSubCategoryEntity> subCategories) {
+	public void setSubCategories(Collection<VehicleSubCategoryEntity> subCategories) {
 		this.subCategories = subCategories;
 	}
 

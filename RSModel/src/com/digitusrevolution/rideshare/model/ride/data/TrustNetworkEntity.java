@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.model.ride.data;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,13 +22,13 @@ public class TrustNetworkEntity {
 	private int id;
 	@ManyToMany
 	@JoinTable(name="trust_network_category",joinColumns=@JoinColumn(name="trust_network_id"))
-	private List<TrustCategoryEntity> trustCategories;
+	private Collection<TrustCategoryEntity> trustCategories = new ArrayList<TrustCategoryEntity>();
 	@ManyToMany
 	@JoinTable(name="trust_network_friend",joinColumns=@JoinColumn(name="trust_network_id"))
-	private List<UserEntity> friends;
+	private Collection<UserEntity> friends = new ArrayList<UserEntity>();
 	@ManyToMany
 	@JoinTable(name="trust_network_group",joinColumns=@JoinColumn(name="trust_network_id"))
-	private List<GroupEntity> groups;
+	private Collection<GroupEntity> groups = new ArrayList<GroupEntity>();
 	
 	public int getId() {
 		return id;
@@ -35,23 +36,24 @@ public class TrustNetworkEntity {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public List<TrustCategoryEntity> getTrustCategories() {
+	public Collection<TrustCategoryEntity> getTrustCategories() {
 		return trustCategories;
 	}
-	public void setTrustCategories(List<TrustCategoryEntity> trustCategories) {
+	public void setTrustCategories(Collection<TrustCategoryEntity> trustCategories) {
 		this.trustCategories = trustCategories;
 	}
-	public List<UserEntity> getFriends() {
+	public Collection<UserEntity> getFriends() {
 		return friends;
 	}
-	public void setFriends(List<UserEntity> friends) {
+	public void setFriends(Collection<UserEntity> friends) {
 		this.friends = friends;
 	}
-	public List<GroupEntity> getGroups() {
+	public Collection<GroupEntity> getGroups() {
 		return groups;
 	}
-	public void setGroups(List<GroupEntity> groups) {
+	public void setGroups(Collection<GroupEntity> groups) {
 		this.groups = groups;
 	}
+
 
 }

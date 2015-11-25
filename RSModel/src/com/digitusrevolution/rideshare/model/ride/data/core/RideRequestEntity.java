@@ -1,7 +1,8 @@
 package com.digitusrevolution.rideshare.model.ride.data.core;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -50,7 +51,7 @@ public class RideRequestEntity {
 	private boolean ridePreference;
 	@ManyToMany
 	@JoinTable(name="ride_request_preferred_ride",joinColumns=@JoinColumn(name="ride_request_id"))
-	private List<RideEntity> preferredRides;
+	private Collection<RideEntity> preferredRides = new ArrayList<RideEntity>();
 	@ManyToOne
 	private RideEntity acceptedRide;
 	@OneToOne
@@ -106,10 +107,10 @@ public class RideRequestEntity {
 	public void setDropPointVariation(int dropPointVariation) {
 		this.dropPointVariation = dropPointVariation;
 	}
-	public List<RideEntity> getPreferredRides() {
+	public Collection<RideEntity> getPreferredRides() {
 		return preferredRides;
 	}
-	public void setPreferredRides(List<RideEntity> preferredRides) {
+	public void setPreferredRides(Collection<RideEntity> preferredRides) {
 		this.preferredRides = preferredRides;
 	}
 	public boolean isRidePreference() {

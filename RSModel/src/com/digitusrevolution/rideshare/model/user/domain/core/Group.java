@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.model.user.domain.core;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
 
@@ -9,7 +10,7 @@ public class Group {
 	private int id;
 	private String name;
 	private Photo photo;
-	private List<User> users;
+	private Collection<User> users = new ArrayList<User>();
 
 	public int getId() {
 		return id;
@@ -35,11 +36,11 @@ public class Group {
 		this.photo = photo;
 	}
 
-	public List<User> getUsers() {
+	public Collection<User> getUsers() {
 		return users;
 	}
 
-	public void setUsers(List<User> users) {
+	public void setUsers(Collection<User> users) {
 		this.users = users;
 	}
 

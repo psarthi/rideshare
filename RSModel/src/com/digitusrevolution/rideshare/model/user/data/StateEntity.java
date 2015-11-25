@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.model.user.data;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,7 +21,7 @@ public class StateEntity {
 	private String name;
 	@OneToMany
 	@JoinTable(name="state_city",joinColumns=@JoinColumn(name="state_id"))
-	private List<CityEntity> cities;
+	private Collection<CityEntity> cities = new ArrayList<CityEntity>();
 	
 	public int getId() {
 		return id;
@@ -34,10 +35,10 @@ public class StateEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public List<CityEntity> getCities() {
+	public Collection<CityEntity> getCities() {
 		return cities;
 	}
-	public void setCities(List<CityEntity> cities) {
+	public void setCities(Collection<CityEntity> cities) {
 		this.cities = cities;
 	}
 	

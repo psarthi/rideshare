@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.model.user.data.core;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,7 +24,7 @@ public class GroupEntity {
 	private PhotoEntity photo;
 	@ManyToMany
 	@JoinTable(name="group_user")
-	private List<UserEntity> users;
+	private Collection<UserEntity> users = new ArrayList<UserEntity>();
 
 	public int getId() {
 		return id;
@@ -49,11 +50,11 @@ public class GroupEntity {
 		this.photo = photo;
 	}
 
-	public List<UserEntity> getUsers() {
+	public Collection<UserEntity> getUsers() {
 		return users;
 	}
 
-	public void setUsers(List<UserEntity> users) {
+	public void setUsers(Collection<UserEntity> users) {
 		this.users = users;
 	}
 

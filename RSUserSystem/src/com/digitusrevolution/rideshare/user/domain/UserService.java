@@ -21,14 +21,14 @@ public class UserService {
 		userDAO = new UserDAO();
 	}
 
-	public int createUser(User user){
-		int id;
+	public User createUser(User user){
 		logger.entry();
 		UserDO userDO = new UserDO();
 		userDO.setUser(user);
-		id = userDAO.create(userDO.getUserEntity());
+		int id = userDAO.create(userDO.getUserEntity());
+		user.setId(id);
 		logger.exit();
-		return id;
+		return user;
 	}
 
 	public boolean checkUserExist(String userEmail){
@@ -60,5 +60,12 @@ public class UserService {
 		}
 		return users;
 	}
+	
+	public void updateUser(User user){
+		UserDO userDO = new UserDO();
+		userDO.setUser(user);
+		userDAO.update(userDO.getUserEntity());
+	}
+
 	
 }

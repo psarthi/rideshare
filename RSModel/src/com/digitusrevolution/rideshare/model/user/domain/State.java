@@ -1,12 +1,13 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class State {
 
 	private int id;
 	private String name;
-	private List<City> cities;
+	private Collection<City> cities = new ArrayList<City>();
 	
 	public int getId() {
 		return id;
@@ -20,10 +21,10 @@ public class State {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public List<City> getCities() {
+	public Collection<City> getCities() {
 		return cities;
 	}
-	public void setCities(List<City> cities) {
+	public void setCities(Collection<City> cities) {
 		this.cities = cities;
 	}
 	

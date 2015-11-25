@@ -1,7 +1,8 @@
 package com.digitusrevolution.rideshare.model.ride.domain.core;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
@@ -27,10 +28,10 @@ public class Ride {
 	private String status;
 	private Vehicle vehicle;
 	private Driver driver;
-	private List<Passenger> passengers; 
-	private List<Bill> bills;
-	private List<RideRequest> acceptedRideRequests;
-	private List<RideRequest> rejectedRideRequests;
+	private Collection<Passenger> passengers = new ArrayList<Passenger>();
+	private Collection<Bill> bills = new ArrayList<Bill>();
+	private Collection<RideRequest> acceptedRideRequests = new ArrayList<RideRequest>();
+	private Collection<RideRequest> rejectedRideRequests = new ArrayList<RideRequest>();
 	
 	public int getId() {
 		return id;
@@ -104,34 +105,34 @@ public class Ride {
 	public void setDriver(Driver driver) {
 		this.driver = driver;
 	}
-	public List<Passenger> getPassengers() {
-		return passengers;
-	}
-	public void setPassengers(List<Passenger> passengers) {
-		this.passengers = passengers;
-	}
-	public List<Bill> getBills() {
-		return bills;
-	}
-	public void setBills(List<Bill> bills) {
-		this.bills = bills;
-	}
 	public Point getEndPoint() {
 		return endPoint;
 	}
 	public void setEndPoint(Point endPoint) {
 		this.endPoint = endPoint;
 	}
-	public List<RideRequest> getAcceptedRideRequests() {
+	public Collection<Passenger> getPassengers() {
+		return passengers;
+	}
+	public void setPassengers(Collection<Passenger> passengers) {
+		this.passengers = passengers;
+	}
+	public Collection<Bill> getBills() {
+		return bills;
+	}
+	public void setBills(Collection<Bill> bills) {
+		this.bills = bills;
+	}
+	public Collection<RideRequest> getAcceptedRideRequests() {
 		return acceptedRideRequests;
 	}
-	public void setAcceptedRideRequests(List<RideRequest> acceptedRideRequests) {
+	public void setAcceptedRideRequests(Collection<RideRequest> acceptedRideRequests) {
 		this.acceptedRideRequests = acceptedRideRequests;
 	}
-	public List<RideRequest> getRejectedRideRequests() {
+	public Collection<RideRequest> getRejectedRideRequests() {
 		return rejectedRideRequests;
 	}
-	public void setRejectedRideRequests(List<RideRequest> rejectedRideRequests) {
+	public void setRejectedRideRequests(Collection<RideRequest> rejectedRideRequests) {
 		this.rejectedRideRequests = rejectedRideRequests;
 	}
 	

@@ -1,18 +1,19 @@
 package com.digitusrevolution.rideshare.model.user.domain.core;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 
 public class Driver extends User{
 	
-	private List<Ride> rides;
+	private Collection<Ride> rides = new ArrayList<Ride>();
 
-	public List<Ride> getRides() {
+	public Collection<Ride> getRides() {
 		return rides;
 	}
 
-	public void setRides(List<Ride> rides) {
+	public void setRides(Collection<Ride> rides) {
 		this.rides = rides;
 	}
 
