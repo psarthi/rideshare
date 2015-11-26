@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.user.domain;
+package com.digitusrevolution.rideshare.user.domain.core;
 
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;

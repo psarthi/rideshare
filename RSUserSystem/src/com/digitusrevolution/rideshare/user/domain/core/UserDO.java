@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.user.domain;
+package com.digitusrevolution.rideshare.user.domain.core;
 
 import java.util.Collection;
 
@@ -6,13 +6,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 
+import com.digitusrevolution.rideshare.common.DomainDataMapper;
 import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
+import com.digitusrevolution.rideshare.user.domain.UserUtil;
 
-public class UserDO {
+public class UserDO implements DomainDataMapper {
 	
 	private User user;
 	private UserEntity userEntity;
@@ -41,13 +43,20 @@ public class UserDO {
 		mapDataModelToDomainModel();
 	}
 
+	@Override
 	public void mapDomainModelToDataModel(){
+		UserUtil userUtil = new UserUtil();
 		userEntity.setId(user.getId());
 		userEntity.setFirstName(user.getFirstName());
 		userEntity.setLastName(user.getLastName());
+		userEntity.setSex(user.getSex());
+		userEntity.setMobileNumber(user.getMobileNumber());
 		userEntity.setEmail(user.getEmail());
+		userEntity.setPassword(user.getPassword());
+//		userEntity.setCity(userUtil.getCityEntity(user.getCity()));
 	}
 	
+	@Override
 	public void mapDataModelToDomainModel(){	
 		user.setId(userEntity.getId());
 		user.setFirstName(userEntity.getFirstName());
@@ -56,14 +65,26 @@ public class UserDO {
 		
 	}
 	
-	public void mapVehicleDomainModelToDataModel(){
+	@Override
+	public void mapChildDomainModelToDataModel(){
+		
+		mapVehicleDomainModelToDataModel();
+	}
+	
+	@Override
+	public void mapChildDataModelToDomainModel(){
+	
+		mapVehicleDataModelToDomainModel();
+		
+	}
+	
+	private void mapVehicleDomainModelToDataModel(){
 
+		UserUtil userUtil = new UserUtil();
 		Collection<Vehicle> vehicles = user.getVehicles();
 		Collection<VehicleEntity> vehicleEntities = userEntity.getVehicles();
 		for (Vehicle vehicle : vehicles) {
-			VehicleDO vehicleDO = new VehicleDO();
-			vehicleDO.setVehicle(vehicle);
-			vehicleEntities.add(vehicleDO.getVehicleEntity());	
+			vehicleEntities.add(userUtil.getVehicleEntity(vehicle));	
 		}
 
 		userEntity.setVehicles(vehicleEntities);		
@@ -71,14 +92,12 @@ public class UserDO {
 	}
 	
 
-	public void mapVehicleDataModelToDomainModel(){
-		
+	private void mapVehicleDataModelToDomainModel(){
+		UserUtil userUtil = new UserUtil();
 		Collection<Vehicle> vehicles = user.getVehicles();
 		Collection<VehicleEntity> vehicleEntities = userEntity.getVehicles();
 		for (VehicleEntity vehicleEntity : vehicleEntities) {
-			VehicleDO vehicleDO = new VehicleDO();
-			vehicleDO.setVehicleEntity(vehicleEntity);
-			vehicles.add(vehicleDO.getVehicle());			
+			vehicles.add(userUtil.getVehicle(vehicleEntity));			
 		}
 		
 		user.setVehicles(vehicles);
@@ -86,11 +105,10 @@ public class UserDO {
 	}
 	
 	public User addVehicle(Vehicle vehicle){
+		logger.debug("Getting Session");
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		user.getVehicles().add(vehicle);
 		UserService userService = new UserService();
-		logger.debug("Session Status: " + session.isOpen());
-		logger.debug("Transaction Status: "+session.getTransaction().getStatus());
 		userService.updateUser(user);
 		logger.debug("Session Status: " + session.isOpen());		
 		logger.debug("Transaction Status: "+session.getTransaction().getStatus());

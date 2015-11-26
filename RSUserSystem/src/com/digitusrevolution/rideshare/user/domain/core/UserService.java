@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.user.domain;
+package com.digitusrevolution.rideshare.user.domain.core;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,16 +14,15 @@ import com.digitusrevolution.rideshare.user.data.UserDAO;
 
 public class UserService {
 	
-	private UserDAO userDAO;
 	private static final Logger logger = LogManager.getLogger(UserService.class.getName());
 	
 	public UserService(){
-		userDAO = new UserDAO();
 	}
 
 	public User createUser(User user){
 		logger.entry();
 		UserDO userDO = new UserDO();
+		UserDAO userDAO = new UserDAO();
 		userDO.setUser(user);
 		int id = userDAO.create(userDO.getUserEntity());
 		user.setId(id);
@@ -32,6 +31,7 @@ public class UserService {
 	}
 
 	public boolean checkUserExist(String userEmail){
+		UserDAO userDAO = new UserDAO();
 		if (userDAO.getUserByEmail(userEmail)==null){
 			return false;			
 		}
@@ -39,6 +39,7 @@ public class UserService {
 	}
 	
 	public User getUser(int userId){
+		UserDAO userDAO = new UserDAO();
 		UserEntity userEntity = new UserEntity();
 		UserDO userDO = new UserDO();
 		userEntity = userDAO.get(userId);
@@ -50,20 +51,23 @@ public class UserService {
 	}
 	
 	public User getUserFullDetail(int userId){
+		
+	 // Don't try to call getUser to avoid duplicate code, else you would loose persistent entity object which is required for lazy fetch 
 
+		UserDAO userDAO = new UserDAO();
 		UserEntity userEntity = new UserEntity();
 		UserDO userDO = new UserDO();
 		userEntity = userDAO.get(userId);
 		if (userEntity == null){
 			throw new NotFoundException("No User found with id: "+userId);
 		}
-		userDO.setUserEntity(userEntity);
-		userDO.mapVehicleDataModelToDomainModel();
+		userDO.setUserEntity(userEntity);		
+		userDO.mapChildDataModelToDomainModel();
 		return userDO.getUser();
-
 	}
 	
 	public List<User> getAllUser(){
+		UserDAO userDAO = new UserDAO();
 		List<UserEntity> userEntities = new ArrayList<>();
 		List<User> users = new ArrayList<>();
 		userEntities = userDAO.getAll();
@@ -76,11 +80,10 @@ public class UserService {
 	}
 	
 	public void updateUser(User user){
+		UserDAO userDAO = new UserDAO();
 		UserDO userDO = new UserDO();
 		userDO.setUser(user);
-		userDO.mapVehicleDomainModelToDataModel();
+		userDO.mapChildDomainModelToDataModel();
 		userDAO.update(userDO.getUserEntity());
 	}
-
-	
 }

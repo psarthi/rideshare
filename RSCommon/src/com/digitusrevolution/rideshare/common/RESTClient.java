@@ -24,7 +24,7 @@ public class RESTClient {
 		user.setFirstName("Partha from REST Client");
 		user.setEmail("partha.sarthi@gmail3.com");
 		restClient.postData(webServiceBusinessURI, user);
-		restClient.getData(webServiceDomainURI);			
+		restClient.getData(webServiceDomainURI);	
 	}
 	
 	public User getData(String webServiceURI){

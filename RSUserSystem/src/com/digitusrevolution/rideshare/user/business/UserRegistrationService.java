@@ -8,7 +8,7 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.user.domain.UserService;
+import com.digitusrevolution.rideshare.user.domain.core.UserService;
 import com.digitusrevolution.rideshare.user.exception.EmailExistException;
 
 public class UserRegistrationService {

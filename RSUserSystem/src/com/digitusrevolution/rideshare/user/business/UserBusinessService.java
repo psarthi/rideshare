@@ -12,8 +12,8 @@ import org.hibernate.Transaction;
 import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
-import com.digitusrevolution.rideshare.user.domain.UserDO;
-import com.digitusrevolution.rideshare.user.domain.UserService;
+import com.digitusrevolution.rideshare.user.domain.core.UserDO;
+import com.digitusrevolution.rideshare.user.domain.core.UserService;
 
 public class UserBusinessService {
 
@@ -27,9 +27,11 @@ public class UserBusinessService {
 	}
 
 	public User createUser(User user){	
+		logger.debug("Getting Session");
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		try {
+			logger.debug("Beginning Transaction");
 			transation = session.beginTransaction();
 			logger.debug("Session Status: " + session.isOpen());		
 			logger.debug("Transaction Status: "+transation.getStatus());
@@ -154,9 +156,11 @@ public class UserBusinessService {
 
 	public User addVehicle(User user, Vehicle vehicle){
 		
+		logger.debug("Getting Session");
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		try {
+			logger.debug("Beginning Transaction");
 			transation = session.beginTransaction();
 			logger.debug("Session Status: " + session.isOpen());		
 			logger.debug("Transaction Status: "+transation.getStatus());			
