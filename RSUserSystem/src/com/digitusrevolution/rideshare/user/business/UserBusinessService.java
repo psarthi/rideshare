@@ -31,14 +31,14 @@ public class UserBusinessService {
 		Transaction transation = null;	
 		try {
 			transation = session.beginTransaction();
-			logger.info(session.isOpen());		
-			logger.info(transation.getStatus());
+			logger.debug("Session Status: " + session.isOpen());		
+			logger.debug("Transaction Status: "+transation.getStatus());
 			user = userService.createUser(user);
-			logger.info(session.isOpen());
-			logger.info(transation.getStatus());
+			logger.debug("Session Status: " + session.isOpen());		
+			logger.debug("Transaction Status: "+transation.getStatus());
 			transation.commit();
-			logger.info(transation.getStatus());
-			logger.info(session.isOpen());
+			logger.debug("Session Status: " + session.isOpen());		
+			logger.debug("Transaction Status: "+transation.getStatus());
 		} catch (HibernateException e) {
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");
@@ -158,11 +158,15 @@ public class UserBusinessService {
 		Transaction transation = null;	
 		try {
 			transation = session.beginTransaction();
-			
+			logger.debug("Session Status: " + session.isOpen());		
+			logger.debug("Transaction Status: "+transation.getStatus());			
 			userDO.setUser(user);
 			user = userDO.addVehicle(vehicle);
-
+			logger.debug("Session Status: " + session.isOpen());		
+			logger.debug("Transaction Status: "+transation.getStatus());
 			transation.commit();
+			logger.debug("Session Status: " + session.isOpen());		
+			logger.debug("Transaction Status: "+transation.getStatus());
 		} catch (HibernateException e) {
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");

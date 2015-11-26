@@ -2,6 +2,11 @@ package com.digitusrevolution.rideshare.user.domain;
 
 import java.util.Collection;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
+
+import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
@@ -11,6 +16,7 @@ public class UserDO {
 	
 	private User user;
 	private UserEntity userEntity;
+	private static final Logger logger = LogManager.getLogger(UserDO.class.getName());
 
 	public UserDO(){
 		user = new User();
@@ -80,9 +86,14 @@ public class UserDO {
 	}
 	
 	public User addVehicle(Vehicle vehicle){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		user.getVehicles().add(vehicle);
 		UserService userService = new UserService();
+		logger.debug("Session Status: " + session.isOpen());
+		logger.debug("Transaction Status: "+session.getTransaction().getStatus());
 		userService.updateUser(user);
+		logger.debug("Session Status: " + session.isOpen());		
+		logger.debug("Transaction Status: "+session.getTransaction().getStatus());
 		return userService.getUserFullDetail(user.getId());
 	}
 }

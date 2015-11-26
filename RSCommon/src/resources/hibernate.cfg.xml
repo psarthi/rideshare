@@ -27,6 +27,9 @@
 		<property name="hbm2ddl.auto">update</property>
 		
 		<property name="current_session_context_class">thread</property>
+	
+		<!-- Default value is also false for autocommit -->
+		<!-- <property name="connection.autocommit">false</property> --> 
 
 		<!-- Names the annotated entity class -->
 		<!-- User System -->
