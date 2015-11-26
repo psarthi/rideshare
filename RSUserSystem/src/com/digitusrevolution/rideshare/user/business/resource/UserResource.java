@@ -24,30 +24,30 @@ public class UserResource {
 	private UserBusinessService userBusinessService = new UserBusinessService();
 	
 	@GET
-	@Path("/{userId}")
-	public Response getUser(@PathParam("userId") int userId){
-		User user = userBusinessService.getUser(userId);
+	@Path("/{id}")
+	public Response get(@PathParam("id") int id){
+		User user = userBusinessService.get(id);
 		return Response.ok(user).build();
 	}
 	
 	@GET
-	@Path("/fulldetail/{userId}")
-	public Response getUserFullDetails(@PathParam("userId") int userId){
-		User user = userBusinessService.getUserFullDetail(userId);
+	@Path("/child/{id}")
+	public Response getChild(@PathParam("id") int id){
+		User user = userBusinessService.getChild(id);
 		return Response.ok(user).build();
 	}
 
 	
 	@GET
-	public Response getAllUser(){
-		List<User> users = userBusinessService.getAllUser();
+	public Response getAll(){
+		List<User> users = userBusinessService.getAll();
 		GenericEntity<List<User>> entity = new GenericEntity<List<User>>(users) {};
 		return Response.ok(entity).build();	
 	}
 
 	@POST
-	public Response createUser(User user){
-		User createdUser = userBusinessService.createUser(user);
+	public Response create(User user){
+		User createdUser = userBusinessService.create(user);
 		return Response.ok(createdUser).build();
 	}
 

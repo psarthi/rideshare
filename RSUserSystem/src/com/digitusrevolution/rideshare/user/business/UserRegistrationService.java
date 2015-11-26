@@ -24,11 +24,11 @@ public class UserRegistrationService {
 			
 			boolean status;
 			UserService userService = new UserService();
-			status = userService.checkUserExist(user.getEmail());
+			status = userService.isExist(user.getEmail());
 			if (status){
 				throw new EmailExistException("Email id already exist :"+user.getEmail());					
 			} else {
-				user = userService.createUser(user);
+				user = userService.create(user);
 			}
 			
 			transation.commit();
@@ -39,7 +39,12 @@ public class UserRegistrationService {
 				throw e;
 			}
 		}
-	
+		finally {
+			if (session.isOpen()){
+				logger.debug("Closing Session");
+				session.close();				
+			}
+		}	
 		return user;
 		
 	}

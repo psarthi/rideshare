@@ -144,9 +144,9 @@ public class UserDO implements DomainDataMapper {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		user.getVehicles().add(vehicle);
 		UserService userService = new UserService();
-		userService.updateUser(user);
+		userService.update(user);
 		logger.debug("Session Status: " + session.isOpen());		
 		logger.debug("Transaction Status: "+session.getTransaction().getStatus());
-		return userService.getUserFullDetail(user.getId());
+		return userService.getChild(user.getId());
 	}
 }

@@ -26,7 +26,7 @@ public class UserBusinessService {
 		userService = new UserService();
 	}
 
-	public User createUser(User user){	
+	public User create(User user){	
 		logger.debug("Getting Session");
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
@@ -35,7 +35,7 @@ public class UserBusinessService {
 			transation = session.beginTransaction();
 			logger.debug("Session Status: " + session.isOpen());		
 			logger.debug("Transaction Status: "+transation.getStatus());
-			user = userService.createUser(user);
+			user = userService.create(user);
 			logger.debug("Session Status: " + session.isOpen());		
 			logger.debug("Transaction Status: "+transation.getStatus());
 			transation.commit();
@@ -48,17 +48,23 @@ public class UserBusinessService {
 				throw e;
 			}
 		}
+		finally {
+			if (session.isOpen()){
+				logger.debug("Closing Session");
+				session.close();				
+			}
+		}
 		return user;
 	}
 
-	public boolean checkUserExist(String userEmail){
+	public boolean isExist(String userEmail){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		boolean status = false;
 		try {
 			transation = session.beginTransaction();
 			
-			status = userService.checkUserExist(userEmail);
+			status = userService.isExist(userEmail);
 
 			transation.commit();
 		} catch (HibernateException e) {
@@ -68,18 +74,24 @@ public class UserBusinessService {
 				throw e;
 			}
 		}
+		finally {
+			if (session.isOpen()){
+				logger.debug("Closing Session");
+				session.close();				
+			}
+		}	
 		return status;
 
 	}
 
-	public User getUser(int userId){
+	public User get(int id){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		User user = null;
 		try {
 			transation = session.beginTransaction();
 			
-			user = userService.getUser(userId);
+			user = userService.get(id);
 
 			transation.commit();
 		} catch (HibernateException e) {
@@ -87,20 +99,26 @@ public class UserBusinessService {
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
 				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.debug("Closing Session");
+				session.close();				
 			}
 		}
 		return user;
 
 	}
 	
-	public User getUserFullDetail(int userId){
+	public User getChild(int id){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		User user = null;
 		try {
 			transation = session.beginTransaction();
 			
-			user = userService.getUserFullDetail(userId);
+			user = userService.getChild(id);
 
 			transation.commit();
 		} catch (HibernateException e) {
@@ -108,20 +126,26 @@ public class UserBusinessService {
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
 				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.debug("Closing Session");
+				session.close();				
 			}
 		}
 		return user;
 
 	}
 
-	public List<User> getAllUser(){
+	public List<User> getAll(){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		List<User> users = new ArrayList<>();
 		try {
 			transation = session.beginTransaction();
 			
-			users = userService.getAllUser();
+			users = userService.getAll();
 
 			transation.commit();
 		} catch (HibernateException e) {
@@ -131,17 +155,22 @@ public class UserBusinessService {
 				throw e;
 			}
 		}
-
+		finally {
+			if (session.isOpen()){
+				logger.debug("Closing Session");
+				session.close();				
+			}
+		}
 		return users;
 	}
 
-	public void updateUser(User user){
+	public void update(User user){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		try {
 			transation = session.beginTransaction();
 			
-			userService.updateUser(user);
+			userService.update(user);
 
 			transation.commit();
 		} catch (HibernateException e) {
@@ -151,7 +180,12 @@ public class UserBusinessService {
 				throw e;
 			}
 		}
-
+		finally {
+			if (session.isOpen()){
+				logger.debug("Closing Session");
+				session.close();				
+			}
+		}
 	}
 
 	public User addVehicle(User user, Vehicle vehicle){
@@ -176,6 +210,12 @@ public class UserBusinessService {
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
 				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.debug("Closing Session");
+				session.close();				
 			}
 		}
 		return user;

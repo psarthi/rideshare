@@ -19,7 +19,7 @@ public class UserService {
 	public UserService(){
 	}
 
-	public User createUser(User user){
+	public User create(User user){
 		logger.entry();
 		UserDO userDO = new UserDO();
 		UserDAO userDAO = new UserDAO();
@@ -30,7 +30,7 @@ public class UserService {
 		return user;
 	}
 
-	public boolean checkUserExist(String userEmail){
+	public boolean isExist(String userEmail){
 		UserDAO userDAO = new UserDAO();
 		if (userDAO.getUserByEmail(userEmail)==null){
 			return false;			
@@ -38,35 +38,35 @@ public class UserService {
 		return true;
 	}
 	
-	public User getUser(int userId){
+	public User get(int id){
 		UserDAO userDAO = new UserDAO();
 		UserEntity userEntity = new UserEntity();
 		UserDO userDO = new UserDO();
-		userEntity = userDAO.get(userId);
+		userEntity = userDAO.get(id);
 		if (userEntity == null){
-			throw new NotFoundException("No User found with id: "+userId);
+			throw new NotFoundException("No Data found with id: "+id);
 		}
 		userDO.setUserEntity(userEntity);
 		return userDO.getUser();
 	}
 	
-	public User getUserFullDetail(int userId){
+	public User getChild(int id){
 		
 	 // Don't try to call getUser to avoid duplicate code, else you would loose persistent entity object which is required for lazy fetch 
 
 		UserDAO userDAO = new UserDAO();
 		UserEntity userEntity = new UserEntity();
 		UserDO userDO = new UserDO();
-		userEntity = userDAO.get(userId);
+		userEntity = userDAO.get(id);
 		if (userEntity == null){
-			throw new NotFoundException("No User found with id: "+userId);
+			throw new NotFoundException("No Data found with id: "+id);
 		}
 		userDO.setUserEntity(userEntity);		
 		userDO.mapChildDataModelToDomainModel();
 		return userDO.getUser();
 	}
 	
-	public List<User> getAllUser(){
+	public List<User> getAll(){
 		UserDAO userDAO = new UserDAO();
 		List<UserEntity> userEntities = new ArrayList<>();
 		List<User> users = new ArrayList<>();
@@ -79,7 +79,7 @@ public class UserService {
 		return users;
 	}
 	
-	public void updateUser(User user){
+	public void update(User user){
 		UserDAO userDAO = new UserDAO();
 		UserDO userDO = new UserDO();
 		userDO.setUser(user);

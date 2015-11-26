@@ -23,7 +23,7 @@ public class UserRegistrationResource {
 		return Response.ok().entity(user).build();
 	}
 	
-	@Path("/{userId}/vehicles")
+	@Path("/{id}/vehicles")
 	public VehicleRegistrationResource getVehicleRegistrationResource(){
 		return new VehicleRegistrationResource();
 	}
