@@ -6,8 +6,8 @@ import com.digitusrevolution.rideshare.model.user.domain.City;
 
 public class CityDO implements DomainDataMapper{
 	
-	City city;
-	CityEntity cityEntity;
+	private City city;
+	private CityEntity cityEntity;
 	
 	public CityDO() {
 		city = new City();
@@ -34,14 +34,14 @@ public class CityDO implements DomainDataMapper{
 
 	@Override
 	public void mapDomainModelToDataModel() {
-		// TODO Auto-generated method stub
-		
+		cityEntity.setId(city.getId());
+		cityEntity.setName(city.getName());
 	}
 
 	@Override
 	public void mapDataModelToDomainModel() {
-		// TODO Auto-generated method stub
-		
+		city.setId(cityEntity.getId());
+		city.setName(cityEntity.getName());
 	}
 
 	@Override

@@ -1,8 +1,10 @@
 package com.digitusrevolution.rideshare.user.domain;
 
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
+import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.City;
+import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.domain.core.VehicleDO;
 
@@ -36,6 +38,17 @@ public class UserUtil {
 		return vehicleDO.getVehicle();
 		
 	}
+	
+	public RoleEntity getRoleEntity(Role role){
+		RoleDO roleDO = new RoleDO();
+		roleDO.setRole(role);
+		return roleDO.getRoleEntity();
+	}
 
+	public Role getRole(RoleEntity roleEntity){
+		RoleDO roleDO = new RoleDO();
+		roleDO.setRoleEntity(roleEntity);
+		return roleDO.getRole();
+	}
 
 }

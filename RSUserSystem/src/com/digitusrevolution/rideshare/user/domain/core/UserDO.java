@@ -8,8 +8,10 @@ import org.hibernate.Session;
 
 import com.digitusrevolution.rideshare.common.DomainDataMapper;
 import com.digitusrevolution.rideshare.common.HibernateUtil;
+import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
+import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.domain.UserUtil;
@@ -53,28 +55,34 @@ public class UserDO implements DomainDataMapper {
 		userEntity.setMobileNumber(user.getMobileNumber());
 		userEntity.setEmail(user.getEmail());
 		userEntity.setPassword(user.getPassword());
-//		userEntity.setCity(userUtil.getCityEntity(user.getCity()));
+		userEntity.setCity(userUtil.getCityEntity(user.getCity()));
 	}
 	
 	@Override
 	public void mapDataModelToDomainModel(){	
+		UserUtil userUtil = new UserUtil();
 		user.setId(userEntity.getId());
 		user.setFirstName(userEntity.getFirstName());
 		user.setLastName(userEntity.getLastName());
-		user.setEmail(userEntity.getEmail());		
-		
+		user.setSex(userEntity.getSex());
+		user.setMobileNumber(userEntity.getMobileNumber());
+		user.setEmail(userEntity.getEmail());
+		user.setPassword(userEntity.getPassword());
+		user.setCity(userUtil.getCity(userEntity.getCity()));
 	}
 	
 	@Override
 	public void mapChildDomainModelToDataModel(){
 		
 		mapVehicleDomainModelToDataModel();
+		mapRoleDomainModelToDataModel();
 	}
 	
 	@Override
 	public void mapChildDataModelToDomainModel(){
 	
 		mapVehicleDataModelToDomainModel();
+		mapRoleDataModelToDomainModel();
 		
 	}
 	
@@ -102,6 +110,33 @@ public class UserDO implements DomainDataMapper {
 		
 		user.setVehicles(vehicles);
 
+	}
+	
+	private void mapRoleDomainModelToDataModel(){
+		
+		UserUtil userUtil = new UserUtil();
+		Collection<Role> roles = user.getRoles();
+		Collection<RoleEntity> roleEntities = userEntity.getRoles();
+		for (Role role : roles) {
+			roleEntities.add(userUtil.getRoleEntity(role));
+		}
+		
+		userEntity.setRoles(roleEntities);		
+		
+	}
+	
+	private void mapRoleDataModelToDomainModel(){
+		
+		UserUtil userUtil = new UserUtil();
+		Collection<Role> roles = user.getRoles();
+		Collection<RoleEntity> roleEntities = userEntity.getRoles();
+		for (RoleEntity roleEntity : roleEntities) {
+			roles.add(userUtil.getRole(roleEntity));
+		}
+		
+		user.setRoles(roles);		
+
+		
 	}
 	
 	public User addVehicle(Vehicle vehicle){
