@@ -8,7 +8,7 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
+import com.digitusrevolution.rideshare.user.business.dto.VehicleDTO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDomainService;
 
@@ -16,7 +16,7 @@ public class VehicleRegistrationService {
 	
 	private static final Logger logger = LogManager.getLogger(VehicleRegistrationService.class.getName());
 	
-	public void addVehicle(int userId, Vehicle vehicle){
+	public void addVehicle(VehicleDTO vehicleDTO){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
@@ -25,9 +25,9 @@ public class VehicleRegistrationService {
 			UserDO userDO = new UserDO();
 			UserDomainService userService = new UserDomainService();
 			transation = session.beginTransaction();
-			User user = userService.getChild(userId);
+			User user = userService.getChild(vehicleDTO.getUserId());
 			userDO.setUser(user);
-			userDO.addVehicle(vehicle);			
+			userDO.addVehicle(vehicleDTO.getVehicle());			
 			logger.debug("Session Status: " + session.isOpen());		
 			logger.debug("Transaction Status: "+transation.getStatus());
 			transation.commit();

@@ -7,8 +7,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.business.VehicleRegistrationService;
+import com.digitusrevolution.rideshare.user.business.dto.VehicleDTO;
 
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
@@ -18,8 +18,10 @@ public class VehicleRegistrationResource {
 	private VehicleRegistrationService vehicleRegistrationService = new VehicleRegistrationService();
 	
 	@POST
-	public Response addVehicle(int userId, Vehicle vehicle){
-		vehicleRegistrationService.addVehicle(userId, vehicle);
+	public Response addVehicle(VehicleDTO vehicleDTO){
+		vehicleRegistrationService.addVehicle(vehicleDTO);
 		return Response.ok().build();
 	}
+
+	
 }

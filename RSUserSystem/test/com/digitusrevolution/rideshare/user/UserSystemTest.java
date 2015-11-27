@@ -1,10 +1,8 @@
 package com.digitusrevolution.rideshare.user;
 
-import com.digitusrevolution.rideshare.model.user.domain.City;
-import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.business.VehicleRegistrationService;
-import com.digitusrevolution.rideshare.user.business.facade.UserDomainFacade;
+import com.digitusrevolution.rideshare.user.business.dto.VehicleDTO;
 
 public class UserSystemTest {
 
@@ -13,8 +11,12 @@ public class UserSystemTest {
 		VehicleRegistrationService vehicleRegistrationService = new VehicleRegistrationService();
 		Vehicle vehicle = new Vehicle();
 		Vehicle vehicle1 = new Vehicle();
-		vehicleRegistrationService.addVehicle(20,vehicle);
-		vehicleRegistrationService.addVehicle(20,vehicle1);
+		VehicleDTO vehicleDTO = new VehicleDTO();
+		vehicleDTO.setUserId(20);
+		vehicleDTO.setVehicle(vehicle);
+		vehicleRegistrationService.addVehicle(vehicleDTO);
+		vehicleDTO.setVehicle(vehicle1);
+		vehicleRegistrationService.addVehicle(vehicleDTO);
 
 		
 		/*
