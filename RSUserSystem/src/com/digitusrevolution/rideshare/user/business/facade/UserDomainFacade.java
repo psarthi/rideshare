@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.user.business;
+package com.digitusrevolution.rideshare.user.business.facade;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,31 +11,24 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
-import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserService;
 
-public class UserBusinessService {
+public class UserDomainFacade {
 
-	private UserDO userDO;
-	private UserService userService;
-	private static final Logger logger = LogManager.getLogger(UserBusinessService.class.getName());
+	private static final Logger logger = LogManager.getLogger(UserDomainFacade.class.getName());
 
-	public UserBusinessService() {
-		userDO = new UserDO();
-		userService = new UserService();
-	}
-
-	public User create(User user){	
+	public int create(User user){	
 		logger.debug("Getting Session");
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
+		int id=0;
 		try {
+			UserService userService = new UserService();
 			logger.debug("Beginning Transaction");
 			transation = session.beginTransaction();
 			logger.debug("Session Status: " + session.isOpen());		
 			logger.debug("Transaction Status: "+transation.getStatus());
-			user = userService.create(user);
+			id = userService.create(user);
 			logger.debug("Session Status: " + session.isOpen());		
 			logger.debug("Transaction Status: "+transation.getStatus());
 			transation.commit();
@@ -54,7 +47,7 @@ public class UserBusinessService {
 				session.close();				
 			}
 		}
-		return user;
+		return id;
 	}
 
 	public boolean isExist(String userEmail){
@@ -63,7 +56,7 @@ public class UserBusinessService {
 		boolean status = false;
 		try {
 			transation = session.beginTransaction();
-			
+			UserService userService = new UserService();
 			status = userService.isExist(userEmail);
 
 			transation.commit();
@@ -90,7 +83,7 @@ public class UserBusinessService {
 		User user = null;
 		try {
 			transation = session.beginTransaction();
-			
+			UserService userService = new UserService();
 			user = userService.get(id);
 
 			transation.commit();
@@ -117,7 +110,7 @@ public class UserBusinessService {
 		User user = null;
 		try {
 			transation = session.beginTransaction();
-			
+			UserService userService = new UserService();
 			user = userService.getChild(id);
 
 			transation.commit();
@@ -144,7 +137,7 @@ public class UserBusinessService {
 		List<User> users = new ArrayList<>();
 		try {
 			transation = session.beginTransaction();
-			
+			UserService userService = new UserService();
 			users = userService.getAll();
 
 			transation.commit();
@@ -169,7 +162,7 @@ public class UserBusinessService {
 		Transaction transation = null;	
 		try {
 			transation = session.beginTransaction();
-			
+			UserService userService = new UserService();
 			userService.update(user);
 
 			transation.commit();
@@ -186,38 +179,5 @@ public class UserBusinessService {
 				session.close();				
 			}
 		}
-	}
-
-	public User addVehicle(User user, Vehicle vehicle){
-		
-		logger.debug("Getting Session");
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
-		try {
-			logger.debug("Beginning Transaction");
-			transation = session.beginTransaction();
-			logger.debug("Session Status: " + session.isOpen());		
-			logger.debug("Transaction Status: "+transation.getStatus());			
-			userDO.setUser(user);
-			user = userDO.addVehicle(vehicle);
-			logger.debug("Session Status: " + session.isOpen());		
-			logger.debug("Transaction Status: "+transation.getStatus());
-			transation.commit();
-			logger.debug("Session Status: " + session.isOpen());		
-			logger.debug("Transaction Status: "+transation.getStatus());
-		} catch (HibernateException e) {
-			if (transation!=null){
-				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
-				throw e;
-			}
-		}
-		finally {
-			if (session.isOpen()){
-				logger.debug("Closing Session");
-				session.close();				
-			}
-		}
-		return user;
 	}
 }

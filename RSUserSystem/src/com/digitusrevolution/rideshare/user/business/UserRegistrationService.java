@@ -15,10 +15,11 @@ public class UserRegistrationService {
 	
 	private static final Logger logger = LogManager.getLogger(UserRegistrationService.class.getName());
 	
-	public User registerUser(User user){
+	public int registerUser(User user){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
+		int id=0;
 		try {
 			transation = session.beginTransaction();
 			
@@ -28,7 +29,7 @@ public class UserRegistrationService {
 			if (status){
 				throw new EmailExistException("Email id already exist :"+user.getEmail());					
 			} else {
-				user = userService.create(user);
+				id = userService.create(user);
 			}
 			
 			transation.commit();
@@ -45,8 +46,7 @@ public class UserRegistrationService {
 				session.close();				
 			}
 		}	
-		return user;
+		return id;
 		
 	}
-
 }

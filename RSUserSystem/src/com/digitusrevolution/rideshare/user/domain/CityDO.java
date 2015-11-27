@@ -1,10 +1,10 @@
 package com.digitusrevolution.rideshare.user.domain;
 
-import com.digitusrevolution.rideshare.common.DomainDataMapper;
+import com.digitusrevolution.rideshare.common.DomainObject;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 
-public class CityDO implements DomainDataMapper{
+public class CityDO implements DomainObject{
 	
 	private City city;
 	private CityEntity cityEntity;

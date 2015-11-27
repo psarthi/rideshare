@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.user.business.resource;
+package com.digitusrevolution.rideshare.user.business.facade.resource;
 
 import java.util.List;
 
@@ -13,15 +13,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.user.business.UserBusinessService;
+import com.digitusrevolution.rideshare.user.business.facade.UserDomainFacade;
 
 
 @Path("/domain/users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class UserResource {
+public class UserDomainResource {
 	
-	private UserBusinessService userBusinessService = new UserBusinessService();
+	private UserDomainFacade userBusinessService = new UserDomainFacade();
 	
 	@GET
 	@Path("/{id}")
@@ -47,8 +47,8 @@ public class UserResource {
 
 	@POST
 	public Response create(User user){
-		User createdUser = userBusinessService.create(user);
-		return Response.ok(createdUser).build();
+		int id = userBusinessService.create(user);
+		return Response.ok(id).build();
 	}
 
 }

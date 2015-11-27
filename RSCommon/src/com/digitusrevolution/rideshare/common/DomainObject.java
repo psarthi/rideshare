@@ -1,6 +1,6 @@
 package com.digitusrevolution.rideshare.common;
 
-public interface DomainDataMapper {
+public interface DomainObject {
 
 	void mapDomainModelToDataModel();
 

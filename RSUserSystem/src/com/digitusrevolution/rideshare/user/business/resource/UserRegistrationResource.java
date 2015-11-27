@@ -19,8 +19,8 @@ public class UserRegistrationResource {
 	
 	@POST
 	public Response registerUser(User user){
-		user = userRegistrationService.registerUser(user);
-		return Response.ok().entity(user).build();
+		int id = userRegistrationService.registerUser(user);
+		return Response.ok().entity(id).build();
 	}
 	
 	@Path("/{id}/vehicles")

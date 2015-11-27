@@ -15,19 +15,16 @@ import com.digitusrevolution.rideshare.user.data.UserDAO;
 public class UserService {
 	
 	private static final Logger logger = LogManager.getLogger(UserService.class.getName());
-	
-	public UserService(){
-	}
 
-	public User create(User user){
+
+	public int create(User user){
 		logger.entry();
 		UserDO userDO = new UserDO();
 		UserDAO userDAO = new UserDAO();
 		userDO.setUser(user);
 		int id = userDAO.create(userDO.getUserEntity());
-		user.setId(id);
 		logger.exit();
-		return user;
+		return id;
 	}
 
 	public boolean isExist(String userEmail){

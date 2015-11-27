@@ -4,10 +4,8 @@ import java.util.Collection;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.Session;
 
-import com.digitusrevolution.rideshare.common.DomainDataMapper;
-import com.digitusrevolution.rideshare.common.HibernateUtil;
+import com.digitusrevolution.rideshare.common.DomainObject;
 import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
@@ -16,7 +14,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.domain.UserUtil;
 
-public class UserDO implements DomainDataMapper {
+public class UserDO implements DomainObject {
 	
 	private User user;
 	private UserEntity userEntity;
@@ -55,7 +53,9 @@ public class UserDO implements DomainDataMapper {
 		userEntity.setMobileNumber(user.getMobileNumber());
 		userEntity.setEmail(user.getEmail());
 		userEntity.setPassword(user.getPassword());
-		userEntity.setCity(userUtil.getCityEntity(user.getCity()));
+		if (user.getCity()!=null){
+		userEntity.setCity(userUtil.getCityEntity(user.getCity()));			
+		}
 	}
 	
 	@Override
@@ -68,7 +68,8 @@ public class UserDO implements DomainDataMapper {
 		user.setMobileNumber(userEntity.getMobileNumber());
 		user.setEmail(userEntity.getEmail());
 		user.setPassword(userEntity.getPassword());
-		user.setCity(userUtil.getCity(userEntity.getCity()));
+		user.setCity(userUtil.getCity(userEntity.getCity()));			
+
 	}
 	
 	@Override
@@ -139,14 +140,9 @@ public class UserDO implements DomainDataMapper {
 		
 	}
 	
-	public User addVehicle(Vehicle vehicle){
-		logger.debug("Getting Session");
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+	public void addVehicle(Vehicle vehicle){
 		user.getVehicles().add(vehicle);
 		UserService userService = new UserService();
 		userService.update(user);
-		logger.debug("Session Status: " + session.isOpen());		
-		logger.debug("Transaction Status: "+session.getTransaction().getStatus());
-		return userService.getChild(user.getId());
 	}
 }
