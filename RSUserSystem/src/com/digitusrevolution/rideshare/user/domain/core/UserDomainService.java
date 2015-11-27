@@ -12,9 +12,9 @@ import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.user.data.UserDAO;
 
-public class UserService {
+public class UserDomainService {
 	
-	private static final Logger logger = LogManager.getLogger(UserService.class.getName());
+	private static final Logger logger = LogManager.getLogger(UserDomainService.class.getName());
 
 
 	public int create(User user){

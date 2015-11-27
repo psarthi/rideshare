@@ -11,7 +11,7 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.user.domain.core.UserService;
+import com.digitusrevolution.rideshare.user.domain.core.UserDomainService;
 
 public class UserDomainFacade {
 
@@ -23,7 +23,7 @@ public class UserDomainFacade {
 		Transaction transation = null;	
 		int id=0;
 		try {
-			UserService userService = new UserService();
+			UserDomainService userService = new UserDomainService();
 			logger.debug("Beginning Transaction");
 			transation = session.beginTransaction();
 			logger.debug("Session Status: " + session.isOpen());		
@@ -56,7 +56,7 @@ public class UserDomainFacade {
 		boolean status = false;
 		try {
 			transation = session.beginTransaction();
-			UserService userService = new UserService();
+			UserDomainService userService = new UserDomainService();
 			status = userService.isExist(userEmail);
 
 			transation.commit();
@@ -83,7 +83,7 @@ public class UserDomainFacade {
 		User user = null;
 		try {
 			transation = session.beginTransaction();
-			UserService userService = new UserService();
+			UserDomainService userService = new UserDomainService();
 			user = userService.get(id);
 
 			transation.commit();
@@ -110,7 +110,7 @@ public class UserDomainFacade {
 		User user = null;
 		try {
 			transation = session.beginTransaction();
-			UserService userService = new UserService();
+			UserDomainService userService = new UserDomainService();
 			user = userService.getChild(id);
 
 			transation.commit();
@@ -137,7 +137,7 @@ public class UserDomainFacade {
 		List<User> users = new ArrayList<>();
 		try {
 			transation = session.beginTransaction();
-			UserService userService = new UserService();
+			UserDomainService userService = new UserDomainService();
 			users = userService.getAll();
 
 			transation.commit();
@@ -162,7 +162,7 @@ public class UserDomainFacade {
 		Transaction transation = null;	
 		try {
 			transation = session.beginTransaction();
-			UserService userService = new UserService();
+			UserDomainService userService = new UserDomainService();
 			userService.update(user);
 
 			transation.commit();

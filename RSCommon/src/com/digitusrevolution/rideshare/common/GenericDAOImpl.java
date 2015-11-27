@@ -28,10 +28,12 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
 		return entity;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void update(T entity) {
+	public T update(T entity) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		session.update(entity);
+		entity = (T) session.merge(entity);
+		return entity;
 	}
 
 	@Override

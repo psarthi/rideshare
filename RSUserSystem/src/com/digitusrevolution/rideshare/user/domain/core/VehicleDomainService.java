@@ -11,9 +11,9 @@ import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.data.UserDAO;
 import com.digitusrevolution.rideshare.user.data.VehicleDAO;
 
-public class VehicleService {
+public class VehicleDomainService {
 
-	public VehicleService(){
+	public VehicleDomainService(){
 	}
 	
 		

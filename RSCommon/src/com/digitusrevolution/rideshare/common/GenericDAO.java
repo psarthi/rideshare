@@ -6,7 +6,7 @@ public interface GenericDAO<T> {
 	
 	int create(T entity);
 	T get(int id);
-	void update(T entity);
+	T update(T entity);
 	void delete(T entity);
 	List<T> getAll();
 }

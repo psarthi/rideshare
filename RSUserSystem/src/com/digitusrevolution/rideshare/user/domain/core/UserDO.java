@@ -9,13 +9,15 @@ import com.digitusrevolution.rideshare.common.DomainObject;
 import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
+import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
-import com.digitusrevolution.rideshare.user.domain.UserUtil;
+import com.digitusrevolution.rideshare.user.domain.CityDO;
+import com.digitusrevolution.rideshare.user.domain.RoleDO;
 
 public class UserDO implements DomainObject {
-	
+
 	private User user;
 	private UserEntity userEntity;
 	private static final Logger logger = LogManager.getLogger(UserDO.class.getName());
@@ -24,7 +26,7 @@ public class UserDO implements DomainObject {
 		user = new User();
 		userEntity = new UserEntity();
 	}
-	
+
 	public User getUser() {
 		return user;
 	}
@@ -45,7 +47,6 @@ public class UserDO implements DomainObject {
 
 	@Override
 	public void mapDomainModelToDataModel(){
-		UserUtil userUtil = new UserUtil();
 		userEntity.setId(user.getId());
 		userEntity.setFirstName(user.getFirstName());
 		userEntity.setLastName(user.getLastName());
@@ -53,14 +54,15 @@ public class UserDO implements DomainObject {
 		userEntity.setMobileNumber(user.getMobileNumber());
 		userEntity.setEmail(user.getEmail());
 		userEntity.setPassword(user.getPassword());
-		if (user.getCity()!=null){
-		userEntity.setCity(userUtil.getCityEntity(user.getCity()));			
-		}
+
+		CityDO cityDO = new CityDO();
+		cityDO.setCity(user.getCity());
+		userEntity.setCity(cityDO.getCityEntity());
+		
 	}
-	
+
 	@Override
 	public void mapDataModelToDomainModel(){	
-		UserUtil userUtil = new UserUtil();
 		user.setId(userEntity.getId());
 		user.setFirstName(userEntity.getFirstName());
 		user.setLastName(userEntity.getLastName());
@@ -68,81 +70,89 @@ public class UserDO implements DomainObject {
 		user.setMobileNumber(userEntity.getMobileNumber());
 		user.setEmail(userEntity.getEmail());
 		user.setPassword(userEntity.getPassword());
-		user.setCity(userUtil.getCity(userEntity.getCity()));			
+
+		CityDO cityDO = new CityDO();
+		cityDO.setCityEntity(userEntity.getCity());
+		user.setCity(cityDO.getCity());
+		
 
 	}
-	
+
 	@Override
 	public void mapChildDomainModelToDataModel(){
-		
+
 		mapVehicleDomainModelToDataModel();
 		mapRoleDomainModelToDataModel();
 	}
-	
+
 	@Override
 	public void mapChildDataModelToDomainModel(){
-	
+
 		mapVehicleDataModelToDomainModel();
 		mapRoleDataModelToDomainModel();
-		
+
 	}
-	
+
 	private void mapVehicleDomainModelToDataModel(){
 
-		UserUtil userUtil = new UserUtil();
 		Collection<Vehicle> vehicles = user.getVehicles();
 		Collection<VehicleEntity> vehicleEntities = userEntity.getVehicles();
 		for (Vehicle vehicle : vehicles) {
-			vehicleEntities.add(userUtil.getVehicleEntity(vehicle));	
+			VehicleDO vehicleDO = new VehicleDO();
+			vehicleDO.setVehicle(vehicle);
+			vehicleEntities.add(vehicleDO.getVehicleEntity());	
 		}
 
 		userEntity.setVehicles(vehicleEntities);		
 
 	}
-	
+
 
 	private void mapVehicleDataModelToDomainModel(){
-		UserUtil userUtil = new UserUtil();
 		Collection<Vehicle> vehicles = user.getVehicles();
 		Collection<VehicleEntity> vehicleEntities = userEntity.getVehicles();
 		for (VehicleEntity vehicleEntity : vehicleEntities) {
-			vehicles.add(userUtil.getVehicle(vehicleEntity));			
+			VehicleDO vehicleDO = new VehicleDO();
+			vehicleDO.setVehicleEntity(vehicleEntity);
+			vehicles.add(vehicleDO.getVehicle());	
 		}
-		
+
 		user.setVehicles(vehicles);
 
 	}
-	
+
 	private void mapRoleDomainModelToDataModel(){
-		
-		UserUtil userUtil = new UserUtil();
+
 		Collection<Role> roles = user.getRoles();
 		Collection<RoleEntity> roleEntities = userEntity.getRoles();
 		for (Role role : roles) {
-			roleEntities.add(userUtil.getRoleEntity(role));
+			RoleDO roleDO = new RoleDO();
+			roleDO.setRole(role);
+			roleEntities.add(roleDO.getRoleEntity());
 		}
-		
+
 		userEntity.setRoles(roleEntities);		
-		
+
 	}
-	
+
 	private void mapRoleDataModelToDomainModel(){
-		
-		UserUtil userUtil = new UserUtil();
+
 		Collection<Role> roles = user.getRoles();
 		Collection<RoleEntity> roleEntities = userEntity.getRoles();
 		for (RoleEntity roleEntity : roleEntities) {
-			roles.add(userUtil.getRole(roleEntity));
+			RoleDO roleDO = new RoleDO();
+			roleDO.setRoleEntity(roleEntity);
+			roles.add(roleDO.getRole());
 		}
-		
+
 		user.setRoles(roles);		
 
-		
+
 	}
-	
+
 	public void addVehicle(Vehicle vehicle){
+		UserDomainService userService = new UserDomainService();
 		user.getVehicles().add(vehicle);
-		UserService userService = new UserService();
 		userService.update(user);
 	}
 }

@@ -10,7 +10,7 @@ import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
-import com.digitusrevolution.rideshare.user.domain.core.UserService;
+import com.digitusrevolution.rideshare.user.domain.core.UserDomainService;
 
 public class VehicleRegistrationService {
 	
@@ -21,16 +21,18 @@ public class VehicleRegistrationService {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 
-		try {
-			transation = session.beginTransaction();
-			
+		try {			
 			UserDO userDO = new UserDO();
-			UserService userService = new UserService();
-			User user = userService.get(userId);
+			UserDomainService userService = new UserDomainService();
+			transation = session.beginTransaction();
+			User user = userService.getChild(userId);
 			userDO.setUser(user);
-			userDO.addVehicle(vehicle);
-			
+			userDO.addVehicle(vehicle);			
+			logger.debug("Session Status: " + session.isOpen());		
+			logger.debug("Transaction Status: "+transation.getStatus());
 			transation.commit();
+			logger.debug("Session Status: " + session.isOpen());		
+			logger.debug("Transaction Status: "+transation.getStatus());
 		} catch (HibernateException e) {
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");

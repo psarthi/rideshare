@@ -8,7 +8,7 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.user.domain.core.UserService;
+import com.digitusrevolution.rideshare.user.domain.core.UserDomainService;
 import com.digitusrevolution.rideshare.user.exception.EmailExistException;
 
 public class UserRegistrationService {
@@ -24,7 +24,7 @@ public class UserRegistrationService {
 			transation = session.beginTransaction();
 			
 			boolean status;
-			UserService userService = new UserService();
+			UserDomainService userService = new UserDomainService();
 			status = userService.isExist(user.getEmail());
 			if (status){
 				throw new EmailExistException("Email id already exist :"+user.getEmail());					
