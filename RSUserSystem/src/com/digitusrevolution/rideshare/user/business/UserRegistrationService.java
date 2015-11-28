@@ -2,7 +2,6 @@ package com.digitusrevolution.rideshare.user.business;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -33,7 +32,7 @@ public class UserRegistrationService {
 			}
 			
 			transation.commit();
-		} catch (HibernateException e) {
+		} catch (RuntimeException e) {
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
@@ -42,7 +41,7 @@ public class UserRegistrationService {
 		}
 		finally {
 			if (session.isOpen()){
-				logger.debug("Closing Session");
+				logger.info("Closing Session");
 				session.close();				
 			}
 		}	

@@ -1,12 +1,19 @@
 package com.digitusrevolution.rideshare.user;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.business.VehicleRegistrationService;
 import com.digitusrevolution.rideshare.user.business.dto.VehicleDTO;
 
 public class UserSystemTest {
 
+	private static final Logger logger = LogManager.getLogger(UserSystemTest.class.getName());
+	
 	public static void main(String args[]){
+		
+		logger.info("Logger Testing");
 
 		/*
 		VehicleRegistrationService vehicleRegistrationService = new VehicleRegistrationService();

@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -34,7 +33,7 @@ public class UserDomainFacade {
 			transation.commit();
 			logger.debug("Session Status: " + session.isOpen());		
 			logger.debug("Transaction Status: "+transation.getStatus());
-		} catch (HibernateException e) {
+		} catch (RuntimeException e) {
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
@@ -43,7 +42,7 @@ public class UserDomainFacade {
 		}
 		finally {
 			if (session.isOpen()){
-				logger.debug("Closing Session");
+				logger.info("Closing Session");
 				session.close();				
 			}
 		}
@@ -60,7 +59,7 @@ public class UserDomainFacade {
 			status = userService.isExist(userEmail);
 
 			transation.commit();
-		} catch (HibernateException e) {
+		} catch (RuntimeException e) {
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
@@ -69,7 +68,7 @@ public class UserDomainFacade {
 		}
 		finally {
 			if (session.isOpen()){
-				logger.debug("Closing Session");
+				logger.info("Closing Session");
 				session.close();				
 			}
 		}	
@@ -87,7 +86,7 @@ public class UserDomainFacade {
 			user = userService.get(id);
 
 			transation.commit();
-		} catch (HibernateException e) {
+		} catch (RuntimeException e) {
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
@@ -96,7 +95,7 @@ public class UserDomainFacade {
 		}
 		finally {
 			if (session.isOpen()){
-				logger.debug("Closing Session");
+				logger.info("Closing Session");
 				session.close();				
 			}
 		}
@@ -114,7 +113,7 @@ public class UserDomainFacade {
 			user = userService.getChild(id);
 
 			transation.commit();
-		} catch (HibernateException e) {
+		} catch (RuntimeException e) {
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
@@ -123,7 +122,7 @@ public class UserDomainFacade {
 		}
 		finally {
 			if (session.isOpen()){
-				logger.debug("Closing Session");
+				logger.info("Closing Session");
 				session.close();				
 			}
 		}
@@ -141,7 +140,7 @@ public class UserDomainFacade {
 			users = userService.getAll();
 
 			transation.commit();
-		} catch (HibernateException e) {
+		} catch (RuntimeException e) {
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
@@ -150,7 +149,7 @@ public class UserDomainFacade {
 		}
 		finally {
 			if (session.isOpen()){
-				logger.debug("Closing Session");
+				logger.info("Closing Session");
 				session.close();				
 			}
 		}
@@ -166,7 +165,7 @@ public class UserDomainFacade {
 			userService.update(user);
 
 			transation.commit();
-		} catch (HibernateException e) {
+		} catch (RuntimeException e) {
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");
 				transation.rollback();
@@ -175,7 +174,7 @@ public class UserDomainFacade {
 		}
 		finally {
 			if (session.isOpen()){
-				logger.debug("Closing Session");
+				logger.info("Closing Session");
 				session.close();				
 			}
 		}

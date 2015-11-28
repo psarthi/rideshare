@@ -1,8 +1,8 @@
 package com.digitusrevolution.rideshare.user;
 
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -11,9 +11,12 @@ import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.domain.CityDomainService;
 import com.digitusrevolution.rideshare.user.domain.RoleDomainService;
+import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDomainService;
+import com.digitusrevolution.rideshare.user.domain.core.VehicleDomainService;
 
 public class DataLoader {
 	
@@ -31,18 +34,26 @@ public class DataLoader {
 			dataLoader.loadCity();
 			dataLoader.loadRole();
 			dataLoader.loadUser();
+			dataLoader.loadVehicle();
 			
 			transation.commit();
-		} catch (HibernateException e) {
+
+			/*
+			 * Reason for catching RuntimeException and not HibernateException as all exceptions thrown by Hibernate
+			 * is not of type HibernateException such as NotFoundException
+			 */
+		} catch (RuntimeException e) {
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");
+				System.out.println("Transaction Failed, Rolling Back");
 				transation.rollback();
 				throw e;
 			}
 		}
 		finally {
 			if (session.isOpen()){
-				logger.debug("Closing Session");
+				logger.info("Closing Session");
+				System.out.println("Closing Session");
 				session.close();				
 			}
 		}	
@@ -98,6 +109,31 @@ public class DataLoader {
 			user.setCity(city);
 			userDomainService.update(user);
 
+		}
+		
+	}
+	
+	public void loadVehicle(){
+		
+		UserDomainService userDomainService = new UserDomainService();
+		VehicleDomainService vehicleDomainService = new VehicleDomainService();
+		UserDO userDO = new UserDO();
+		User user = new User();
+		Vehicle vehicle = new Vehicle();
+		
+		for (int i=0;i<2;i++){
+			int id = vehicleDomainService.create(vehicle);
+			vehicle = vehicleDomainService.get(id);
+			user = userDomainService.getChild(6);
+			userDO.setUser(user);
+			userDO.addVehicle(vehicle);
+		}
+		
+		for (int i=0;i<2;i++){
+			user = userDomainService.getChild(7);
+			userDO.setUser(user);
+			Vehicle vehicle2 = new Vehicle();			
+			userDO.addVehicle(vehicle2);
 		}
 		
 	}
