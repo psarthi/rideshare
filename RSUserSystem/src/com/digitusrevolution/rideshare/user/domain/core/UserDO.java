@@ -34,6 +34,7 @@ public class UserDO implements DomainObject {
 	public void setUser(User user) {
 		this.user = user;
 		mapDomainModelToDataModel();
+		mapChildDomainModelToDataModel();
 	}
 
 	public UserEntity getUserEntity() {

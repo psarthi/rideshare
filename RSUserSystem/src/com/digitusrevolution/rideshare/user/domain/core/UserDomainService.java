@@ -80,7 +80,6 @@ public class UserDomainService {
 		UserDAO userDAO = new UserDAO();
 		UserDO userDO = new UserDO();
 		userDO.setUser(user);
-		userDO.mapChildDomainModelToDataModel();
 		userDAO.update(userDO.getUserEntity());
 	}
 }
