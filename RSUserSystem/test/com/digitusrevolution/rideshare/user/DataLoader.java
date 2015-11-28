@@ -83,16 +83,16 @@ public class DataLoader {
 		id = cityDomainService.create(city);
 		System.out.println("City ID: "+id);
 		city.setName("Chennai");
-		cityDomainService.create(city);
+		id = cityDomainService.create(city);
 		System.out.println("City ID: "+id);
 		city.setName("Mumbai");
-		cityDomainService.create(city);
+		id = cityDomainService.create(city);
 		System.out.println("City ID: "+id);
 		city.setName("New Delhi");
-		cityDomainService.create(city);
+		id = cityDomainService.create(city);
 		System.out.println("City ID: "+id);
 		city.setName("Kolkata");
-		cityDomainService.create(city);
+		id = cityDomainService.create(city);
 		System.out.println("City ID: "+id);
 		
 	}

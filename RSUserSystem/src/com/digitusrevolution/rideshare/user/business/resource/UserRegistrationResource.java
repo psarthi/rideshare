@@ -20,7 +20,7 @@ public class UserRegistrationResource {
 	@POST
 	public Response registerUser(User user){
 		int id = userRegistrationService.registerUser(user);
-		return Response.ok().entity(id).build();
+		return Response.ok().entity(Integer.toString(id)).build();
 	}
 	
 	@Path("/{id}/vehicles")

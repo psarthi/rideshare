@@ -46,7 +46,7 @@ public class UserDomainResource {
 	@POST
 	public Response create(User user){
 		int id = userBusinessService.create(user);
-		return Response.ok(id).build();
+		return Response.ok(Integer.toString(id)).build();
 	}
 
 }
