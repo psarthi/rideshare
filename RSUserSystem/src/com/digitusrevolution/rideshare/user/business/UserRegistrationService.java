@@ -24,12 +24,12 @@ public class UserRegistrationService {
 			transation = session.beginTransaction();
 			
 			boolean status;
-			UserDomainService userService = new UserDomainService();
-			status = userService.isExist(user.getEmail());
+			UserDomainService userDomainService = new UserDomainService();
+			status = userDomainService.isExist(user.getEmail());
 			if (status){
 				throw new EmailExistException("Email id already exist :"+user.getEmail());					
 			} else {
-				id = userService.create(user);
+				id = userDomainService.create(user);
 			}
 			
 			transation.commit();
