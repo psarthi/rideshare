@@ -1,6 +1,12 @@
 package com.digitusrevolution.rideshare.user;
 
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
@@ -18,10 +24,21 @@ import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDomainService;
 import com.digitusrevolution.rideshare.user.domain.core.VehicleDomainService;
 
+@Path("/domain/loadsample")
+@Consumes(MediaType.APPLICATION_JSON)
 public class DataLoader {
 	
 	
 	private static final Logger logger = LogManager.getLogger(DataLoader.class.getName());
+	
+	@GET
+	public Response load(){
+		
+		String[] args ={};
+		DataLoader.main(args);
+		return Response.ok().build();
+	}
+	
 	
 	public static void main(String args[]){
 		
@@ -45,7 +62,6 @@ public class DataLoader {
 		} catch (RuntimeException e) {
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				System.out.println("Transaction Failed, Rolling Back");
 				transation.rollback();
 				throw e;
 			}
@@ -53,7 +69,6 @@ public class DataLoader {
 		finally {
 			if (session.isOpen()){
 				logger.info("Closing Session");
-				System.out.println("Closing Session");
 				session.close();				
 			}
 		}	
@@ -64,15 +79,21 @@ public class DataLoader {
 		CityDomainService cityDomainService = new CityDomainService();
 		City city = new City();
 		city.setName("Bangalore");
-		cityDomainService.create(city);
+		int id;
+		id = cityDomainService.create(city);
+		System.out.println("City ID: "+id);
 		city.setName("Chennai");
 		cityDomainService.create(city);
+		System.out.println("City ID: "+id);
 		city.setName("Mumbai");
 		cityDomainService.create(city);
+		System.out.println("City ID: "+id);
 		city.setName("New Delhi");
 		cityDomainService.create(city);
+		System.out.println("City ID: "+id);
 		city.setName("Kolkata");
 		cityDomainService.create(city);
+		System.out.println("City ID: "+id);
 		
 	}
 
@@ -124,13 +145,13 @@ public class DataLoader {
 		for (int i=0;i<2;i++){
 			int id = vehicleDomainService.create(vehicle);
 			vehicle = vehicleDomainService.get(id);
-			user = userDomainService.getChild(6);
+			user = userDomainService.getChild(1);
 			userDO.setUser(user);
 			userDO.addVehicle(vehicle);
 		}
 		
 		for (int i=0;i<2;i++){
-			user = userDomainService.getChild(7);
+			user = userDomainService.getChild(2);
 			userDO.setUser(user);
 			Vehicle vehicle2 = new Vehicle();			
 			userDO.addVehicle(vehicle2);

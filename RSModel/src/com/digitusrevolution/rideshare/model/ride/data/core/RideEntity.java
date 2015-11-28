@@ -7,6 +7,7 @@ import java.util.Date;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -29,7 +30,7 @@ import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 @Table(name="ride")
 public class RideEntity {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	private Date dateTime;
 	@OneToOne
