@@ -112,8 +112,13 @@ public class DataLoader {
 		
 		UserDomainService userDomainService = new UserDomainService();
 		CityDomainService cityDomainService = new CityDomainService();
+		RoleDomainService roleDomainService = new RoleDomainService();
 		User user = new User();
 		City city = new City();
+		Role role = new Role();
+		role = roleDomainService.get("Passenger");
+		user.getRoles().add(role);
+
 	
 		for (int i=1; i<6; i++){
 	
@@ -141,17 +146,25 @@ public class DataLoader {
 		UserDO userDO = new UserDO();
 		User user = new User();
 		Vehicle vehicle = new Vehicle();
+		RoleDomainService roleDomainService = new RoleDomainService();
+		Role role = roleDomainService.get("Driver");
 		
 		for (int i=0;i<2;i++){
 			int id = vehicleDomainService.create(vehicle);
 			vehicle = vehicleDomainService.get(id);
 			user = userDomainService.getChild(1);
+			if (user.getVehicles().size()==0){
+				user.getRoles().add(role);
+			}
 			userDO.setUser(user);
 			userDO.addVehicle(vehicle);
 		}
 		
 		for (int i=0;i<2;i++){
 			user = userDomainService.getChild(2);
+			if (user.getVehicles().size()==0){
+				user.getRoles().add(role);
+			}
 			userDO.setUser(user);
 			Vehicle vehicle2 = new Vehicle();			
 			userDO.addVehicle(vehicle2);
