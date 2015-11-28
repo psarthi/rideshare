@@ -2,10 +2,10 @@ package com.digitusrevolution.rideshare.common;
 
 import java.util.List;
 
-public interface GenericDAO<T> {
+public interface GenericDAO<T,ID> {
 	
-	int create(T entity);
-	T get(int id);
+	ID create(T entity);
+	T get(ID id);
 	T update(T entity);
 	void delete(T entity);
 	List<T> getAll();

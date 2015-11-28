@@ -6,6 +6,8 @@ import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -34,7 +36,8 @@ public class UserEntity {
 	private int id;
 	private String firstName;
 	private String lastName;
-	@Column(columnDefinition="varchar(255)")
+	@Column
+	@Enumerated(EnumType.STRING)
 	private Sex sex;
 	private String mobileNumber;
 	private String email;

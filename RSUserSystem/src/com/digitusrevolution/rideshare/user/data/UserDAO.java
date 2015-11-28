@@ -14,7 +14,7 @@ import com.digitusrevolution.rideshare.common.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
-public class UserDAO extends GenericDAOImpl<UserEntity>{
+public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 
 	private static final Logger logger = LogManager.getLogger(GenericDAOImpl.class.getName());
 

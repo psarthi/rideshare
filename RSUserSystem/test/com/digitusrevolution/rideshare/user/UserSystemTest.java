@@ -7,7 +7,8 @@ import com.digitusrevolution.rideshare.user.business.dto.VehicleDTO;
 public class UserSystemTest {
 
 	public static void main(String args[]){
-		
+
+		/*
 		VehicleRegistrationService vehicleRegistrationService = new VehicleRegistrationService();
 		Vehicle vehicle = new Vehicle();
 		Vehicle vehicle1 = new Vehicle();
@@ -19,7 +20,6 @@ public class UserSystemTest {
 		vehicleRegistrationService.addVehicle(vehicleDTO);
 
 		
-		/*
 		UserDomainFacade userDomainFacade = new UserDomainFacade();
 		User user = new User();
 		City city = new City();

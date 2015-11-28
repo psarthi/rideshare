@@ -16,7 +16,14 @@ public class UserDomainService {
 	
 	private static final Logger logger = LogManager.getLogger(UserDomainService.class.getName());
 
-
+	public boolean isExist(String userEmail){
+		UserDAO userDAO = new UserDAO();
+		if (userDAO.getUserByEmail(userEmail)==null){
+			return false;			
+		}
+		return true;
+	}
+	
 	public int create(User user){
 		logger.entry();
 		UserDO userDO = new UserDO();
@@ -27,18 +34,10 @@ public class UserDomainService {
 		return id;
 	}
 
-	public boolean isExist(String userEmail){
-		UserDAO userDAO = new UserDAO();
-		if (userDAO.getUserByEmail(userEmail)==null){
-			return false;			
-		}
-		return true;
-	}
-	
 	public User get(int id){
 		UserDAO userDAO = new UserDAO();
-		UserEntity userEntity = new UserEntity();
 		UserDO userDO = new UserDO();
+		UserEntity userEntity = new UserEntity();
 		userEntity = userDAO.get(id);
 		if (userEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);
@@ -52,8 +51,8 @@ public class UserDomainService {
 	 // Don't try to call getUser to avoid duplicate code, else you would loose persistent entity object which is required for lazy fetch 
 
 		UserDAO userDAO = new UserDAO();
-		UserEntity userEntity = new UserEntity();
 		UserDO userDO = new UserDO();
+		UserEntity userEntity = new UserEntity();
 		userEntity = userDAO.get(id);
 		if (userEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);
@@ -82,4 +81,12 @@ public class UserDomainService {
 		userDO.setUser(user);
 		userDAO.update(userDO.getUserEntity());
 	}
+	
+	public void delete(User user){
+		UserDAO userDAO = new UserDAO();
+		UserDO userDO = new UserDO();
+		userDO.setUser(user);
+		userDAO.delete(userDO.getUserEntity());
+	}
+
 }

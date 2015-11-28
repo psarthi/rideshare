@@ -27,7 +27,9 @@ public class VehicleRegistrationService {
 			transation = session.beginTransaction();
 			User user = userDomainService.getChild(vehicleDTO.getUserId());
 			userDO.setUser(user);
-			userDO.addVehicle(vehicleDTO.getVehicle());			
+			userDO.addVehicle(vehicleDTO.getVehicle());
+			
+			
 			logger.debug("Session Status: " + session.isOpen());		
 			logger.debug("Transaction Status: "+transation.getStatus());
 			transation.commit();

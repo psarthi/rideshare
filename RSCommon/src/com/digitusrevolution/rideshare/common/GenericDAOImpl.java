@@ -1,11 +1,12 @@
 package com.digitusrevolution.rideshare.common;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 
-public class GenericDAOImpl<T> implements GenericDAO<T> {
+public class GenericDAOImpl<T,ID extends Serializable> implements GenericDAO<T,ID> {
 
 	private final Class<T> entityClass;
 
@@ -14,14 +15,15 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
 	}
 
 	@Override
-	public int create(T entity) {
+	public ID create(T entity) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		int id = (int) session.save(entity);
+		@SuppressWarnings("unchecked")
+		ID id = (ID) session.save(entity);
 		return id;
 	}
 
 	@Override
-	public T get(int id) {
+	public T get(ID id) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		T entity = null;
 		entity = session.get(entityClass,id);
@@ -57,4 +59,5 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
 		entityList = criteria.list();			
 		return entityList;
 	}
+
 }

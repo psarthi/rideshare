@@ -10,7 +10,7 @@ public class RoleDO implements DomainObject{
 	private RoleEntity roleEntity;
 
 	public RoleDO() {
-		setRole(new Role());
+		role = new Role();
 		roleEntity = new RoleEntity();
 	}
 
@@ -21,6 +21,7 @@ public class RoleDO implements DomainObject{
 
 	public void setRole(Role role) {
 		this.role = role;
+		mapDomainModelToDataModel();
 	}
 
 	public RoleEntity getRoleEntity() {
@@ -30,18 +31,19 @@ public class RoleDO implements DomainObject{
 
 	public void setRoleEntity(RoleEntity roleEntity) {
 		this.roleEntity = roleEntity;
+		mapDataModelToDomainModel();
 	}
 
 
 	@Override
 	public void mapDomainModelToDataModel() {
-		// TODO Auto-generated method stub
+		roleEntity.setName(role.getName());
 
 	}
 
 	@Override
 	public void mapDataModelToDomainModel() {
-		// TODO Auto-generated method stub
+		role.setName(roleEntity.getName());
 
 	}
 
