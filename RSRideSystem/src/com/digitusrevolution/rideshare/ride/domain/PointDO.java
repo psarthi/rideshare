@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.ride.domain;
 
 import com.digitusrevolution.rideshare.common.DomainObject;
+import com.digitusrevolution.rideshare.common.mapper.ride.PointMapper;
 import com.digitusrevolution.rideshare.model.ride.data.PointEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 
@@ -34,18 +35,14 @@ public class PointDO implements DomainObject{
 
 	@Override
 	public void mapDomainModelToDataModel() {
-		pointEntity.setId(point.getId());
-		pointEntity.setLattitude(point.getLattitude());
-		pointEntity.setLongitude(point.getLongitude());
-		
+		PointMapper pointMapper = new PointMapper();
+		pointEntity = pointMapper.getPointEntity(point);	
 	}
 
 	@Override
 	public void mapDataModelToDomainModel() {
-		point.setId(pointEntity.getId());
-		point.setLattitude(pointEntity.getLattitude());
-		point.setLongitude(pointEntity.getLongitude());
-		
+		PointMapper pointMapper = new PointMapper();
+		point = pointMapper.getPoint(pointEntity);		
 	}
 
 	@Override

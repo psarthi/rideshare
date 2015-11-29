@@ -1,8 +1,12 @@
 package com.digitusrevolution.rideshare.ride.domain;
 
+import java.util.Collection;
+
 import com.digitusrevolution.rideshare.common.DomainObject;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
+import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 public class TrustNetworkDO implements DomainObject{
 

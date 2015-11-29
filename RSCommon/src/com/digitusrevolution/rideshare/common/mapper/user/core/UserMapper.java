@@ -1,5 +1,8 @@
 package com.digitusrevolution.rideshare.common.mapper.user.core;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import com.digitusrevolution.rideshare.common.mapper.user.CityMapper;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
@@ -40,6 +43,22 @@ public class UserMapper {
 		CityEntity cityEntity = userEntity.getCity();
 		user.setCity(cityMapper.getCity(cityEntity));
 		return user;
+	}
+	
+	public Collection<User> getUsers(Collection<UserEntity> userEntities){
+		Collection<User> users = new LinkedList<>();
+		for (UserEntity userEntity : userEntities) {
+			users.add(getUser(userEntity));
+		}
+		return users;		
+	}
+	
+	public Collection<UserEntity> getuserEntities(Collection<User> users){
+		Collection<UserEntity> userEntities = new LinkedList<>();
+		for (User user : users) {
+			userEntities.add(getUserEntity(user));
+		}
+		return userEntities;		
 	}
 
 }

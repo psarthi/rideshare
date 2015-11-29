@@ -1,11 +1,10 @@
 package com.digitusrevolution.rideshare.common.mapper.user;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
-import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
-import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 public class RoleMapper {
 	
@@ -23,8 +22,7 @@ public class RoleMapper {
 	
 	public Collection<RoleEntity> getRoleEntities(Collection<Role> roles){
 
-		UserEntity userEntity = new UserEntity();
-		Collection<RoleEntity> roleEntities = userEntity.getRoles();
+		Collection<RoleEntity> roleEntities = new ArrayList<>();
 		for (Role role : roles) {
 			roleEntities.add(getRoleEntity(role));
 		}
@@ -33,8 +31,7 @@ public class RoleMapper {
 
 	public Collection<Role> getRoles(Collection<RoleEntity> roleEntities){
 
-		User user = new User();
-		Collection<Role> roles = user.getRoles();
+		Collection<Role> roles = new ArrayList<>();
 		for (RoleEntity roleEntity : roleEntities) {
 			roles.add(getRole(roleEntity));
 		}

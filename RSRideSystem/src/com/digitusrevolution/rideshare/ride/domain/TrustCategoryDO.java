@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.ride.domain;
 
 import com.digitusrevolution.rideshare.common.DomainObject;
+import com.digitusrevolution.rideshare.common.mapper.ride.TrustCategoryMapper;
 import com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 
@@ -42,14 +43,16 @@ public class TrustCategoryDO implements DomainObject{
 
 	@Override
 	public void mapDomainModelToDataModel() {
-		trustCategoryEntity.setName(trustCategory.getName());
+		
+		TrustCategoryMapper trustCategoryMapper = new TrustCategoryMapper();
+		trustCategoryEntity = trustCategoryMapper.getTrustCategoryEntity(trustCategory);
 		
 	}
 
 	@Override
 	public void mapDataModelToDomainModel() {
-		trustCategory.setName(trustCategoryEntity.getName());
-		
+		TrustCategoryMapper trustCategoryMapper = new TrustCategoryMapper();
+		trustCategory = trustCategoryMapper.getTrustCategory(trustCategoryEntity);
 	}
 
 	@Override

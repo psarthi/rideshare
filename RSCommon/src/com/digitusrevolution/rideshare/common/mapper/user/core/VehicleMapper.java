@@ -1,10 +1,9 @@
 package com.digitusrevolution.rideshare.common.mapper.user.core;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
-import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
-import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 
 public class VehicleMapper {
@@ -26,8 +25,7 @@ public class VehicleMapper {
 	
 	public Collection<VehicleEntity> getVehicleEntities(Collection<Vehicle> vehicles){
 		
-		UserEntity userEntity = new UserEntity();
-		Collection<VehicleEntity> vehicleEntities = userEntity.getVehicles();
+		Collection<VehicleEntity> vehicleEntities = new LinkedList<>();
 		for (Vehicle vehicle : vehicles) {
 			vehicleEntities.add(getVehicleEntity(vehicle));
 		}
@@ -36,8 +34,8 @@ public class VehicleMapper {
 
 
 	public Collection<Vehicle> getVehicles(Collection<VehicleEntity> vehicleEntities){
-		User user = new User();
-		Collection<Vehicle> vehicles = user.getVehicles();
+		
+		Collection<Vehicle> vehicles = new LinkedList<>();
 		for (VehicleEntity vehicleEntity : vehicleEntities) {
 			vehicles.add(getVehicle(vehicleEntity));	
 		}
