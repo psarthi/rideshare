@@ -50,9 +50,9 @@ public class RideEntity {
 	private String status;
 	@ManyToOne
 	private VehicleEntity vehicle;
-	@ManyToOne
+	@ManyToOne(cascade=CascadeType.ALL)
 	private DriverEntity driver;
-	@ManyToMany
+	@ManyToMany(cascade=CascadeType.ALL)
 	private Collection<PassengerEntity> passengers = new ArrayList<PassengerEntity>();
 	@OneToMany(mappedBy="ride")
 	private Collection<BillEntity> bills = new ArrayList<BillEntity>();

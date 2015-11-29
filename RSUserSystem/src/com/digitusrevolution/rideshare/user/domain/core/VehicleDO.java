@@ -28,7 +28,6 @@ public class VehicleDO implements DomainObject{
 	public void setVehicle(Vehicle vehicle) {
 		this.vehicle = vehicle;
 		mapDomainModelToDataModel();
-		mapChildDomainModelToDataModel();
 	}
 
 	public VehicleEntity getVehicleEntity() {

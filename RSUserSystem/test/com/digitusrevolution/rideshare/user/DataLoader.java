@@ -11,15 +11,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.engine.internal.Versioning;
 
 import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
+import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
+import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.domain.CityDomainService;
 import com.digitusrevolution.rideshare.user.domain.RoleDomainService;
+import com.digitusrevolution.rideshare.user.domain.VehicleCategoryDomainService;
+import com.digitusrevolution.rideshare.user.domain.VehicleSubCategoryDomainService;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDomainService;
 import com.digitusrevolution.rideshare.user.domain.core.VehicleDomainService;
@@ -51,6 +56,8 @@ public class DataLoader {
 			dataLoader.loadCity();
 			dataLoader.loadRole();
 			dataLoader.loadUser();
+			dataLoader.loadVehicleCategory();
+			dataLoader.loadVehicleSubCategory();
 			dataLoader.loadVehicle();
 			
 			transation.commit();
@@ -139,6 +146,30 @@ public class DataLoader {
 		
 	}
 	
+	public void loadVehicleCategory(){
+		VehicleCategory vehicleCategory = new VehicleCategory();
+		vehicleCategory.setName("Car");
+		VehicleCategoryDomainService vehicleCategoryDomainService = new VehicleCategoryDomainService();
+		vehicleCategoryDomainService.create(vehicleCategory);
+	}
+	
+	public void loadVehicleSubCategory(){
+		VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
+		vehicleSubCategory.setName("Sedan");
+		vehicleSubCategory.setAirConditioner(true);
+		VehicleSubCategoryDomainService vehicleSubCategoryDomainService = new VehicleSubCategoryDomainService();
+		vehicleSubCategoryDomainService.create(vehicleSubCategory);
+		
+		VehicleCategoryDomainService vehicleCategoryDomainService = new VehicleCategoryDomainService();
+		VehicleCategory vehicleCategory = new VehicleCategory();
+		vehicleCategory = vehicleCategoryDomainService.get(1);
+		vehicleSubCategory = vehicleSubCategoryDomainService.get(1);
+		
+		vehicleCategory.getSubCategories().add(vehicleSubCategory);
+		vehicleCategoryDomainService.update(vehicleCategory);
+	}
+
+		
 	public void loadVehicle(){
 		
 		UserDomainService userDomainService = new UserDomainService();
@@ -148,6 +179,16 @@ public class DataLoader {
 		Vehicle vehicle = new Vehicle();
 		RoleDomainService roleDomainService = new RoleDomainService();
 		Role role = roleDomainService.get("Driver");
+		VehicleCategory vehicleCategory = new VehicleCategory();
+		VehicleCategoryDomainService vehicleCategoryDomainService = new VehicleCategoryDomainService();
+		vehicleCategory = vehicleCategoryDomainService.get(1);
+		
+		VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
+		VehicleSubCategoryDomainService vehicleSubCategoryDomainService = new VehicleSubCategoryDomainService();
+		vehicleSubCategory = vehicleSubCategoryDomainService.get(1);
+		
+		vehicle.setVehicleCategory(vehicleCategory);
+		vehicle.setVehicleSubCategory(vehicleSubCategory);
 		
 		for (int i=0;i<2;i++){
 			int id = vehicleDomainService.create(vehicle);
