@@ -8,7 +8,7 @@ public class Vehicle {
 
 	private int id;
 	private VehicleCategory vehicleCategory;
-	private VehicleSubCategory subCategory;
+	private VehicleSubCategory vehicleSubCategory;
 	private Photo photo;
 	
 	public int getId() {
@@ -19,12 +19,12 @@ public class Vehicle {
 		this.id = id;
 	}
 
-	public VehicleSubCategory getSubCategory() {
-		return subCategory;
+	public VehicleSubCategory getVehicleSubCategory() {
+		return vehicleSubCategory;
 	}
 
-	public void setSubCategory(VehicleSubCategory subCategory) {
-		this.subCategory = subCategory;
+	public void setVehicleSubCategory(VehicleSubCategory vehicleSubCategory) {
+		this.vehicleSubCategory = vehicleSubCategory;
 	}
 
 	public VehicleCategory getVehicleCategory() {

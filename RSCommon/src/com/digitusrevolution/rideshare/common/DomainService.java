@@ -8,6 +8,12 @@ public interface DomainService<T> {
 
 	T get(int id);
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 *  Don't try to call getUser to avoid duplicate code, else you would loose persistent 
+	 *  entity object which is required for lazy fetch
+	 */
 	T getChild(int id);
 
 	List<T> getAll();

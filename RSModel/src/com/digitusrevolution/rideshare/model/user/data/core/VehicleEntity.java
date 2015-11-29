@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.model.user.data.core;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,8 +22,8 @@ public class VehicleEntity {
 	@ManyToOne
 	private VehicleCategoryEntity vehicleCategory;
 	@ManyToOne
-	private VehicleSubCategoryEntity subCategory;
-	@OneToOne
+	private VehicleSubCategoryEntity vehicleSubCategory;
+	@OneToOne(cascade=CascadeType.ALL)
 	private PhotoEntity photo;
 	
 	public int getId() {
@@ -41,12 +42,12 @@ public class VehicleEntity {
 		this.vehicleCategory = vehicleCategory;
 	}
 
-	public VehicleSubCategoryEntity getSubCategory() {
-		return subCategory;
+	public VehicleSubCategoryEntity getVehicleSubCategory() {
+		return vehicleSubCategory;
 	}
 
-	public void setSubCategory(VehicleSubCategoryEntity subCategory) {
-		this.subCategory = subCategory;
+	public void setVehicleSubCategory(VehicleSubCategoryEntity vehicleSubCategory) {
+		this.vehicleSubCategory = vehicleSubCategory;
 	}
 
 	public PhotoEntity getPhoto() {
