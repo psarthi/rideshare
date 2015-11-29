@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.ride.domain;
+package com.digitusrevolution.rideshare.ride.domain.core;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 
-public class RideService {
+public class RideDomainService {
 
 	public List<Ride> searchRides(RideRequest rideRequest){
 

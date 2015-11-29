@@ -8,11 +8,12 @@ import javax.ws.rs.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.digitusrevolution.rideshare.common.DomainServicePKString;
 import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.user.data.RoleDAO;
 
-public class RoleDomainService {
+public class RoleDomainService implements DomainServicePKString<Role>{
 	
 	private static final Logger logger = LogManager.getLogger(RoleDomainService.class.getName());
 	

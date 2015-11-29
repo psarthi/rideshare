@@ -8,11 +8,12 @@ import javax.ws.rs.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.digitusrevolution.rideshare.common.DomainService;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.data.VehicleDAO;
 
-public class VehicleDomainService {
+public class VehicleDomainService implements DomainService<Vehicle>{
 	
 	private static final Logger logger = LogManager.getLogger(VehicleDomainService.class.getName());
 

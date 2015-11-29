@@ -8,11 +8,12 @@ import javax.ws.rs.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.digitusrevolution.rideshare.common.DomainService;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.user.data.UserDAO;
 
-public class UserDomainService {
+public class UserDomainService implements DomainService<User> {
 	
 	private static final Logger logger = LogManager.getLogger(UserDomainService.class.getName());
 
@@ -24,6 +25,7 @@ public class UserDomainService {
 		return true;
 	}
 	
+	@Override
 	public int create(User user){
 		logger.entry();
 		UserDO userDO = new UserDO();
@@ -34,6 +36,7 @@ public class UserDomainService {
 		return id;
 	}
 
+	@Override
 	public User get(int id){
 		UserDAO userDAO = new UserDAO();
 		UserDO userDO = new UserDO();
@@ -46,6 +49,7 @@ public class UserDomainService {
 		return userDO.getUser();
 	}
 	
+	@Override
 	public User getChild(int id){
 		
 	 // Don't try to call getUser to avoid duplicate code, else you would loose persistent entity object which is required for lazy fetch 
@@ -62,6 +66,7 @@ public class UserDomainService {
 		return userDO.getUser();
 	}
 	
+	@Override
 	public List<User> getAll(){
 		UserDAO userDAO = new UserDAO();
 		List<UserEntity> userEntities = new ArrayList<>();
@@ -75,6 +80,7 @@ public class UserDomainService {
 		return users;
 	}
 	
+	@Override
 	public void update(User user){
 		UserDAO userDAO = new UserDAO();
 		UserDO userDO = new UserDO();
@@ -82,11 +88,11 @@ public class UserDomainService {
 		userDAO.update(userDO.getUserEntity());
 	}
 	
+	@Override
 	public void delete(User user){
 		UserDAO userDAO = new UserDAO();
 		UserDO userDO = new UserDO();
 		userDO.setUser(user);
 		userDAO.delete(userDO.getUserEntity());
 	}
-
 }

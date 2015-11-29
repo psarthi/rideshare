@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
-import com.digitusrevolution.rideshare.model.ride.data.PointEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
@@ -31,8 +30,8 @@ public class RideRequest {
 	private boolean ridePreference;
 	private Collection<Ride> preferredRides = new ArrayList<Ride>();
 	private Ride acceptedRide;
-	private PointEntity ridePickupPoint;
-	private PointEntity rideDropPoint;
+	private Point ridePickupPoint;
+	private Point rideDropPoint;
 	
 	public int getId() {
 		return id;
@@ -136,17 +135,18 @@ public class RideRequest {
 	public void setAcceptedRide(Ride acceptedRide) {
 		this.acceptedRide = acceptedRide;
 	}
-	public PointEntity getRidePickupPoint() {
+	public Point getRidePickupPoint() {
 		return ridePickupPoint;
 	}
-	public void setRidePickupPoint(PointEntity ridePickupPoint) {
+	public void setRidePickupPoint(Point ridePickupPoint) {
 		this.ridePickupPoint = ridePickupPoint;
 	}
-	public PointEntity getRideDropPoint() {
+	public Point getRideDropPoint() {
 		return rideDropPoint;
 	}
-	public void setRideDropPoint(PointEntity rideDropPoint) {
+	public void setRideDropPoint(Point rideDropPoint) {
 		this.rideDropPoint = rideDropPoint;
-	}	
+	}
 
+	
 }
