@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.user.domain.core;
 
 import com.digitusrevolution.rideshare.common.DomainObject;
+import com.digitusrevolution.rideshare.common.mapper.user.core.VehicleMapper;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 
@@ -33,12 +34,14 @@ public class VehicleDO implements DomainObject{
 	}
 	@Override
 	public void mapDomainModelToDataModel(){
-		vehicleEntity.setId(vehicle.getId());	
+		VehicleMapper vehicleMapper = new VehicleMapper();
+		vehicleEntity = vehicleMapper.getVehicleEntity(vehicle);
 	}
 	
 	@Override
 	public void mapDataModelToDomainModel(){
-		vehicle.setId(vehicleEntity.getId());
+		VehicleMapper vehicleMapper = new VehicleMapper();
+		vehicle = vehicleMapper.getVehicle(vehicleEntity);
 	}
 
 	@Override

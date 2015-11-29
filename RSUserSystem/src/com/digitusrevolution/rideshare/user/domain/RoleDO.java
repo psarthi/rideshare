@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.user.domain;
 
 import com.digitusrevolution.rideshare.common.DomainObject;
+import com.digitusrevolution.rideshare.common.mapper.user.RoleMapper;
 import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 
@@ -37,14 +38,14 @@ public class RoleDO implements DomainObject{
 
 	@Override
 	public void mapDomainModelToDataModel() {
-		roleEntity.setName(role.getName());
-
+		RoleMapper roleMapper = new RoleMapper();
+		roleEntity = roleMapper.getRoleEntity(role);
 	}
 
 	@Override
 	public void mapDataModelToDomainModel() {
-		role.setName(roleEntity.getName());
-
+		RoleMapper roleMapper = new RoleMapper();
+		role = roleMapper.getRole(roleEntity);
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.user.domain;
 
 import com.digitusrevolution.rideshare.common.DomainObject;
+import com.digitusrevolution.rideshare.common.mapper.user.CityMapper;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 
@@ -34,14 +35,14 @@ public class CityDO implements DomainObject{
 
 	@Override
 	public void mapDomainModelToDataModel() {
-		cityEntity.setId(city.getId());
-		cityEntity.setName(city.getName());
+		CityMapper cityMapper = new CityMapper();
+		cityEntity = cityMapper.getCityEntity(city);
 	}
 
 	@Override
 	public void mapDataModelToDomainModel() {
-		city.setId(cityEntity.getId());
-		city.setName(cityEntity.getName());
+		CityMapper cityMapper = new CityMapper();
+		city = cityMapper.getCity(cityEntity);
 	}
 
 	@Override
