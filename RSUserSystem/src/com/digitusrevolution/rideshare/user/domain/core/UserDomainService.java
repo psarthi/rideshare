@@ -16,9 +16,13 @@ import com.digitusrevolution.rideshare.user.data.UserDAO;
 public class UserDomainService implements DomainService<User> {
 	
 	private static final Logger logger = LogManager.getLogger(UserDomainService.class.getName());
+	private final UserDAO userDAO;
+	
+	public UserDomainService() {
+		userDAO = new UserDAO();
+	}
 
 	public boolean isExist(String userEmail){
-		UserDAO userDAO = new UserDAO();
 		if (userDAO.getUserByEmail(userEmail)==null){
 			return false;			
 		}
@@ -29,7 +33,6 @@ public class UserDomainService implements DomainService<User> {
 	public int create(User user){
 		logger.entry();
 		UserDO userDO = new UserDO();
-		UserDAO userDAO = new UserDAO();
 		userDO.setUser(user);
 		int id = userDAO.create(userDO.getUserEntity());
 		logger.exit();
@@ -38,7 +41,6 @@ public class UserDomainService implements DomainService<User> {
 
 	@Override
 	public User get(int id){
-		UserDAO userDAO = new UserDAO();
 		UserDO userDO = new UserDO();
 		UserEntity userEntity = new UserEntity();
 		userEntity = userDAO.get(id);
@@ -54,7 +56,6 @@ public class UserDomainService implements DomainService<User> {
 		
 	 // Don't try to call getUser to avoid duplicate code, else you would loose persistent entity object which is required for lazy fetch 
 
-		UserDAO userDAO = new UserDAO();
 		UserDO userDO = new UserDO();
 		UserEntity userEntity = new UserEntity();
 		userEntity = userDAO.get(id);
@@ -68,7 +69,6 @@ public class UserDomainService implements DomainService<User> {
 	
 	@Override
 	public List<User> getAll(){
-		UserDAO userDAO = new UserDAO();
 		List<UserEntity> userEntities = new ArrayList<>();
 		List<User> users = new ArrayList<>();
 		userEntities = userDAO.getAll();
@@ -82,7 +82,6 @@ public class UserDomainService implements DomainService<User> {
 	
 	@Override
 	public void update(User user){
-		UserDAO userDAO = new UserDAO();
 		UserDO userDO = new UserDO();
 		userDO.setUser(user);
 		userDAO.update(userDO.getUserEntity());
@@ -90,7 +89,6 @@ public class UserDomainService implements DomainService<User> {
 	
 	@Override
 	public void delete(User user){
-		UserDAO userDAO = new UserDAO();
 		UserDO userDO = new UserDO();
 		userDO.setUser(user);
 		userDAO.delete(userDO.getUserEntity());

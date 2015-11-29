@@ -6,7 +6,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.DomainObject;
-import com.digitusrevolution.rideshare.common.DomainService;
 import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
@@ -152,8 +151,10 @@ public class UserDO implements DomainObject {
 	}
 
 	public void addVehicle(Vehicle vehicle){
+		logger.entry();
 		UserDomainService userDomainService = new UserDomainService();
 		user.getVehicles().add(vehicle);
 		userDomainService.update(user);
+		logger.exit();
 	}
 }

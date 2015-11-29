@@ -16,11 +16,15 @@ import com.digitusrevolution.rideshare.user.data.RoleDAO;
 public class RoleDomainService implements DomainServicePKString<Role>{
 	
 	private static final Logger logger = LogManager.getLogger(RoleDomainService.class.getName());
+	private final RoleDAO roleDAO;
+	
+	public RoleDomainService() {
+		roleDAO = new RoleDAO();
+	}
 	
 	public String create(Role role){
 		logger.entry();
 		RoleDO roleDO = new RoleDO();
-		RoleDAO roleDAO = new RoleDAO();
 		roleDO.setRole(role);
 		String id = roleDAO.create(roleDO.getRoleEntity());
 		logger.exit();
@@ -29,7 +33,6 @@ public class RoleDomainService implements DomainServicePKString<Role>{
 
 	public Role get(String id){
 		RoleDO roleDO = new RoleDO();
-		RoleDAO roleDAO = new RoleDAO();
 		RoleEntity roleEntity = new RoleEntity();
 		roleEntity = roleDAO.get(id);
 		if (roleEntity == null){
@@ -44,7 +47,6 @@ public class RoleDomainService implements DomainServicePKString<Role>{
 	 // Don't try to call getUser to avoid duplicate code, else you would loose persistent entity object which is required for lazy fetch 
 
 		RoleDO roleDO = new RoleDO();
-		RoleDAO roleDAO = new RoleDAO();
 		RoleEntity roleEntity = new RoleEntity();
 		roleEntity = roleDAO.get(id);
 		if (roleEntity == null){
@@ -56,7 +58,6 @@ public class RoleDomainService implements DomainServicePKString<Role>{
 	}
 	
 	public List<Role> getAll(){
-		RoleDAO roleDAO = new RoleDAO();
 		List<RoleEntity> roleEntities = new ArrayList<>();
 		List<Role> roles = new ArrayList<>();
 		roleEntities = roleDAO.getAll();
@@ -70,14 +71,12 @@ public class RoleDomainService implements DomainServicePKString<Role>{
 	
 	public void update(Role role){
 		RoleDO roleDO = new RoleDO();
-		RoleDAO roleDAO = new RoleDAO();
 		roleDO.setRole(role);
 		roleDAO.update(roleDO.getRoleEntity());
 	}
 	
 	public void delete(Role role){
 		RoleDO roleDO = new RoleDO();
-		RoleDAO roleDAO = new RoleDAO();
 		roleDO.setRole(role);
 		roleDAO.delete(roleDO.getRoleEntity());
 	}
