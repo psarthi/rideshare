@@ -6,7 +6,7 @@ import java.util.Map;
 public class Route {
 	
 	private int id;
-	//Integer will hold sequence of points
+	//Integer will hold sequence of points, which is key here and point is value
 	private Map<Integer,Point> points = new HashMap<Integer, Point>();
 
 	public int getId() {

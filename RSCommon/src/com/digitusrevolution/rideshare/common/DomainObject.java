@@ -6,8 +6,7 @@ public interface DomainObject {
 
 	void mapDataModelToDomainModel();
 	
-	void mapChildDataModelToDomainModel();
-	
 	void mapChildDomainModelToDataModel();
 
+	void mapChildDataModelToDomainModel();
 }

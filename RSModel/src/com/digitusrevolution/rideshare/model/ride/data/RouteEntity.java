@@ -1,7 +1,7 @@
 package com.digitusrevolution.rideshare.model.ride.data;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
@@ -16,15 +16,15 @@ public class RouteEntity {
 	@Embedded
 	@ElementCollection
 	@JoinTable(name="route_point",joinColumns=@JoinColumn(name="ride_id"))
-	private Collection<RoutePointEntity> routePoints = new ArrayList<RoutePointEntity>();
+	//Need to find way to change column name of value to sequence
+	private Map<Integer,PointEntity> points = new HashMap<Integer, PointEntity>();
 
-	public Collection<RoutePointEntity> getRoutePoints() {
-		return routePoints;
+	public Map<Integer, PointEntity> getPoints() {
+		return points;
 	}
 
-	public void setRoutePoints(Collection<RoutePointEntity> routePoints) {
-		this.routePoints = routePoints;
-	}
-
+	public void setPoints(Map<Integer, PointEntity> points) {
+		this.points = points;
+	}	
 	
 }

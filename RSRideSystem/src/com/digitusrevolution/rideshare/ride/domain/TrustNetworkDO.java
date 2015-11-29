@@ -3,7 +3,12 @@ package com.digitusrevolution.rideshare.ride.domain;
 import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.DomainObject;
+import com.digitusrevolution.rideshare.common.mapper.ride.TrustCategoryMapper;
+import com.digitusrevolution.rideshare.common.mapper.ride.TrustNetworkMapper;
+import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
+import com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
@@ -43,30 +48,43 @@ public class TrustNetworkDO implements DomainObject{
 		mapDataModelToDomainModel();
 	}
 
-
-
 	@Override
 	public void mapDomainModelToDataModel() {
-		trustNetworkEntity.setId(trustNetwork.getId());
-
+		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
+		trustNetworkEntity = trustNetworkMapper.getTrustNetworkEntity(trustNetwork);
 	}
 
 	@Override
 	public void mapDataModelToDomainModel() {
-		trustNetwork.setId(trustNetworkEntity.getId());
-
-	}
-
-	@Override
-	public void mapChildDataModelToDomainModel() {
-		// TODO Auto-generated method stub
-
+		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
+		trustNetwork = trustNetworkMapper.getTrustNetwork(trustNetworkEntity);
 	}
 
 	@Override
 	public void mapChildDomainModelToDataModel() {
-		// TODO Auto-generated method stub
 
+			TrustCategoryMapper trustCategoryMapper = new TrustCategoryMapper();
+			Collection<TrustCategory> trustCategories = trustNetwork.getTrustCategories();
+			trustNetworkEntity.setTrustCategories(trustCategoryMapper.getTrustCategoryEntities(trustCategories));
+			
+			UserMapper userMapper = new UserMapper();
+			Collection<User> users = trustNetwork.getFriends();
+			trustNetworkEntity.setFriends(userMapper.getuserEntities(users));
+	
 	}
+
+	@Override
+	public void mapChildDataModelToDomainModel() {
+
+		TrustCategoryMapper trustCategoryMapper = new TrustCategoryMapper();
+		Collection<TrustCategoryEntity> trustCategoryEntities = trustNetworkEntity.getTrustCategories();
+		trustNetwork.setTrustCategories(trustCategoryMapper.getTrustCategories(trustCategoryEntities));
+		
+		UserMapper userMapper = new UserMapper();
+		Collection<UserEntity> userEntities = trustNetworkEntity.getFriends();
+		trustNetwork.setFriends(userMapper.getUsers(userEntities));
+		
+	}
+
 
 }

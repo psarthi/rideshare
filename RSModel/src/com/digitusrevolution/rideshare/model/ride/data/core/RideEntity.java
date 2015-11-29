@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,18 +34,18 @@ public class RideEntity {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	private Date dateTime;
-	@OneToOne
+	@OneToOne(cascade=CascadeType.ALL)
 	private PointEntity startPoint;
-	@OneToOne
+	@OneToOne(cascade=CascadeType.ALL)
 	private PointEntity endPoint;
 	private int seatOffered;
 	private int luggageCapacityOffered;
-	@OneToOne
+	@OneToOne(cascade=CascadeType.ALL)
 	private TrustNetworkEntity trustNetwork;
 	@Embedded
 	private RouteEntity route;
 	private boolean recur;
-	@OneToOne
+	@OneToOne(cascade=CascadeType.ALL)
 	private RecurringDetailEntity recurringDetail;
 	private String status;
 	@ManyToOne

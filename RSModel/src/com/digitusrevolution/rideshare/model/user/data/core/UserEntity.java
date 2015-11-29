@@ -43,7 +43,7 @@ public class UserEntity {
 	private String mobileNumber;
 	private String email;
 	private String password;
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne
 	private CityEntity city;
 	@OneToOne(cascade=CascadeType.ALL)
 	private PhotoEntity photo;
@@ -55,7 +55,7 @@ public class UserEntity {
 	@ManyToMany
 	@JoinTable(name="user_friend",joinColumns=@JoinColumn(name="user_id"))
 	private Collection<UserEntity> friends = new ArrayList<UserEntity>();
-	@ManyToMany(cascade=CascadeType.ALL)
+	@ManyToMany
 	@JoinTable(name="user_role",joinColumns=@JoinColumn(name="user_id"))
 	private Collection<RoleEntity> roles = new ArrayList<RoleEntity>();
 	@OneToMany
