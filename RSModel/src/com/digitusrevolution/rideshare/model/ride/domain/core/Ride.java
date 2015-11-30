@@ -63,7 +63,7 @@ public class Ride {
 	public void setLuggageCapacityOffered(int luggageCapacityOffered) {
 		this.luggageCapacityOffered = luggageCapacityOffered;
 	}
-	public boolean isRecur() {
+	public boolean getRecur() {
 		return recur;
 	}
 	public void setRecur(boolean recur) {

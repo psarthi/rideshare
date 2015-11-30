@@ -104,5 +104,5 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		}
 		return userEntities;		
 	}
-	
+		
 }
