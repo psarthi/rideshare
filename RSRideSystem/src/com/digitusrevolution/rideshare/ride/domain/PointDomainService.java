@@ -8,7 +8,7 @@ import javax.ws.rs.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.digitusrevolution.rideshare.common.DomainService;
+import com.digitusrevolution.rideshare.common.inf.DomainService;
 import com.digitusrevolution.rideshare.model.ride.data.PointEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.ride.data.PointDAO;
@@ -57,7 +57,7 @@ public class PointDomainService implements DomainService<Point>{
 			throw new NotFoundException("No Data found with id: "+id);
 		}
 		pointDO.setPointEntity(pointEntity);
-		pointDO.mapChildDataModelToDomainModel();
+		pointDO.fetchChild();
 		return pointDO.getPoint();
 
 	}

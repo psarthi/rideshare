@@ -1,6 +1,6 @@
 package com.digitusrevolution.rideshare.user.domain;
 
-import com.digitusrevolution.rideshare.common.DomainObject;
+import com.digitusrevolution.rideshare.common.inf.DomainObject;
 import com.digitusrevolution.rideshare.common.mapper.user.CityMapper;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.domain.City;
@@ -9,10 +9,12 @@ public class CityDO implements DomainObject{
 	
 	private City city;
 	private CityEntity cityEntity;
+	private CityMapper cityMapper;
 	
 	public CityDO() {
 		city = new City();
-		cityEntity = new CityEntity();		
+		cityEntity = new CityEntity();
+		cityMapper = new CityMapper();
 	}
 
 	public City getCity() {
@@ -21,7 +23,8 @@ public class CityDO implements DomainObject{
 
 	public void setCity(City city) {
 		this.city = city;
-		mapDomainModelToDataModel();
+		cityEntity = cityMapper.getEntity(city);
+		
 	}
 
 	public CityEntity getCityEntity() {
@@ -30,32 +33,14 @@ public class CityDO implements DomainObject{
 
 	public void setCityEntity(CityEntity cityEntity) {
 		this.cityEntity = cityEntity;
-		mapDataModelToDomainModel();
+		city = cityMapper.getDomainModel(cityEntity);
 	}
 
 	@Override
-	public void mapDomainModelToDataModel() {
-		CityMapper cityMapper = new CityMapper();
-		cityEntity = cityMapper.getCityEntity(city);
-	}
-
-	@Override
-	public void mapDataModelToDomainModel() {
-		CityMapper cityMapper = new CityMapper();
-		city = cityMapper.getCity(cityEntity);
-	}
-
-	@Override
-	public void mapChildDataModelToDomainModel() {
+	public void fetchChild() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
-	public void mapChildDomainModelToDataModel() {
-		// TODO Auto-generated method stub
-		
-	}
-	
 
 }

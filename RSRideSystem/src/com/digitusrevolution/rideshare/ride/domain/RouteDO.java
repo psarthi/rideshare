@@ -1,6 +1,6 @@
 package com.digitusrevolution.rideshare.ride.domain;
 
-import com.digitusrevolution.rideshare.common.DomainObject;
+import com.digitusrevolution.rideshare.common.inf.DomainObject;
 import com.digitusrevolution.rideshare.common.mapper.ride.RouteMapper;
 import com.digitusrevolution.rideshare.model.ride.data.RouteEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
@@ -9,11 +9,12 @@ public class RouteDO implements DomainObject{
 	
 	private Route route;
 	private RouteEntity routeEntity;
-	
+	private RouteMapper routeMapper;
 	
 	public RouteDO() {
 		route = new Route();
 		routeEntity = new RouteEntity();
+		routeMapper = new RouteMapper();
 	}
 	
 	
@@ -24,7 +25,7 @@ public class RouteDO implements DomainObject{
 
 	public void setRoute(Route route) {
 		this.route = route;
-		mapDomainModelToDataModel();
+		routeEntity = routeMapper.getEntity(route);
 	}
 
 
@@ -35,32 +36,11 @@ public class RouteDO implements DomainObject{
 
 	public void setRouteEntity(RouteEntity routeEntity) {
 		this.routeEntity = routeEntity;
-		mapDataModelToDomainModel();
-	}
-
-
-	@Override
-	public void mapDomainModelToDataModel() {
-		RouteMapper routeMapper = new RouteMapper();
-		routeEntity = routeMapper.getRouteEntity(route);
-		
+		route = routeMapper.getDomainModel(routeEntity);
 	}
 
 	@Override
-	public void mapDataModelToDomainModel() {
-		
-		RouteMapper routeMapper = new RouteMapper();
-		route = routeMapper.getRoute(routeEntity);
-	}
-
-	@Override
-	public void mapChildDomainModelToDataModel() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mapChildDataModelToDomainModel() {
+	public void fetchChild() {
 		// TODO Auto-generated method stub
 		
 	}

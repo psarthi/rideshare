@@ -8,7 +8,7 @@ import javax.ws.rs.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.digitusrevolution.rideshare.common.DomainServicePKString;
+import com.digitusrevolution.rideshare.common.inf.DomainServicePKString;
 import com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.ride.data.TrustCategoryDAO;
@@ -56,7 +56,7 @@ public class TrustCategoryDomainService implements DomainServicePKString<TrustCa
 			throw new NotFoundException("No Data found with id: "+id);
 		}
 		trustCategoryDO.setTrustCategoryEntity(trustCategoryEntity);
-		trustCategoryDO.mapChildDataModelToDomainModel();
+		trustCategoryDO.fetchChild();
 		return trustCategoryDO.getTrustCategory();
 	}
 

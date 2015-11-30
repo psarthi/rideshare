@@ -8,7 +8,7 @@ import javax.ws.rs.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.digitusrevolution.rideshare.common.DomainService;
+import com.digitusrevolution.rideshare.common.inf.DomainService;
 import com.digitusrevolution.rideshare.model.user.data.VehicleCategoryEntity;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.user.data.VehicleCategoryDAO;
@@ -55,7 +55,7 @@ public class VehicleCategoryDomainService implements DomainService<VehicleCatego
 			throw new NotFoundException("No Data found with id: "+id);
 		}
 		vehicleCategoryDO.setVehicleCategoryEntity(vehicleCategoryEntity);
-		vehicleCategoryDO.mapChildDataModelToDomainModel();
+		vehicleCategoryDO.fetchChild();
 		return vehicleCategoryDO.getVehicleCategory();
 	}
 

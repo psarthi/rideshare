@@ -1,6 +1,6 @@
 package com.digitusrevolution.rideshare.user.domain;
 
-import com.digitusrevolution.rideshare.common.DomainObject;
+import com.digitusrevolution.rideshare.common.inf.DomainObject;
 import com.digitusrevolution.rideshare.common.mapper.user.VehicleSubCategoryMapper;
 import com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
@@ -9,10 +9,12 @@ public class VehicleSubCategoryDO implements DomainObject{
 	
 	private VehicleSubCategory vehicleSubCategory;
 	private VehicleSubCategoryEntity vehicleSubCategoryEntity;
+	private VehicleSubCategoryMapper vehicleSubCategoryMapper;
 	
 	public VehicleSubCategoryDO() {
 		vehicleSubCategory = new VehicleSubCategory();
 		vehicleSubCategoryEntity = new VehicleSubCategoryEntity();
+		vehicleSubCategoryMapper = new VehicleSubCategoryMapper();
 	}
 
 	public VehicleSubCategory getVehicleSubCategory() {
@@ -22,7 +24,7 @@ public class VehicleSubCategoryDO implements DomainObject{
 
 	public void setVehicleSubCategory(VehicleSubCategory vehicleSubCategory) {
 		this.vehicleSubCategory = vehicleSubCategory;
-		mapDomainModelToDataModel();
+		vehicleSubCategoryEntity = vehicleSubCategoryMapper.getEntity(vehicleSubCategory);
 	}
 
 
@@ -33,33 +35,12 @@ public class VehicleSubCategoryDO implements DomainObject{
 
 	public void setVehicleSubCategoryEntity(VehicleSubCategoryEntity vehicleSubCategoryEntity) {
 		this.vehicleSubCategoryEntity = vehicleSubCategoryEntity;
-		mapDataModelToDomainModel();
-	}
-
-
-	@Override
-	public void mapDomainModelToDataModel() {
-		VehicleSubCategoryMapper vehicleSubCategoryMapper = new VehicleSubCategoryMapper();
-		vehicleSubCategoryEntity = vehicleSubCategoryMapper.getVehicleSubCategoryEntity(vehicleSubCategory);
+		vehicleSubCategory = vehicleSubCategoryMapper.getDomainModel(vehicleSubCategoryEntity);
 	}
 
 	@Override
-	public void mapDataModelToDomainModel() {
-		VehicleSubCategoryMapper vehicleSubCategoryMapper = new VehicleSubCategoryMapper();
-		vehicleSubCategory = vehicleSubCategoryMapper.getVehicleSubCategory(vehicleSubCategoryEntity);
-		
-	}
-
-	@Override
-	public void mapChildDomainModelToDataModel() {
+	public void fetchChild() {
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public void mapChildDataModelToDomainModel() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

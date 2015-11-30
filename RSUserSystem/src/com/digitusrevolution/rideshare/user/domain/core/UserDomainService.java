@@ -8,7 +8,7 @@ import javax.ws.rs.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.digitusrevolution.rideshare.common.DomainService;
+import com.digitusrevolution.rideshare.common.inf.DomainService;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.user.data.UserDAO;
@@ -63,7 +63,7 @@ public class UserDomainService implements DomainService<User> {
 			throw new NotFoundException("No Data found with id: "+id);
 		}
 		userDO.setUserEntity(userEntity);		
-		userDO.mapChildDataModelToDomainModel();
+		userDO.fetchChild();
 		return userDO.getUser();
 	}
 	

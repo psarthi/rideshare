@@ -8,7 +8,7 @@ import javax.ws.rs.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.digitusrevolution.rideshare.common.DomainService;
+import com.digitusrevolution.rideshare.common.inf.DomainService;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.user.data.CityDAO;
@@ -53,7 +53,7 @@ public class CityDomainService implements DomainService<City>{
 			throw new NotFoundException("No Data found with id: "+id);
 		}
 		cityDO.setCityEntity(cityEntity);		
-		cityDO.mapChildDataModelToDomainModel();
+		cityDO.fetchChild();
 		return cityDO.getCity();
 	}
 	

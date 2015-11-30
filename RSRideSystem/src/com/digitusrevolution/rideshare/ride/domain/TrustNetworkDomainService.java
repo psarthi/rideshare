@@ -8,7 +8,7 @@ import javax.ws.rs.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.digitusrevolution.rideshare.common.DomainService;
+import com.digitusrevolution.rideshare.common.inf.DomainService;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.ride.data.TrustNetworkDAO;
@@ -57,7 +57,7 @@ public class TrustNetworkDomainService implements DomainService<TrustNetwork>{
 			throw new NotFoundException("No Data found with id: "+id);
 		}
 		trustNetworkDO.setTrustNetworkEntity(trustNetworkEntity);
-		trustNetworkDO.mapChildDataModelToDomainModel();
+		trustNetworkDO.fetchChild();
 		return trustNetworkDO.getTrustNetwork();
 
 	}

@@ -11,7 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.engine.internal.Versioning;
 
 import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.model.user.domain.City;
@@ -86,21 +85,15 @@ public class DataLoader {
 		CityDomainService cityDomainService = new CityDomainService();
 		City city = new City();
 		city.setName("Bangalore");
-		int id;
-		id = cityDomainService.create(city);
-		System.out.println("City ID: "+id);
+		cityDomainService.create(city);
 		city.setName("Chennai");
-		id = cityDomainService.create(city);
-		System.out.println("City ID: "+id);
+		cityDomainService.create(city);
 		city.setName("Mumbai");
-		id = cityDomainService.create(city);
-		System.out.println("City ID: "+id);
+		cityDomainService.create(city);
 		city.setName("New Delhi");
-		id = cityDomainService.create(city);
-		System.out.println("City ID: "+id);
+		cityDomainService.create(city);
 		city.setName("Kolkata");
-		id = cityDomainService.create(city);
-		System.out.println("City ID: "+id);
+		cityDomainService.create(city);
 		
 	}
 
@@ -190,6 +183,10 @@ public class DataLoader {
 		vehicle.setVehicleCategory(vehicleCategory);
 		vehicle.setVehicleSubCategory(vehicleSubCategory);
 		
+		Vehicle vehicle2 = new Vehicle();
+		vehicle2.setVehicleCategory(vehicleCategory);
+		vehicle2.setVehicleSubCategory(vehicleSubCategory);
+		
 		for (int i=0;i<2;i++){
 			int id = vehicleDomainService.create(vehicle);
 			vehicle = vehicleDomainService.get(id);
@@ -206,8 +203,7 @@ public class DataLoader {
 			if (user.getVehicles().size()==0){
 				user.getRoles().add(role);
 			}
-			userDO.setUser(user);
-			Vehicle vehicle2 = new Vehicle();			
+			userDO.setUser(user);			
 			userDO.addVehicle(vehicle2);
 		}
 		

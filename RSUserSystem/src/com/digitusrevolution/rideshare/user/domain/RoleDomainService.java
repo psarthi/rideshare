@@ -8,7 +8,7 @@ import javax.ws.rs.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.digitusrevolution.rideshare.common.DomainServicePKString;
+import com.digitusrevolution.rideshare.common.inf.DomainServicePKString;
 import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.user.data.RoleDAO;
@@ -53,7 +53,7 @@ public class RoleDomainService implements DomainServicePKString<Role>{
 			throw new NotFoundException("No Data found with id: "+id);
 		}
 		roleDO.setRoleEntity(roleEntity);
-		roleDO.mapChildDataModelToDomainModel();
+		roleDO.fetchChild();
 		return roleDO.getRole();
 	}
 	

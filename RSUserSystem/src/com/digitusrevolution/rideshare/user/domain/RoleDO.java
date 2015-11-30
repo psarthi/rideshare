@@ -1,6 +1,6 @@
 package com.digitusrevolution.rideshare.user.domain;
 
-import com.digitusrevolution.rideshare.common.DomainObject;
+import com.digitusrevolution.rideshare.common.inf.DomainObject;
 import com.digitusrevolution.rideshare.common.mapper.user.RoleMapper;
 import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
@@ -9,10 +9,12 @@ public class RoleDO implements DomainObject{
 
 	private Role role;
 	private RoleEntity roleEntity;
+	private RoleMapper roleMapper;
 
 	public RoleDO() {
 		role = new Role();
 		roleEntity = new RoleEntity();
+		roleMapper = new RoleMapper();
 	}
 
 	public Role getRole() {
@@ -22,7 +24,7 @@ public class RoleDO implements DomainObject{
 
 	public void setRole(Role role) {
 		this.role = role;
-		mapDomainModelToDataModel();
+		roleEntity = roleMapper.getEntity(role);
 	}
 
 	public RoleEntity getRoleEntity() {
@@ -32,31 +34,12 @@ public class RoleDO implements DomainObject{
 
 	public void setRoleEntity(RoleEntity roleEntity) {
 		this.roleEntity = roleEntity;
-		mapDataModelToDomainModel();
-	}
-
-
-	@Override
-	public void mapDomainModelToDataModel() {
-		RoleMapper roleMapper = new RoleMapper();
-		roleEntity = roleMapper.getRoleEntity(role);
+		role = roleMapper.getDomainModel(roleEntity);
 	}
 
 	@Override
-	public void mapDataModelToDomainModel() {
-		RoleMapper roleMapper = new RoleMapper();
-		role = roleMapper.getRole(roleEntity);
-	}
-
-	@Override
-	public void mapChildDataModelToDomainModel() {
+	public void fetchChild() {
 		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mapChildDomainModelToDataModel() {
-		// TODO Auto-generated method stub
-
+		
 	}
 }

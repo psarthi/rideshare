@@ -6,6 +6,8 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 
+import com.digitusrevolution.rideshare.common.inf.GenericDAO;
+
 public class GenericDAOImpl<T,ID extends Serializable> implements GenericDAO<T,ID> {
 
 	private final Class<T> entityClass;

@@ -8,7 +8,7 @@ import javax.ws.rs.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.digitusrevolution.rideshare.common.DomainService;
+import com.digitusrevolution.rideshare.common.inf.DomainService;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.data.VehicleDAO;
@@ -22,6 +22,7 @@ public class VehicleDomainService implements DomainService<Vehicle>{
 		vehicleDAO = new VehicleDAO();
 	}
 
+	@Override
 	public int create(Vehicle vehicle){
 		logger.entry();
 		VehicleDO vehicleDO = new VehicleDO();
@@ -31,6 +32,7 @@ public class VehicleDomainService implements DomainService<Vehicle>{
 		return id;
 	}
 
+	@Override
 	public Vehicle get(int id){
 		VehicleDO vehicleDO = new VehicleDO();
 		VehicleEntity vehicleEntity = new VehicleEntity();
@@ -42,6 +44,7 @@ public class VehicleDomainService implements DomainService<Vehicle>{
 		return vehicleDO.getVehicle();
 	}
 	
+	@Override
 	public Vehicle getChild(int id){
 		
 	 // Don't try to call getUser to avoid duplicate code, else you would loose persistent entity object which is required for lazy fetch 
@@ -53,10 +56,11 @@ public class VehicleDomainService implements DomainService<Vehicle>{
 			throw new NotFoundException("No Data found with id: "+id);
 		}
 		vehicleDO.setVehicleEntity(vehicleEntity);		
-		vehicleDO.mapChildDataModelToDomainModel();
+		vehicleDO.fetchChild();
 		return vehicleDO.getVehicle();
 	}
 	
+	@Override
 	public List<Vehicle> getAll(){
 		List<VehicleEntity> vehicleEntities = new ArrayList<>();
 		List<Vehicle> vehicles = new ArrayList<>();
@@ -69,12 +73,14 @@ public class VehicleDomainService implements DomainService<Vehicle>{
 		return vehicles;
 	}
 	
+	@Override
 	public void update(Vehicle vehicle){
 		VehicleDO vehicleDO = new VehicleDO();
 		vehicleDO.setVehicle(vehicle);
 		vehicleDAO.update(vehicleDO.getVehicleEntity());
 	}
 	
+	@Override
 	public void delete(Vehicle vehicle){
 		VehicleDO vehicleDO = new VehicleDO();
 		vehicleDO.setVehicle(vehicle);
