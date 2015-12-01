@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -40,7 +41,7 @@ public class RideRequestEntity {
 	private VehicleSubCategoryEntity vehicleSubCategory;
 	@OneToOne
 	private TrustNetworkEntity trustNetwork;
-	@Column(columnDefinition="varchar(255)")
+	@Enumerated(EnumType.STRING)
 	private Sex sexPreference;
 	private int seatRequired;
 	private int luggageCapacityRequired;
@@ -114,7 +115,7 @@ public class RideRequestEntity {
 	public void setPreferredRides(Collection<RideEntity> preferredRides) {
 		this.preferredRides = preferredRides;
 	}
-	public boolean isRidePreference() {
+	public boolean getRidePreference() {
 		return ridePreference;
 	}
 	public void setRidePreference(boolean ridePreference) {

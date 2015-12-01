@@ -123,7 +123,7 @@ public class RideRequest {
 	public void setPreferredRides(Collection<Ride> preferredRides) {
 		this.preferredRides = preferredRides;
 	}
-	public boolean isRidePreference() {
+	public boolean getRidePreference() {
 		return ridePreference;
 	}
 	public void setRidePreference(boolean ridePreference) {

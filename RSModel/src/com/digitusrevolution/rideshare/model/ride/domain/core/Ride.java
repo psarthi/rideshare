@@ -9,6 +9,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RecurringDetail;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
+import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 
@@ -20,6 +21,7 @@ public class Ride {
 	private Point endPoint;
 	private int seatOffered;
 	private int luggageCapacityOffered;
+	private Sex sexPreference;
 	private TrustNetwork trustNetwork;
 	private Route route;
 	private boolean recur;
@@ -133,6 +135,12 @@ public class Ride {
 	}
 	public void setPassengers(Collection<User> passengers) {
 		this.passengers = passengers;
+	}
+	public Sex getSexPreference() {
+		return sexPreference;
+	}
+	public void setSexPreference(Sex sexPreference) {
+		this.sexPreference = sexPreference;
 	}
 	
 }

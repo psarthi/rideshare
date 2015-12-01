@@ -7,6 +7,8 @@ import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,6 +27,7 @@ import com.digitusrevolution.rideshare.model.ride.data.RouteEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
+import com.digitusrevolution.rideshare.model.user.domain.Sex;
 
 @Entity
 @Table(name="ride")
@@ -39,6 +42,8 @@ public class RideEntity {
 	private PointEntity endPoint;
 	private int seatOffered;
 	private int luggageCapacityOffered;
+	@Enumerated(EnumType.STRING)
+	private Sex sexPreference;
 	@OneToOne(cascade=CascadeType.ALL)
 	private TrustNetworkEntity trustNetwork;
 	@Embedded
@@ -163,6 +168,12 @@ public class RideEntity {
 	}
 	public void setPassengers(Collection<UserEntity> passengers) {
 		this.passengers = passengers;
+	}
+	public Sex getSexPreference() {
+		return sexPreference;
+	}
+	public void setSexPreference(Sex sexPreference) {
+		this.sexPreference = sexPreference;
 	}
 
 }

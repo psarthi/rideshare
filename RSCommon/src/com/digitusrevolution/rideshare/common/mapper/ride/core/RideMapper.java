@@ -7,6 +7,7 @@ import com.digitusrevolution.rideshare.common.inf.Mapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.PointMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.RouteMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.TrustNetworkMapper;
+import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.VehicleMapper;
 import com.digitusrevolution.rideshare.model.ride.data.PointEntity;
 import com.digitusrevolution.rideshare.model.ride.data.RouteEntity;
@@ -16,7 +17,9 @@ import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 
 public class RideMapper implements Mapper<Ride, RideEntity>{
@@ -30,6 +33,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		rideEntity.setLuggageCapacityOffered(ride.getLuggageCapacityOffered());
 		rideEntity.setRecur(ride.getRecur());
 		rideEntity.setStatus(ride.getStatus());
+		rideEntity.setSexPreference(ride.getSexPreference());
 		
 		PointMapper pointMapper = new PointMapper();
 		Point point = ride.getStartPoint();
@@ -48,7 +52,11 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		VehicleMapper vehicleMapper = new VehicleMapper();
 		Vehicle vehicle = ride.getVehicle();
 		rideEntity.setVehicle(vehicleMapper.getEntity(vehicle));
-				
+		
+		UserMapper userMapper = new UserMapper();
+		User user = ride.getDriver();
+		rideEntity.setDriver(userMapper.getEntity(user));
+
 		rideEntity = getEntityChild(ride, rideEntity);
 		
 		return rideEntity;
@@ -56,6 +64,10 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 
 	@Override
 	public RideEntity getEntityChild(Ride ride, RideEntity rideEntity) {
+		
+		UserMapper userMapper = new UserMapper();
+		Collection<User> users = ride.getPassengers();
+		rideEntity.setPassengers(userMapper.getEntities(users));
 		
 		return rideEntity;
 	}
@@ -69,6 +81,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		ride.setLuggageCapacityOffered(rideEntity.getLuggageCapacityOffered());
 		ride.setRecur(rideEntity.getRecur());
 		ride.setStatus(rideEntity.getStatus());
+		ride.setSexPreference(rideEntity.getSexPreference());
 		
 		PointMapper pointMapper = new PointMapper();
 		PointEntity pointEntity = rideEntity.getStartPoint();
@@ -88,12 +101,20 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		VehicleEntity vehicleEntity = rideEntity.getVehicle();
 		ride.setVehicle(vehicleMapper.getDomainModel(vehicleEntity));
 		
+		UserMapper userMapper = new UserMapper();
+		UserEntity userEntity = rideEntity.getDriver();
+		ride.setDriver(userMapper.getDomainModel(userEntity));
+		
 		return ride;
 	}
 
 
 	@Override
 	public Ride getDomainModelChild(Ride ride, RideEntity rideEntity) {
+		
+		UserMapper userMapper = new UserMapper();
+		Collection<UserEntity> userEntities = rideEntity.getPassengers();
+		ride.setPassengers(userMapper.getDomainModels(userEntities));
 		
 		return ride;
 	}
