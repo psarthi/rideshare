@@ -2,15 +2,22 @@ package com.digitusrevolution.rideshare.ride.business;
 
 import java.util.List;
 
+import javax.ws.rs.core.Response;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.HibernateUtil;
+import com.digitusrevolution.rideshare.common.PropertyReader;
+import com.digitusrevolution.rideshare.common.RESTClientImpl;
+import com.digitusrevolution.rideshare.common.RESTClientUtil;
+import com.digitusrevolution.rideshare.common.inf.RESTClient;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDomainService;
 
 
@@ -55,8 +62,8 @@ public class RideOfferManagementService {
 		try {
 			transation = session.beginTransaction();
 			
-			
-			
+			int userId = ride.getDriver().getId();
+			User user = RESTClientUtil.getUser(userId);
 
 			RideDomainService rideDomainService = new RideDomainService();
 			id = rideDomainService.create(ride);
