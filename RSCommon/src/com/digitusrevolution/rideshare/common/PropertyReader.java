@@ -17,7 +17,7 @@ public class PropertyReader {
 	static
 	{
 		try {
-			InputStream inputStream = PropertyReader.class.getClassLoader().getResourceAsStream("/resources/config.properties");
+			InputStream inputStream = PropertyReader.class.getClassLoader().getResourceAsStream("resources/config.properties");
 			properties.load(inputStream);
 			logger.info("Property file loaded");
 		} catch (IOException ex) {
