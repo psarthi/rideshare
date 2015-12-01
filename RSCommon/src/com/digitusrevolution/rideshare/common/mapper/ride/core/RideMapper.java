@@ -7,7 +7,6 @@ import com.digitusrevolution.rideshare.common.inf.Mapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.PointMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.RouteMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.TrustNetworkMapper;
-import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.VehicleMapper;
 import com.digitusrevolution.rideshare.model.ride.data.PointEntity;
 import com.digitusrevolution.rideshare.model.ride.data.RouteEntity;
@@ -17,13 +16,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
-import com.digitusrevolution.rideshare.model.user.data.core.DriverEntity;
-import com.digitusrevolution.rideshare.model.user.data.core.PassengerEntity;
-import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
-import com.digitusrevolution.rideshare.model.user.domain.core.Driver;
-import com.digitusrevolution.rideshare.model.user.domain.core.Passenger;
-import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 
 public class RideMapper implements Mapper<Ride, RideEntity>{
@@ -55,23 +48,14 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		VehicleMapper vehicleMapper = new VehicleMapper();
 		Vehicle vehicle = ride.getVehicle();
 		rideEntity.setVehicle(vehicleMapper.getEntity(vehicle));
-		
-		UserMapper userMapper = new UserMapper();
-		Driver driver = ride.getDriver();
-		rideEntity.setDriver((DriverEntity) userMapper.getEntity(driver));
-		
+				
 		rideEntity = getEntityChild(ride, rideEntity);
 		
 		return rideEntity;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public RideEntity getEntityChild(Ride ride, RideEntity rideEntity) {
-		
-		UserMapper userMapper = new UserMapper();
-		Collection<User> users = (Collection<User>) (Collection<?>) ride.getPassengers();
-		rideEntity.setPassengers((Collection<PassengerEntity>) (Collection<?>) userMapper.getEntities(users));
 		
 		return rideEntity;
 	}
@@ -104,20 +88,12 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		VehicleEntity vehicleEntity = rideEntity.getVehicle();
 		ride.setVehicle(vehicleMapper.getDomainModel(vehicleEntity));
 		
-		UserMapper userMapper = new UserMapper();
-		DriverEntity driverEntity = rideEntity.getDriver();
-		ride.setDriver((Driver) userMapper.getDomainModel(driverEntity));
-		
 		return ride;
 	}
 
-	@SuppressWarnings("unchecked")
+
 	@Override
 	public Ride getDomainModelChild(Ride ride, RideEntity rideEntity) {
-		
-		UserMapper userMapper = new UserMapper();
-		Collection<UserEntity> userEntities = (Collection<UserEntity>) (Collection<?>) rideEntity.getPassengers();
-		ride.setPassengers((Collection<Passenger>) (Collection<?>) userMapper.getDomainModels(userEntities));
 		
 		return ride;
 	}

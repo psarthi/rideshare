@@ -9,8 +9,7 @@ import javax.persistence.Table;
 
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.serviceprovider.data.core.CompanyEntity;
-import com.digitusrevolution.rideshare.model.user.data.core.DriverEntity;
-import com.digitusrevolution.rideshare.model.user.data.core.PassengerEntity;
+import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
 @Entity
 @Table(name="bill")
@@ -19,9 +18,9 @@ public class BillEntity {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int number;
 	@ManyToOne
-	private PassengerEntity passenger;
+	private UserEntity passenger;
 	@ManyToOne
-	private DriverEntity driver;
+	private UserEntity driver;
 	@ManyToOne
 	private CompanyEntity company;
 	@ManyToOne
@@ -34,23 +33,11 @@ public class BillEntity {
 	public void setNumber(int number) {
 		this.number = number;
 	}
-	public DriverEntity getDriver() {
-		return driver;
-	}
-	public void setDriver(DriverEntity driver) {
-		this.driver = driver;
-	}
 	public int getAmount() {
 		return amount;
 	}
 	public void setAmount(int amount) {
 		this.amount = amount;
-	}
-	public PassengerEntity getPassenger() {
-		return passenger;
-	}
-	public void setPassenger(PassengerEntity passenger) {
-		this.passenger = passenger;
 	}
 	public CompanyEntity getCompany() {
 		return company;
@@ -63,6 +50,18 @@ public class BillEntity {
 	}
 	public void setRide(RideEntity ride) {
 		this.ride = ride;
+	}
+	public UserEntity getPassenger() {
+		return passenger;
+	}
+	public void setPassenger(UserEntity passenger) {
+		this.passenger = passenger;
+	}
+	public UserEntity getDriver() {
+		return driver;
+	}
+	public void setDriver(UserEntity driver) {
+		this.driver = driver;
 	}
 	
 

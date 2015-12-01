@@ -11,8 +11,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -21,6 +19,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
+import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
+import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
 import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
@@ -28,7 +29,6 @@ import com.digitusrevolution.rideshare.model.user.domain.Sex;
 
 @Entity
 @Table (name="user_detail")
-@Inheritance(strategy=InheritanceType.JOINED)
 //@NamedQuery(name="UserEntity.byEmail", query="from UserEntity where email=:email")
 public class UserEntity {
 	
@@ -63,7 +63,16 @@ public class UserEntity {
 	private Collection<AccountEntity> accounts = new ArrayList<AccountEntity>();
 	private int profileRating;
 	
+	@OneToMany(mappedBy="driver")
+	private Collection<RideEntity> ridesOffered = new ArrayList<RideEntity>();
 	
+	@ManyToMany(mappedBy="passengers")
+	private Collection<RideEntity> ridesTaken = new ArrayList<RideEntity>();
+	@OneToMany(mappedBy="passenger")
+	private Collection<RideRequestEntity> rideRequests = new ArrayList<RideRequestEntity>();
+	@OneToMany(mappedBy="passenger")
+	private Collection<BillEntity> bills = new ArrayList<BillEntity>();
+
 	public int getId() {
 		return id;
 	}
@@ -172,5 +181,36 @@ public class UserEntity {
 		this.accounts = accounts;
 	}
 
-	
+	public Collection<RideRequestEntity> getRideRequests() {
+		return rideRequests;
+	}
+
+	public void setRideRequests(Collection<RideRequestEntity> rideRequests) {
+		this.rideRequests = rideRequests;
+	}
+
+	public Collection<BillEntity> getBills() {
+		return bills;
+	}
+
+	public void setBills(Collection<BillEntity> bills) {
+		this.bills = bills;
+	}
+
+	public Collection<RideEntity> getRidesOffered() {
+		return ridesOffered;
+	}
+
+	public void setRidesOffered(Collection<RideEntity> ridesOffered) {
+		this.ridesOffered = ridesOffered;
+	}
+
+	public Collection<RideEntity> getRidesTaken() {
+		return ridesTaken;
+	}
+
+	public void setRidesTaken(Collection<RideEntity> ridesTaken) {
+		this.ridesTaken = ridesTaken;
+	}
+
 }

@@ -57,7 +57,7 @@ public class DataLoader {
 			dataLoader.loadUser();
 			dataLoader.loadVehicleCategory();
 			dataLoader.loadVehicleSubCategory();
-			dataLoader.loadVehicle();
+			dataLoader.loadVehicle();			
 			
 			transation.commit();
 

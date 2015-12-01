@@ -23,8 +23,7 @@ import com.digitusrevolution.rideshare.model.ride.data.PointEntity;
 import com.digitusrevolution.rideshare.model.ride.data.RecurringDetailEntity;
 import com.digitusrevolution.rideshare.model.ride.data.RouteEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
-import com.digitusrevolution.rideshare.model.user.data.core.DriverEntity;
-import com.digitusrevolution.rideshare.model.user.data.core.PassengerEntity;
+import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 
 @Entity
@@ -50,10 +49,11 @@ public class RideEntity {
 	private String status;
 	@ManyToOne
 	private VehicleEntity vehicle;
-	@ManyToOne(cascade=CascadeType.ALL)
-	private DriverEntity driver;
-	@ManyToMany(cascade=CascadeType.ALL)
-	private Collection<PassengerEntity> passengers = new ArrayList<PassengerEntity>();
+	@ManyToOne
+	private UserEntity driver;
+	@ManyToMany
+	@JoinTable(name="ride_passenger", joinColumns=@JoinColumn(name="ride_id"))
+	private Collection<UserEntity> passengers = new ArrayList<UserEntity>();
 	@OneToMany(mappedBy="ride")
 	private Collection<BillEntity> bills = new ArrayList<BillEntity>();
 	@OneToMany(mappedBy="acceptedRide")
@@ -134,18 +134,6 @@ public class RideEntity {
 	public void setVehicle(VehicleEntity vehicle) {
 		this.vehicle = vehicle;
 	}
-	public DriverEntity getDriver() {
-		return driver;
-	}
-	public void setDriver(DriverEntity driver) {
-		this.driver = driver;
-	}
-	public Collection<PassengerEntity> getPassengers() {
-		return passengers;
-	}
-	public void setPassengers(Collection<PassengerEntity> passengers) {
-		this.passengers = passengers;
-	}
 	public Collection<BillEntity> getBills() {
 		return bills;
 	}
@@ -163,6 +151,18 @@ public class RideEntity {
 	}
 	public void setRejectedRideRequests(Collection<RideRequestEntity> rejectedRideRequests) {
 		this.rejectedRideRequests = rejectedRideRequests;
+	}
+	public UserEntity getDriver() {
+		return driver;
+	}
+	public void setDriver(UserEntity driver) {
+		this.driver = driver;
+	}
+	public Collection<UserEntity> getPassengers() {
+		return passengers;
+	}
+	public void setPassengers(Collection<UserEntity> passengers) {
+		this.passengers = passengers;
 	}
 
 }

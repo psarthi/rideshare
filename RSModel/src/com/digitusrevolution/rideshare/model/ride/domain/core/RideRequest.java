@@ -9,7 +9,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
-import com.digitusrevolution.rideshare.model.user.domain.core.Passenger;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 public class RideRequest {
 
@@ -26,7 +26,7 @@ public class RideRequest {
 	private int pickupPointVariation;
 	private int dropPointVariation;
 	private String status;
-	private Passenger passenger;
+	private User passenger;
 	private boolean ridePreference;
 	private Collection<Ride> preferredRides = new ArrayList<Ride>();
 	private Ride acceptedRide;
@@ -111,10 +111,10 @@ public class RideRequest {
 	public void setDropPointVariation(int dropPointVariation) {
 		this.dropPointVariation = dropPointVariation;
 	}
-	public Passenger getPassenger() {
+	public User getPassenger() {
 		return passenger;
 	}
-	public void setPassenger(Passenger passenger) {
+	public void setPassenger(User passenger) {
 		this.passenger = passenger;
 	}
 	public Collection<Ride> getPreferredRides() {

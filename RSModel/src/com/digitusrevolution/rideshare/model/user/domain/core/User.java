@@ -3,6 +3,9 @@ package com.digitusrevolution.rideshare.model.user.domain.core;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
@@ -25,7 +28,12 @@ public class User {
 	private Collection<Role> roles = new ArrayList<Role>();
 	private Collection<Account> accounts = new ArrayList<Account>();
 	private int profileRating;
+
+	private Collection<Ride> ridesOffered = new ArrayList<Ride>();
 	
+	private Collection<Ride> ridesTaken = new ArrayList<Ride>();
+	private Collection<RideRequest> rideRequests = new ArrayList<RideRequest>();
+	private Collection<Bill> bills = new ArrayList<Bill>();
 	
 	public int getId() {
 		return id;
@@ -128,6 +136,38 @@ public class User {
 
 	public void setAccounts(Collection<Account> accounts) {
 		this.accounts = accounts;
+	}
+
+	public Collection<RideRequest> getRideRequests() {
+		return rideRequests;
+	}
+
+	public void setRideRequests(Collection<RideRequest> rideRequests) {
+		this.rideRequests = rideRequests;
+	}
+
+	public Collection<Bill> getBills() {
+		return bills;
+	}
+
+	public void setBills(Collection<Bill> bills) {
+		this.bills = bills;
+	}
+
+	public Collection<Ride> getRidesOffered() {
+		return ridesOffered;
+	}
+
+	public void setRidesOffered(Collection<Ride> ridesOffered) {
+		this.ridesOffered = ridesOffered;
+	}
+
+	public Collection<Ride> getRidesTaken() {
+		return ridesTaken;
+	}
+
+	public void setRidesTaken(Collection<Ride> ridesTaken) {
+		this.ridesTaken = ridesTaken;
 	}
 	
 	

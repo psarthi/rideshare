@@ -33,9 +33,7 @@
 
 		<!-- Names the annotated entity class -->
 		<!-- User System -->
-		<mapping class="com.digitusrevolution.rideshare.model.user.data.core.DriverEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.core.GroupEntity" />
-		<mapping class="com.digitusrevolution.rideshare.model.user.data.core.PassengerEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.core.UserEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.core.AccountEntity" />

@@ -2,14 +2,13 @@ package com.digitusrevolution.rideshare.model.billing.domain.core;
 
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
-import com.digitusrevolution.rideshare.model.user.domain.core.Driver;
-import com.digitusrevolution.rideshare.model.user.domain.core.Passenger;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 public class Bill {
 	
 	private int number;
-	private Passenger passenger;
-	private Driver driver;
+	private User passenger;
+	private User driver;
 	private Company company;
 	private Ride ride;
 	private int amount;
@@ -20,16 +19,16 @@ public class Bill {
 	public void setNumber(int number) {
 		this.number = number;
 	}
-	public Passenger getPassenger() {
+	public User getPassenger() {
 		return passenger;
 	}
-	public void setPassenger(Passenger passenger) {
+	public void setPassenger(User passenger) {
 		this.passenger = passenger;
 	}
-	public Driver getDriver() {
+	public User getDriver() {
 		return driver;
 	}
-	public void setDriver(Driver driver) {
+	public void setDriver(User driver) {
 		this.driver = driver;
 	}
 	public Company getCompany() {

@@ -20,7 +20,7 @@ import com.digitusrevolution.rideshare.model.ride.data.PointEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.user.data.VehicleCategoryEntity;
 import com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity;
-import com.digitusrevolution.rideshare.model.user.data.core.PassengerEntity;
+import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 
 @Entity
@@ -48,7 +48,7 @@ public class RideRequestEntity {
 	private int dropPointVariation;
 	private String status;
 	@ManyToOne
-	private PassengerEntity passenger;
+	private UserEntity passenger;
 	private boolean ridePreference;
 	@ManyToMany
 	@JoinTable(name="ride_request_preferred_ride",joinColumns=@JoinColumn(name="ride_request_id"))
@@ -156,12 +156,6 @@ public class RideRequestEntity {
 	public void setTrustNetwork(TrustNetworkEntity trustNetwork) {
 		this.trustNetwork = trustNetwork;
 	}
-	public PassengerEntity getPassenger() {
-		return passenger;
-	}
-	public void setPassenger(PassengerEntity passenger) {
-		this.passenger = passenger;
-	}
 	public PointEntity getRidePickupPoint() {
 		return ridePickupPoint;
 	}
@@ -173,6 +167,12 @@ public class RideRequestEntity {
 	}
 	public void setRideDropPoint(PointEntity rideDropPoint) {
 		this.rideDropPoint = rideDropPoint;
+	}
+	public UserEntity getPassenger() {
+		return passenger;
+	}
+	public void setPassenger(UserEntity passenger) {
+		this.passenger = passenger;
 	}	
 
 }

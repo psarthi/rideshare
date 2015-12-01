@@ -9,8 +9,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RecurringDetail;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
-import com.digitusrevolution.rideshare.model.user.domain.core.Driver;
-import com.digitusrevolution.rideshare.model.user.domain.core.Passenger;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 
 public class Ride {
@@ -27,8 +26,8 @@ public class Ride {
 	private RecurringDetail recurringDetail;
 	private String status;
 	private Vehicle vehicle;
-	private Driver driver;
-	private Collection<Passenger> passengers = new ArrayList<Passenger>();
+	private User driver;
+	private Collection<User> passengers = new ArrayList<User>();
 	private Collection<Bill> bills = new ArrayList<Bill>();
 	private Collection<RideRequest> acceptedRideRequests = new ArrayList<RideRequest>();
 	private Collection<RideRequest> rejectedRideRequests = new ArrayList<RideRequest>();
@@ -99,23 +98,11 @@ public class Ride {
 	public void setVehicle(Vehicle vehicle) {
 		this.vehicle = vehicle;
 	}
-	public Driver getDriver() {
-		return driver;
-	}
-	public void setDriver(Driver driver) {
-		this.driver = driver;
-	}
 	public Point getEndPoint() {
 		return endPoint;
 	}
 	public void setEndPoint(Point endPoint) {
 		this.endPoint = endPoint;
-	}
-	public Collection<Passenger> getPassengers() {
-		return passengers;
-	}
-	public void setPassengers(Collection<Passenger> passengers) {
-		this.passengers = passengers;
 	}
 	public Collection<Bill> getBills() {
 		return bills;
@@ -134,6 +121,18 @@ public class Ride {
 	}
 	public void setRejectedRideRequests(Collection<RideRequest> rejectedRideRequests) {
 		this.rejectedRideRequests = rejectedRideRequests;
+	}
+	public User getDriver() {
+		return driver;
+	}
+	public void setDriver(User driver) {
+		this.driver = driver;
+	}
+	public Collection<User> getPassengers() {
+		return passengers;
+	}
+	public void setPassengers(Collection<User> passengers) {
+		this.passengers = passengers;
 	}
 	
 }
