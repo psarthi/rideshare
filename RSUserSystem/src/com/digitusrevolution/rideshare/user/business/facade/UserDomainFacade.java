@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.user.business.facade;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -9,6 +10,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.HibernateUtil;
+import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.user.domain.core.UserDomainService;
 
@@ -179,4 +181,34 @@ public class UserDomainFacade {
 			}
 		}
 	}
+	
+	public Collection<Role> getRoles(int id){
+		
+
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transation = null;	
+		Collection<Role> roles = null;
+		try {
+			transation = session.beginTransaction();
+			UserDomainService userService = new UserDomainService();
+			roles = userService.getRoles(id);
+
+			transation.commit();
+		} catch (RuntimeException e) {
+			if (transation!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transation.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		
+		return roles;
+	}
+	
 }

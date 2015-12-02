@@ -1,11 +1,14 @@
 package com.digitusrevolution.rideshare.ride;
 
+import java.util.Collection;
+
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.common.PropertyReader;
 import com.digitusrevolution.rideshare.common.RESTClientImpl;
 import com.digitusrevolution.rideshare.common.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.user.domain.City;
+import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 public class RESTClientTest {
@@ -16,8 +19,13 @@ public class RESTClientTest {
 		Class.forName("com.digitusrevolution.rideshare.common.PropertyReader");
 		
 		int id = 1;
-		User user1 = RESTClientUtil.getUser(id);
+		RESTClientUtil restClientUtil = new RESTClientUtil();
+		User user1 = restClientUtil.getUser(id);
 		System.out.println("FirstName: "+user1.getFirstName()+",Email: "+user1.getEmail());
+
+		Collection<Role> roles = restClientUtil.getRoles(id);
+		System.out.println("Role size: "+roles.size());
+
 		
 		User user = new User();
 		user.setEmail("email-9");

@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.user.domain.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.ws.rs.NotFoundException;
@@ -10,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.inf.DomainService;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
+import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.user.data.UserDAO;
 
@@ -27,6 +29,12 @@ public class UserDomainService implements DomainService<User> {
 			return false;			
 		}
 		return true;
+	}
+	
+	public Collection<Role> getRoles(int id){
+		User user = getChild(id);
+		logger.debug("Role size: "+user.getRoles().size());
+		return user.getRoles();
 	}
 	
 	@Override

@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.ride.business;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
@@ -17,6 +18,7 @@ import com.digitusrevolution.rideshare.common.inf.RESTClient;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDomainService;
 
@@ -63,7 +65,8 @@ public class RideOfferManagementService {
 			transation = session.beginTransaction();
 			
 			int userId = ride.getDriver().getId();
-			User user = RESTClientUtil.getUser(userId);
+			RESTClientUtil restClientUtil = new RESTClientUtil();
+			Collection<Role> roles = restClientUtil.getRoles(userId);
 
 			RideDomainService rideDomainService = new RideDomainService();
 			id = rideDomainService.create(ride);
