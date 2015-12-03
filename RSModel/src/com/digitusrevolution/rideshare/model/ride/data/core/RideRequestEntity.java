@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -30,16 +31,16 @@ public class RideRequestEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
-	@OneToOne
+	@OneToOne(cascade=CascadeType.ALL)
 	private PointEntity pickupPoint;
-	@OneToOne
+	@OneToOne(cascade=CascadeType.ALL)
 	private PointEntity dropPoint;
 	private Date dateTime;
 	@ManyToOne
 	private VehicleCategoryEntity vehicleCategory;
 	@ManyToOne
 	private VehicleSubCategoryEntity vehicleSubCategory;
-	@OneToOne
+	@OneToOne(cascade=CascadeType.ALL)
 	private TrustNetworkEntity trustNetwork;
 	@Enumerated(EnumType.STRING)
 	private Sex sexPreference;
@@ -56,9 +57,9 @@ public class RideRequestEntity {
 	private Collection<RideEntity> preferredRides = new ArrayList<RideEntity>();
 	@ManyToOne
 	private RideEntity acceptedRide;
-	@OneToOne
+	@OneToOne(cascade=CascadeType.ALL)
 	private PointEntity ridePickupPoint;
-	@OneToOne
+	@OneToOne(cascade=CascadeType.ALL)
 	private PointEntity rideDropPoint;
 	
 	public int getId() {

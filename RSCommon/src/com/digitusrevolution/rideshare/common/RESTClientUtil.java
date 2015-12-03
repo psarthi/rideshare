@@ -7,6 +7,7 @@ import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 
 /**
  * 
@@ -37,5 +38,17 @@ public class RESTClientUtil {
 		return roles;
 		
 	}
+	
+	public Vehicle getVehicle(int userId, int vehicleId){
+		
+		RESTClientImpl<Vehicle> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_VEHICLE_URL");
+		url = url.replace("{userId}", Integer.toString(userId)).replace("{vehicleId}", Integer.toString(vehicleId));
+		Response response = restClientUtil.get(url);
+		Vehicle vehicle = response.readEntity(Vehicle.class);
+		return vehicle;
+		
+	}
+
 
 }

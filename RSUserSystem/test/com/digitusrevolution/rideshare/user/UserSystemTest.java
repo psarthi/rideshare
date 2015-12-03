@@ -11,7 +11,7 @@ public class UserSystemTest {
 		
 		logger.info("Logger Testing");
 		
-		DataLoader dataLoader = new DataLoader();
+		UserDataLoader dataLoader = new UserDataLoader();
 		dataLoader.load();
 		
 		

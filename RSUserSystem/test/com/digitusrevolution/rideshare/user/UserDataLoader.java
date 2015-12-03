@@ -28,16 +28,16 @@ import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
 @Path("/domain/loadsample")
 @Consumes(MediaType.APPLICATION_JSON)
-public class DataLoader {
+public class UserDataLoader {
 	
 	
-	private static final Logger logger = LogManager.getLogger(DataLoader.class.getName());
+	private static final Logger logger = LogManager.getLogger(UserDataLoader.class.getName());
 	
 	@GET
 	public Response load(){
 		
 		String[] args ={};
-		DataLoader.main(args);
+		UserDataLoader.main(args);
 		return Response.ok().build();
 	}
 	
@@ -49,7 +49,7 @@ public class DataLoader {
 		try {
 			transation = session.beginTransaction();
 			
-			DataLoader dataLoader = new DataLoader();
+			UserDataLoader dataLoader = new UserDataLoader();
 			dataLoader.loadCity();
 			dataLoader.loadRole();
 			dataLoader.loadUser();

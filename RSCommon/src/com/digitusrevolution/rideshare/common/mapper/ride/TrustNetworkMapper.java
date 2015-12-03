@@ -17,6 +17,9 @@ public class TrustNetworkMapper implements Mapper<TrustNetwork, TrustNetworkEnti
 	public TrustNetworkEntity getEntity(TrustNetwork trustNetwork) {
 		TrustNetworkEntity trustNetworkEntity = new TrustNetworkEntity();
 		trustNetworkEntity.setId(trustNetwork.getId());
+		
+		trustNetworkEntity = getEntityChild(trustNetwork, trustNetworkEntity);
+		
 		return trustNetworkEntity;
 	}
 
