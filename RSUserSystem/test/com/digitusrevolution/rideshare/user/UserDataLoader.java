@@ -1,10 +1,8 @@
 package com.digitusrevolution.rideshare.user;
 
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
@@ -26,8 +24,7 @@ import com.digitusrevolution.rideshare.user.domain.VehicleCategoryDO;
 import com.digitusrevolution.rideshare.user.domain.VehicleSubCategoryDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
-@Path("/domain/loadsample")
-@Consumes(MediaType.APPLICATION_JSON)
+@Path("/domain/loadsampleuser")
 public class UserDataLoader {
 	
 	

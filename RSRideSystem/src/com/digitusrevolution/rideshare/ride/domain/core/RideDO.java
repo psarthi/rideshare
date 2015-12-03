@@ -14,8 +14,6 @@ import com.digitusrevolution.rideshare.common.RESTClientUtil;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
-import com.digitusrevolution.rideshare.model.ride.domain.Point;
-import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
@@ -112,11 +110,6 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 
 	public List<Ride> getUpcomingRides(int userId){
 		
-		return null;
-	}
-			
-	public List<Route> getRoutes(Point startPoint, Point endPoint){		
-
 		return null;
 	}
 	

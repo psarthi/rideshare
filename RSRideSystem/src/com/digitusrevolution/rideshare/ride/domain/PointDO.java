@@ -101,4 +101,9 @@ public class PointDO implements DomainObjectPKInteger<Point>{
 		return point;
 	}
 
+	public Point getCordinates(String location){
+		
+		return null;
+	}
+
 }

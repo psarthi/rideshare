@@ -12,6 +12,7 @@ import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 
 public class RideOfferManagementService {
@@ -26,8 +27,8 @@ public class RideOfferManagementService {
 		try {
 			transation = session.beginTransaction();
 
-			RideDO rideDO = new RideDO();
-			routes = rideDO.getRoutes(startPoint, endPoint);
+			RouteDO routeDO = new RouteDO();
+			routes = routeDO.getRoutes(startPoint, endPoint);
 			
 			transation.commit();
 		} catch (RuntimeException e) {

@@ -2,6 +2,10 @@ package com.digitusrevolution.rideshare.ride;
 
 import java.util.HashMap;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
@@ -19,9 +23,18 @@ import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.ride.domain.TrustCategoryDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 
+@Path("/domain/loadsampleride")
 public class RideDataLoader {
 	
 	private static final Logger logger = LogManager.getLogger(RideDataLoader.class.getName());
+	
+	@GET
+	public Response load(){
+		logger.info("Inside Ride DataLoader");
+		String[] args ={};
+		RideDataLoader.main(args);
+		return Response.ok().build();
+	}
 	
 	public static void main(String args[]){
 		
@@ -31,7 +44,7 @@ public class RideDataLoader {
 			transation = session.beginTransaction();
 			
 			RideDataLoader dataLoader = new RideDataLoader();
-			dataLoader.loadTrustCategory();
+//			dataLoader.loadTrustCategory();
 			dataLoader.loadRide();
 			
 			transation.commit();
