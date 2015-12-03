@@ -1,7 +1,5 @@
-package com.digitusrevolution.rideshare.user.business.facade;
+package com.digitusrevolution.rideshare.user.domain.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -10,13 +8,13 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.HibernateUtil;
-import com.digitusrevolution.rideshare.model.user.domain.Role;
+import com.digitusrevolution.rideshare.common.inf.DomainService;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.user.domain.core.UserDomainService;
+import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
-public class UserDomainFacade {
+public class UserDomainService implements DomainService<User>{
 
-	private static final Logger logger = LogManager.getLogger(UserDomainFacade.class.getName());
+	private static final Logger logger = LogManager.getLogger(UserDomainService.class.getName());
 
 	public int create(User user){	
 		logger.debug("Getting Session");
@@ -24,12 +22,11 @@ public class UserDomainFacade {
 		Transaction transation = null;	
 		int id=0;
 		try {
-			UserDomainService userService = new UserDomainService();
+			UserDO userDO = new UserDO();
 			logger.debug("Beginning Transaction");
 			transation = session.beginTransaction();
-			logger.debug("Session Status: " + session.isOpen());		
-			logger.debug("Transaction Status: "+transation.getStatus());
-			id = userService.create(user);
+			id = userDO.create(user);
+			
 			logger.debug("Session Status: " + session.isOpen());		
 			logger.debug("Transaction Status: "+transation.getStatus());
 			transation.commit();
@@ -51,42 +48,21 @@ public class UserDomainFacade {
 		return id;
 	}
 
-	public boolean isExist(String userEmail){
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
-		boolean status = false;
-		try {
-			transation = session.beginTransaction();
-			UserDomainService userService = new UserDomainService();
-			status = userService.isExist(userEmail);
 
-			transation.commit();
-		} catch (RuntimeException e) {
-			if (transation!=null){
-				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
-				throw e;
-			}
-		}
-		finally {
-			if (session.isOpen()){
-				logger.info("Closing Session");
-				session.close();				
-			}
-		}	
-		return status;
-
-	}
-
-	public User get(int id){
+	public User get(int id, boolean fetchChild){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		User user = null;
 		try {
 			transation = session.beginTransaction();
-			UserDomainService userService = new UserDomainService();
-			user = userService.get(id);
-
+	
+			UserDO userDO = new UserDO();
+			if (fetchChild){
+				user = userDO.getChild(id);
+			} else {
+				user = userDO.get(id);			
+			}
+			
 			transation.commit();
 		} catch (RuntimeException e) {
 			if (transation!=null){
@@ -102,44 +78,18 @@ public class UserDomainFacade {
 			}
 		}
 		return user;
-
 	}
 	
-	public User getChild(int id){
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
-		User user = null;
-		try {
-			transation = session.beginTransaction();
-			UserDomainService userService = new UserDomainService();
-			user = userService.getChild(id);
-
-			transation.commit();
-		} catch (RuntimeException e) {
-			if (transation!=null){
-				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
-				throw e;
-			}
-		}
-		finally {
-			if (session.isOpen()){
-				logger.info("Closing Session");
-				session.close();				
-			}
-		}
-		return user;
-
-	}
 
 	public List<User> getAll(){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
-		List<User> users = new ArrayList<>();
+		List<User> users = null;
 		try {
 			transation = session.beginTransaction();
-			UserDomainService userService = new UserDomainService();
-			users = userService.getAll();
+
+			UserDO userDO = new UserDO();
+			users = userDO.getAll();
 
 			transation.commit();
 		} catch (RuntimeException e) {
@@ -158,13 +108,15 @@ public class UserDomainFacade {
 		return users;
 	}
 
+
 	public void update(User user){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		try {
 			transation = session.beginTransaction();
-			UserDomainService userService = new UserDomainService();
-			userService.update(user);
+	
+			UserDO userDO = new UserDO();
+			userDO.update(user);
 
 			transation.commit();
 		} catch (RuntimeException e) {
@@ -182,16 +134,14 @@ public class UserDomainFacade {
 		}
 	}
 	
-	public Collection<Role> getRoles(int id){
-		
-
+	public void delete(User user){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
-		Collection<Role> roles = null;
 		try {
 			transation = session.beginTransaction();
-			UserDomainService userService = new UserDomainService();
-			roles = userService.getRoles(id);
+	
+			UserDO userDO = new UserDO();
+			userDO.delete(user);
 
 			transation.commit();
 		} catch (RuntimeException e) {
@@ -207,8 +157,6 @@ public class UserDomainFacade {
 				session.close();				
 			}
 		}
-		
-		return roles;
 	}
-	
+
 }

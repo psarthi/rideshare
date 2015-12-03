@@ -20,13 +20,11 @@ import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
-import com.digitusrevolution.rideshare.user.domain.CityDomainService;
-import com.digitusrevolution.rideshare.user.domain.RoleDomainService;
-import com.digitusrevolution.rideshare.user.domain.VehicleCategoryDomainService;
-import com.digitusrevolution.rideshare.user.domain.VehicleSubCategoryDomainService;
+import com.digitusrevolution.rideshare.user.domain.CityDO;
+import com.digitusrevolution.rideshare.user.domain.RoleDO;
+import com.digitusrevolution.rideshare.user.domain.VehicleCategoryDO;
+import com.digitusrevolution.rideshare.user.domain.VehicleSubCategoryDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
-import com.digitusrevolution.rideshare.user.domain.core.UserDomainService;
-import com.digitusrevolution.rideshare.user.domain.core.VehicleDomainService;
 
 @Path("/domain/loadsample")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -82,41 +80,41 @@ public class DataLoader {
 	}
 	
 	public void loadCity(){
-		CityDomainService cityDomainService = new CityDomainService();
+		CityDO cityDO = new CityDO();
 		City city = new City();
 		city.setName("Bangalore");
-		cityDomainService.create(city);
+		cityDO.create(city);
 		city.setName("Chennai");
-		cityDomainService.create(city);
+		cityDO.create(city);
 		city.setName("Mumbai");
-		cityDomainService.create(city);
+		cityDO.create(city);
 		city.setName("New Delhi");
-		cityDomainService.create(city);
+		cityDO.create(city);
 		city.setName("Kolkata");
-		cityDomainService.create(city);
+		cityDO.create(city);
 		
 	}
 
 	public void loadRole(){
 		
-		RoleDomainService roleDomainService = new RoleDomainService();
+		RoleDO roleDO = new RoleDO();
 		Role role = new Role();
 		role.setName("Passenger");
-		roleDomainService.create(role);
+		roleDO.create(role);
 		role.setName("Driver");
-		roleDomainService.create(role);		
+		roleDO.create(role);		
 	
 	}
 	
 	public void loadUser(){
 		
-		UserDomainService userDomainService = new UserDomainService();
-		CityDomainService cityDomainService = new CityDomainService();
-		RoleDomainService roleDomainService = new RoleDomainService();
+		UserDO userDO = new UserDO();
+		CityDO cityDO = new CityDO();
+		RoleDO roleDO = new RoleDO();
 		User user = new User();
 		City city = new City();
 		Role role = new Role();
-		role = roleDomainService.get("Passenger");
+		role = roleDO.get("Passenger");
 		user.getRoles().add(role);
 
 	
@@ -131,9 +129,9 @@ public class DataLoader {
 			}else {
 				user.setSex(Sex.Female);
 			}			
-			city = cityDomainService.get(i);
+			city = cityDO.get(i);
 			user.setCity(city);
-			userDomainService.update(user);
+			userDO.update(user);
 
 		}
 		
@@ -142,69 +140,45 @@ public class DataLoader {
 	public void loadVehicleCategory(){
 		VehicleCategory vehicleCategory = new VehicleCategory();
 		vehicleCategory.setName("Car");
-		VehicleCategoryDomainService vehicleCategoryDomainService = new VehicleCategoryDomainService();
-		vehicleCategoryDomainService.create(vehicleCategory);
+		
+		VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();
+		vehicleCategoryDO.create(vehicleCategory);
 	}
 	
 	public void loadVehicleSubCategory(){
 		VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
 		vehicleSubCategory.setName("Sedan");
 		vehicleSubCategory.setAirConditioner(true);
-		VehicleSubCategoryDomainService vehicleSubCategoryDomainService = new VehicleSubCategoryDomainService();
-		vehicleSubCategoryDomainService.create(vehicleSubCategory);
 		
-		VehicleCategoryDomainService vehicleCategoryDomainService = new VehicleCategoryDomainService();
-		VehicleCategory vehicleCategory = new VehicleCategory();
-		vehicleCategory = vehicleCategoryDomainService.get(1);
-		vehicleSubCategory = vehicleSubCategoryDomainService.get(1);
+		VehicleSubCategoryDO vehicleSubCategoryDO = new VehicleSubCategoryDO();
+		vehicleSubCategoryDO.create(vehicleSubCategory);
+		vehicleSubCategory = vehicleSubCategoryDO.get(1);
+		
+		VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();	
+		VehicleCategory vehicleCategory = vehicleCategoryDO.get(1);
 		
 		vehicleCategory.getSubCategories().add(vehicleSubCategory);
-		vehicleCategoryDomainService.update(vehicleCategory);
+		vehicleCategoryDO.update(vehicleCategory);
 	}
 
 		
 	public void loadVehicle(){
+		 		
+		VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();
+		VehicleCategory vehicleCategory = vehicleCategoryDO.get(1);		
 		
-		UserDomainService userDomainService = new UserDomainService();
-		VehicleDomainService vehicleDomainService = new VehicleDomainService();
-		UserDO userDO = new UserDO();
-		User user = new User();
+		VehicleSubCategoryDO vehicleSubCategoryDO = new VehicleSubCategoryDO();
+		VehicleSubCategory vehicleSubCategory = vehicleSubCategoryDO.get(1);
+
 		Vehicle vehicle = new Vehicle();
-		RoleDomainService roleDomainService = new RoleDomainService();
-		Role role = roleDomainService.get("Driver");
-		VehicleCategory vehicleCategory = new VehicleCategory();
-		VehicleCategoryDomainService vehicleCategoryDomainService = new VehicleCategoryDomainService();
-		vehicleCategory = vehicleCategoryDomainService.get(1);
-		
-		VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
-		VehicleSubCategoryDomainService vehicleSubCategoryDomainService = new VehicleSubCategoryDomainService();
-		vehicleSubCategory = vehicleSubCategoryDomainService.get(1);
-		
 		vehicle.setVehicleCategory(vehicleCategory);
 		vehicle.setVehicleSubCategory(vehicleSubCategory);
 		
-		Vehicle vehicle2 = new Vehicle();
-		vehicle2.setVehicleCategory(vehicleCategory);
-		vehicle2.setVehicleSubCategory(vehicleSubCategory);
-		
-		for (int i=0;i<2;i++){
-			int id = vehicleDomainService.create(vehicle);
-			vehicle = vehicleDomainService.get(id);
-			user = userDomainService.getChild(1);
-			if (user.getVehicles().size()==0){
-				user.getRoles().add(role);
-			}
-			userDO.setUser(user);
-			userDO.addVehicle(vehicle);
-		}
-		
-		for (int i=0;i<2;i++){
-			user = userDomainService.getChild(2);
-			if (user.getVehicles().size()==0){
-				user.getRoles().add(role);
-			}
+		for (int i=1;i<5;i++){
+			UserDO userDO = new UserDO();
+			User user = userDO.getChild(i);
 			userDO.setUser(user);			
-			userDO.addVehicle(vehicle2);
+			userDO.addVehicle(vehicle);
 		}
 		
 	}

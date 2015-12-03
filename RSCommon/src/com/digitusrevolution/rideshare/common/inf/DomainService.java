@@ -6,21 +6,13 @@ public interface DomainService<T> {
 
 	int create(T model);
 
-	T get(int id);
-
-	/**
-	 *  Don't try to call getUser to avoid duplicate code, else you would loose persistent 
-	 *  entity object which is required for lazy fetch. 
-	 *  
-	 *<P> Call fetchChild method to load child
-	 * 	
-	 */
-	T getChild(int id);
+	T get(int id, boolean fetchChild);
 
 	List<T> getAll();
 
 	void update(T model);
 
 	void delete(T model);
+	
 
 }

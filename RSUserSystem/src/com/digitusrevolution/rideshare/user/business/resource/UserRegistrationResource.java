@@ -14,17 +14,13 @@ import com.digitusrevolution.rideshare.user.business.UserRegistrationService;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserRegistrationResource {
-	
-	private UserRegistrationService userRegistrationService = new UserRegistrationService();  
-	
+
 	@POST
 	public Response registerUser(User user){
+
+		UserRegistrationService userRegistrationService = new UserRegistrationService();
 		int id = userRegistrationService.registerUser(user);
 		return Response.ok().entity(Integer.toString(id)).build();
-	}
-	
-	@Path("/{id}/vehicles")
-	public VehicleRegistrationResource getVehicleRegistrationResource(){
-		return new VehicleRegistrationResource();
+
 	}
 }

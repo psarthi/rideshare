@@ -16,13 +16,13 @@ import com.digitusrevolution.rideshare.user.business.VehicleRegistrationService;
 @Consumes(MediaType.APPLICATION_JSON)
 public class VehicleRegistrationResource {
 
-	private VehicleRegistrationService vehicleRegistrationService = new VehicleRegistrationService();
-	
+
 	@POST
-	public Response addVehicle(Vehicle vehicle, @PathParam("id") int id){
-		vehicleRegistrationService.addVehicle(id, vehicle);
+	public Response addVehicle(@PathParam("id") int userId, Vehicle vehicle){
+
+		VehicleRegistrationService vehicleRegistrationService = new VehicleRegistrationService();
+		vehicleRegistrationService.addVehicle(userId, vehicle);			
 		return Response.ok().build();
 	}
 
-	
 }

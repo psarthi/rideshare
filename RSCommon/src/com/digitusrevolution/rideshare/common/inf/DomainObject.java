@@ -1,6 +1,14 @@
 package com.digitusrevolution.rideshare.common.inf;
 
-public interface DomainObject {
+import java.util.List;
+
+public interface DomainObject<T>{
+	
+	List<T> getAll();
+
+	void update(T model);
+
+	void delete(T model);
 	
 	/**
      * Fetch domain model child
@@ -11,4 +19,6 @@ public interface DomainObject {
      * 
      */
 	void fetchChild();
+	
+	
 }

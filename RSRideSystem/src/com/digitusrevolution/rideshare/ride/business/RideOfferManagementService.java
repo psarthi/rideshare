@@ -3,25 +3,18 @@ package com.digitusrevolution.rideshare.ride.business;
 import java.util.Collection;
 import java.util.List;
 
-import javax.ws.rs.core.Response;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.HibernateUtil;
-import com.digitusrevolution.rideshare.common.PropertyReader;
-import com.digitusrevolution.rideshare.common.RESTClientImpl;
 import com.digitusrevolution.rideshare.common.RESTClientUtil;
-import com.digitusrevolution.rideshare.common.inf.RESTClient;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
-import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.ride.domain.core.RideDomainService;
-
+import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 
 public class RideOfferManagementService {
 	
@@ -35,8 +28,8 @@ public class RideOfferManagementService {
 		try {
 			transation = session.beginTransaction();
 
-			RideDomainService rideDomainService = new RideDomainService();
-			routes = rideDomainService.getRoutes(startPoint, endPoint);
+			RideDO rideDO = new RideDO();
+			routes = rideDO.getRoutes(startPoint, endPoint);
 			
 			transation.commit();
 		} catch (RuntimeException e) {
@@ -68,8 +61,8 @@ public class RideOfferManagementService {
 			RESTClientUtil restClientUtil = new RESTClientUtil();
 			Collection<Role> roles = restClientUtil.getRoles(userId);
 
-			RideDomainService rideDomainService = new RideDomainService();
-			id = rideDomainService.create(ride);
+			RideDO rideDO = new RideDO();
+			id = rideDO.create(ride);
 			
 			transation.commit();
 		} catch (RuntimeException e) {

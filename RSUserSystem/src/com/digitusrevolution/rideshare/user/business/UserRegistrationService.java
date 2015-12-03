@@ -7,8 +7,7 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.user.domain.core.UserDomainService;
-import com.digitusrevolution.rideshare.user.exception.EmailExistException;
+import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
 public class UserRegistrationService {
 	
@@ -16,20 +15,15 @@ public class UserRegistrationService {
 	
 	public int registerUser(User user){
 		
+		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
-		int id=0;
+		int id = 0;
 		try {
 			transation = session.beginTransaction();
 			
-			boolean status;
-			UserDomainService userDomainService = new UserDomainService();
-			status = userDomainService.isExist(user.getEmail());
-			if (status){
-				throw new EmailExistException("Email id already exist :"+user.getEmail());					
-			} else {
-				id = userDomainService.create(user);
-			}
+			UserDO userDO = new UserDO();
+			id = userDO.registerUser(user);
 			
 			transation.commit();
 		} catch (RuntimeException e) {
@@ -45,7 +39,8 @@ public class UserRegistrationService {
 				session.close();				
 			}
 		}	
-		return id;
 		
+		return id;
 	}
+
 }
