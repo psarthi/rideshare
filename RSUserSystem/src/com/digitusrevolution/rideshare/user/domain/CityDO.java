@@ -36,11 +36,7 @@ public class CityDO implements DomainObjectPKInteger<City>{
 		
 	}
 
-	public CityEntity getCityEntity() {
-		return cityEntity;
-	}
-
-	public void setCityEntity(CityEntity cityEntity) {
+	private void setCityEntity(CityEntity cityEntity) {
 		this.cityEntity = cityEntity;
 		city = cityMapper.getDomainModel(cityEntity);
 	}

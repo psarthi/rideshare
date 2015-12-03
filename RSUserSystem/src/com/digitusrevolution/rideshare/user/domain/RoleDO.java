@@ -36,12 +36,7 @@ public class RoleDO implements DomainObjectPKString<Role>{
 		roleEntity = roleMapper.getEntity(role);
 	}
 
-	public RoleEntity getRoleEntity() {
-		return roleEntity;
-	}
-
-
-	public void setRoleEntity(RoleEntity roleEntity) {
+	private void setRoleEntity(RoleEntity roleEntity) {
 		this.roleEntity = roleEntity;
 		role = roleMapper.getDomainModel(roleEntity);
 	}

@@ -41,11 +41,7 @@ public class PointDO implements DomainObjectPKInteger<Point>{
 		pointEntity = pointMapper.getEntity(point);
 	}
 
-	public PointEntity getPointEntity() {
-		return pointEntity;
-	}
-
-	public void setPointEntity(PointEntity pointEntity) {
+	private void setPointEntity(PointEntity pointEntity) {
 		this.pointEntity = pointEntity;
 		point = pointMapper.getDomainModel(pointEntity);
 	}

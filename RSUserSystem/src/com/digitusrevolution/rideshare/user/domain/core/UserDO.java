@@ -43,11 +43,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		userEntity = userMapper.getEntity(user);
 	}
 
-	public UserEntity getUserEntity() {
-		return userEntity;
-	}
-
-	public void setUserEntity(UserEntity userEntity) {
+	private void setUserEntity(UserEntity userEntity) {
 		this.userEntity = userEntity;
 		user = userMapper.getDomainModel(userEntity);
 	}

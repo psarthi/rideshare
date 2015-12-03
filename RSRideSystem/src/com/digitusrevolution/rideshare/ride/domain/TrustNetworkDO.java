@@ -40,11 +40,7 @@ public class TrustNetworkDO implements DomainObjectPKInteger<TrustNetwork>{
 		trustNetworkEntity = trustNetworkMapper.getEntity(trustNetwork);
 	}
 
-	public TrustNetworkEntity getTrustNetworkEntity() {
-		return trustNetworkEntity;
-	}
-
-	public void setTrustNetworkEntity(TrustNetworkEntity trustNetworkEntity) {
+	private void setTrustNetworkEntity(TrustNetworkEntity trustNetworkEntity) {
 		this.trustNetworkEntity = trustNetworkEntity;
 		trustNetwork = trustNetworkMapper.getDomainModel(trustNetworkEntity);
 	}

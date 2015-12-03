@@ -45,11 +45,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		rideEntity = rideMapper.getEntity(ride);
 	}
 
-	public RideEntity getRideEntity() {
-		return rideEntity;
-	}
-
-	public void setRideEntity(RideEntity rideEntity) {
+	private void setRideEntity(RideEntity rideEntity) {
 		this.rideEntity = rideEntity;
 		ride = rideMapper.getDomainModel(rideEntity);
 	}
@@ -131,6 +127,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		int id = 0;
 		for (Role role : roles) {
 			if (role.getName().equals("Driver")){
+				ride.setStatus("planned");
 				id = create(ride);
 				return id;
 			} 
