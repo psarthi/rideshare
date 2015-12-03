@@ -80,6 +80,7 @@ public class DataLoader {
 	}
 	
 	public void loadCity(){
+		logger.entry();
 		CityDO cityDO = new CityDO();
 		City city = new City();
 		city.setName("Bangalore");
@@ -96,7 +97,7 @@ public class DataLoader {
 	}
 
 	public void loadRole(){
-		
+		logger.entry();		
 		RoleDO roleDO = new RoleDO();
 		Role role = new Role();
 		role.setName("Passenger");
@@ -107,7 +108,7 @@ public class DataLoader {
 	}
 	
 	public void loadUser(){
-		
+		logger.entry();
 		UserDO userDO = new UserDO();
 		CityDO cityDO = new CityDO();
 		RoleDO roleDO = new RoleDO();
@@ -138,6 +139,7 @@ public class DataLoader {
 	}
 	
 	public void loadVehicleCategory(){
+		logger.entry();
 		VehicleCategory vehicleCategory = new VehicleCategory();
 		vehicleCategory.setName("Car");
 		
@@ -146,6 +148,7 @@ public class DataLoader {
 	}
 	
 	public void loadVehicleSubCategory(){
+		logger.entry();
 		VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
 		vehicleSubCategory.setName("Sedan");
 		vehicleSubCategory.setAirConditioner(true);
@@ -163,7 +166,7 @@ public class DataLoader {
 
 		
 	public void loadVehicle(){
-		 		
+		logger.entry(); 		
 		VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();
 		VehicleCategory vehicleCategory = vehicleCategoryDO.get(1);		
 		
@@ -174,7 +177,7 @@ public class DataLoader {
 		vehicle.setVehicleCategory(vehicleCategory);
 		vehicle.setVehicleSubCategory(vehicleSubCategory);
 		
-		for (int i=1;i<5;i++){
+		for (int i=1;i<2;i++){
 			UserDO userDO = new UserDO();
 			User user = userDO.getChild(i);
 			userDO.setUser(user);			

@@ -21,6 +21,11 @@ public class UserRegistrationResource {
 		UserRegistrationService userRegistrationService = new UserRegistrationService();
 		int id = userRegistrationService.registerUser(user);
 		return Response.ok().entity(Integer.toString(id)).build();
-
 	}
+	
+	@Path("/{id}/vehicles")
+	public VehicleRegistrationResource getVehicleRegistrationResource(){
+		return new VehicleRegistrationResource();
+	}
+
 }

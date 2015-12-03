@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.user.exception;
+package com.digitusrevolution.rideshare.common.exception;
 
 public class EmailExistException extends RuntimeException{
 

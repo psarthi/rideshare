@@ -9,6 +9,7 @@ import javax.ws.rs.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.digitusrevolution.rideshare.common.exception.EmailExistException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
@@ -17,7 +18,6 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.data.UserDAO;
 import com.digitusrevolution.rideshare.user.domain.RoleDO;
-import com.digitusrevolution.rideshare.user.exception.EmailExistException;
 
 public class UserDO implements DomainObjectPKInteger<User>{
 

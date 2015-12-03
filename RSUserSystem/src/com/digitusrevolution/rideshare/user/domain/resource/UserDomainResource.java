@@ -1,12 +1,10 @@
 package com.digitusrevolution.rideshare.user.domain.resource;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -14,22 +12,19 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import com.digitusrevolution.rideshare.common.inf.DomainResource;
+import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.user.domain.service.UserDomainService;
 
 @Path("/domain/users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class UserDomainResource{
+public class UserDomainResource implements DomainResource<User>{
 
 
-	@PUT
-	public Response create(User user){	
-		UserDomainService userDomainService = new UserDomainService();
-		int id = userDomainService.create(user);
-		return Response.ok(Integer.toString(id)).build();
-	}
-
+	@Override
 	@GET
 	@Path("/{id}")
 	public Response get(@PathParam("id") int id, @QueryParam("fetchChild") String fetchChild){
@@ -40,6 +35,7 @@ public class UserDomainResource{
 	}
 	
 
+	@Override
 	@GET
 	public Response getAll(){
 		
@@ -49,18 +45,19 @@ public class UserDomainResource{
 		return Response.ok(entity).build();
 	}
 
-	@POST
-	public Response update(User user){
+	@GET
+	@Path("/{id}/roles")
+	public Response getRoles(@PathParam("id") int id){
 		UserDomainService userDomainService = new UserDomainService();
-		userDomainService.update(user);
-		return Response.ok().build();
+		Collection<Role> roles = userDomainService.getRoles(id);
+		GenericEntity<Collection<Role>> entity = new GenericEntity<Collection<Role>>(roles) {};
+		return Response.ok(entity).build();
 	}
 	
-	@DELETE
-	public Response delete(User user){
-		UserDomainService userDomainService = new UserDomainService();
-		userDomainService.delete(user);
-		return Response.ok().build();
+	@Path("/{id}/vehicles")
+	public VehicleDomainResource getVehicleDomainResource(){
+		return new VehicleDomainResource();
 	}
+
 
 }

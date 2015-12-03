@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.user.domain.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -9,6 +10,7 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.common.inf.DomainService;
+import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
@@ -17,21 +19,16 @@ public class UserDomainService implements DomainService<User>{
 	private static final Logger logger = LogManager.getLogger(UserDomainService.class.getName());
 
 	public int create(User user){	
-		logger.debug("Getting Session");
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		int id=0;
 		try {
 			UserDO userDO = new UserDO();
-			logger.debug("Beginning Transaction");
 			transation = session.beginTransaction();
+
 			id = userDO.create(user);
 			
-			logger.debug("Session Status: " + session.isOpen());		
-			logger.debug("Transaction Status: "+transation.getStatus());
 			transation.commit();
-			logger.debug("Session Status: " + session.isOpen());		
-			logger.debug("Transaction Status: "+transation.getStatus());
 		} catch (RuntimeException e) {
 			if (transation!=null){
 				logger.error("Transaction Failed, Rolling Back");
@@ -157,6 +154,34 @@ public class UserDomainService implements DomainService<User>{
 				session.close();				
 			}
 		}
+	}
+	
+	public Collection<Role> getRoles(int id){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transation = null;	
+		Collection<Role> roles = null;
+		try {
+			transation = session.beginTransaction();
+	
+			UserDO userDO = new UserDO();
+			roles = userDO.getRoles(id);
+
+			transation.commit();
+		} catch (RuntimeException e) {
+			if (transation!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transation.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return roles;
+		
 	}
 
 }

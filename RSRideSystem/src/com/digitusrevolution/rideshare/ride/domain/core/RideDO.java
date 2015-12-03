@@ -1,13 +1,16 @@
 package com.digitusrevolution.rideshare.ride.domain.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.digitusrevolution.rideshare.common.RESTClientUtil;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
@@ -15,6 +18,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.ride.data.RideDAO;
 
 public class RideDO implements DomainObjectPKInteger<Ride>{
@@ -119,6 +123,18 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 
 		return null;
 	}
-
-
+	
+	public int offerRide(Ride ride){
+		int userId = ride.getDriver().getId();
+		RESTClientUtil restClientUtil = new RESTClientUtil();
+		Collection<Role> roles = restClientUtil.getRoles(userId);
+		int id = 0;
+		for (Role role : roles) {
+			if (role.getName().equals("Driver")){
+				id = create(ride);
+				return id;
+			} 
+		}
+		throw new NotAuthorizedException("Can't offer ride unless you are a Driver");
+	}
 }
