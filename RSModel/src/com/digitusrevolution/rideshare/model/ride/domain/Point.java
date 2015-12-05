@@ -3,7 +3,7 @@ package com.digitusrevolution.rideshare.model.ride.domain;
 public class Point {
 	
 	private int id;
-	private String lattitude;
+	private String latitude;
 	private String longitude;
 	
 	public int getId() {
@@ -12,11 +12,11 @@ public class Point {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getLattitude() {
-		return lattitude;
+	public String getLatitude() {
+		return latitude;
 	}
 	public void setLattitude(String lattitude) {
-		this.lattitude = lattitude;
+		this.latitude = lattitude;
 	}
 	public String getLongitude() {
 		return longitude;

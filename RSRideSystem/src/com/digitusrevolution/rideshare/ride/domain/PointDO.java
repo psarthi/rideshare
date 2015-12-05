@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.GenericDAOImpl;
+import com.digitusrevolution.rideshare.common.PropertyReader;
+import com.digitusrevolution.rideshare.common.RESTClientImpl;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
 import com.digitusrevolution.rideshare.common.mapper.ride.PointMapper;
@@ -103,7 +106,10 @@ public class PointDO implements DomainObjectPKInteger<Point>{
 
 	public Point getCordinates(String location){
 		
+		
+
 		return null;
+		
 	}
 
 }

@@ -12,7 +12,7 @@ public class PointMapper implements Mapper<Point, PointEntity>{
 	public Point getDomainModel(PointEntity pointEntity){
 		Point point = new Point();
 		point.setId(pointEntity.getId());
-		point.setLattitude(pointEntity.getLattitude());
+		point.setLattitude(pointEntity.getLatitude());
 		point.setLongitude(pointEntity.getLongitude());
 		return point;
 	}
@@ -21,7 +21,7 @@ public class PointMapper implements Mapper<Point, PointEntity>{
 	public PointEntity getEntity(Point point){
 		PointEntity pointEntity = new PointEntity();
 		pointEntity.setId(point.getId());
-		pointEntity.setLattitude(point.getLattitude());
+		pointEntity.setLattitude(point.getLatitude());
 		pointEntity.setLongitude(point.getLongitude());
 		return pointEntity;
 	}

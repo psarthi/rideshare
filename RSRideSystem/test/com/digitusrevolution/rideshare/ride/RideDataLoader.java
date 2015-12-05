@@ -2,6 +2,7 @@ package com.digitusrevolution.rideshare.ride;
 
 import java.util.HashMap;
 
+import javax.json.Json;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -102,6 +103,7 @@ public class RideDataLoader {
 			TrustNetwork trustNetwork = new TrustNetwork();
 			trustNetwork.getTrustCategories().add(trustCategory);
 			ride.setTrustNetwork(trustNetwork);
+
 			
 			Route route = new Route();
 			HashMap<Integer, Point> points = new HashMap<>();
