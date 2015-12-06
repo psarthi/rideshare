@@ -1,25 +1,18 @@
 package com.digitusrevolution.rideshare.model.ride.domain;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class Route {
 	
-	private int id;
-	//Integer will hold sequence of points, which is key here and point is value
-	private Map<Integer,Point> points = new HashMap<Integer, Point>();
+	private Collection<RoutePoint> routePoints = new ArrayList<RoutePoint>();
 
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	public Map<Integer,Point> getPoints() {
-		return points;
-	}
-	public void setPoints(Map<Integer,Point> points) {
-		this.points = points;
+	public Collection<RoutePoint> getRoutePoints() {
+		return routePoints;
 	}
 
+	public void setRoutePoints(Collection<RoutePoint> routePoints) {
+		this.routePoints = routePoints;
+	}
+	
 }

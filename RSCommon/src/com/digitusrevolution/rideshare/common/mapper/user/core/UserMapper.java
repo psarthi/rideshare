@@ -4,8 +4,14 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
+import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
+import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.CityMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.RoleMapper;
+import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
+import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
@@ -48,6 +54,18 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		Collection<Role> roles = user.getRoles();
 		userEntity.setRoles(roleMapper.getEntities(roles));
 		
+		RideMapper rideMapper = new RideMapper();
+		Collection<Ride> ridesOffered = user.getRidesOffered();
+		userEntity.setRidesOffered(rideMapper.getEntities(ridesOffered));
+		
+		Collection<Ride> ridesTaken = user.getRidesTaken();
+		userEntity.setRidesTaken(rideMapper.getEntities(ridesTaken));
+		
+		RideRequestMapper rideRequestMapper = new RideRequestMapper();
+		Collection<RideRequest> rideRequests = user.getRideRequests();
+		userEntity.setRideRequests(rideRequestMapper.getEntities(rideRequests));
+
+		
 		return userEntity;
 		
 	}
@@ -80,6 +98,17 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		RoleMapper roleMapper = new RoleMapper();
 		Collection<RoleEntity> roleEntities = userEntity.getRoles();
 		user.setRoles(roleMapper.getDomainModels(roleEntities));
+		
+		RideMapper rideMapper = new RideMapper();
+		Collection<RideEntity> ridesOfferedEntities = userEntity.getRidesOffered();
+		user.setRidesOffered(rideMapper.getDomainModels(ridesOfferedEntities));
+		
+		Collection<RideEntity> ridesTakenEntities = userEntity.getRidesTaken();
+		user.setRidesTaken(rideMapper.getDomainModels(ridesTakenEntities));
+		
+		RideRequestMapper rideRequestMapper = new RideRequestMapper();
+		Collection<RideRequestEntity> rideRequestEntities = userEntity.getRideRequests();
+		user.setRideRequests(rideRequestMapper.getDomainModels(rideRequestEntities));
 		
 		return user;
 	}

@@ -8,6 +8,7 @@ import javax.ws.rs.WebApplicationException;
 import com.digitusrevolution.rideshare.common.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
+import com.digitusrevolution.rideshare.model.ride.domain.RoutePoint;
 import com.digitusrevolution.rideshare.ride.dto.GoogleDirection;
 import com.digitusrevolution.rideshare.ride.dto.Step;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,12 +34,15 @@ public class RouteDO{
 		}
 		
 		List<Step> steps = googleDirection.getRoutes().get(0).getLegs().get(0).getSteps();
-		Integer seq = 1;
+		int seq = 1;
 		for (Step step : steps) {			
 			Point point = new Point();
 			point.setLatitude(step.getStartLocation().getLat());
 			point.setLongitude(step.getStartLocation().getLng());
-			route.getPoints().put(seq, point);
+			RoutePoint routePoint = new RoutePoint();
+			routePoint.setPoint(point);
+			routePoint.setSequence(seq);
+			route.getRoutePoints().add(routePoint);
 			seq++;
 		}
 		return route;

@@ -24,7 +24,7 @@ import com.digitusrevolution.rideshare.user.domain.VehicleCategoryDO;
 import com.digitusrevolution.rideshare.user.domain.VehicleSubCategoryDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
-@Path("/domain/loadsampleuser")
+@Path("/domain/loadsample/user")
 public class UserDataLoader {
 	
 	
@@ -38,8 +38,9 @@ public class UserDataLoader {
 		return Response.ok().build();
 	}
 	
-	
-	public static void main(String args[]){
+	@GET
+	@Path("/prereq")
+	public Response prereq(){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
@@ -49,9 +50,41 @@ public class UserDataLoader {
 			UserDataLoader dataLoader = new UserDataLoader();
 			dataLoader.loadCity();
 			dataLoader.loadRole();
-			dataLoader.loadUser();
 			dataLoader.loadVehicleCategory();
 			dataLoader.loadVehicleSubCategory();
+			
+			transation.commit();
+
+			/*
+			 * Reason for catching RuntimeException and not HibernateException as all exceptions thrown by Hibernate
+			 * is not of type HibernateException such as NotFoundException
+			 */
+		} catch (RuntimeException e) {
+			if (transation!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transation.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}	
+		
+		return Response.ok().build();
+	}
+	
+	public static void main(String args[]){
+		
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transation = null;	
+		try {
+			transation = session.beginTransaction();
+			
+			UserDataLoader dataLoader = new UserDataLoader();
+			dataLoader.loadUser();
 			dataLoader.loadVehicle();			
 			
 			transation.commit();

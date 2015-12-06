@@ -1,9 +1,11 @@
 package com.digitusrevolution.rideshare.ride;
 
+import java.util.Collection;
 import java.util.Map;
 
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
+import com.digitusrevolution.rideshare.model.ride.domain.RoutePoint;
 import com.digitusrevolution.rideshare.ride.domain.PointDO;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 
@@ -21,14 +23,14 @@ public class RideSystemTest {
 
 		RouteDO routeDO = new RouteDO();
 		Route route = routeDO.getRoute(startPoint, endPoint);
-		Map<Integer, Point> routePoints = route.getPoints();
+		Collection<RoutePoint> routePoints = route.getRoutePoints();
 		
-		for (Map.Entry<Integer, Point> entry: routePoints.entrySet()){
-
-			System.out.println("Route Points are with sequence,lat,lng:" + entry.getKey()+":"+entry.getValue().getLatitude()+","+entry.getValue().getLongitude());
+		for (RoutePoint routePoint : routePoints) {
 			
+			System.out.println("Route Points are with sequence,lat,lng:" + routePoint.getSequence()+":"+routePoint.getPoint().getLatitude()+","+routePoint.getPoint().getLongitude());
 		}
 
+			
 
 	}
 
