@@ -31,10 +31,6 @@ public class TrustNetworkDO implements DomainObjectPKInteger<TrustNetwork>{
 		genericDAO = new GenericDAOImpl<>(TrustNetworkEntity.class);
 	}
 
-	public TrustNetwork getTrustNetwork() {
-		return trustNetwork;
-	}
-
 	public void setTrustNetwork(TrustNetwork trustNetwork) {
 		this.trustNetwork = trustNetwork;
 		trustNetworkEntity = trustNetworkMapper.getEntity(trustNetwork);

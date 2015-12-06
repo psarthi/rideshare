@@ -27,9 +27,6 @@ public class RideOfferManagementService {
 		try {
 			transation = session.beginTransaction();
 
-			RouteDO routeDO = new RouteDO();
-			routes = routeDO.getRoutes(startPoint, endPoint);
-			
 			transation.commit();
 		} catch (RuntimeException e) {
 			if (transation!=null){

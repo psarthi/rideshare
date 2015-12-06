@@ -34,10 +34,6 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		rideDAO = new RideDAO();
 	}
 	
-	public Ride getRide() {
-		return ride;
-	}
-
 	public void setRide(Ride ride) {
 		this.ride = ride;
 		rideEntity = rideMapper.getEntity(ride);

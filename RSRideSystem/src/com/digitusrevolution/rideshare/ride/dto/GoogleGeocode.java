@@ -27,6 +27,8 @@ public class GoogleGeocode {
     private String status;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    @JsonProperty("error_message")
+    private String error_message;
 
     /**
      * 
@@ -77,5 +79,15 @@ public class GoogleGeocode {
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
     }
+
+    @JsonProperty("error_message")
+	public String getError_message() {
+		return error_message;
+	}
+
+    @JsonProperty("error_message")
+	public void setError_message(String error_message) {
+		this.error_message = error_message;
+	}
 
 }

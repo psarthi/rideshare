@@ -1,9 +1,11 @@
 package com.digitusrevolution.rideshare.common;
 
+import java.net.URI;
 import java.util.Collection;
 
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
@@ -21,8 +23,9 @@ public class RESTClientUtil {
 
 		RESTClientImpl<User> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_USER_URL");
-		url = url.replace("{id}", Integer.toString(id));
-		Response response = restClientUtil.get(url);
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Integer.toString(id));
+		Response response = restClientUtil.get(uri);
 		User user = response.readEntity(User.class);
 
 		return user;
@@ -33,8 +36,9 @@ public class RESTClientUtil {
 
 		RESTClientImpl<Role> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_USER_ROLE_URL");
-		url = url.replace("{id}", Integer.toString(id));
-		Response response = restClientUtil.get(url);		
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Integer.toString(id));
+		Response response = restClientUtil.get(uri);		
 		Collection<Role> roles = response.readEntity(new GenericType<Collection<Role>>() {});
 		return roles;
 
@@ -44,10 +48,37 @@ public class RESTClientUtil {
 
 		RESTClientImpl<Vehicle> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_VEHICLE_URL");
-		url = url.replace("{userId}", Integer.toString(userId)).replace("{vehicleId}", Integer.toString(vehicleId));
-		Response response = restClientUtil.get(url);
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Integer.toString(userId),Integer.toString(vehicleId));
+		Response response = restClientUtil.get(uri);
 		Vehicle vehicle = response.readEntity(Vehicle.class);
 		return vehicle;
 
 	}
+	
+	public String getGeocode(String address){
+
+		RESTClientImpl<String> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_GOOGLE_GEOCODE_URL");
+		String key = PropertyReader.getInstance().getProperty("GOOGLE_SERVER_KEY");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(address,key);
+		Response response = restClientUtil.get(uri);
+		String json = response.readEntity(String.class);
+		return json;
+	}
+	
+	public String getDirection(Double originLat, Double originLng, Double destinationLat, Double destinationLng){
+
+		RESTClientImpl<String> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_GOOGLE_DIRECTION_URL");
+		String key = PropertyReader.getInstance().getProperty("GOOGLE_SERVER_KEY");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(originLat,originLng,destinationLat,destinationLng,key);
+		Response response = restClientUtil.get(uri);
+		String json = response.readEntity(String.class);
+		return json;
+	}
+	
+	
 }

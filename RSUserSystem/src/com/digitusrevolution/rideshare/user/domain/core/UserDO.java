@@ -34,10 +34,6 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		userDAO = new UserDAO();
 	}
 
-	public User getUser() {
-		return user;
-	}
-
 	public void setUser(User user) {
 		this.user = user;
 		userEntity = userMapper.getEntity(user);

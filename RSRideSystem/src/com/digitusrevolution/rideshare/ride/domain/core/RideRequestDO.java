@@ -30,10 +30,6 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		rideRequestDAO = new RideRequestDAO();
 	}
 
-	public RideRequest getRideRequest() {
-		return rideRequest;
-	}
-
 	public void setRideRequest(RideRequest rideRequest) {
 		this.rideRequest = rideRequest;
 		rideRequestEntity = rideRequestMapper.getEntity(rideRequest);

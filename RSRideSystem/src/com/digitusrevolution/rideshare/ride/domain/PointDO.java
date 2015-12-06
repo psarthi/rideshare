@@ -1,22 +1,24 @@
 package com.digitusrevolution.rideshare.ride.domain;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.NotFoundException;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.WebApplicationException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.GenericDAOImpl;
-import com.digitusrevolution.rideshare.common.PropertyReader;
-import com.digitusrevolution.rideshare.common.RESTClientImpl;
+import com.digitusrevolution.rideshare.common.RESTClientUtil;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
 import com.digitusrevolution.rideshare.common.mapper.ride.PointMapper;
 import com.digitusrevolution.rideshare.model.ride.data.PointEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
+import com.digitusrevolution.rideshare.ride.dto.GoogleGeocode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 public class PointDO implements DomainObjectPKInteger<Point>{
@@ -33,10 +35,6 @@ public class PointDO implements DomainObjectPKInteger<Point>{
 		pointEntity = new PointEntity();
 		pointMapper = new PointMapper();
 		genericDAO = new GenericDAOImpl<>(PointEntity.class);
-	}
-
-	public Point getPoint() {
-		return point;
 	}
 
 	public void setPoint(Point point) {
@@ -103,13 +101,21 @@ public class PointDO implements DomainObjectPKInteger<Point>{
 		fetchChild();
 		return point;
 	}
-
-	public Point getCordinates(String location){
+	
+	public Point getCordinates(String address){
 		
-		
-
-		return null;
-		
+		RESTClientUtil restClientUtil = new RESTClientUtil();
+		String json = restClientUtil.getGeocode(address);
+		ObjectMapper objectMapper = new ObjectMapper();
+		GoogleGeocode googleGeocode = null;
+		try {
+			googleGeocode = objectMapper.readValue(json, GoogleGeocode.class);
+		} catch (IOException e) {
+			throw new WebApplicationException("Unable to process JSON",e);
+		}
+		point.setLatitude(googleGeocode.getResults().get(0).getGeometry().getLocation().getLat());
+		point.setLongitude(googleGeocode.getResults().get(0).getGeometry().getLocation().getLng());
+		return point;
 	}
 
 }

@@ -87,12 +87,12 @@ public class RideDataLoader {
 			ride.setDriver(driver);
 			
 			Point point = new Point();
-			point.setLattitude("1.12");
-			point.setLongitude("2.11");
+			point.setLatitude(1.12);
+			point.setLongitude(2.11);
 			
 			Point point1 = new Point();
-			point1.setLattitude("3.12");
-			point1.setLongitude("4.11");
+			point1.setLatitude(3.12);
+			point1.setLongitude(4.11);
 
 			ride.setStartPoint(point);
 			ride.setEndPoint(point1);
@@ -109,8 +109,8 @@ public class RideDataLoader {
 			HashMap<Integer, Point> points = new HashMap<>();
 			
 			Point point2 = new Point();
-			point2.setLattitude("5.12");
-			point2.setLongitude("6.11");
+			point2.setLatitude(5.12);
+			point2.setLongitude(6.11);
 			
 			points.put(1, point);
 			points.put(2, point2);

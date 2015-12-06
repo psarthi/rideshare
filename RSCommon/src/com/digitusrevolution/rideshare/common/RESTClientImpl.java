@@ -1,5 +1,7 @@
 package com.digitusrevolution.rideshare.common;
 
+import java.net.URI;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -17,9 +19,9 @@ public class RESTClientImpl<T> implements RESTClient<T>{
 
 
 	@Override
-	public Response get(String url) {
+	public Response get(URI uri) {
 		Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class));
-		WebTarget webTarget = client.target(url);
+		WebTarget webTarget = client.target(uri);
 		
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 		Response response = invocationBuilder.get();	
@@ -28,9 +30,9 @@ public class RESTClientImpl<T> implements RESTClient<T>{
 	}
 
 	@Override
-	public Response post(String url, T model) {
+	public Response post(URI uri, T model) {
 		Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class));
-		WebTarget webTarget = client.target(url);
+		WebTarget webTarget = client.target(uri);
 		
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 		Response response = invocationBuilder.post(Entity.entity(model, MediaType.APPLICATION_JSON));		
@@ -39,9 +41,9 @@ public class RESTClientImpl<T> implements RESTClient<T>{
 	}
 
 	@Override
-	public Response put(String url, T model) {
+	public Response put(URI uri, T model) {
 		Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class));
-		WebTarget webTarget = client.target(url);
+		WebTarget webTarget = client.target(uri);
 		
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 		Response response = invocationBuilder.put(Entity.entity(model, MediaType.APPLICATION_JSON));		
@@ -50,9 +52,9 @@ public class RESTClientImpl<T> implements RESTClient<T>{
 	}
 
 	@Override
-	public Response delete(String url) {
+	public Response delete(URI uri) {
 		Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class));
-		WebTarget webTarget = client.target(url);
+		WebTarget webTarget = client.target(uri);
 		
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 		Response response = invocationBuilder.delete();		

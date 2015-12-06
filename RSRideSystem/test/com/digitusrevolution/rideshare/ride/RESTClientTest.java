@@ -57,7 +57,7 @@ public class RESTClientTest {
 		System.out.println("Response: "+json);
 
 
-*/
+
 		
 		// Converting JSON to Specific Class & Tree model using Jackson
 	 
@@ -127,11 +127,11 @@ public class RESTClientTest {
 			GoogleDirection direction = mapper.readValue(json2, GoogleDirection.class);
 			List<Step> steps = direction.getRoutes().get(0).getLegs().get(0).getSteps();
 			for (Step step : steps) {
+				System.out.println("-----");
 				System.out.println("Start Location: " + step.getStartLocation().getLat()+","+step.getStartLocation().getLng());
 				System.out.println("Distance: " + step.getDistance().getText());
 				System.out.println("Time: " + step.getDuration().getText());
 				System.out.println("End Location: " + step.getEndLocation().getLat()+","+step.getEndLocation().getLng());
-				System.out.println("-----");
 			}
 		
 		
@@ -139,7 +139,9 @@ public class RESTClientTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+	
+			*/
+
 
 
 		

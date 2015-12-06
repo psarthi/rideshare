@@ -26,10 +26,6 @@ public class VehicleCategoryDO implements DomainObjectPKInteger<VehicleCategory>
 		genericDAO = new GenericDAOImpl<>(VehicleCategoryEntity.class);
 	}
 	
-	public VehicleCategory getVehicleCategory() {
-		return vehicleCategory;
-	}
-
 	public void setVehicleCategory(VehicleCategory vehicleCategory) {
 		this.vehicleCategory = vehicleCategory;
 		vehicleCategoryEntity = vehicleCategoryMapper.getEntity(vehicleCategory);

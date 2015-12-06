@@ -26,10 +26,6 @@ public class CityDO implements DomainObjectPKInteger<City>{
 		genericDAO = new GenericDAOImpl<>(CityEntity.class);
 	}
 
-	public City getCity() {
-		return city;
-	}
-
 	public void setCity(City city) {
 		this.city = city;
 		cityEntity = cityMapper.getEntity(city);

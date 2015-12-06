@@ -31,10 +31,6 @@ public class TrustCategoryDO implements DomainObjectPKString<TrustCategory>{
 		genericDAO = new GenericDAOImpl<>(TrustCategoryEntity.class);
 	}
 	
-	public TrustCategory getTrustCategory() {
-		return trustCategory;
-	}
-
 	public void setTrustCategory(TrustCategory trustCategory) {
 		this.trustCategory = trustCategory;
 		trustCategoryEntity = trustCategoryMapper.getEntity(trustCategory);

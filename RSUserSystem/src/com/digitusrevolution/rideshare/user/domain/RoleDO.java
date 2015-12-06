@@ -26,11 +26,6 @@ public class RoleDO implements DomainObjectPKString<Role>{
 		genericDAO = new GenericDAOImpl<>(RoleEntity.class);
 	}
 
-	public Role getRole() {
-		return role;
-	}
-
-
 	public void setRole(Role role) {
 		this.role = role;
 		roleEntity = roleMapper.getEntity(role);
