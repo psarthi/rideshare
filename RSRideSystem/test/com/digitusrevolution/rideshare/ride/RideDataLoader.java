@@ -1,6 +1,11 @@
 package com.digitusrevolution.rideshare.ride;
 
-import java.util.HashMap;
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -15,12 +20,13 @@ import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.common.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
-import com.digitusrevolution.rideshare.model.ride.domain.RoutePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
+import com.digitusrevolution.rideshare.ride.domain.PointDO;
+import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 import com.digitusrevolution.rideshare.ride.domain.TrustCategoryDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 
@@ -81,7 +87,8 @@ public class RideDataLoader {
 			transation = session.beginTransaction();
 			
 			RideDataLoader dataLoader = new RideDataLoader();
-			dataLoader.loadRide();
+			//dataLoader.loadRide();
+			dataLoader.test();
 			
 			transation.commit();
 
@@ -120,17 +127,19 @@ public class RideDataLoader {
 			RESTClientUtil restClientUtil = new RESTClientUtil();
 			User driver = restClientUtil.getUser(1);
 			ride.setDriver(driver);
+	
+			PointDO pointDO = new PointDO();
+			Point startPoint = pointDO.getCordinates("Gopalan Grandeur Bangalore"); 
 			
-			Point point = new Point();
-			point.setLatitude(1.12);
-			point.setLongitude(2.11);
+			Point endPoint = pointDO.getCordinates("Silk Board Bangalore"); 
 			
-			Point point1 = new Point();
-			point1.setLatitude(3.12);
-			point1.setLongitude(4.11);
-
-			ride.setStartPoint(point);
-			ride.setEndPoint(point1);
+			ride.setStartPoint(startPoint);
+			ride.setEndPoint(endPoint);
+			
+			LocalDateTime localDateTime = LocalDateTime.of(2015, Month.DECEMBER, 7, 9, 30);
+			ZoneId zoneId = ZoneId.of("Asia/Kolkata"); 
+			ZonedDateTime startTime = ZonedDateTime.of(localDateTime, zoneId);
+			ride.setDateTime(startTime);
 			
 			TrustCategoryDO trustCategoryDO = new TrustCategoryDO();
 			TrustCategory trustCategory = trustCategoryDO.get("Anonymous");
@@ -139,29 +148,9 @@ public class RideDataLoader {
 			trustNetwork.getTrustCategories().add(trustCategory);
 			ride.setTrustNetwork(trustNetwork);
 
-			
-			Route route = new Route();
-			
-			
-			Point point2 = new Point();
-			point2.setLatitude(5.12);
-			point2.setLongitude(6.11);
-			
-			RoutePoint routePoint = new RoutePoint();
-			routePoint.setPoint(point);
-			routePoint.setSequence(1);
-			route.getRoutePoints().add(routePoint);
-
-			RoutePoint routePoint1 = new RoutePoint();
-			routePoint1.setPoint(point1);
-			routePoint1.setSequence(2);
-			route.getRoutePoints().add(routePoint1);
-			
-			RoutePoint routePoint2 = new RoutePoint();
-			routePoint2.setPoint(point2);
-			routePoint2.setSequence(3);
-			route.getRoutePoints().add(routePoint2);
-			
+			RouteDO routeDO = new RouteDO();
+			Route route = routeDO.getRoute(startPoint, endPoint);
+						
 			ride.setRoute(route);
 			
 			Vehicle vehicle = restClientUtil.getVehicle(driver.getId(), 1);
@@ -172,6 +161,21 @@ public class RideDataLoader {
 			ride = rideDO.get(id);
 			System.out.println("Route Point Size: "+ride.getRoute().getRoutePoints().size());;
 
+		}
+		
+		public void test(){
+			
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d yyyy hh:mm a");
+			RideDO rideDO = new RideDO();
+			ZonedDateTime zonedDateTime = rideDO.get(1).getDateTime();
+			System.out.println(zonedDateTime.format(formatter)+","+zonedDateTime.getZone());
+			
+			
+			ZonedDateTime dateTime1 = zonedDateTime.toOffsetDateTime().atZoneSameInstant(ZoneId.of("Australia/Canberra"));		
+			System.out.println(dateTime1.format(formatter)+","+dateTime1.getZone());
+			
+			ZonedDateTime dateTime2 = zonedDateTime.toOffsetDateTime().atZoneSameInstant(ZoneId.of("UTC"));
+			System.out.println(dateTime2.format(formatter)+","+dateTime2.getZone());
 			
 		}
 		

@@ -1,8 +1,8 @@
 package com.digitusrevolution.rideshare.model.ride.domain.core;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
@@ -16,7 +16,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 public class Ride {
 
 	private int id;
-	private Date dateTime;
+	private ZonedDateTime dateTime;
 	private Point startPoint;
 	private Point endPoint;
 	private int seatOffered;
@@ -40,10 +40,10 @@ public class Ride {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public Date getDateTime() {
+	public ZonedDateTime getDateTime() {
 		return dateTime;
 	}
-	public void setDateTime(Date dateTime) {
+	public void setDateTime(ZonedDateTime dateTime) {
 		this.dateTime = dateTime;
 	}
 	public Point getStartPoint() {
