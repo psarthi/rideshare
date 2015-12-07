@@ -8,7 +8,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
 
 @Embeddable
 public class RouteEntity {

@@ -4,9 +4,11 @@ import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import javax.validation.constraints.AssertTrue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -87,8 +89,8 @@ public class RideDataLoader {
 			transation = session.beginTransaction();
 			
 			RideDataLoader dataLoader = new RideDataLoader();
-			//dataLoader.loadRide();
-			dataLoader.test();
+			dataLoader.loadRide();
+		//	dataLoader.test();
 			
 			transation.commit();
 
@@ -137,8 +139,8 @@ public class RideDataLoader {
 			ride.setEndPoint(endPoint);
 			
 			LocalDateTime localDateTime = LocalDateTime.of(2015, Month.DECEMBER, 7, 9, 30);
-			ZoneId zoneId = ZoneId.of("Asia/Kolkata"); 
-			ZonedDateTime startTime = ZonedDateTime.of(localDateTime, zoneId);
+			ZoneId india = ZoneId.of("Asia/Kolkata");
+			ZonedDateTime startTime = ZonedDateTime.of(localDateTime, india);
 			ride.setDateTime(startTime);
 			
 			TrustCategoryDO trustCategoryDO = new TrustCategoryDO();
@@ -167,16 +169,13 @@ public class RideDataLoader {
 			
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d yyyy hh:mm a");
 			RideDO rideDO = new RideDO();
-			ZonedDateTime zonedDateTime = rideDO.get(1).getDateTime();
+			ZonedDateTime zonedDateTime = rideDO.get(3).getDateTime();
 			System.out.println(zonedDateTime.format(formatter)+","+zonedDateTime.getZone());
 			
-			
-			ZonedDateTime dateTime1 = zonedDateTime.toOffsetDateTime().atZoneSameInstant(ZoneId.of("Australia/Canberra"));		
+			ZoneId india = ZoneId.of("Asia/Kolkata");
+			ZonedDateTime dateTime1 = zonedDateTime.withZoneSameInstant(india);		
 			System.out.println(dateTime1.format(formatter)+","+dateTime1.getZone());
-			
-			ZonedDateTime dateTime2 = zonedDateTime.toOffsetDateTime().atZoneSameInstant(ZoneId.of("UTC"));
-			System.out.println(dateTime2.format(formatter)+","+dateTime2.getZone());
-			
+						
 		}
 		
 }

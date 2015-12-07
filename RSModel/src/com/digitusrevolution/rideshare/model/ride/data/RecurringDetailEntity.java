@@ -1,6 +1,6 @@
 package com.digitusrevolution.rideshare.model.ride.data;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,8 +14,8 @@ public class RecurringDetailEntity {
 	@Id
 	@GeneratedValue
 	private int id;
-	private Date startDate;
-	private Date endDate;
+	private ZonedDateTime startDate;
+	private ZonedDateTime endDate;
 	private String repeatFrequency;
 
 	public int getId() {
@@ -26,19 +26,19 @@ public class RecurringDetailEntity {
 		this.id = id;
 	}
 
-	public Date getStartDate() {
+	public ZonedDateTime getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Date startDate) {
+	public void setStartDate(ZonedDateTime startDate) {
 		this.startDate = startDate;
 	}
 
-	public Date getEndDate() {
+	public ZonedDateTime getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Date endDate) {
+	public void setEndDate(ZonedDateTime endDate) {
 		this.endDate = endDate;
 	}
 

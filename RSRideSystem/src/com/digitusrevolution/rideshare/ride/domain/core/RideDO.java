@@ -1,5 +1,7 @@
 package com.digitusrevolution.rideshare.ride.domain.core;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -117,6 +119,8 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		for (Role role : roles) {
 			if (role.getName().equals("Driver")){
 				ride.setStatus("planned");
+				ZonedDateTime dateTimeUTC = ride.getDateTime().withZoneSameInstant(ZoneOffset.UTC);
+				ride.setDateTime(dateTimeUTC);
 				id = create(ride);
 				return id;
 			} 

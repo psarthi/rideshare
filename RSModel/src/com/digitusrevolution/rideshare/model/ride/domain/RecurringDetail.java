@@ -1,12 +1,12 @@
 package com.digitusrevolution.rideshare.model.ride.domain;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 public class RecurringDetail {
 	
 	private int id;
-	private Date startDate;
-	private Date endDate;
+	private ZonedDateTime startDate;
+	private ZonedDateTime endDate;
 	private String repeatFrequency;
 
 	public int getId() {
@@ -17,19 +17,19 @@ public class RecurringDetail {
 		this.id = id;
 	}
 
-	public Date getStartDate() {
+	public ZonedDateTime getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Date startDate) {
+	public void setStartDate(ZonedDateTime startDate) {
 		this.startDate = startDate;
 	}
 
-	public Date getEndDate() {
+	public ZonedDateTime getEndDate() {
 		return endDate;
 	}
 
-	public void setEndDate(Date endDate) {
+	public void setEndDate(ZonedDateTime endDate) {
 		this.endDate = endDate;
 	}
 
