@@ -1,14 +1,12 @@
 package com.digitusrevolution.rideshare.ride;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Month;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import javax.validation.constraints.AssertTrue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -25,12 +23,15 @@ import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.ride.domain.PointDO;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 import com.digitusrevolution.rideshare.ride.domain.TrustCategoryDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
+import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
 
 @Path("/domain/loadsample/ride")
 public class RideDataLoader {
@@ -89,8 +90,9 @@ public class RideDataLoader {
 			transation = session.beginTransaction();
 			
 			RideDataLoader dataLoader = new RideDataLoader();
-			dataLoader.loadRide();
-		//	dataLoader.test();
+//			dataLoader.loadRide();
+//			dataLoader.loadRideRequest();
+			dataLoader.test();
 			
 			transation.commit();
 
@@ -129,20 +131,10 @@ public class RideDataLoader {
 			RESTClientUtil restClientUtil = new RESTClientUtil();
 			User driver = restClientUtil.getUser(1);
 			ride.setDriver(driver);
-	
-			PointDO pointDO = new PointDO();
-			Point startPoint = pointDO.getCordinates("Gopalan Grandeur Bangalore"); 
 			
-			Point endPoint = pointDO.getCordinates("Silk Board Bangalore"); 
-			
-			ride.setStartPoint(startPoint);
-			ride.setEndPoint(endPoint);
-			
-			LocalDateTime localDateTime = LocalDateTime.of(2015, Month.DECEMBER, 7, 9, 30);
-			ZoneId india = ZoneId.of("Asia/Kolkata");
-			ZonedDateTime startTime = ZonedDateTime.of(localDateTime, india);
-			ride.setDateTime(startTime);
-			
+			Vehicle vehicle = restClientUtil.getVehicle(driver.getId(), 1);
+			ride.setVehicle(vehicle);
+
 			TrustCategoryDO trustCategoryDO = new TrustCategoryDO();
 			TrustCategory trustCategory = trustCategoryDO.get("Anonymous");
 	 
@@ -150,26 +142,134 @@ public class RideDataLoader {
 			trustNetwork.getTrustCategories().add(trustCategory);
 			ride.setTrustNetwork(trustNetwork);
 
-			RouteDO routeDO = new RouteDO();
-			Route route = routeDO.getRoute(startPoint, endPoint);
-						
-			ride.setRoute(route);
-			
-			Vehicle vehicle = restClientUtil.getVehicle(driver.getId(), 1);
-			ride.setVehicle(vehicle);
-					
-			int id = rideDO.offerRide(ride);
-		
-			ride = rideDO.get(id);
-			System.out.println("Route Point Size: "+ride.getRoute().getRoutePoints().size());;
+			// Ride - 1
 
+			PointDO pointDO = new PointDO();
+			Point startPoint = pointDO.getCordinates("Gopalan Grandeur Bangalore"); 			
+			Point endPoint = pointDO.getCordinates("Silk Board Bangalore"); 
+			
+			ride.setStartPoint(startPoint);
+			ride.setEndPoint(endPoint);
+			
+			LocalDateTime localDateTime = LocalDateTime.of(2015, Month.DECEMBER, 8, 9, 30);
+			ZoneId india = ZoneId.of("Asia/Kolkata");
+			ZonedDateTime startTime = ZonedDateTime.of(localDateTime, india);
+			ride.setStartTime(startTime);
+			
+			RouteDO routeDO = new RouteDO();
+			Route route = routeDO.getRoute(startPoint, endPoint);						
+			ride.setRoute(route);
+					
+			int id = rideDO.offerRide(ride);	
+			System.out.println("Ride has been created: "+id);
+
+			// Ride - 2
+
+			startPoint = pointDO.getCordinates("ITPL Bangalore"); 			
+			endPoint = pointDO.getCordinates("Silk Board Bangalore"); 
+			
+			ride.setStartPoint(startPoint);
+			ride.setEndPoint(endPoint);
+			
+			localDateTime = LocalDateTime.of(2015, Month.DECEMBER, 8, 9, 30);
+			startTime = ZonedDateTime.of(localDateTime, india);
+			ride.setStartTime(startTime);
+			
+			route = routeDO.getRoute(startPoint, endPoint);						
+			ride.setRoute(route);
+					
+			id = rideDO.offerRide(ride);	
+			System.out.println("Ride has been created: "+id);
+
+			// Ride - 3
+
+			startPoint = pointDO.getCordinates("Marathalli Bangalore"); 			
+			endPoint = pointDO.getCordinates("Electronic City Bangalore"); 
+			
+			ride.setStartPoint(startPoint);
+			ride.setEndPoint(endPoint);
+			
+			localDateTime = LocalDateTime.of(2015, Month.DECEMBER, 8, 9, 30);
+			startTime = ZonedDateTime.of(localDateTime, india);
+			ride.setStartTime(startTime);
+			
+			route = routeDO.getRoute(startPoint, endPoint);						
+			ride.setRoute(route);
+					
+			id = rideDO.offerRide(ride);	
+			System.out.println("Ride has been created: "+id);
+
+			// Ride - 4
+
+			startPoint = pointDO.getCordinates("Hebbal Bangalore"); 			
+			endPoint = pointDO.getCordinates("BTM Layout Bangalore"); 
+			
+			ride.setStartPoint(startPoint);
+			ride.setEndPoint(endPoint);
+			
+			localDateTime = LocalDateTime.of(2015, Month.DECEMBER, 8, 9, 30);
+			startTime = ZonedDateTime.of(localDateTime, india);
+			ride.setStartTime(startTime);
+			
+			route = routeDO.getRoute(startPoint, endPoint);						
+			ride.setRoute(route);
+					
+			id = rideDO.offerRide(ride);	
+			System.out.println("Ride has been created: "+id);
+			
 		}
+		
+		
+		public void loadRideRequest(){
+			
+			RideRequestDO rideRequestDO = new RideRequestDO();
+			RideRequest rideRequest = new RideRequest();
+			
+			RESTClientUtil restClientUtil = new RESTClientUtil();
+			User passenger = restClientUtil.getUser(2);
+			rideRequest.setPassenger(passenger);
+			
+			restClientUtil = new RESTClientUtil();
+			VehicleCategory vehicleCategory = restClientUtil.getVehicleCategory(1);
+			rideRequest.setVehicleCategory(vehicleCategory);
+			
+			TrustCategoryDO trustCategoryDO = new TrustCategoryDO();
+			TrustCategory trustCategory = trustCategoryDO.get("Anonymous");
+	 
+			TrustNetwork trustNetwork = new TrustNetwork();
+			trustNetwork.getTrustCategories().add(trustCategory);
+			rideRequest.setTrustNetwork(trustNetwork);
+
+			// Ride Request - 1
+
+			PointDO pointDO = new PointDO();
+			Point pickupPoint = pointDO.getCordinates("RMZ Ecospace Bangalore"); 			
+			Point dropPoint = pointDO.getCordinates("NPS HSR Bangalore"); 
+			
+			rideRequest.setPickupPoint(pickupPoint);
+			rideRequest.setDropPoint(dropPoint);
+			
+			rideRequest.setPickupPointVariation(1);
+			rideRequest.setDropPointVariation(1);
+			
+			
+			LocalDateTime localDateTime = LocalDateTime.of(2015, Month.DECEMBER, 8, 10, 00);
+			ZoneId india = ZoneId.of("Asia/Kolkata");
+			ZonedDateTime pickupTime = ZonedDateTime.of(localDateTime, india);
+			rideRequest.setPickupTime(pickupTime);
+			rideRequest.setPickupTimeVariation(LocalTime.of(0, 30));
+			
+			int id = rideRequestDO.requestRide(rideRequest);	
+			System.out.println("Ride Request has been created: "+id);
+			
+		}
+
 		
 		public void test(){
 			
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d yyyy hh:mm a");
 			RideDO rideDO = new RideDO();
-			ZonedDateTime zonedDateTime = rideDO.get(3).getDateTime();
+			ZonedDateTime zonedDateTime = rideDO.get(5).getStartTime();
 			System.out.println(zonedDateTime.format(formatter)+","+zonedDateTime.getZone());
 			
 			ZoneId india = ZoneId.of("Asia/Kolkata");

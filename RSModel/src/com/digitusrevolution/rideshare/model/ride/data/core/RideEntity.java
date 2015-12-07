@@ -35,7 +35,7 @@ public class RideEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
-	private ZonedDateTime dateTime;
+	private ZonedDateTime startTime;
 	@OneToOne(cascade=CascadeType.ALL)
 	private PointEntity startPoint;
 	@OneToOne(cascade=CascadeType.ALL)
@@ -73,11 +73,11 @@ public class RideEntity {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public ZonedDateTime getDateTime() {
-		return dateTime;
+	public ZonedDateTime getStartTime() {
+		return startTime;
 	}
-	public void setDateTime(ZonedDateTime dateTime) {
-		this.dateTime = dateTime;
+	public void setStartTime(ZonedDateTime startTime) {
+		this.startTime = startTime;
 	}
 	public int getSeatOffered() {
 		return seatOffered;

@@ -28,7 +28,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 	public RideEntity getEntity(Ride ride) {
 		RideEntity rideEntity = new RideEntity();
 		rideEntity.setId(ride.getId());
-		rideEntity.setDateTime(ride.getDateTime());
+		rideEntity.setStartTime(ride.getStartTime());
 		rideEntity.setSeatOffered(ride.getSeatOffered());
 		rideEntity.setLuggageCapacityOffered(ride.getLuggageCapacityOffered());
 		rideEntity.setRecur(ride.getRecur());
@@ -76,7 +76,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 	public Ride getDomainModel(RideEntity rideEntity) {
 		Ride ride = new Ride();
 		ride.setId(rideEntity.getId());
-		ride.setDateTime(rideEntity.getDateTime());
+		ride.setStartTime(rideEntity.getStartTime());
 		ride.setSeatOffered(rideEntity.getSeatOffered());
 		ride.setLuggageCapacityOffered(rideEntity.getLuggageCapacityOffered());
 		ride.setRecur(rideEntity.getRecur());

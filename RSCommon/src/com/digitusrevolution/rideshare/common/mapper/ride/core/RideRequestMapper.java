@@ -31,7 +31,8 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		
 		RideRequestEntity rideRequestEntity = new RideRequestEntity();
 		rideRequestEntity.setId(rideRequest.getId());
-		rideRequestEntity.setDateTime(rideRequest.getDateTime());
+		rideRequestEntity.setPickupTime(rideRequest.getPickupTime());
+		rideRequestEntity.setPickupTimeVariation(rideRequest.getPickupTimeVariation());
 		rideRequestEntity.setSeatRequired(rideRequest.getSeatRequired());
 		rideRequestEntity.setLuggageCapacityRequired(rideRequest.getLuggageCapacityRequired());
 		rideRequestEntity.setPickupPointVariation(rideRequest.getPickupPointVariation());
@@ -45,18 +46,22 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		point = rideRequest.getDropPoint();
 		rideRequestEntity.setDropPoint(pointMapper.getEntity(point));
 		point = rideRequest.getRidePickupPoint();
+		if (point!=null){
 		rideRequestEntity.setRidePickupPoint(pointMapper.getEntity(point));
+		}		
 		point = rideRequest.getRideDropPoint();
+		if (point!=null){
 		rideRequestEntity.setRideDropPoint(pointMapper.getEntity(point));	
-		
+		}
 		VehicleCategoryMapper vehicleCategoryMapper = new VehicleCategoryMapper();
 		VehicleCategory vehicleCategory = rideRequest.getVehicleCategory();
 		rideRequestEntity.setVehicleCategory(vehicleCategoryMapper.getEntity(vehicleCategory));
 		
 		VehicleSubCategoryMapper vehicleSubCategoryMapper = new VehicleSubCategoryMapper();
 		VehicleSubCategory vehicleSubCategory = rideRequest.getVehicleSubCategory();
+		if (vehicleSubCategory!=null){
 		rideRequestEntity.setVehicleSubCategory(vehicleSubCategoryMapper.getEntity(vehicleSubCategory));
-		
+		}
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
 		TrustNetwork trustNetwork = rideRequest.getTrustNetwork();
 		rideRequestEntity.setTrustNetwork(trustNetworkMapper.getEntity(trustNetwork));
@@ -67,7 +72,9 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		
 		RideMapper rideMapper = new RideMapper();
 		Ride ride = rideRequest.getAcceptedRide();
+		if (ride!=null){
 		rideRequestEntity.setAcceptedRide(rideMapper.getEntity(ride));
+		}
 		
 		rideRequestEntity = getEntityChild(rideRequest, rideRequestEntity);
 
@@ -90,7 +97,8 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		
 		RideRequest rideRequest = new RideRequest();
 		rideRequest.setId(rideRequestEntity.getId());
-		rideRequest.setDateTime(rideRequestEntity.getDateTime());
+		rideRequest.setPickupTime(rideRequestEntity.getPickupTime());
+		rideRequest.setPickupTimeVariation(rideRequestEntity.getPickupTimeVariation());
 		rideRequest.setSeatRequired(rideRequestEntity.getSeatRequired());
 		rideRequest.setLuggageCapacityRequired(rideRequestEntity.getLuggageCapacityRequired());
 		rideRequest.setPickupPointVariation(rideRequestEntity.getPickupPointVariation());
@@ -104,18 +112,22 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		pointEntity = rideRequestEntity.getDropPoint();
 		rideRequest.setDropPoint(pointMapper.getDomainModel(pointEntity));
 		pointEntity = rideRequestEntity.getRidePickupPoint();
+		if (pointEntity!=null){
 		rideRequest.setRidePickupPoint(pointMapper.getDomainModel(pointEntity));
+		}
 		pointEntity = rideRequestEntity.getRideDropPoint();
+		if (pointEntity!=null){
 		rideRequest.setRideDropPoint(pointMapper.getDomainModel(pointEntity));	
-		
+		}
 		VehicleCategoryMapper vehicleCategoryMapper = new VehicleCategoryMapper();
 		VehicleCategoryEntity vehicleCategoryEntity = rideRequestEntity.getVehicleCategory();
 		rideRequest.setVehicleCategory(vehicleCategoryMapper.getDomainModel(vehicleCategoryEntity));
 		
 		VehicleSubCategoryMapper vehicleSubCategoryMapper = new VehicleSubCategoryMapper();
 		VehicleSubCategoryEntity vehicleSubCategoryEntity = rideRequestEntity.getVehicleSubCategory();
+		if (vehicleSubCategoryEntity!=null){
 		rideRequest.setVehicleSubCategory(vehicleSubCategoryMapper.getDomainModel(vehicleSubCategoryEntity));
-		
+		}
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
 		TrustNetworkEntity trustNetworkEntity = rideRequestEntity.getTrustNetwork();
 		rideRequest.setTrustNetwork(trustNetworkMapper.getDomainModel(trustNetworkEntity));
@@ -126,8 +138,9 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		
 		RideMapper rideMapper = new RideMapper();
 		RideEntity rideEntity = rideRequestEntity.getAcceptedRide();
+		if (rideEntity!=null){
 		rideRequest.setAcceptedRide(rideMapper.getDomainModel(rideEntity));
-		
+		}
 		return rideRequest;
 
 	}

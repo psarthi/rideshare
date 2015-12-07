@@ -119,8 +119,8 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		for (Role role : roles) {
 			if (role.getName().equals("Driver")){
 				ride.setStatus("planned");
-				ZonedDateTime dateTimeUTC = ride.getDateTime().withZoneSameInstant(ZoneOffset.UTC);
-				ride.setDateTime(dateTimeUTC);
+				ZonedDateTime startTimeUTC = ride.getStartTime().withZoneSameInstant(ZoneOffset.UTC);
+				ride.setStartTime(startTimeUTC);
 				id = create(ride);
 				return id;
 			} 

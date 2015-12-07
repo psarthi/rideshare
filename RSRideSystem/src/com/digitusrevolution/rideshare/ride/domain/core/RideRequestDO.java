@@ -1,5 +1,7 @@
 package com.digitusrevolution.rideshare.ride.domain.core;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,6 +102,13 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		return rideRequest;
 	}
 
+	public int requestRide(RideRequest rideRequest){
+		ZonedDateTime pickupTimeUTC = rideRequest.getPickupTime().withZoneSameInstant(ZoneOffset.UTC);
+		rideRequest.setPickupTime(pickupTimeUTC);
+		rideRequest.setStatus("unfulfilled");
+		int id = create(rideRequest);
+		return id;
+	}
 	
 
 }

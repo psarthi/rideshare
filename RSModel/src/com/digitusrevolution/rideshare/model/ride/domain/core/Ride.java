@@ -16,7 +16,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 public class Ride {
 
 	private int id;
-	private ZonedDateTime dateTime;
+	private ZonedDateTime startTime;
 	private Point startPoint;
 	private Point endPoint;
 	private int seatOffered;
@@ -40,11 +40,11 @@ public class Ride {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public ZonedDateTime getDateTime() {
-		return dateTime;
+	public ZonedDateTime getStartTime() {
+		return startTime;
 	}
-	public void setDateTime(ZonedDateTime dateTime) {
-		this.dateTime = dateTime;
+	public void setStartTime(ZonedDateTime startTime) {
+		this.startTime = startTime;
 	}
 	public Point getStartPoint() {
 		return startPoint;

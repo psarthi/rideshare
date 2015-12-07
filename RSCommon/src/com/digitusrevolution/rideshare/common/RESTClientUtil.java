@@ -8,6 +8,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import com.digitusrevolution.rideshare.model.user.domain.Role;
+import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 
@@ -27,9 +28,7 @@ public class RESTClientUtil {
 		URI uri = uriBuilder.build(Integer.toString(id));
 		Response response = restClientUtil.get(uri);
 		User user = response.readEntity(User.class);
-
 		return user;
-
 	}
 
 	public Collection<Role> getRoles(int id){
@@ -41,7 +40,6 @@ public class RESTClientUtil {
 		Response response = restClientUtil.get(uri);		
 		Collection<Role> roles = response.readEntity(new GenericType<Collection<Role>>() {});
 		return roles;
-
 	}
 
 	public Vehicle getVehicle(int userId, int vehicleId){
@@ -53,7 +51,6 @@ public class RESTClientUtil {
 		Response response = restClientUtil.get(uri);
 		Vehicle vehicle = response.readEntity(Vehicle.class);
 		return vehicle;
-
 	}
 	
 	public String getGeocode(String address){
@@ -79,6 +76,18 @@ public class RESTClientUtil {
 		String json = response.readEntity(String.class);
 		return json;
 	}
+	
+	public VehicleCategory getVehicleCategory(int id){
+
+		RESTClientImpl<VehicleCategory> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_VEHICLE_CATEGORY_URL");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Integer.toString(id));
+		Response response = restClientUtil.get(uri);
+		VehicleCategory vehicleCategory = response.readEntity(VehicleCategory.class);
+		return vehicleCategory;
+	}
+
 	
 	
 }

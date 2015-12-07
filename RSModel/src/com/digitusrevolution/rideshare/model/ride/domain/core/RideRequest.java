@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.model.ride.domain.core;
 
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +17,8 @@ public class RideRequest {
 	private int id;
 	private Point pickupPoint;
 	private Point dropPoint;
-	private ZonedDateTime dateTime;
+	private ZonedDateTime pickupTime;
+	private LocalTime pickupTimeVariation;
 	private VehicleCategory vehicleCategory;
 	private VehicleSubCategory vehicleSubCategory;
 	private TrustNetwork trustNetwork;
@@ -51,11 +53,17 @@ public class RideRequest {
 	public void setDropPoint(Point dropPoint) {
 		this.dropPoint = dropPoint;
 	}
-	public ZonedDateTime getDateTime() {
-		return dateTime;
+	public ZonedDateTime getPickupTime() {
+		return pickupTime;
 	}
-	public void setDateTime(ZonedDateTime dateTime) {
-		this.dateTime = dateTime;
+	public void setPickupTime(ZonedDateTime pickupTime) {
+		this.pickupTime = pickupTime;
+	}
+	public LocalTime getPickupTimeVariation() {
+		return pickupTimeVariation;
+	}
+	public void setPickupTimeVariation(LocalTime pickupTimeVariation) {
+		this.pickupTimeVariation = pickupTimeVariation;
 	}
 	public VehicleCategory getVehicleCategory() {
 		return vehicleCategory;

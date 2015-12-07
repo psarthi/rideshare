@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.model.ride.data.core;
 
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,7 +36,8 @@ public class RideRequestEntity {
 	private PointEntity pickupPoint;
 	@OneToOne(cascade=CascadeType.ALL)
 	private PointEntity dropPoint;
-	private ZonedDateTime dateTime;
+	private ZonedDateTime pickupTime;
+	private LocalTime pickupTimeVariation;
 	@ManyToOne
 	private VehicleCategoryEntity vehicleCategory;
 	@ManyToOne
@@ -68,11 +70,17 @@ public class RideRequestEntity {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public ZonedDateTime getDateTime() {
-		return dateTime;
+	public ZonedDateTime getPickupTime() {
+		return pickupTime;
 	}
-	public void setDateTime(ZonedDateTime dateTime) {
-		this.dateTime = dateTime;
+	public void setPickupTime(ZonedDateTime pickupTime) {
+		this.pickupTime = pickupTime;
+	}
+	public LocalTime getPickupTimeVariation() {
+		return pickupTimeVariation;
+	}
+	public void setPickupTimeVariation(LocalTime pickupTimeVariation) {
+		this.pickupTimeVariation = pickupTimeVariation;
 	}
 	public int getSeatRequired() {
 		return seatRequired;

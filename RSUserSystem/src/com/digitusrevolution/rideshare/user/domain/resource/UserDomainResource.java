@@ -58,6 +58,4 @@ public class UserDomainResource implements DomainResource<User>{
 	public VehicleDomainResource getVehicleDomainResource(){
 		return new VehicleDomainResource();
 	}
-
-
 }

@@ -1,6 +1,5 @@
 package com.digitusrevolution.rideshare.user.domain.service;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -10,29 +9,28 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.common.inf.DomainService;
-import com.digitusrevolution.rideshare.model.user.domain.Role;
-import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.user.domain.core.UserDO;
+import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
+import com.digitusrevolution.rideshare.user.domain.VehicleCategoryDO;
 
-public class UserDomainService implements DomainService<User>{
+public class VehicleCategoryDomainService implements DomainService<VehicleCategory>{
 
-	private static final Logger logger = LogManager.getLogger(UserDomainService.class.getName());
+	private static final Logger logger = LogManager.getLogger(VehicleCategoryDomainService.class.getName());
 
 	@Override
-	public User get(int id, boolean fetchChild){
+	public VehicleCategory get(int id, boolean fetchChild) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
-		User user = null;
+		VehicleCategory vehicleCategory = null;
 		try {
 			transation = session.beginTransaction();
-	
-			UserDO userDO = new UserDO();
+
+			VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();
 			if (fetchChild){
-				user = userDO.getChild(id);
+				vehicleCategory = vehicleCategoryDO.getChild(id);
 			} else {
-				user = userDO.get(id);			
+				vehicleCategory = vehicleCategoryDO.get(id);			
 			}
-			
+
 			transation.commit();
 		} catch (RuntimeException e) {
 			if (transation!=null){
@@ -47,19 +45,19 @@ public class UserDomainService implements DomainService<User>{
 				session.close();				
 			}
 		}
-		return user;
+		return vehicleCategory;
 	}
-	
+
 	@Override
-	public List<User> getAll(){
+	public List<VehicleCategory> getAll() {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
-		List<User> users = null;
+		List<VehicleCategory> vehicleCategories = null;
 		try {
 			transation = session.beginTransaction();
 
-			UserDO userDO = new UserDO();
-			users = userDO.getAll();
+			VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();
+			vehicleCategories = vehicleCategoryDO.getAll();
 
 			transation.commit();
 		} catch (RuntimeException e) {
@@ -75,36 +73,8 @@ public class UserDomainService implements DomainService<User>{
 				session.close();				
 			}
 		}
-		return users;
+		return vehicleCategories;	
 	}
 
-
-	public Collection<Role> getRoles(int id){
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
-		Collection<Role> roles = null;
-		try {
-			transation = session.beginTransaction();
-	
-			UserDO userDO = new UserDO();
-			roles = userDO.getRoles(id);
-
-			transation.commit();
-		} catch (RuntimeException e) {
-			if (transation!=null){
-				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
-				throw e;
-			}
-		}
-		finally {
-			if (session.isOpen()){
-				logger.info("Closing Session");
-				session.close();				
-			}
-		}
-		return roles;
-		
-	}
 
 }
