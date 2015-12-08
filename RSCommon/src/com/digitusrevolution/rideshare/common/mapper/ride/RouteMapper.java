@@ -78,4 +78,28 @@ public class RouteMapper implements Mapper<Route, RouteEntity>{
 		return null;
 	}
 
+	@Override
+	public RouteEntity getEntityWithOnlyPK(Route model) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Route getDomainModelWithOnlyPK(RouteEntity entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<Route> getDomainModelsWithOnlyPK(Collection<RouteEntity> entities) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<RouteEntity> getEntitiesWithOnlyPK(Collection<Route> model) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

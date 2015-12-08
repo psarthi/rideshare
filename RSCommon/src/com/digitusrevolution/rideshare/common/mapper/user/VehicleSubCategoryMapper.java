@@ -8,25 +8,39 @@ import com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 
 public class VehicleSubCategoryMapper implements Mapper<VehicleSubCategory, VehicleSubCategoryEntity>{
-	
+
+	@Override
+	public VehicleSubCategoryEntity getEntityWithOnlyPK(VehicleSubCategory vehicleSubCategory) {
+		VehicleSubCategoryEntity vehicleSubCategoryEntity = new VehicleSubCategoryEntity();
+		vehicleSubCategoryEntity.setId(vehicleSubCategory.getId());
+		return vehicleSubCategoryEntity;
+	}
+
 	@Override
 	public VehicleSubCategoryEntity getEntity(VehicleSubCategory vehicleSubCategory){
 		VehicleSubCategoryEntity vehicleSubCategoryEntity = new VehicleSubCategoryEntity();
-		vehicleSubCategoryEntity.setId(vehicleSubCategory.getId());
+		vehicleSubCategoryEntity = getEntityWithOnlyPK(vehicleSubCategory);
 		vehicleSubCategoryEntity.setAirConditioner(vehicleSubCategory.getAirConditioner());
 		vehicleSubCategoryEntity.setName(vehicleSubCategory.getName());
 		return vehicleSubCategoryEntity;
 	}
-	
+
 	@Override
 	public VehicleSubCategoryEntity getEntityChild(VehicleSubCategory vehicleSubCategory, VehicleSubCategoryEntity vehicleSubCategoryEntity){	
 		return null;
 	}
 
 	@Override
-	public VehicleSubCategory getDomainModel(VehicleSubCategoryEntity vehicleSubCategoryEntity){
+	public VehicleSubCategory getDomainModelWithOnlyPK(VehicleSubCategoryEntity vehicleSubCategoryEntity) {
 		VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
 		vehicleSubCategory.setId(vehicleSubCategoryEntity.getId());
+		return vehicleSubCategory;
+	}
+
+	@Override
+	public VehicleSubCategory getDomainModel(VehicleSubCategoryEntity vehicleSubCategoryEntity){
+		VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
+		vehicleSubCategory = getDomainModelWithOnlyPK(vehicleSubCategoryEntity);
 		vehicleSubCategory.setAirConditioner(vehicleSubCategoryEntity.getAirConditioner());
 		vehicleSubCategory.setName(vehicleSubCategoryEntity.getName());
 		return vehicleSubCategory;
@@ -39,7 +53,6 @@ public class VehicleSubCategoryMapper implements Mapper<VehicleSubCategory, Vehi
 
 	@Override
 	public Collection<VehicleSubCategory> getDomainModels(Collection<VehicleSubCategoryEntity> vehicleSubCategoryEntities){
-		
 		Collection<VehicleSubCategory> vehicleSubCategories = new LinkedList<>();
 		VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
 		for (VehicleSubCategoryEntity vehicleSubCategoryEntity : vehicleSubCategoryEntities) {
@@ -47,18 +60,35 @@ public class VehicleSubCategoryMapper implements Mapper<VehicleSubCategory, Vehi
 			vehicleSubCategories.add(vehicleSubCategory);
 		}
 		return vehicleSubCategories;
-
 	}
-	
+
+	@Override
+	public Collection<VehicleSubCategory> getDomainModelsWithOnlyPK(Collection<VehicleSubCategoryEntity> vehicleSubCategoryEntities) {
+		Collection<VehicleSubCategory> vehicleSubCategories = new LinkedList<>();
+		VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
+		for (VehicleSubCategoryEntity vehicleSubCategoryEntity : vehicleSubCategoryEntities) {
+			vehicleSubCategory = getDomainModelWithOnlyPK(vehicleSubCategoryEntity);
+			vehicleSubCategories.add(vehicleSubCategory);
+		}
+		return vehicleSubCategories;
+	}
+
 	@Override
 	public Collection<VehicleSubCategoryEntity> getEntities(Collection<VehicleSubCategory> vehicleSubCategories){
-		
 		Collection<VehicleSubCategoryEntity> vehicleSubCategoryEntities = new LinkedList<>();
 		for (VehicleSubCategory vehicleSubCategory : vehicleSubCategories) {
 			vehicleSubCategoryEntities.add(getEntity(vehicleSubCategory));
 		}
 		return vehicleSubCategoryEntities;
-
 	}
-	
+
+	@Override
+	public Collection<VehicleSubCategoryEntity> getEntitiesWithOnlyPK(Collection<VehicleSubCategory> vehicleSubCategories) {
+		Collection<VehicleSubCategoryEntity> vehicleSubCategoryEntities = new LinkedList<>();
+		for (VehicleSubCategory vehicleSubCategory : vehicleSubCategories) {
+			vehicleSubCategoryEntities.add(getEntityWithOnlyPK(vehicleSubCategory));
+		}
+		return vehicleSubCategoryEntities;
+	}
+
 }

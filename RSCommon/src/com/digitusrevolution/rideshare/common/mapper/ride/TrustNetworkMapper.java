@@ -14,20 +14,33 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 public class TrustNetworkMapper implements Mapper<TrustNetwork, TrustNetworkEntity>{
 
 	@Override
-	public TrustNetworkEntity getEntity(TrustNetwork trustNetwork) {
+	public TrustNetworkEntity getEntityWithOnlyPK(TrustNetwork trustNetwork) {
 		TrustNetworkEntity trustNetworkEntity = new TrustNetworkEntity();
 		trustNetworkEntity.setId(trustNetwork.getId());
+		return trustNetworkEntity;
+	}
+
+	@Override
+	public TrustNetworkEntity getEntity(TrustNetwork trustNetwork) {
+		TrustNetworkEntity trustNetworkEntity = new TrustNetworkEntity();
+		trustNetworkEntity = getEntityWithOnlyPK(trustNetwork);
 		
 		trustNetworkEntity = getEntityChild(trustNetwork, trustNetworkEntity);
 		
 		return trustNetworkEntity;
 	}
 
+	@Override
+	public TrustNetwork getDomainModelWithOnlyPK(TrustNetworkEntity trustNetworkEntity) {
+		TrustNetwork trustNetwork = new TrustNetwork();
+		trustNetwork.setId(trustNetworkEntity.getId());
+		return trustNetwork;
+	}
 
 	@Override
 	public TrustNetwork getDomainModel(TrustNetworkEntity trustNetworkEntity) {
 		TrustNetwork trustNetwork = new TrustNetwork();
-		trustNetwork.setId(trustNetworkEntity.getId());
+		trustNetwork = getDomainModelWithOnlyPK(trustNetworkEntity);
 		return trustNetwork;
 	}
 
@@ -44,7 +57,6 @@ public class TrustNetworkMapper implements Mapper<TrustNetwork, TrustNetworkEnti
 		return trustNetworkEntity;
 	}
 
-
 	@Override
 	public TrustNetwork getDomainModelChild(TrustNetwork trustNetwork, TrustNetworkEntity trustNetworkEntity) {
 		
@@ -59,13 +71,17 @@ public class TrustNetworkMapper implements Mapper<TrustNetwork, TrustNetworkEnti
 		return trustNetwork;
 	}
 
-
 	@Override
 	public Collection<TrustNetwork> getDomainModels(Collection<TrustNetworkEntity> entities) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
+	public Collection<TrustNetwork> getDomainModelsWithOnlyPK(Collection<TrustNetworkEntity> entities) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public Collection<TrustNetworkEntity> getEntities(Collection<TrustNetwork> model) {
@@ -73,6 +89,9 @@ public class TrustNetworkMapper implements Mapper<TrustNetwork, TrustNetworkEnti
 		return null;
 	}
 
-
-
+	@Override
+	public Collection<TrustNetworkEntity> getEntitiesWithOnlyPK(Collection<TrustNetwork> model) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

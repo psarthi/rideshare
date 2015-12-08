@@ -9,17 +9,31 @@ import com.digitusrevolution.rideshare.model.user.domain.City;
 public class CityMapper implements Mapper<City, CityEntity>{
 	
 	@Override
-	public CityEntity getEntity(City city) {
+	public CityEntity getEntityWithOnlyPK(City city) {
 		CityEntity cityEntity = new CityEntity();
 		cityEntity.setId(city.getId());
+		return cityEntity;
+	}
+
+	@Override
+	public CityEntity getEntity(City city) {
+		CityEntity cityEntity = new CityEntity();
+		cityEntity = getEntityWithOnlyPK(city);
 		cityEntity.setName(city.getName());
 		return cityEntity;
 	}
 
 	@Override
-	public City getDomainModel(CityEntity cityEntity) {
+	public City getDomainModelWithOnlyPK(CityEntity cityEntity) {
 		City city = new City();
 		city.setId(cityEntity.getId());
+		return city;
+	}
+
+	@Override
+	public City getDomainModel(CityEntity cityEntity) {
+		City city = new City();
+		city = getDomainModelWithOnlyPK(cityEntity);
 		city.setName(cityEntity.getName());
 		return city;
 	}
@@ -43,6 +57,18 @@ public class CityMapper implements Mapper<City, CityEntity>{
 
 	@Override
 	public Collection<CityEntity> getEntities(Collection<City> model) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<City> getDomainModelsWithOnlyPK(Collection<CityEntity> entities) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<CityEntity> getEntitiesWithOnlyPK(Collection<City> model) {
 		// TODO Auto-generated method stub
 		return null;
 	}

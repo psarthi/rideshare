@@ -24,9 +24,16 @@ import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 public class UserMapper implements Mapper<User, UserEntity> {
 
 	@Override
-	public UserEntity getEntity(User user){
+	public UserEntity getEntityWithOnlyPK(User user){
 		UserEntity userEntity = new UserEntity();
 		userEntity.setId(user.getId());
+		return userEntity;
+	}
+	
+	@Override
+	public UserEntity getEntity(User user){
+		UserEntity userEntity = new UserEntity();
+		userEntity = getEntityWithOnlyPK(user);
 		userEntity.setFirstName(user.getFirstName());
 		userEntity.setLastName(user.getLastName());
 		userEntity.setSex(user.getSex());
@@ -56,24 +63,30 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		
 		RideMapper rideMapper = new RideMapper();
 		Collection<Ride> ridesOffered = user.getRidesOffered();
-		userEntity.setRidesOffered(rideMapper.getEntities(ridesOffered));
+		userEntity.setRidesOffered(rideMapper.getEntitiesWithOnlyPK(ridesOffered));
 		
 		Collection<Ride> ridesTaken = user.getRidesTaken();
-		userEntity.setRidesTaken(rideMapper.getEntities(ridesTaken));
+		userEntity.setRidesTaken(rideMapper.getEntitiesWithOnlyPK(ridesTaken));
 		
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
 		Collection<RideRequest> rideRequests = user.getRideRequests();
-		userEntity.setRideRequests(rideRequestMapper.getEntities(rideRequests));
-
+		userEntity.setRideRequests(rideRequestMapper.getEntitiesWithOnlyPK(rideRequests));
 		
 		return userEntity;
 		
 	}
 	
 	@Override
-	public User getDomainModel(UserEntity userEntity){
+	public User getDomainModelWithOnlyPK(UserEntity userEntity){
 		User user = new User();
 		user.setId(userEntity.getId());
+		return user;
+	}
+	
+	@Override
+	public User getDomainModel(UserEntity userEntity){
+		User user = new User();
+		user = getDomainModelWithOnlyPK(userEntity);
 		user.setFirstName(userEntity.getFirstName());
 		user.setLastName(userEntity.getLastName());
 		user.setSex(userEntity.getSex());
@@ -101,16 +114,27 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		
 		RideMapper rideMapper = new RideMapper();
 		Collection<RideEntity> ridesOfferedEntities = userEntity.getRidesOffered();
-		user.setRidesOffered(rideMapper.getDomainModels(ridesOfferedEntities));
+		user.setRidesOffered(rideMapper.getDomainModelsWithOnlyPK(ridesOfferedEntities));
 		
 		Collection<RideEntity> ridesTakenEntities = userEntity.getRidesTaken();
-		user.setRidesTaken(rideMapper.getDomainModels(ridesTakenEntities));
+		user.setRidesTaken(rideMapper.getDomainModelsWithOnlyPK(ridesTakenEntities));
 		
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
 		Collection<RideRequestEntity> rideRequestEntities = userEntity.getRideRequests();
-		user.setRideRequests(rideRequestMapper.getDomainModels(rideRequestEntities));
+		user.setRideRequests(rideRequestMapper.getDomainModelsWithOnlyPK(rideRequestEntities));
 		
 		return user;
+	}
+	
+	@Override
+	public Collection<User> getDomainModelsWithOnlyPK(Collection<UserEntity> userEntities){
+		Collection<User> users = new LinkedList<>();
+		User user = new User();
+		for (UserEntity userEntity : userEntities) {
+			user = getDomainModelWithOnlyPK(userEntity);
+			users.add(user);
+		}
+		return users;		
 	}
 	
 	@Override
@@ -123,6 +147,16 @@ public class UserMapper implements Mapper<User, UserEntity> {
 			users.add(user);
 		}
 		return users;		
+	}
+	
+	@Override
+	public Collection<UserEntity> getEntitiesWithOnlyPK(Collection<User> users){
+		Collection<UserEntity> userEntities = new LinkedList<>();
+		for (User user : users) {
+			userEntities.add(getEntityWithOnlyPK(user));
+		}
+		return userEntities;		
+
 	}
 	
 	@Override

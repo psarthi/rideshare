@@ -4,14 +4,28 @@ import java.util.Collection;
 
 
 public interface Mapper<M,E> {
-
+	
     /**
-     * Set entity and invoke getEntityChild() to set entity child
+     * Set entity PK only
      * 
      *<P>Sample code -
      * 
      *<P>UserEntity userEntity = new UserEntity();
      *<P>userEntity.setId(user.getId());
+	 *	
+	 *<P>return userEntity;				
+     * 
+     */
+	E getEntityWithOnlyPK(M model);
+
+    /**
+     * Set entity by first invoking getEntityWithOnlyPK() and then setting rest of the properties at root level,   
+     * and then invoke getEntityChild() to set entity child
+     * 
+     *<P>Sample code -
+     * 
+     *<P>UserEntity userEntity = new UserEntity();
+     *<P>userEntity = getEntityWithOnlyPK(user);
 	 *<P>userEntity.setFirstName(user.getFirstName());
 	 *		
 	 *<P>userEntity = getEntityChild(user, userEntity);	
@@ -34,8 +48,21 @@ public interface Mapper<M,E> {
      */
 	E getEntityChild(M model, E entity);
 
+	/**
+     * Set domain model PK only
+     * 
+     *<P> Sample code -
+     * 
+     *<P> 	User user = new User();
+	 *<P>	user.setId(userEntity.getId());
+	 *
+     *<P> 	return user;
+     * 
+     */
+	M getDomainModelWithOnlyPK(E entity);
+	
     /**
-     * Set domain model 
+     * Set domain model by first invoking getEntityWithOnlyPK() and then setting rest of the properties at root level.
      * 
      *<P> Sample code -
      * 
@@ -62,6 +89,25 @@ public interface Mapper<M,E> {
      * 
      */
 	M getDomainModelChild(M model, E entity);
+	
+	/**
+     * Set all domain models PK only
+     * 
+     *<P> Sample code -
+     * 
+     * 
+     *<P>  Collection<User> users = new LinkedList<>();
+	 *<P>	User user = new User();
+	 *<P>	for (UserEntity userEntity : userEntities) {
+	 *<P>		user = getDomainModelWithOnlyPK(userEntity);
+	 *<P>		users.add(user);
+	 *<P>	}
+	 *
+	 *<P>	return users;		
+	 *
+     * 
+     */
+	Collection<M> getDomainModelsWithOnlyPK(Collection<E> entities);
 
 	/**
      * Set all domain models and invoke getDomainChild to set domain model child elements
@@ -82,6 +128,23 @@ public interface Mapper<M,E> {
      * 
      */
 	Collection<M> getDomainModels(Collection<E> entities);
+	
+	/**
+     * Set all entities PK only
+     * 
+     *<P> Sample code -
+     * 
+     *<P> 	Collection<UserEntity> userEntities = new LinkedList<>();
+	 *<P>	for (User user : users) {
+	 *<P>		userEntities.add(getEntityWithOnlyPK(user));
+	 *<P>	}
+	 *
+	 *<P>	return userEntities;		
+	 *
+	 *	
+     */
+	Collection<E> getEntitiesWithOnlyPK(Collection<M> model);
+
 
 	/**
      * Set all entities
