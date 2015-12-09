@@ -7,6 +7,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.digitusrevolution.rideshare.model.ride.domain.Point;
+
 public class MathUtil {
 
 	private static final Logger logger = LogManager.getLogger(MathUtil.class.getName());
@@ -15,7 +17,7 @@ public class MathUtil {
 
 		// (Slope) m = (Ya - Yb)/(Xa - Xb) 
 
-		double m = (pointA.y - pointB.y)/(pointA.x - pointB.x);
+		double m = (pointA.getLongitude() - pointB.getLongitude())/(pointA.getLatitude() - pointB.getLatitude());
 		return m;
 	}
 
@@ -24,7 +26,7 @@ public class MathUtil {
 		// y = mx + b, where "m" is slope and "b" is y-intercept 
 
 		double m = slope;
-		double b = point.y - m * point.x ;
+		double b = point.getLongitude() - m * point.getLatitude() ;
 		return b;
 	}
 
@@ -32,8 +34,8 @@ public class MathUtil {
 
 		double m = getLineSlope(pointA, pointB);
 		double b = getLineYIntercept(pointA, m);
-		double p = center.x;
-		double q = center.y;
+		double p = center.getLatitude();
+		double q = center.getLongitude();
 		double r = radius;
 
 		System.out.println("Slope: "+m+"\nY-Intercept:" + b);
@@ -44,9 +46,9 @@ public class MathUtil {
 		if (Double.isInfinite(m)){
 
 			// x1 = x2 as its a vertical line
-			double x = pointA.x;
-			double y1 = q + Math.sqrt((Math.pow(r, 2)-Math.pow((pointA.x-p),2)));
-			double y2 = q - Math.sqrt((Math.pow(r, 2)-Math.pow((pointA.x-p),2)));
+			double x = pointA.getLatitude();
+			double y1 = q + Math.sqrt((Math.pow(r, 2)-Math.pow((pointA.getLatitude()-p),2)));
+			double y2 = q - Math.sqrt((Math.pow(r, 2)-Math.pow((pointA.getLatitude()-p),2)));
 
 			System.out.println("Y1,Y2: "+y1+","+y2);
 
@@ -55,14 +57,19 @@ public class MathUtil {
 				return Collections.emptyList();
 			}
 
-			Point i1 = new Point(x, y1);			
+			Point i1 = new Point();
+			i1.setLatitude(x);
+			i1.setLongitude(y1);
+			
 			if (y1==y2){
 				System.out.println("One Intesection");
 				return Arrays.asList(i1);
 			}
 			
 			System.out.println("Two Intesection");
-			Point i2 = new Point(x, y2);
+			Point i2 = new Point();
+			i2.setLatitude(x);
+			i2.setLongitude(y2);
 			return Arrays.asList(i1, i2);
 
 		// Reference - http://math.stackexchange.com/questions/228841/how-do-i-calculate-the-intersections-of-a-straight-line-and-a-circle
@@ -81,7 +88,9 @@ public class MathUtil {
 
 			double x1 = (-B + Math.sqrt((discriminant)))/ (2*A);
 			double y1 = m * x1 + b ;
-			Point i1 = new Point(x1, y1);
+			Point i1 = new Point();
+			i1.setLatitude(x1);
+			i1.setLongitude(y1);
 
 			if (discriminant == 0){
 				System.out.println("One Intersection");
@@ -91,7 +100,9 @@ public class MathUtil {
 			System.out.println("Two Intersection");			
 			double x2 = (-B - Math.sqrt(discriminant))/ (2*A);
 			double y2 = m * x2 + b ;
-			Point i2 = new Point(x2, y2);
+			Point i2 = new Point();
+			i2.setLatitude(x2);
+			i2.setLongitude(y2);
 			return Arrays.asList(i1, i2);
 		}
 
@@ -99,12 +110,12 @@ public class MathUtil {
 	
 	public Point getPerpendicularIntersectionPointOnLineFromAnotherPoint(Point pointA, Point pointB, Point pointC){
 		
-		double x1 = pointA.x;
-		double y1 = pointA.y;
-		double x2 = pointB.x;
-		double y2 = pointB.y;
-		double x3 = pointC.x;
-		double y3 = pointC.y;
+		double x1 = pointA.getLatitude();
+		double y1 = pointA.getLongitude();
+		double x2 = pointB.getLatitude();
+		double y2 = pointB.getLongitude();
+		double x3 = pointC.getLatitude();
+		double y3 = pointC.getLongitude();
 
 		/*
 		 *  http://stackoverflow.com/questions/1811549/perpendicular-on-a-line-from-a-given-point
@@ -119,15 +130,21 @@ public class MathUtil {
 		double x4 = x3 - k * (y2 - y1);
 		double y4 = y3 + k * (x2 - x1);
 		
-		Point perpendicularPoint = new Point(x4, y4);
+		Point perpendicularPoint = new Point(); 
+		perpendicularPoint.setLatitude(x4);
+		perpendicularPoint.setLongitude(y4);
 
 		return perpendicularPoint;
 	}
 
-	public boolean isPointExistBetweenLineSegment(Point a, Point b, Point c) {
-		double value = (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
-		System.out.println("Value: "+value);
-		if (value == 0){
+	public boolean isPointExistBetweenLineSegment(Point startPoint, Point searchPoint, Point endPoint) {
+		Point a = startPoint;
+		Point b = searchPoint;
+		Point c = endPoint;
+		double area = (b.getLatitude() - a.getLatitude()) * (c.getLongitude() - a.getLongitude()) 
+						- (c.getLatitude() - a.getLatitude()) * (b.getLongitude() - a.getLongitude());
+		System.out.println("Area: "+area);
+		if (area == 0){
 			
 			double ac = getDistanceBetweenPoints(a, c); 
 			double ab = getDistanceBetweenPoints(a, b);
@@ -149,62 +166,10 @@ public class MathUtil {
 	
 	public double getDistanceBetweenPoints(Point a, Point b){
 		
-		double x = Math.pow((b.x-a.x),2);
-		double y = Math.pow((b.y-a.y),2);
+		double x = Math.pow((b.getLatitude()-a.getLatitude()),2);
+		double y = Math.pow((b.getLongitude()-a.getLongitude()),2);
 		double d = Math.sqrt(x-y);
 		System.out.println("Distance from "+ a +","+b+":" + d);
 		return d;
-	}
-
-	static class Point{
-		double x, y;
-
-		public Point(double x, double y) { this.x = x; this.y = y; }
-
-		@Override
-		public String toString() {
-			return "Point [x=" + x + ", y=" + y + "]";
-		}
-	}
-
-	public static void main(String[] args) {
-
-		MathUtil mathUtil = new MathUtil();
-		List<Point> points = mathUtil.getCircleLineIntersectionPoint(new Point(-3, -3),new Point(-3, 3), new Point(0, 0), 4);
-		System.out.println("Intersection Points: "+ points);
-		
-		if (points.size()==2){
-			Point point = mathUtil.getPerpendicularIntersectionPointOnLineFromAnotherPoint(new Point(-3, -3),new Point(-3, 3), new Point(0, 0));
-			System.out.println("Perpendicular Point from Center: " + point);
-		}
-		
-		points = mathUtil.getCircleLineIntersectionPoint(new Point(0, -2),new Point(1, -2), new Point(1, 1), 5);
-		System.out.println("Intersection Points: "+ points);
-		
-		if (points.size()==2){
-			Point point = mathUtil.getPerpendicularIntersectionPointOnLineFromAnotherPoint(new Point(0, -2),new Point(1, -2), new Point(1, 1));
-			System.out.println("Perpendicular Point from Center: " + point);
-		}
-
-		points = mathUtil.getCircleLineIntersectionPoint(new Point(1, -1), new Point(-1, 0), new Point(-1, 1), 5);
-		System.out.println("Intersection Points: "+ points);
-		
-		if (points.size()==2){
-			Point point = mathUtil.getPerpendicularIntersectionPointOnLineFromAnotherPoint(new Point(1, -1), new Point(-1, 0), new Point(-1, 1));
-			System.out.println("Perpendicular Point from Center: " + point);
-		}
-	
-		points = mathUtil.getCircleLineIntersectionPoint(new Point(-3, -3),new Point(-2, -2), new Point(0, 0), Math.sqrt(2));
-		System.out.println("Intersection Points: "+ points);
-		
-		if (points.size()==2){
-			Point point = mathUtil.getPerpendicularIntersectionPointOnLineFromAnotherPoint(new Point(-3, -3),new Point(-2, -2), new Point(0, 0));
-			System.out.println("Perpendicular Point from Center: " + point);
-		}
-		
-		System.out.println(mathUtil.getPerpendicularIntersectionPointOnLineFromAnotherPoint(new Point(9, 5), new Point(49, 5), new Point(3, 11)));
-		System.out.println(mathUtil.isPointExistBetweenLineSegment(new Point(4, 0), new Point(2, 0), new Point(3, 0)));
-		
-		
 	}
 }
