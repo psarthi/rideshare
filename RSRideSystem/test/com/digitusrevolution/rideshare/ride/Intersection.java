@@ -116,6 +116,37 @@ public class Intersection {
 		return perpendicularPoint;
 	}
 
+	public static boolean isPointExistBetweenLineSegment(Point a, Point b, Point c) {
+		double value = (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
+		System.out.println("Value: "+value);
+		if (value == 0){
+			
+			double ac = getDistanceBetweenPoints(a, c); 
+			double ab = getDistanceBetweenPoints(a, b);
+			double bc = getDistanceBetweenPoints(b, c);
+			
+			if (ac == (ab + bc)){
+				System.out.println("Collinear & Between Line segment");
+				return true;
+			} else {
+				System.out.println("Collinear but not between line segment");
+				return false;				
+			}
+		} else {
+			System.out.println("Not Collinear");
+			return false;
+		}
+	}
+	
+	
+	public static double getDistanceBetweenPoints(Point a, Point b){
+		
+		double x = Math.pow((b.x-a.x),2);
+		double y = Math.pow((b.y-a.y),2);
+		double d = Math.sqrt(x-y);
+		System.out.println("Distance from "+ a +","+b+":" + d);
+		return d;
+	}
 
 	static class Point{
 		double x, y;
@@ -140,6 +171,8 @@ public class Intersection {
 				new Point(-2, -2), new Point(0, 0), Math.sqrt(2)));
 		
 		System.out.println(getPerpendicularIntersectionPointFromAnotherPoint(new Point(9, 5), new Point(49, 5), new Point(3, 11)));
+		System.out.println(isPointExistBetweenLineSegment(new Point(4, 0), new Point(2, 0), new Point(3, 0)));
+		
 		
 	}
 }
