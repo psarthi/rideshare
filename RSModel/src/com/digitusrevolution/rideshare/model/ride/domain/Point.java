@@ -6,6 +6,15 @@ public class Point {
 	private double latitude;
 	private double longitude;
 	
+	public Point() {
+	 // This is mainly required for Hibernate for using proxy object
+	}
+	
+	public Point(double latitude, double longitude) {
+		this.latitude = latitude;
+		this.longitude = longitude;
+	}
+	
 	public int getId() {
 		return id;
 	}

@@ -1,16 +1,14 @@
-package com.digitusrevolution.rideshare.ride;
-
 import java.util.List;
 
-import com.digitusrevolution.rideshare.common.MathUtil;
+import com.digitusrevolution.rideshare.common.math.PlaneGeometry;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 
-public class MathUtilTest {
+public class PlaneGeometryTest {
 	
 
 	public static void main(String[] args) {
 
-		MathUtil mathUtil = new MathUtil();
+		PlaneGeometry mathUtil = new PlaneGeometry();
 		Point pointA = new Point();
 		pointA.setLatitude(-3);
 		pointA.setLongitude(-3);
@@ -22,6 +20,7 @@ public class MathUtilTest {
 		Point center = new Point();
 		center.setLatitude(0);
 		center.setLongitude(0);
+		
 		
 		List<Point> points = mathUtil.getCircleLineIntersectionPoint(pointA,pointB,center,3);
 		System.out.println("Intersection Points: "+ points);
@@ -71,6 +70,14 @@ public class MathUtilTest {
 		pointC.setLongitude(0);
 		
 		System.out.println(mathUtil.isPointExistBetweenLineSegment(pointA,pointB,pointC));
+		
+		pointA.setLatitude(12.9914249);
+		pointA.setLongitude(77.71518669999999);
+		
+		pointB.setLatitude(12.9899311);
+		pointB.setLongitude(77.71333389999999);
+		
+		System.out.println(mathUtil.getDistanceBetweenPoints(pointA, pointB));
 		
 		
 	}

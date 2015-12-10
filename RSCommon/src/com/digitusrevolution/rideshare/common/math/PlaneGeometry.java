@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.common;
+package com.digitusrevolution.rideshare.common.math;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,9 +9,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 
-public class MathUtil {
+public class PlaneGeometry {
 
-	private static final Logger logger = LogManager.getLogger(MathUtil.class.getName());
+	private static final Logger logger = LogManager.getLogger(PlaneGeometry.class.getName());
 	
 	public double getLineSlope(Point pointA, Point pointB){
 
