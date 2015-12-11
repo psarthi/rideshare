@@ -219,7 +219,7 @@ public class SphericalGeometry {
 		Point pointC = geometry.getMidpoint(pointA, pointB);
 		System.out.println("Middle Point: " + pointC);
 		System.out.println("Cross Track Distance from Middle point :" + geometry.getCrossTrackDistance(pointA, pointB, pointC));
-		pointC = new Point(12.916113, 77.627795);
+		pointC = new Point(12.906074, 77.577326);
 		System.out.println("Cross Track Distance from Another point :" + pointC + " : "+ geometry.getCrossTrackDistance(pointA, pointB, pointC));
 		System.out.println("Along Track Distance from Another point :" + pointC + " : "+ geometry.getAlongTrackDistance(pointA, pointB, pointC));
 
