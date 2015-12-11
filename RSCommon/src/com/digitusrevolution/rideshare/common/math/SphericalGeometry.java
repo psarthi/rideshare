@@ -92,6 +92,7 @@ public class SphericalGeometry {
 		double y = Math.sin(Δλ) * Math.cos(φ2);
 		double x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
 		double θ = Math.atan2(y, x);
+//		System.out.println("Original Bearing: "+Math.toDegrees(θ));
 		return (Math.toDegrees(θ)+360) % 360;
 	}
 
@@ -204,7 +205,64 @@ public class SphericalGeometry {
 		return dat;
 		
 	}
+	
+	
+	/*
+	 * Destination point given distance and bearing from start point
+	 * 
+	 * Given a start point, initial bearing, and distance, 
+	 * this will calculate the destination point and final bearing travelling along a (shortest distance) great circle arc.
+	 * 
+	 * Formula:	
+	 * φ2 = asin( sin φ1 ⋅ cos δ + cos φ1 ⋅ sin δ ⋅ cos θ )
+	 * λ2 = λ1 + atan2( sin θ ⋅ sin δ ⋅ cos φ1, cos δ − sin φ1 ⋅ sin φ2 )
+	 * where,
+	 * φ is latitude, λ is longitude, θ is the bearing (clockwise from north), δ is the angular distance d/R; 
+	 * d being the distance travelled, R the earth’s radius
+	 * 
+	 * 
+	 */
 
+	public Point getDestinationPoint(Point point, double bearing, double distance){
+		double φ1 = Math.toRadians(point.getLatitude());
+		double λ1 = Math.toRadians(point.getLongitude());
+		double δ = distance/R;
+		double θ = Math.toRadians(bearing);
+		
+		double φ2 = Math.asin(Math.sin(φ1) * Math.cos(δ) + Math.cos(φ1) * Math.sin(δ) * Math.cos(θ));
+		double y = Math.sin(θ) * Math.sin(δ) * Math.cos(φ1);
+		double x = Math.cos(δ) - Math.sin(φ1) * Math.sin(φ2);
+		double λ2 = λ1 + Math.atan2(y, x);
+		Point destinationPoint = new Point(Math.toDegrees(φ2), Math.toDegrees(λ2));
+		return destinationPoint;
+	}
+	
+	// Testing (Draft code)
+	
+	public boolean isOnSegment(Point pointA, Point pointB, Point pointC){
+
+		double φ1 = Math.toRadians(pointA.getLatitude());
+		double λ1 = Math.toRadians(pointA.getLongitude());
+		double φ2 = Math.toRadians(pointA.getLatitude());
+		double λ2 = Math.toRadians(pointA.getLongitude());
+		double Δφ12 = Math.toRadians(φ2 - φ1);
+		double Δλ12 = Math.toRadians(λ2 - λ1);
+		double φ3 = Math.toRadians(pointC.getLatitude());
+		double λ3 = Math.toRadians(pointC.getLongitude());
+		
+		double shortestLength = (Δφ12 * (φ3 - φ1) + Δλ12 * (λ3 - λ1)) / ((Δφ12 * Δφ12) + (Δλ12 * Δλ12));
+		double φ4 = φ1 + Δφ12 * shortestLength;
+		double λ4 = λ1 + Δλ12 * shortestLength;
+		
+		if (φ4 < φ2 && φ4 > φ1 && λ4 < λ2 && λ4 > λ1){
+			return true;
+		} else{
+			return false;
+		}
+
+	}
+	
+	
 	public static void main(String[] args) {
 		SphericalGeometry geometry = new SphericalGeometry();
 		Point pointA = new Point(12.839469, 77.676546);
@@ -212,32 +270,45 @@ public class SphericalGeometry {
 		System.out.println("-------------------------------------");
 		System.out.println("Details of " + pointA + "," + pointB);
 		System.out.println("-------------------------------------");
-		System.out.println("Haversine - Distance: " + geometry.getDistanceByHaversine(pointA,pointB));
+		double distance = geometry.getDistanceByHaversine(pointA,pointB);
+		System.out.println("Haversine - Distance: " + distance);
 		System.out.println("Law of Cosine - Distance: " + geometry.getDistanceByLawOfCosines(pointA,pointB));
-		System.out.println("Initial Bearing: " + geometry.getInitialBearing(pointA,pointB));
+		double bearning = geometry.getInitialBearing(pointA,pointB);
+		System.out.println("Initial Bearing: " + bearning);
 		System.out.println("Final Bearing: " + geometry.getFinalBearing(pointA, pointB));
 		Point pointC = geometry.getMidpoint(pointA, pointB);
 		System.out.println("Middle Point: " + pointC);
 		System.out.println("Cross Track Distance from Middle point :" + geometry.getCrossTrackDistance(pointA, pointB, pointC));
 		pointC = new Point(12.906074, 77.577326);
-		System.out.println("Cross Track Distance from Another point :" + pointC + " : "+ geometry.getCrossTrackDistance(pointA, pointB, pointC));
-		System.out.println("Along Track Distance from Another point :" + pointC + " : "+ geometry.getAlongTrackDistance(pointA, pointB, pointC));
+		double crossTrackDistance = geometry.getCrossTrackDistance(pointA, pointB, pointC);
+		System.out.println("Cross Track Distance from Another point :" + pointC + " : "+ crossTrackDistance);
+		double alongTrackDistance = geometry.getAlongTrackDistance(pointA, pointB, pointC);
+		System.out.println("Along Track Distance from Another point :" + pointC + " : "+ alongTrackDistance);
+		System.out.println("Destination Point: " + geometry.getDestinationPoint(pointA,bearning, distance));
+		pointC = geometry.getDestinationPoint(pointA,bearning, alongTrackDistance);
+		System.out.println("Destination Point: " + pointC);
+		System.out.println("Distance: "+geometry.getDistanceByHaversine(pointA, pointC));
+		
 
 		pointA = new Point(13.032170, 77.640785);
 		pointB = new Point(29.426006, 77.201332);
 		System.out.println("-------------------------------------");
 		System.out.println("Details of " + pointA + "," + pointB);
 		System.out.println("-------------------------------------");
-		System.out.println("Haversine - Distance: " + geometry.getDistanceByHaversine(pointA,pointB));
+		distance = geometry.getDistanceByHaversine(pointA,pointB);
+		System.out.println("Haversine - Distance: " + distance);
 		System.out.println("Law of Cosine - Distance: " + geometry.getDistanceByLawOfCosines(pointA,pointB));
-		System.out.println("Initial Bearing: " + geometry.getInitialBearing(pointA,pointB));
+		bearning = geometry.getInitialBearing(pointA,pointB);
+		System.out.println("Initial Bearing: " + bearning);
 		System.out.println("Final Bearing: " + geometry.getFinalBearing(pointA, pointB));
 		pointC = geometry.getMidpoint(pointA, pointB);
 		System.out.println("Middle Point: " + pointC);		
 		System.out.println("Cross Track Distance from Middle point :" + geometry.getCrossTrackDistance(pointA, pointB, pointC));
 		pointC = new Point(29.811668, 76.839084);
-		System.out.println("Cross Track Distance from Another point :" + pointC + " : "+ geometry.getCrossTrackDistance(pointA, pointB, pointC));
-		System.out.println("Along Track Distance from Another point :" + pointC + " : "+ geometry.getAlongTrackDistance(pointA, pointB, pointC));
+		crossTrackDistance = geometry.getCrossTrackDistance(pointA, pointB, pointC);
+		System.out.println("Cross Track Distance from Another point :" + pointC + " : "+ crossTrackDistance);
+		alongTrackDistance = geometry.getAlongTrackDistance(pointA, pointB, pointC);
+		System.out.println("Along Track Distance from Another point :" + pointC + " : "+ alongTrackDistance);
 	}
 
 }

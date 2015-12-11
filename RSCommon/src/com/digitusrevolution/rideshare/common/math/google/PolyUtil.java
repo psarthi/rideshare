@@ -184,7 +184,7 @@ public class PolyUtil {
             for (LatLng point2 : poly) {
                 double lat2 = toRadians(point2.latitude);
                 double lng2 = toRadians(point2.longitude);
-                System.out.println("Line: ["+lat1+","+lng1+"]"+":["+lat2 +","+lng2+"]"+"Pickup Point"+":["+lat3 +","+lng3+"]");
+                System.out.println("Line: ["+Math.toDegrees(lat1)+","+Math.toDegrees(lng1)+"]"+":["+Math.toDegrees(lat2) +","+Math.toDegrees(lng2)+"]");
                 if (isOnSegmentGC(lat1, lng1, lat2, lng2, lat3, lng3, havTolerance)) {
                 	System.out.println("Matched!!!!! - line: ["+lat1+","+lng1+"]"+":["+lat2 +","+lng2+"]"+"Pickup Point"+":["+lat3 +","+lng3+"]");
                     return true;
