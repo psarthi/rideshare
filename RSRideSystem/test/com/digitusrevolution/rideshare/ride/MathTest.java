@@ -22,8 +22,8 @@ public class MathTest {
 
 
 		PointDO pointDO = new PointDO();
-		Point startPoint = pointDO.getCordinates("Electronic City Bangalore"); 			
-		Point endPoint = pointDO.getCordinates("Chennai"); 
+		Point startPoint = pointDO.getCordinates("Gopalan Grandeur Hoodi Bangalore"); 			
+		Point endPoint = pointDO.getCordinates("New Delhi"); 
 
 		RESTClientUtil restClientUtil = new RESTClientUtil();
 		String json = restClientUtil.getDirection(startPoint.getLatitude(),startPoint.getLongitude(), endPoint.getLatitude(), endPoint.getLongitude());
@@ -36,6 +36,7 @@ public class MathTest {
 		}
 		
 		List<LatLng> latLngs = PolyUtil.decode(googleDirection.getRoutes().get(0).getOverviewPolyline().getPoints());
+		List<Step> steps = googleDirection.getRoutes().get(0).getLegs().get(0).getSteps();
 		
 		LatLng pickupPoint = new LatLng(12.906074, 77.577326); 
 		Point pointC = new Point(12.906074, 77.577326);
@@ -60,7 +61,10 @@ public class MathTest {
 			pointA = pointB;
 		}
 		
+		
+		
 		System.out.println("Total Points: "+latLngs.size());
+		System.out.println("Total Steps: "+steps.size());
 		
 		LatLng latLngA = new LatLng(12.83995, 77.67702);
 		LatLng latLngB = new LatLng(12.922471, 77.624018);
