@@ -3,7 +3,7 @@
 <head>
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
 <meta charset="utf-8">
-<title>RideShare Visualizer</title>
+<title>Route Visualizer</title>
 <style>
 html, body {
 	height: 100%;
@@ -38,165 +38,21 @@ html, body {
 </head>
 <body>
 	<div id="floating-panel">
-		<b>Start: </b> <select id="start">
-			<option value="Electronic City Bangalore">Electronic City</option>
-			<option value="Silk Board Bangalore">Silk Board</option>
-			<option value="Gopalan Grandeur Hoodi Bangalore">Gopalan
-				Grandeur</option>
-			<option value="MG Road Bangalore">MG Road</option>
-			<option value="Hebbal Bangalore">Hebbal</option>
-			<option value="Chennai">Chennai</option>
-		</select> <b>End: </b> <select id="end">
-			<option value="Electronic City Bangalore">Electronic City</option>
-			<option value="Silk Board Bangalore">Silk Board</option>
-			<option value="Gopalan Grandeur Hoodi Bangalore">Gopalan
-				Grandeur</option>
-			<option value="MG Road Bangalore">MG Road</option>
-			<option value="Hebbal Bangalore">Hebbal</option>
-			<option value="Chennai">Chennai</option>
-
-		</select>
+		<font size="1" color="blue">* Input Format (address / Lat,Lng)</font>
+		<b>Start:</b><input type="text" id="start"> <b>End:</b><input
+			type="text" id="end">
 		<button
 			onclick="calculateAndDisplayRoute(directionsService, markerArray,
 			stepDisplay, map)">Show
 			Route</button>
 
-		<b>Pickup: </b> <select id="address">
-			<option value="K R Puram Bangalore">K R Puram</option>
-			<option value="HSR Layout Bangalore">HSR Layout</option>
-		</select>
-		<button onclick="geocodeAddress()">Locate Pickup Point</button>
+		<b>Point:</b> <input type="text" id="point">
+		<button onclick="geocodeAddress()">Locate Point</button>
 
 	</div>
 	<div id="map"></div>
-	&nbsp;
 	<div id="warnings-panel"></div>
-	<script>
-		var markerArray;
-		var directionsService;
-		var map;
-		var stepDisplay;
-		var point;
-		var geocoder;
-		function initMap() {
-			markerArray = [];
-
-			// Instantiate a directions service.
-			directionsService = new google.maps.DirectionsService;
-
-			// Create a map and center it on Manhattan.
-			map = new google.maps.Map(document.getElementById('map'), {
-				zoom : 5,
-				center : {
-					lat : 12.970689,
-					lng : 77.589043
-				}
-			});
-
-			// Instantiate an info window to hold step text.
-			stepDisplay = new google.maps.InfoWindow;
-
-			// Instantiate geocoder service
-			geocoder = new google.maps.Geocoder();
-		}
-
-		function calculateAndDisplayRoute(directionsService, markerArray,
-				stepDisplay, map) {
-
-			// *****Create a new renderer for directions and bind it to the map, this will retain old rendered lines/routes etc.****
-			var directionsDisplay = new google.maps.DirectionsRenderer({
-				map : map,
-				polylineOptions: {
-				      strokeColor: getRandomColor()
-				    }
-			});
-
-			// Retrieve the start and end locations and create a DirectionsRequest using
-			// WALKING directions.
-			directionsService.route({
-				origin : document.getElementById('start').value,
-				destination : document.getElementById('end').value,
-				travelMode : google.maps.TravelMode.WALKING
-			}, function(response, status) {
-				// Route the directions and pass the response to a function to create
-				// markers for each step.
-				if (status === google.maps.DirectionsStatus.OK) {
-					document.getElementById('warnings-panel').innerHTML = '<b>'
-							+ response.routes[0].warnings + '</b>';
-					directionsDisplay.setDirections(response);
-					showSteps(response, markerArray, stepDisplay, map);
-				} else {
-					window.alert('Directions request failed due to ' + status);
-				}
-			});
-		}
-
-		function showSteps(directionResult, markerArray, stepDisplay, map) {
-			// For each step, place a marker, and add the text to the marker's infowindow.
-			// Also attach the marker to an array so we can keep track of it and remove it
-			// when calculating new routes.
-			var myRoute = directionResult.routes[0].legs[0];
-			for (var i = 0; i < myRoute.steps.length; i++) {
-				var marker = markerArray[i] = markerArray[i]
-						|| new google.maps.Marker;
-				marker.setMap(map);
-				marker.setPosition(myRoute.steps[i].start_location);
-				attachInstructionText(stepDisplay, marker,
-						myRoute.steps[i].instructions, map);
-			}
-		}
-
-		function attachInstructionText(stepDisplay, marker, text, map) {
-			google.maps.event.addListener(marker, 'click', function() {
-				// Open an info window when the marker is clicked on, containing the text
-				// of the step.
-				stepDisplay.setContent(text);
-				stepDisplay.open(map, marker);
-			});
-		}
-
-		function geocodeAddress() {
-			address = document.getElementById('address').value;
- 			var image = {
-					  url: "pickup.png",
-					  size: new google.maps.Size(71, 71),
-					  origin: new google.maps.Point(0, 0),
-					  anchor: new google.maps.Point(17, 34),
-					  scaledSize: new google.maps.Size(25, 25)
-					};
-			geocoder
-					.geocode(
-							{
-								'address' : address
-							},
-							function(results, status) {
-								if (status === google.maps.GeocoderStatus.OK) {
-									map
-											.setCenter(results[0].geometry.location);
-									var marker = new google.maps.Marker({
-										map : map,
-										position : results[0].geometry.location,
-										icon: image
-									});
-								} else {
-									alert('Geocode was not successful for the following reason: '
-											+ status);
-								}
-							});
-		}
-
-		function getRandomColor() {
-		    var letters = '0123456789ABCDEF'.split('');
-		    var color = '#';
-		    for (var i = 0; i < 6; i++ ) {
-		        color += letters[Math.floor(Math.random() * 16)];
-		    }
-		    return color;
-		}
-		
-	</script>
-	<script
-		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDed4q35hM4sq6Ri1odS9panH1d6exOtcI&callback=initMap"
-		async defer></script>
+	<script type="text/javascript" src="script/script.js">	</script>
+	<script type="text/javascript" src="script/authenticate.js"> </script>
 </body>
 </html>
