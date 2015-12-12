@@ -3,7 +3,7 @@
 <head>
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
 <meta charset="utf-8">
-<title>Directions service (complex)</title>
+<title>RideShare Visualizer</title>
 <style>
 html, body {
 	height: 100%;
@@ -105,7 +105,10 @@ html, body {
 
 			// *****Create a new renderer for directions and bind it to the map, this will retain old rendered lines/routes etc.****
 			var directionsDisplay = new google.maps.DirectionsRenderer({
-				map : map
+				map : map,
+				polylineOptions: {
+				      strokeColor: getRandomColor()
+				    }
 			});
 
 			// Retrieve the start and end locations and create a DirectionsRequest using
@@ -154,6 +157,13 @@ html, body {
 
 		function geocodeAddress() {
 			address = document.getElementById('address').value;
+ 			var image = {
+					  url: "pickup.png",
+					  size: new google.maps.Size(71, 71),
+					  origin: new google.maps.Point(0, 0),
+					  anchor: new google.maps.Point(17, 34),
+					  scaledSize: new google.maps.Size(25, 25)
+					};
 			geocoder
 					.geocode(
 							{
@@ -165,7 +175,8 @@ html, body {
 											.setCenter(results[0].geometry.location);
 									var marker = new google.maps.Marker({
 										map : map,
-										position : results[0].geometry.location
+										position : results[0].geometry.location,
+										icon: image
 									});
 								} else {
 									alert('Geocode was not successful for the following reason: '
@@ -174,6 +185,15 @@ html, body {
 							});
 		}
 
+		function getRandomColor() {
+		    var letters = '0123456789ABCDEF'.split('');
+		    var color = '#';
+		    for (var i = 0; i < 6; i++ ) {
+		        color += letters[Math.floor(Math.random() * 16)];
+		    }
+		    return color;
+		}
+		
 	</script>
 	<script
 		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDed4q35hM4sq6Ri1odS9panH1d6exOtcI&callback=initMap"
