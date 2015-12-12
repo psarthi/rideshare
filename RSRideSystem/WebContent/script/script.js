@@ -6,7 +6,7 @@ var point;
 var geocoder;
 function initMap() {
 	markerArray = [];
-	
+
 	// Instantiate a directions service.
 	directionsService = new google.maps.DirectionsService;
 
@@ -36,6 +36,11 @@ function calculateAndDisplayRoute(directionsService, markerArray,
 			strokeColor: getRandomColor()
 		}
 	});
+
+	// First, remove any existing markers from the map.
+	for (var i = 0; i < markerArray.length; i++) {
+		markerArray[i].setMap(null);
+	}
 
 	// Retrieve the start and end locations and create a DirectionsRequest using
 	// WALKING directions.
