@@ -55,7 +55,11 @@ function calculateAndDisplayRoute(directionsService, markerArray,
 			document.getElementById('warnings-panel').innerHTML = '<b>'
 				+ response.routes[0].warnings + '</b>';
 			directionsDisplay.setDirections(response);
-			showSteps(response, markerArray, stepDisplay, map);
+			var overview_polyline = response.routes[0].overview_polyline;
+			//This will show all points returned by Google which is in overview_polyline
+	//		showAllPolyLinePoints(overview_polyline);
+			//This will show only high level points which is in the steps
+			//	showSteps(response, markerArray, stepDisplay, map);
 		} else {
 			window.alert('Directions request failed due to ' + status);
 		}
@@ -86,7 +90,7 @@ function attachInstructionText(stepDisplay, marker, text, map) {
 	});
 }
 
-function geocodeAddress() {
+function locatePoint() {
 	address = document.getElementById('point').value;
 	var image = {
 			url: "image/pickup.png",
@@ -117,10 +121,55 @@ function geocodeAddress() {
 }
 
 function getRandomColor() {
-	var letters = '0123456789ABCDEF'.split('');
-	var color = '#';
-	for (var i = 0; i < 6; i++ ) {
-		color += letters[Math.floor(Math.random() * 16)];
+
+	return '#'+Math.floor(Math.random()*16777215).toString(16);
+}
+
+
+function loadSampleData(){
+	document.getElementById('start').value = "Silk Board Bangalore";
+	document.getElementById('end').value = "K R Puram Bangalore";
+	calculateAndDisplayRoute(directionsService, markerArray,stepDisplay, map);
+	document.getElementById('start').value = "Bannerghatta Road Bangalore";
+	document.getElementById('end').value = "Hebbal Bangalore";
+	calculateAndDisplayRoute(directionsService, markerArray,stepDisplay, map);
+	document.getElementById('start').value = "Bannerghatta Road Bangalore";
+	document.getElementById('end').value = "K R Puram Bangalore";
+	calculateAndDisplayRoute(directionsService, markerArray,stepDisplay, map);
+	document.getElementById('start').value = "BTM Layout Bangalore";
+	document.getElementById('end').value = "K R Puram Bangalore";
+	calculateAndDisplayRoute(directionsService, markerArray,stepDisplay, map);
+	document.getElementById('start').value = "Silk Board Bangalore";
+	document.getElementById('end').value = "Manyata Tech Park Bangalore";
+	calculateAndDisplayRoute(directionsService, markerArray,stepDisplay, map);
+	document.getElementById('start').value = "Electronic City Bangalore";
+	document.getElementById('end').value = "M G Road Bangalore";
+	calculateAndDisplayRoute(directionsService, markerArray,stepDisplay, map);
+	document.getElementById('start').value = "Christ University Bangalore";
+	document.getElementById('end').value = "Convent Road Bangalore";
+	calculateAndDisplayRoute(directionsService, markerArray,stepDisplay, map);
+
+}
+
+
+function showAllPolyLinePoints(ecodedPolyLine) {
+
+	var points = google.maps.geometry.encoding.decodePath(ecodedPolyLine);
+	var fullPath = new google.maps.Polyline({
+		path: points,
+		geodesic: false,
+		strokeColor: '#FF0000',
+		strokeOpacity: 1.0,
+		strokeWeight: 2
+	});
+
+	for (var i = 0; i < points.length; i++) {
+		var marker = new google.maps.Marker({
+			position: points[i],
+			map: map
+		});
 	}
-	return color;
-}		
+
+	// Below line, would draw a full polyline
+//	fullPath.setMap(map);
+}

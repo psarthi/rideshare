@@ -42,17 +42,23 @@ html, body {
 		<b>Start:</b><input type="text" id="start"> <b>End:</b><input
 			type="text" id="end">
 		<button
-			onclick="calculateAndDisplayRoute(directionsService, markerArray,
-			stepDisplay, map)">Show
-			Route</button>
-
+			onclick="calculateAndDisplayRoute(directionsService, markerArray,stepDisplay, map)">Show
+		Route
+		</button>
 		<b>Point:</b> <input type="text" id="point">
-		<button onclick="geocodeAddress()">Locate Point</button>
-
+		<button onclick="locatePoint()">Locate Point</button>
+		<button
+			onclick="loadSampleData()">Load Sample
+		</button>
+		
 	</div>
 	<div id="map"></div>
 	<div id="warnings-panel"></div>
-	<script type="text/javascript" src="script/script.js">	</script>
-	<script type="text/javascript" src="script/authenticate.js"> </script>
+	<script type="text/javascript" src="script/script.js">
+		
+	</script>
+	<script type="text/javascript" src="script/authenticate.js">
+		
+	</script>
 </body>
 </html>

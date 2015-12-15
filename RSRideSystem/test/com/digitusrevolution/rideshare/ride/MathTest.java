@@ -22,7 +22,7 @@ public class MathTest {
 
 
 		PointDO pointDO = new PointDO();
-		Point startPoint = pointDO.getCordinates("Gopalan Grandeur Hoodi Bangalore"); 			
+		Point startPoint = pointDO.getCordinates("Bangalore"); 			
 		Point endPoint = pointDO.getCordinates("New Delhi"); 
 
 		RESTClientUtil restClientUtil = new RESTClientUtil();
@@ -52,7 +52,8 @@ public class MathTest {
 		for (LatLng latLng : latLngs) {
 			LatLng to = latLng;
 			Point pointB = new Point(to.latitude,to.longitude);
-			System.out.println("Mine: From: "+pointA + ":To:" + pointB + " Distance: " + geometry.getDistanceByHaversine(pointA, pointB));
+		//	System.out.println("Mine: From: "+pointA + ":To:" + pointB + " Distance: " + geometry.getDistanceByHaversine(pointA, pointB));
+			System.out.println(geometry.getDistanceByHaversine(pointA, pointB));
 			if (geometry.isOnSegment(pointA, pointB, pointC)){
 				System.out.println("Matched!!!");
 			}
