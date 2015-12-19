@@ -112,6 +112,13 @@
 			<version>2.6.3</version>
 		</dependency>
 		<!-- Jackson End -->
+		<!-- MongoDB Start -->
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver</artifactId>
+			<version>3.2.0</version>
+		</dependency>
+		<!-- MongoDB End -->
 	</dependencies>
 
 </project>
