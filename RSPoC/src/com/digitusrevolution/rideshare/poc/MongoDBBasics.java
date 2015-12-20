@@ -10,6 +10,7 @@ import org.bson.BsonDocumentReader;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.Block;
@@ -99,9 +100,9 @@ public class MongoDBBasics {
 		
 		
 		RidePoint ridePoint = new RidePoint();
-		com.digitusrevolution.rideshare.poc.Point point1 = new com.digitusrevolution.rideshare.poc.Point(12.1212, 13.1212);
-		ridePoint.setPoint(point1);
-		ridePoint.setRide_id("R1");
+		ridePoint.getPoint().setLatitude(12.12);
+		ridePoint.getPoint().setLongitude(13.12);
+		ridePoint.setRideId(1);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		String json = null;

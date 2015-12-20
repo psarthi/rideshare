@@ -14,15 +14,15 @@ public class RouteEntity {
 	
 	@Embedded
 	@ElementCollection
-	@JoinTable(name="route_point",joinColumns=@JoinColumn(name="ride_id"))
-	private Collection<RoutePointEntity> routePoints = new ArrayList<RoutePointEntity>();
+	@JoinTable(name="route_ridepoint",joinColumns=@JoinColumn(name="ride_id"))
+	private Collection<RidePointEntity> ridePointEntities = new ArrayList<RidePointEntity>();
 
-	public Collection<RoutePointEntity> getRoutePoints() {
-		return routePoints;
+	public Collection<RidePointEntity> getRidePointEntities() {
+		return ridePointEntities;
 	}
 
-	public void setRoutePoints(Collection<RoutePointEntity> routePoints) {
-		this.routePoints = routePoints;
+	public void setRidePointEntities(Collection<RidePointEntity> ridePointEntities) {
+		this.ridePointEntities = ridePointEntities;
 	}
 
 }

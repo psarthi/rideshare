@@ -14,9 +14,8 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import com.digitusrevolution.rideshare.common.RideShareUtil;
-import com.digitusrevolution.rideshare.model.ride.domain.Point;
+import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
-import com.digitusrevolution.rideshare.model.ride.domain.RoutePoint;
 import com.digitusrevolution.rideshare.ride.domain.PointDO;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 

@@ -19,7 +19,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.digitusrevolution.rideshare.model.ride.data.PointEntity;
+import com.digitusrevolution.rideshare.model.ride.data.RidePointEntity;
+import com.digitusrevolution.rideshare.model.ride.data.RideRequestPointEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.user.data.VehicleCategoryEntity;
 import com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity;
@@ -33,9 +34,9 @@ public class RideRequestEntity {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	@OneToOne(cascade=CascadeType.ALL)
-	private PointEntity pickupPoint;
+	private RideRequestPointEntity pickupPoint;
 	@OneToOne(cascade=CascadeType.ALL)
-	private PointEntity dropPoint;
+	private RideRequestPointEntity dropPoint;
 	private ZonedDateTime pickupTime;
 	private LocalTime pickupTimeVariation;
 	@ManyToOne
@@ -60,9 +61,9 @@ public class RideRequestEntity {
 	@ManyToOne
 	private RideEntity acceptedRide;
 	@OneToOne(cascade=CascadeType.ALL)
-	private PointEntity ridePickupPoint;
+	private RidePointEntity ridePickupPoint;
 	@OneToOne(cascade=CascadeType.ALL)
-	private PointEntity rideDropPoint;
+	private RidePointEntity rideDropPoint;
 	
 	public int getId() {
 		return id;
@@ -136,16 +137,16 @@ public class RideRequestEntity {
 	public void setAcceptedRide(RideEntity acceptedRide) {
 		this.acceptedRide = acceptedRide;
 	}
-	public PointEntity getPickupPoint() {
+	public RideRequestPointEntity getPickupPoint() {
 		return pickupPoint;
 	}
-	public void setPickupPoint(PointEntity pickupPoint) {
+	public void setPickupPoint(RideRequestPointEntity pickupPoint) {
 		this.pickupPoint = pickupPoint;
 	}
-	public PointEntity getDropPoint() {
+	public RideRequestPointEntity getDropPoint() {
 		return dropPoint;
 	}
-	public void setDropPoint(PointEntity dropPoint) {
+	public void setDropPoint(RideRequestPointEntity dropPoint) {
 		this.dropPoint = dropPoint;
 	}
 	public VehicleCategoryEntity getVehicleCategory() {
@@ -166,16 +167,16 @@ public class RideRequestEntity {
 	public void setTrustNetwork(TrustNetworkEntity trustNetwork) {
 		this.trustNetwork = trustNetwork;
 	}
-	public PointEntity getRidePickupPoint() {
+	public RidePointEntity getRidePickupPoint() {
 		return ridePickupPoint;
 	}
-	public void setRidePickupPoint(PointEntity ridePickupPoint) {
+	public void setRidePickupPoint(RidePointEntity ridePickupPoint) {
 		this.ridePickupPoint = ridePickupPoint;
 	}
-	public PointEntity getRideDropPoint() {
+	public RidePointEntity getRideDropPoint() {
 		return rideDropPoint;
 	}
-	public void setRideDropPoint(PointEntity rideDropPoint) {
+	public void setRideDropPoint(RidePointEntity rideDropPoint) {
 		this.rideDropPoint = rideDropPoint;
 	}
 	public UserEntity getPassenger() {

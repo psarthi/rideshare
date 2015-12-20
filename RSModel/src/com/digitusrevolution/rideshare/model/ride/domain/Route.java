@@ -5,14 +5,13 @@ import java.util.Collection;
 
 public class Route {
 	
-	private Collection<RoutePoint> routePoints = new ArrayList<RoutePoint>();
+	private Collection<RidePoint> ridePoints = new ArrayList<RidePoint>();
 
-	public Collection<RoutePoint> getRoutePoints() {
-		return routePoints;
-	}
-
-	public void setRoutePoints(Collection<RoutePoint> routePoints) {
-		this.routePoints = routePoints;
+	public Collection<RidePoint> getRidePoints() {
+		return ridePoints;
 	}
 	
+	public void setRidePoints(Collection<RidePoint> ridePoints) {
+		this.ridePoints = ridePoints;
+	}
 }

@@ -21,7 +21,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
-import com.digitusrevolution.rideshare.model.ride.data.PointEntity;
+import com.digitusrevolution.rideshare.model.ride.data.RidePointEntity;
 import com.digitusrevolution.rideshare.model.ride.data.RecurringDetailEntity;
 import com.digitusrevolution.rideshare.model.ride.data.RouteEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
@@ -37,9 +37,9 @@ public class RideEntity {
 	private int id;
 	private ZonedDateTime startTime;
 	@OneToOne(cascade=CascadeType.ALL)
-	private PointEntity startPoint;
+	private RidePointEntity startPoint;
 	@OneToOne(cascade=CascadeType.ALL)
-	private PointEntity endPoint;
+	private RidePointEntity endPoint;
 	private int seatOffered;
 	private int luggageCapacityOffered;
 	@Enumerated(EnumType.STRING)
@@ -103,16 +103,16 @@ public class RideEntity {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public PointEntity getStartPoint() {
+	public RidePointEntity getStartPoint() {
 		return startPoint;
 	}
-	public void setStartPoint(PointEntity startPoint) {
+	public void setStartPoint(RidePointEntity startPoint) {
 		this.startPoint = startPoint;
 	}
-	public PointEntity getEndPoint() {
+	public RidePointEntity getEndPoint() {
 		return endPoint;
 	}
-	public void setEndPoint(PointEntity endPoint) {
+	public void setEndPoint(RidePointEntity endPoint) {
 		this.endPoint = endPoint;
 	}
 	public TrustNetworkEntity getTrustNetwork() {

@@ -4,16 +4,15 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
-import com.digitusrevolution.rideshare.common.mapper.ride.PointMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.TrustNetworkMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.VehicleCategoryMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.VehicleSubCategoryMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
-import com.digitusrevolution.rideshare.model.ride.data.PointEntity;
+import com.digitusrevolution.rideshare.model.ride.data.RidePointEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
-import com.digitusrevolution.rideshare.model.ride.domain.Point;
+import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
@@ -47,8 +46,11 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		rideRequestEntity.setStatus(rideRequest.getStatus());
 		rideRequestEntity.setRidePreference(rideRequest.getRidePreference());
 
+		/*
+		 * 		This needs to be rewritten based on MongoDB
+		 * 
 		PointMapper pointMapper = new PointMapper();
-		Point point = rideRequest.getPickupPoint();
+		RidePoint point = rideRequest.getPickupPoint();
 		rideRequestEntity.setPickupPoint(pointMapper.getEntity(point));
 
 		point = rideRequest.getDropPoint();
@@ -59,7 +61,8 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 
 		point = rideRequest.getRideDropPoint();
 		if (point!=null) rideRequestEntity.setRideDropPoint(pointMapper.getEntity(point));	
-
+*/
+		
 		VehicleCategoryMapper vehicleCategoryMapper = new VehicleCategoryMapper();
 		VehicleCategory vehicleCategory = rideRequest.getVehicleCategory();
 		rideRequestEntity.setVehicleCategory(vehicleCategoryMapper.getEntityWithOnlyPK(vehicleCategory));
@@ -117,8 +120,11 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		rideRequest.setStatus(rideRequestEntity.getStatus());
 		rideRequest.setRidePreference(rideRequestEntity.getRidePreference());
 
+		/*
+		 * 		This needs to be rewritten based on MongoDB
+		 * 
 		PointMapper pointMapper = new PointMapper();
-		PointEntity pointEntity = rideRequestEntity.getPickupPoint();
+		RidePointEntity pointEntity = rideRequestEntity.getPickupPoint();
 		rideRequest.setPickupPoint(pointMapper.getDomainModel(pointEntity));
 		
 		pointEntity = rideRequestEntity.getDropPoint();
@@ -129,7 +135,8 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 	
 		pointEntity = rideRequestEntity.getRideDropPoint();
 		if (pointEntity!=null) rideRequest.setRideDropPoint(pointMapper.getDomainModel(pointEntity));	
-	
+	*/
+		
 		VehicleCategoryMapper vehicleCategoryMapper = new VehicleCategoryMapper();
 		VehicleCategoryEntity vehicleCategoryEntity = rideRequestEntity.getVehicleCategory();
 		rideRequest.setVehicleCategory(vehicleCategoryMapper.getDomainModelWithOnlyPK(vehicleCategoryEntity));

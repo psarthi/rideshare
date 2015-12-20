@@ -24,7 +24,7 @@
 		<property name="show_sql">true</property>
 
 		<!-- Drop and re-create the database schema on startup -->
-		<property name="hbm2ddl.auto">update</property>
+		<property name="hbm2ddl.auto">create</property>
 		
 		<property name="current_session_context_class">thread</property>
 	
@@ -54,7 +54,8 @@
 		<mapping class="com.digitusrevolution.rideshare.model.ride.data.core.RideEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity" />
 	
-		<mapping class="com.digitusrevolution.rideshare.model.ride.data.PointEntity" />
+		<mapping class="com.digitusrevolution.rideshare.model.ride.data.RidePointEntity" />
+		<mapping class="com.digitusrevolution.rideshare.model.ride.data.RideRequestPointEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.ride.data.RecurringDetailEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity" />

@@ -19,6 +19,7 @@ import org.hibernate.Transaction;
 import com.digitusrevolution.rideshare.common.HibernateUtil;
 import com.digitusrevolution.rideshare.common.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
+import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
@@ -147,19 +148,23 @@ public class RideDataLoader {
 			PointDO pointDO = new PointDO();
 			Point startPoint = pointDO.getCordinates("Gopalan Grandeur Bangalore"); 			
 			Point endPoint = pointDO.getCordinates("Silk Board Bangalore"); 
-			
-			ride.setStartPoint(startPoint);
-			ride.setEndPoint(endPoint);
+	
+			//******Below commented line Needs to be rewritten based on MongoDB implementation
+
+//			ride.setStartPoint(startPoint);
+//			ride.setEndPoint(endPoint);
 			
 			LocalDateTime localDateTime = LocalDateTime.of(2015, Month.DECEMBER, 8, 9, 30);
 			ZoneId india = ZoneId.of("Asia/Kolkata");
 			ZonedDateTime startTime = ZonedDateTime.of(localDateTime, india);
 			ride.setStartTime(startTime);
 			
-			RouteDO routeDO = new RouteDO();
+			//******Below commented line Needs to be rewritten based on MongoDB implementation
+			
+/*			RouteDO routeDO = new RouteDO();
 			Route route = routeDO.getRoute(startPoint, endPoint);						
 			ride.setRoute(route);
-					
+*/					
 			int id = rideDO.offerRide(ride);	
 			System.out.println("Ride has been created: "+id);
 
@@ -167,16 +172,20 @@ public class RideDataLoader {
 
 			startPoint = pointDO.getCordinates("ITPL Bangalore"); 			
 			endPoint = pointDO.getCordinates("Silk Board Bangalore"); 
+	
+			//******Below commented line Needs to be rewritten based on MongoDB implementation
 			
-			ride.setStartPoint(startPoint);
-			ride.setEndPoint(endPoint);
+//			ride.setStartPoint(startPoint);
+//			ride.setEndPoint(endPoint);
 			
 			localDateTime = LocalDateTime.of(2015, Month.DECEMBER, 8, 9, 30);
 			startTime = ZonedDateTime.of(localDateTime, india);
 			ride.setStartTime(startTime);
+	
+			//******Below commented line Needs to be rewritten based on MongoDB implementation
 			
-			route = routeDO.getRoute(startPoint, endPoint);						
-			ride.setRoute(route);
+//			route = routeDO.getRoute(startPoint, endPoint);						
+//			ride.setRoute(route);
 					
 			id = rideDO.offerRide(ride);	
 			System.out.println("Ride has been created: "+id);
@@ -186,15 +195,18 @@ public class RideDataLoader {
 			startPoint = pointDO.getCordinates("Marathalli Bangalore"); 			
 			endPoint = pointDO.getCordinates("Electronic City Bangalore"); 
 			
-			ride.setStartPoint(startPoint);
-			ride.setEndPoint(endPoint);
+			//******Below commented line Needs to be rewritten based on MongoDB implementation		
+//			ride.setStartPoint(startPoint);
+//			ride.setEndPoint(endPoint);
 			
 			localDateTime = LocalDateTime.of(2015, Month.DECEMBER, 8, 9, 30);
 			startTime = ZonedDateTime.of(localDateTime, india);
 			ride.setStartTime(startTime);
 			
-			route = routeDO.getRoute(startPoint, endPoint);						
-			ride.setRoute(route);
+			//******Below commented line Needs to be rewritten based on MongoDB implementation
+			
+//			route = routeDO.getRoute(startPoint, endPoint);						
+//			ride.setRoute(route);
 					
 			id = rideDO.offerRide(ride);	
 			System.out.println("Ride has been created: "+id);
@@ -203,16 +215,20 @@ public class RideDataLoader {
 
 			startPoint = pointDO.getCordinates("Hebbal Bangalore"); 			
 			endPoint = pointDO.getCordinates("BTM Layout Bangalore"); 
+	
+			//******Below commented line Needs to be rewritten based on MongoDB implementation
 			
-			ride.setStartPoint(startPoint);
-			ride.setEndPoint(endPoint);
+//			ride.setStartPoint(startPoint);
+//			ride.setEndPoint(endPoint);
 			
 			localDateTime = LocalDateTime.of(2015, Month.DECEMBER, 8, 9, 30);
 			startTime = ZonedDateTime.of(localDateTime, india);
 			ride.setStartTime(startTime);
+	
+			//******Below commented line Needs to be rewritten based on MongoDB implementation
 			
-			route = routeDO.getRoute(startPoint, endPoint);						
-			ride.setRoute(route);
+//			route = routeDO.getRoute(startPoint, endPoint);						
+//			ride.setRoute(route);
 					
 			id = rideDO.offerRide(ride);	
 			System.out.println("Ride has been created: "+id);
@@ -245,9 +261,11 @@ public class RideDataLoader {
 			PointDO pointDO = new PointDO();
 			Point pickupPoint = pointDO.getCordinates("RMZ Ecospace Bangalore"); 			
 			Point dropPoint = pointDO.getCordinates("NPS HSR Bangalore"); 
+
+			//******Below commented line Needs to be rewritten based on MongoDB implementation
 			
-			rideRequest.setPickupPoint(pickupPoint);
-			rideRequest.setDropPoint(dropPoint);
+//			rideRequest.setPickupPoint(pickupPoint);
+//			rideRequest.setDropPoint(dropPoint);
 			
 			rideRequest.setPickupPointVariation(1);
 			rideRequest.setDropPointVariation(1);

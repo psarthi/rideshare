@@ -1,37 +1,76 @@
 package com.digitusrevolution.rideshare.model.ride.data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 
-@Entity
-@Table(name="point")
-public class PointEntity {
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
-	private double latitude;
-	private double longitude;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
+
+import com.digitusrevolution.rideshare.model.ride.domain.Geometry;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+/*
+ * This is based on GeoJSON Point Geometry Object specification
+ * http://geojson.org/geojson-spec.html
+ * 
+ * { "type": "Point", "coordinates": [100.0, 0.0] }
+ * 
+ * The default CRS is a geographic coordinate reference system, using the WGS84 datum, 
+ * and with longitude and latitude units of decimal degrees.
+ * 
+ * The coordinate order is longitude, then latitude as per 
+ * 
+ * Basic idea is to generate GeoJSON format directly from this POJO
+ */
+
+@Embeddable
+public class PointEntity implements Geometry{
 	
-	public int getId() {
-		return id;
+	private final String type = "Point";
+	@ElementCollection
+	private List<Double> coordinates = new ArrayList<Double>(2);
+	
+	public PointEntity() {
+		//This is just to add two elements in the list, so that while setting lat/lon would not throw index out of bound exception
+		coordinates.add(null);
+		coordinates.add(null);
 	}
-	public void setId(int id) {
-		this.id = id;
+	
+	public PointEntity(double longitude, double latitude){
+		this.coordinates.add(longitude);
+		this.coordinates.add(latitude);
 	}
-	public double getLatitude() {
-		return latitude;
+
+
+	public List<Double> getCoordinates() {
+		return coordinates;
 	}
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
+
+	public void setCoordinates(List<Double> coordinates) {
+		this.coordinates = coordinates;
 	}
-	public double getLongitude() {
-		return longitude;
+
+	public String getType() {
+		return type;
 	}
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
+	
+	public double getLongitude(){		
+		return getCoordinates().get(0);
 	}
+	
+	public double getLatitude(){		
+		return getCoordinates().get(1);
+	}
+	
+	@JsonIgnore
+	public void setLongitude(double longitude){		
+		getCoordinates().set(0,longitude);
+	}
+	
+	@JsonIgnore
+	public void setLatitude(double latitude){		
+		getCoordinates().set(1, latitude);
+	}
+	
 	
 }

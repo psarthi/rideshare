@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
-import com.digitusrevolution.rideshare.model.ride.domain.Point;
+import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RecurringDetail;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
@@ -15,10 +15,11 @@ import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 
 public class Ride {
 
+	//id data type needs to be finalized later, whether to use int, long, string
 	private int id;
 	private ZonedDateTime startTime;
-	private Point startPoint;
-	private Point endPoint;
+	private RidePoint startPoint;
+	private RidePoint endPoint;
 	private int seatOffered;
 	private int luggageCapacityOffered;
 	private Sex sexPreference;
@@ -46,10 +47,10 @@ public class Ride {
 	public void setStartTime(ZonedDateTime startTime) {
 		this.startTime = startTime;
 	}
-	public Point getStartPoint() {
+	public RidePoint getStartPoint() {
 		return startPoint;
 	}
-	public void setStartPoint(Point startPoint) {
+	public void setStartPoint(RidePoint startPoint) {
 		this.startPoint = startPoint;
 	}
 	public int getSeatOffered() {
@@ -100,10 +101,10 @@ public class Ride {
 	public void setVehicle(Vehicle vehicle) {
 		this.vehicle = vehicle;
 	}
-	public Point getEndPoint() {
+	public RidePoint getEndPoint() {
 		return endPoint;
 	}
-	public void setEndPoint(Point endPoint) {
+	public void setEndPoint(RidePoint endPoint) {
 		this.endPoint = endPoint;
 	}
 	public Collection<Bill> getBills() {

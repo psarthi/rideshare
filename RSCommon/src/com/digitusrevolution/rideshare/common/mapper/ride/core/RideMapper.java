@@ -4,16 +4,14 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
-import com.digitusrevolution.rideshare.common.mapper.ride.PointMapper;
-import com.digitusrevolution.rideshare.common.mapper.ride.RouteMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.TrustNetworkMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.VehicleMapper;
-import com.digitusrevolution.rideshare.model.ride.data.PointEntity;
+import com.digitusrevolution.rideshare.model.ride.data.RidePointEntity;
 import com.digitusrevolution.rideshare.model.ride.data.RouteEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
-import com.digitusrevolution.rideshare.model.ride.domain.Point;
+import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
@@ -42,20 +40,25 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		rideEntity.setStatus(ride.getStatus());
 		rideEntity.setSexPreference(ride.getSexPreference());
 		
-		PointMapper pointMapper = new PointMapper();
-		Point point = ride.getStartPoint();
+/*		This needs to be rewritten based on MongoDB
+ * 
+ * 		PointMapper pointMapper = new PointMapper();
+		RidePoint point = ride.getStartPoint();
 		rideEntity.setStartPoint(pointMapper.getEntity(point));
 		point = ride.getEndPoint();
 		rideEntity.setEndPoint(pointMapper.getEntity(point));
-		
+*/		
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
 		TrustNetwork trustNetwork = ride.getTrustNetwork();
 		rideEntity.setTrustNetwork(trustNetworkMapper.getEntity(trustNetwork));
-		
+
+		/*		
+		 * This needs to be rewritten based on MongoDB
+		 * 
 		RouteMapper routeMapper = new RouteMapper();
 		Route route = ride.getRoute();
 		rideEntity.setRoute(routeMapper.getEntity(route));
-		
+*/		
 		VehicleMapper vehicleMapper = new VehicleMapper();
 		Vehicle vehicle = ride.getVehicle();
 		rideEntity.setVehicle(vehicleMapper.getEntityWithOnlyPK(vehicle));
@@ -96,23 +99,30 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		ride.setRecur(rideEntity.getRecur());
 		ride.setStatus(rideEntity.getStatus());
 		ride.setSexPreference(rideEntity.getSexPreference());
-		
+	
+		/*
+		 * 		This needs to be rewritten based on MongoDB
+		 * 
 		PointMapper pointMapper = new PointMapper();
-		PointEntity pointEntity = rideEntity.getStartPoint();
+		RidePointEntity pointEntity = rideEntity.getStartPoint();
 		ride.setStartPoint(pointMapper.getDomainModel(pointEntity));
 		pointEntity = rideEntity.getEndPoint();
 		ride.setEndPoint(pointMapper.getDomainModel(pointEntity));
+		 */
 		
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
 		TrustNetworkEntity trustNetworkEntity = rideEntity.getTrustNetwork();
 		TrustNetwork trustNetwork = trustNetworkMapper.getDomainModel(trustNetworkEntity);
 		trustNetwork = trustNetworkMapper.getDomainModelChild(trustNetwork, trustNetworkEntity);
 		ride.setTrustNetwork(trustNetwork);
-		
+
+		/*
+		 * 		This needs to be rewritten based on MongoDB
+		 * 		
 		RouteMapper routeMapper = new RouteMapper();
 		RouteEntity routeEntity = rideEntity.getRoute();
 		ride.setRoute(routeMapper.getDomainModel(routeEntity));
-		
+*/		
 		VehicleMapper vehicleMapper = new VehicleMapper();
 		VehicleEntity vehicleEntity = rideEntity.getVehicle();
 		ride.setVehicle(vehicleMapper.getDomainModelWithOnlyPK(vehicleEntity));

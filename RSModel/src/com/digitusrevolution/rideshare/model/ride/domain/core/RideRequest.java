@@ -5,7 +5,8 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.digitusrevolution.rideshare.model.ride.domain.Point;
+import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
+import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
@@ -15,8 +16,8 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 public class RideRequest {
 
 	private int id;
-	private Point pickupPoint;
-	private Point dropPoint;
+	private RideRequestPoint pickupPoint;
+	private RideRequestPoint dropPoint;
 	private ZonedDateTime pickupTime;
 	private LocalTime pickupTimeVariation;
 	private VehicleCategory vehicleCategory;
@@ -32,8 +33,8 @@ public class RideRequest {
 	private boolean ridePreference;
 	private Collection<Ride> preferredRides = new ArrayList<Ride>();
 	private Ride acceptedRide;
-	private Point ridePickupPoint;
-	private Point rideDropPoint;
+	private RidePoint ridePickupPoint;
+	private RidePoint rideDropPoint;
 	
 	public int getId() {
 		return id;
@@ -41,16 +42,16 @@ public class RideRequest {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public Point getPickupPoint() {
+	public RideRequestPoint getPickupPoint() {
 		return pickupPoint;
 	}
-	public void setPickupPoint(Point pickupPoint) {
+	public void setPickupPoint(RideRequestPoint pickupPoint) {
 		this.pickupPoint = pickupPoint;
 	}
-	public Point getDropPoint() {
+	public RideRequestPoint getDropPoint() {
 		return dropPoint;
 	}
-	public void setDropPoint(Point dropPoint) {
+	public void setDropPoint(RideRequestPoint dropPoint) {
 		this.dropPoint = dropPoint;
 	}
 	public ZonedDateTime getPickupTime() {
@@ -143,16 +144,16 @@ public class RideRequest {
 	public void setAcceptedRide(Ride acceptedRide) {
 		this.acceptedRide = acceptedRide;
 	}
-	public Point getRidePickupPoint() {
+	public RidePoint getRidePickupPoint() {
 		return ridePickupPoint;
 	}
-	public void setRidePickupPoint(Point ridePickupPoint) {
+	public void setRidePickupPoint(RidePoint ridePickupPoint) {
 		this.ridePickupPoint = ridePickupPoint;
 	}
-	public Point getRideDropPoint() {
+	public RidePoint getRideDropPoint() {
 		return rideDropPoint;
 	}
-	public void setRideDropPoint(Point rideDropPoint) {
+	public void setRideDropPoint(RidePoint rideDropPoint) {
 		this.rideDropPoint = rideDropPoint;
 	}
 

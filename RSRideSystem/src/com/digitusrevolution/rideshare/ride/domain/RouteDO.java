@@ -6,9 +6,8 @@ import java.util.List;
 import javax.ws.rs.WebApplicationException;
 
 import com.digitusrevolution.rideshare.common.RESTClientUtil;
-import com.digitusrevolution.rideshare.model.ride.domain.Point;
+import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
-import com.digitusrevolution.rideshare.model.ride.domain.RoutePoint;
 import com.digitusrevolution.rideshare.ride.dto.google.GoogleDirection;
 import com.digitusrevolution.rideshare.ride.dto.google.Step;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,10 +20,10 @@ public class RouteDO{
 		route = new Route();
 	}
 	
-	public Route getRoute(Point startPoint, Point endPoint){		
+	public Route getRoute(RidePoint startPoint, RidePoint endPoint){		
 		
 		RESTClientUtil restClientUtil = new RESTClientUtil();
-		String json = restClientUtil.getDirection(startPoint.getLatitude(),startPoint.getLongitude(), endPoint.getLatitude(), endPoint.getLongitude());
+		String json = restClientUtil.getDirection(startPoint.getPoint().getLatitude(),startPoint.getPoint().getLongitude(), endPoint.getPoint().getLatitude(), endPoint.getPoint().getLongitude());
 		ObjectMapper objectMapper = new ObjectMapper();
 		GoogleDirection googleDirection = null;
 		try {
@@ -36,13 +35,11 @@ public class RouteDO{
 		List<Step> steps = googleDirection.getRoutes().get(0).getLegs().get(0).getSteps();
 		int seq = 1;
 		for (Step step : steps) {			
-			Point point = new Point();
-			point.setLatitude(step.getStartLocation().getLat());
-			point.setLongitude(step.getStartLocation().getLng());
-			RoutePoint routePoint = new RoutePoint();
-			routePoint.setPoint(point);
-			routePoint.setSequence(seq);
-			route.getRoutePoints().add(routePoint);
+			RidePoint ridePoint = new RidePoint();
+			ridePoint.getPoint().setLatitude(step.getStartLocation().getLat());
+			ridePoint.getPoint().setLongitude(step.getStartLocation().getLng());
+			ridePoint.setSequence(seq);
+			route.getRidePoints().add(ridePoint);
 			seq++;
 		}
 		return route;
