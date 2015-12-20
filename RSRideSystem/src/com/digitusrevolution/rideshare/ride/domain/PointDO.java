@@ -17,7 +17,7 @@ import com.digitusrevolution.rideshare.common.inf.GenericDAO;
 import com.digitusrevolution.rideshare.common.mapper.ride.PointMapper;
 import com.digitusrevolution.rideshare.model.ride.data.PointEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
-import com.digitusrevolution.rideshare.ride.dto.GoogleGeocode;
+import com.digitusrevolution.rideshare.ride.dto.google.GoogleGeocode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 

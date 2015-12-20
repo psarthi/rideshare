@@ -9,8 +9,8 @@ import com.digitusrevolution.rideshare.common.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.RoutePoint;
-import com.digitusrevolution.rideshare.ride.dto.GoogleDirection;
-import com.digitusrevolution.rideshare.ride.dto.Step;
+import com.digitusrevolution.rideshare.ride.dto.google.GoogleDirection;
+import com.digitusrevolution.rideshare.ride.dto.google.Step;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RouteDO{
