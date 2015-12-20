@@ -1,7 +1,7 @@
-package com.digitusrevolution.rideshare.ride;
+package com.digitusrevolution.rideshare;
 import java.util.List;
 
-import com.digitusrevolution.rideshare.common.math.PlaneGeometry;
+import com.digitusrevolution.rideshare.core.PlaneGeometry;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 
 public class PlaneGeometryTest {

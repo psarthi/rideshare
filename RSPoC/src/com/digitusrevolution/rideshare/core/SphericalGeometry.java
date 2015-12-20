@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.common.math;
+package com.digitusrevolution.rideshare.core;
 
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 

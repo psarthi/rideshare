@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.ride;
+package com.digitusrevolution.rideshare;
 
 import java.io.IOException;
 import java.util.List;
@@ -6,10 +6,10 @@ import java.util.List;
 import javax.ws.rs.WebApplicationException;
 
 import com.digitusrevolution.rideshare.common.RESTClientUtil;
-import com.digitusrevolution.rideshare.common.math.SphericalGeometry;
 import com.digitusrevolution.rideshare.common.math.google.LatLng;
 import com.digitusrevolution.rideshare.common.math.google.PolyUtil;
 import com.digitusrevolution.rideshare.common.math.google.SphericalUtil;
+import com.digitusrevolution.rideshare.core.SphericalGeometry;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.ride.domain.PointDO;
 import com.digitusrevolution.rideshare.ride.dto.GoogleDirection;

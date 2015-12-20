@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.ride;
+package com.digitusrevolution.rideshare;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,7 +10,6 @@ import org.bson.BsonDocumentReader;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import com.digitusrevolution.rideshare.ride.dto.GoogleGeocode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.Block;
 import com.mongodb.DBObject;

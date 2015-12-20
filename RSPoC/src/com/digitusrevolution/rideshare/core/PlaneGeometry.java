@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.common.math;
+package com.digitusrevolution.rideshare.core;
 
 import java.util.Arrays;
 import java.util.Collections;

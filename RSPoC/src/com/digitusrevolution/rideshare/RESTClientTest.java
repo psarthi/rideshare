@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.ride;
+package com.digitusrevolution.rideshare;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -12,10 +12,6 @@ import com.digitusrevolution.rideshare.common.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.ride.dto.GoogleDirection;
-import com.digitusrevolution.rideshare.ride.dto.GoogleGeocode;
-import com.digitusrevolution.rideshare.ride.dto.Route;
-import com.digitusrevolution.rideshare.ride.dto.Step;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

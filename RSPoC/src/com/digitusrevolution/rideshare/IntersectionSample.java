@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.ride;
+package com.digitusrevolution.rideshare;
 
 import java.util.Arrays;
 import java.util.Collections;
