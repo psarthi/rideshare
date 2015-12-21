@@ -16,8 +16,8 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 public class RideRequest {
 
 	private int id;
-	private RideRequestPoint pickupPoint;
-	private RideRequestPoint dropPoint;
+	private RideRequestPoint pickupPoint = new RideRequestPoint();
+	private RideRequestPoint dropPoint = new RideRequestPoint();
 	private ZonedDateTime pickupTime;
 	private LocalTime pickupTimeVariation;
 	private VehicleCategory vehicleCategory;
@@ -33,8 +33,8 @@ public class RideRequest {
 	private boolean ridePreference;
 	private Collection<Ride> preferredRides = new ArrayList<Ride>();
 	private Ride acceptedRide;
-	private RidePoint ridePickupPoint;
-	private RidePoint rideDropPoint;
+	private RidePoint ridePickupPoint = new RidePoint();
+	private RidePoint rideDropPoint = new RidePoint();
 	
 	public int getId() {
 		return id;

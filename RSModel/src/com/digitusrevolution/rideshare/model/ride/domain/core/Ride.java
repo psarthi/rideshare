@@ -18,8 +18,8 @@ public class Ride {
 	//id data type needs to be finalized later, whether to use int, long, string
 	private int id;
 	private ZonedDateTime startTime;
-	private RidePoint startPoint;
-	private RidePoint endPoint;
+	private RidePoint startPoint = new RidePoint();
+	private RidePoint endPoint = new RidePoint();
 	private int seatOffered;
 	private int luggageCapacityOffered;
 	private Sex sexPreference;

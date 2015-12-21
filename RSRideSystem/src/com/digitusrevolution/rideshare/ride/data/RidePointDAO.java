@@ -17,7 +17,7 @@ import com.mongodb.client.model.Filters;
 public class RidePointDAO{
 	
 	private MongoDatabase db = MongoDBUtil.getDatabase();
-	private MongoCollection<Document> collection = db.getCollection("ridepoint");
+	private MongoCollection<Document> collection = db.getCollection("ride_point");
 	private final JSONUtil<RidePoint> jsonUtil = new JSONUtil<>(RidePoint.class);
 
 	public String create(RidePoint ridePoint) {

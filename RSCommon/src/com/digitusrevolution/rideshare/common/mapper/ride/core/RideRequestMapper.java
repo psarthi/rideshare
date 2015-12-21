@@ -8,11 +8,9 @@ import com.digitusrevolution.rideshare.common.mapper.ride.TrustNetworkMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.VehicleCategoryMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.VehicleSubCategoryMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
-import com.digitusrevolution.rideshare.model.ride.data.RidePointEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
-import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
@@ -46,23 +44,12 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		rideRequestEntity.setStatus(rideRequest.getStatus());
 		rideRequestEntity.setRidePreference(rideRequest.getRidePreference());
 
-		/*
-		 * 		This needs to be rewritten based on MongoDB
-		 * 
-		PointMapper pointMapper = new PointMapper();
-		RidePoint point = rideRequest.getPickupPoint();
-		rideRequestEntity.setPickupPoint(pointMapper.getEntity(point));
+		//We need to just map Point ID in Hibernate as we are storing Point in MongoDB
+		rideRequestEntity.setPickupPointId(rideRequest.getPickupPoint().get_id());
+		rideRequestEntity.setDropPointId(rideRequest.getDropPoint().get_id());	
+		rideRequestEntity.setRidePickupPointId(rideRequest.getRidePickupPoint().get_id());		
+		rideRequestEntity.setRideDropPointId(rideRequest.getRideDropPoint().get_id());	
 
-		point = rideRequest.getDropPoint();
-		rideRequestEntity.setDropPoint(pointMapper.getEntity(point));
-
-		point = rideRequest.getRidePickupPoint();
-		if (point!=null) rideRequestEntity.setRidePickupPoint(pointMapper.getEntity(point));		
-
-		point = rideRequest.getRideDropPoint();
-		if (point!=null) rideRequestEntity.setRideDropPoint(pointMapper.getEntity(point));	
-*/
-		
 		VehicleCategoryMapper vehicleCategoryMapper = new VehicleCategoryMapper();
 		VehicleCategory vehicleCategory = rideRequest.getVehicleCategory();
 		rideRequestEntity.setVehicleCategory(vehicleCategoryMapper.getEntityWithOnlyPK(vehicleCategory));
@@ -119,23 +106,12 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		rideRequest.setDropPointVariation(rideRequestEntity.getDropPointVariation());
 		rideRequest.setStatus(rideRequestEntity.getStatus());
 		rideRequest.setRidePreference(rideRequestEntity.getRidePreference());
-
-		/*
-		 * 		This needs to be rewritten based on MongoDB
-		 * 
-		PointMapper pointMapper = new PointMapper();
-		RidePointEntity pointEntity = rideRequestEntity.getPickupPoint();
-		rideRequest.setPickupPoint(pointMapper.getDomainModel(pointEntity));
 		
-		pointEntity = rideRequestEntity.getDropPoint();
-		rideRequest.setDropPoint(pointMapper.getDomainModel(pointEntity));
-	
-		pointEntity = rideRequestEntity.getRidePickupPoint();
-		if (pointEntity!=null) rideRequest.setRidePickupPoint(pointMapper.getDomainModel(pointEntity));
-	
-		pointEntity = rideRequestEntity.getRideDropPoint();
-		if (pointEntity!=null) rideRequest.setRideDropPoint(pointMapper.getDomainModel(pointEntity));	
-	*/
+		//We need to just map Point ID from Hibernate as we are storing Point in MongoDB
+		rideRequest.getPickupPoint().set_id(rideRequestEntity.getPickupPointId());
+		rideRequest.getDropPoint().set_id(rideRequestEntity.getDropPointId());	
+		rideRequest.getRidePickupPoint().set_id(rideRequestEntity.getRidePickupPointId());
+		rideRequest.getRideDropPoint().set_id(rideRequestEntity.getRideDropPointId());	
 		
 		VehicleCategoryMapper vehicleCategoryMapper = new VehicleCategoryMapper();
 		VehicleCategoryEntity vehicleCategoryEntity = rideRequestEntity.getVehicleCategory();

@@ -38,6 +38,10 @@ public class Point implements Geometry{
 		return coordinates;
 	}
 
+	/*
+	 * Order needs to be maintained which is longitude, latitude
+	 * 
+	 */
 	public void setCoordinates(List<Double> coordinates) {
 		this.coordinates = coordinates;
 	}

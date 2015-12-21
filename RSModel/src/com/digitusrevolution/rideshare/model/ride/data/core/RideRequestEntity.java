@@ -19,8 +19,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.digitusrevolution.rideshare.model.ride.data.RidePointEntity;
-import com.digitusrevolution.rideshare.model.ride.data.RideRequestPointEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.user.data.VehicleCategoryEntity;
 import com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity;
@@ -28,15 +26,14 @@ import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 
 @Entity
-@Table(name="ride_request")
+@Table(name="rideRequest")
 public class RideRequestEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
-	@OneToOne(cascade=CascadeType.ALL)
-	private RideRequestPointEntity pickupPoint;
-	@OneToOne(cascade=CascadeType.ALL)
-	private RideRequestPointEntity dropPoint;
+	//We need to store just rideRequestPointId in Hibernate as rideRequestPoint is getting stored in MonogoDB
+	private String pickupPointId;
+	private String dropPointId;
 	private ZonedDateTime pickupTime;
 	private LocalTime pickupTimeVariation;
 	@ManyToOne
@@ -56,14 +53,13 @@ public class RideRequestEntity {
 	private UserEntity passenger;
 	private boolean ridePreference;
 	@ManyToMany
-	@JoinTable(name="ride_request_preferred_ride",joinColumns=@JoinColumn(name="ride_request_id"))
+	@JoinTable(name="rideRequest_preferred_ride",joinColumns=@JoinColumn(name="ride_request_id"))
 	private Collection<RideEntity> preferredRides = new ArrayList<RideEntity>();
 	@ManyToOne
 	private RideEntity acceptedRide;
-	@OneToOne(cascade=CascadeType.ALL)
-	private RidePointEntity ridePickupPoint;
-	@OneToOne(cascade=CascadeType.ALL)
-	private RidePointEntity rideDropPoint;
+	//We need to store just ridePointId in Hibernate as ridepoint is getting stored in MonogoDB
+	private String ridePickupPointId;
+	private String rideDropPointId;
 	
 	public int getId() {
 		return id;
@@ -137,18 +133,6 @@ public class RideRequestEntity {
 	public void setAcceptedRide(RideEntity acceptedRide) {
 		this.acceptedRide = acceptedRide;
 	}
-	public RideRequestPointEntity getPickupPoint() {
-		return pickupPoint;
-	}
-	public void setPickupPoint(RideRequestPointEntity pickupPoint) {
-		this.pickupPoint = pickupPoint;
-	}
-	public RideRequestPointEntity getDropPoint() {
-		return dropPoint;
-	}
-	public void setDropPoint(RideRequestPointEntity dropPoint) {
-		this.dropPoint = dropPoint;
-	}
 	public VehicleCategoryEntity getVehicleCategory() {
 		return vehicleCategory;
 	}
@@ -167,23 +151,35 @@ public class RideRequestEntity {
 	public void setTrustNetwork(TrustNetworkEntity trustNetwork) {
 		this.trustNetwork = trustNetwork;
 	}
-	public RidePointEntity getRidePickupPoint() {
-		return ridePickupPoint;
-	}
-	public void setRidePickupPoint(RidePointEntity ridePickupPoint) {
-		this.ridePickupPoint = ridePickupPoint;
-	}
-	public RidePointEntity getRideDropPoint() {
-		return rideDropPoint;
-	}
-	public void setRideDropPoint(RidePointEntity rideDropPoint) {
-		this.rideDropPoint = rideDropPoint;
-	}
 	public UserEntity getPassenger() {
 		return passenger;
 	}
 	public void setPassenger(UserEntity passenger) {
 		this.passenger = passenger;
-	}	
+	}
+	public String getPickupPointId() {
+		return pickupPointId;
+	}
+	public void setPickupPointId(String pickupPointId) {
+		this.pickupPointId = pickupPointId;
+	}
+	public String getDropPointId() {
+		return dropPointId;
+	}
+	public void setDropPointId(String dropPointId) {
+		this.dropPointId = dropPointId;
+	}
+	public String getRidePickupPointId() {
+		return ridePickupPointId;
+	}
+	public void setRidePickupPointId(String ridePickupPointId) {
+		this.ridePickupPointId = ridePickupPointId;
+	}
+	public String getRideDropPointId() {
+		return rideDropPointId;
+	}
+	public void setRideDropPointId(String rideDropPointId) {
+		this.rideDropPointId = rideDropPointId;
+	}
 
 }

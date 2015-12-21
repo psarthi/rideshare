@@ -23,9 +23,9 @@ public class RidePointTest {
 		ridePoint.setSequence(1);
 
 		RidePointDAO ridePointDAO = new RidePointDAO();
-		String _id = ridePointDAO.create(ridePoint);
+		String id = ridePointDAO.create(ridePoint);
 		
-		RidePoint ridePoint1 = ridePointDAO.get(_id);
+		RidePoint ridePoint1 = ridePointDAO.get(id);
 		JSONUtil<RidePoint> jsonUtil = new JSONUtil<>(RidePoint.class);
 		System.out.println(jsonUtil.getJson(ridePoint1));
 		
@@ -49,7 +49,7 @@ public class RidePointTest {
 		for (RidePoint ridePoint2 : ridePoints) {
 			System.out.println(jsonUtil.getJson(ridePoint2));
 		}
-		ridePointDAO.delete(_id);
+	//	ridePointDAO.delete(_id);
 		
 	}
 

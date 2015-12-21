@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -21,9 +20,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
-import com.digitusrevolution.rideshare.model.ride.data.RidePointEntity;
 import com.digitusrevolution.rideshare.model.ride.data.RecurringDetailEntity;
-import com.digitusrevolution.rideshare.model.ride.data.RouteEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
@@ -36,18 +33,16 @@ public class RideEntity {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	private ZonedDateTime startTime;
-	@OneToOne(cascade=CascadeType.ALL)
-	private RidePointEntity startPoint;
-	@OneToOne(cascade=CascadeType.ALL)
-	private RidePointEntity endPoint;
+	//We need to store just ridePointId in Hibernate as ridepoint is getting stored in MonogoDB
+	//Apart from that, we don't have Route details here as its stored in MongoDB, instead of Hibernate
+	private String startPointId;
+	private String endPointId;
 	private int seatOffered;
 	private int luggageCapacityOffered;
 	@Enumerated(EnumType.STRING)
 	private Sex sexPreference;
 	@OneToOne(cascade=CascadeType.ALL)
 	private TrustNetworkEntity trustNetwork;
-	@Embedded
-	private RouteEntity route;
 	private boolean recur;
 	@OneToOne(cascade=CascadeType.ALL)
 	private RecurringDetailEntity recurringDetail;
@@ -103,29 +98,23 @@ public class RideEntity {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	public RidePointEntity getStartPoint() {
-		return startPoint;
+	public String getStartPointId() {
+		return startPointId;
 	}
-	public void setStartPoint(RidePointEntity startPoint) {
-		this.startPoint = startPoint;
+	public void setStartPointId(String startPointId) {
+		this.startPointId = startPointId;
 	}
-	public RidePointEntity getEndPoint() {
-		return endPoint;
+	public String getEndPointId() {
+		return endPointId;
 	}
-	public void setEndPoint(RidePointEntity endPoint) {
-		this.endPoint = endPoint;
+	public void setEndPointId(String endPointId) {
+		this.endPointId = endPointId;
 	}
 	public TrustNetworkEntity getTrustNetwork() {
 		return trustNetwork;
 	}
 	public void setTrustNetwork(TrustNetworkEntity trustNetwork) {
 		this.trustNetwork = trustNetwork;
-	}
-	public RouteEntity getRoute() {
-		return route;
-	}
-	public void setRoute(RouteEntity route) {
-		this.route = route;
 	}
 	public RecurringDetailEntity getRecurringDetail() {
 		return recurringDetail;
