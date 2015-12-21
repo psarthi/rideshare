@@ -84,6 +84,15 @@ public class UserDataLoader {
 			transation = session.beginTransaction();
 			
 			UserDataLoader dataLoader = new UserDataLoader();
+			
+			// This will take care of prerequisites
+			//Start
+//			dataLoader.loadCity();
+//			dataLoader.loadRole();
+//			dataLoader.loadVehicleCategory();
+//			dataLoader.loadVehicleSubCategory();
+			//End			
+			
 			dataLoader.loadUser();
 			dataLoader.loadVehicle();			
 			

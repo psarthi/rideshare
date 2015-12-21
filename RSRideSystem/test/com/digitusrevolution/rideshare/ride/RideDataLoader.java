@@ -91,9 +91,14 @@ public class RideDataLoader {
 			transation = session.beginTransaction();
 			
 			RideDataLoader dataLoader = new RideDataLoader();
-//			dataLoader.loadRide();
-//			dataLoader.loadRideRequest();
-			dataLoader.test();
+
+			//Trust Category needs to be loaded only once
+//			dataLoader.loadTrustCategory();
+			
+			dataLoader.loadRide();
+			dataLoader.loadRideRequest();
+
+//			dataLoader.test();
 			
 			transation.commit();
 
