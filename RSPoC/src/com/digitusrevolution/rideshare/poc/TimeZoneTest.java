@@ -1,46 +1,17 @@
-package com.digitusrevolution.rideshare.ride;
+package com.digitusrevolution.rideshare.poc;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 
-import com.digitusrevolution.rideshare.common.RideShareUtil;
-import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
-import com.digitusrevolution.rideshare.model.ride.domain.Route;
-import com.digitusrevolution.rideshare.ride.domain.PointDO;
-import com.digitusrevolution.rideshare.ride.domain.RouteDO;
-
-public class RideSystemTest {
+public class TimeZoneTest {
 
 	public static void main(String[] args) {
 
-		/*		PointDO pointDO = new PointDO();
-		Point startPoint = pointDO.getCordinates("Gopalan Grandeur Bangalore");
-		System.out.println("Start Point Lat/Lang: " + startPoint.getLatitude()+","+startPoint.getLongitude());	
-
-		PointDO pointDO1 = new PointDO();
-		Point endPoint = pointDO1.getCordinates("Silk Board Bangalore");
-		System.out.println("End Point Lat/Lang: " + endPoint.getLatitude()+","+endPoint.getLongitude());
-
-		RouteDO routeDO = new RouteDO();
-		Route route = routeDO.getRoute(startPoint, endPoint);
-		Collection<RoutePoint> routePoints = route.getRoutePoints();
-
-		for (RoutePoint routePoint : routePoints) {
-
-			System.out.println("Route Points are with sequence,lat,lng:" + routePoint.getSequence()+":"+routePoint.getPoint().getLatitude()+","+routePoint.getPoint().getLongitude());
-		}
-		 */
-		
 		LocalDateTime dateTime1 = LocalDateTime.now();
 		System.out.println("Local Date time w/o timezone: "+dateTime1);
 		
@@ -82,7 +53,7 @@ public class RideSystemTest {
 		
 		Set<String> strings = ZoneId.getAvailableZoneIds();
 		for (String string : strings) {
-	//		System.out.println(string+","+ZoneId.of(string));
+			System.out.println(string+","+ZoneId.of(string));
 		}
 
 

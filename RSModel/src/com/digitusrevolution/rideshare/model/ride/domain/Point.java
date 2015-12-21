@@ -26,7 +26,7 @@ public class Point implements Geometry{
 	public Point() {
 		//This is just to add two elements in the list, so that while setting lat/lon would not throw index out of bound exception
 		coordinates.add(null);
-		coordinates.add(null);
+		coordinates.add(null);		
 	}
 	
 	public Point(double longitude, double latitude){
