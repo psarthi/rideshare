@@ -103,7 +103,7 @@ public class MongoDBBasics {
 		RidePoint ridePoint = new RidePoint();
 		ridePoint.getPoint().setLatitude(12.12);
 		ridePoint.getPoint().setLongitude(13.12);
-		ridePoint.setRideId(1);
+		ridePoint.setSequence(1);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		String json = null;

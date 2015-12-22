@@ -18,9 +18,11 @@ public class GeoJSONUtil {
 		String pointJson = jsonUtilPoint.getJson(ridePoint.getPoint());
 		Feature feature = new Feature();
 		feature.setGeometry(getGeoJsonObject(pointJson));
-		feature.setProperty("rideId", ridePoint.getRideId());
+		//Needs to be rewritten as object structure has been changed to Map
+//		feature.setProperty("rideId", ridePoint.getRideId());
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d yyyy hh:mm a");
-		feature.setProperty("dateTime", ridePoint.getDateTime().format(formatter));
+		//Needs to be rewritten as object structure has been changed to Map
+//		feature.setProperty("dateTime", ridePoint.getDateTime().format(formatter));
 		feature.setProperty("sequence", ridePoint.getSequence());
 		return feature;		
 	}

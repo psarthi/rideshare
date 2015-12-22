@@ -1,13 +1,16 @@
 package com.digitusrevolution.rideshare.model.ride.domain;
 
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RidePoint{
 	
-	private String _id; 
-	private int rideId;
-	private ZonedDateTime dateTime;
+	private String _id;
+	@JsonProperty("rides")
+	private List<RideBasicInfo> ridesBasicInfo = new ArrayList<RideBasicInfo>();
 	private Point point = new Point();
 	private int sequence;
 	
@@ -16,18 +19,6 @@ public class RidePoint{
 	}
 	public void set_id(String _id) {
 		this._id = _id;
-	}
-	public int getRideId() {
-		return rideId;
-	}
-	public void setRideId(int rideId) {
-		this.rideId = rideId;
-	}
-	public ZonedDateTime getDateTime() {
-		return dateTime;
-	}
-	public void setDateTime(ZonedDateTime dateTime) {
-		this.dateTime = dateTime;
 	}
 	public Point getPoint() {
 		return point;
@@ -40,14 +31,20 @@ public class RidePoint{
 	}
 	public void setSequence(int sequence) {
 		this.sequence = sequence;
+	}		
+	public List<RideBasicInfo> getRidesBasicInfo() {
+		return ridesBasicInfo;
 	}
-	
+	public void setRidesBasicInfo(List<RideBasicInfo> ridesBasicInfo) {
+		this.ridesBasicInfo = ridesBasicInfo;
+	}
 	@Override
 	public String toString(){
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d yyyy hh:mm a");
-		
-		return "[_id,rideId,dateTime,sequence,point]:"+get_id()+","+getRideId()+
-				","+getDateTime().format(formatter)+","+getSequence()+","+getPoint().toString();
-	}
-	
+		String rides = "";
+		for (RideBasicInfo rideBasicInfo : this.ridesBasicInfo) {
+			rides += rideBasicInfo.getId()+","+rideBasicInfo.getDateTime().format(formatter) +":";
+		}
+		return "[_id:sequence:point:rides]:"+get_id()+":"+getSequence()+":"+getPoint().toString()+":"+rides;
+	}	
 }

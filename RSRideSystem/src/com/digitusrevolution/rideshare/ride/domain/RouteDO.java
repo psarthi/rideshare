@@ -1,7 +1,10 @@
 package com.digitusrevolution.rideshare.ride.domain;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +17,7 @@ import com.digitusrevolution.rideshare.common.util.MathUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
+import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.ride.dto.google.GoogleDirection;
@@ -36,7 +40,7 @@ public class RouteDO{
 		return googleDirection;
 	}
 	
-	public Route processRoute(GoogleDirection googleDirection, ZonedDateTime startDateTime, int rideId){		
+	public Route processRoute(GoogleDirection googleDirection, List<RideBasicInfo> ridesBasicInfo){		
 		
 		Leg leg = googleDirection.getRoutes().get(0).getLegs().get(0);
 		List<Step> steps = leg.getSteps();
@@ -49,11 +53,11 @@ public class RouteDO{
 		double overallSpeed = MathUtil.getSpeed(totalDistance, totalTime);
 		int seq = 1;
 		int skip = 1;
-		ZonedDateTime lastPointDateTime = startDateTime;
 		double sumOfDistance = 0;
 		double sumOfTime = 0;
 		double combinedDistance = 0;
 		double minDistance = Double.parseDouble(PropertyReader.getInstance().getProperty("MIN_DISTANCE_BETWEEN_ROUTE_POINTS"));
+		logger.debug("Ride Start Time:"+ridesBasicInfo.get(0).getDateTime());
 		for (Step step : steps) {	
 			double stepDistance = step.getDistance().getValue();
 			double stepTime = step.getDuration().getValue();
@@ -69,7 +73,6 @@ public class RouteDO{
 				ridePoint.getPoint().setLatitude(latLngs.get(i).latitude);
 				ridePoint.getPoint().setLongitude(latLngs.get(i).longitude);
 				ridePoint.setSequence(seq);
-				ridePoint.setRideId(rideId);
 				double distance = SphericalUtil.computeDistanceBetween(from, to);
 				combinedDistance += distance;
 				if (combinedDistance <= minDistance){
@@ -79,12 +82,24 @@ public class RouteDO{
 				} 
 				logger.trace("More:"+distance+","+seq+","+skip+","+combinedDistance);
 				logger.trace(distance);
+				
 				double time = MathUtil.getTime(distance, stepSpeed);
+				long seconds = (long) time;
+
 				double timeBasedOnOverallSpeed = MathUtil.getTime(distance, overallSpeed);
 				logger.trace("timeBasedOnOverallSpeed:"+timeBasedOnOverallSpeed+":timeBasedOnStepSpeed:"+time+":Diff:"+(timeBasedOnOverallSpeed-time));
-				long seconds = (long) timeBasedOnOverallSpeed;
-				lastPointDateTime = lastPointDateTime.plusSeconds(seconds);
-				ridePoint.setDateTime(lastPointDateTime);
+				logger.trace(timeBasedOnOverallSpeed-time);
+				List<RideBasicInfo> updatedRidesBasicInfo = new ArrayList<>();
+				for (RideBasicInfo rideBasicInfo : ridesBasicInfo) {
+					ZonedDateTime lastPointDateTime = rideBasicInfo.getDateTime();
+					ZonedDateTime thisPointDateTime = lastPointDateTime.plusSeconds(seconds);
+					rideBasicInfo.setDateTime(thisPointDateTime);
+					RideBasicInfo updatedRideBasicInfo = new RideBasicInfo();
+					updatedRideBasicInfo.setId(rideBasicInfo.getId());
+					updatedRideBasicInfo.setDateTime(rideBasicInfo.getDateTime());
+					updatedRidesBasicInfo.add(updatedRideBasicInfo);
+				}
+				ridePoint.setRidesBasicInfo(updatedRidesBasicInfo);
 				route.getRidePoints().add(ridePoint);
 				from = to;
 				seq++;
@@ -93,8 +108,9 @@ public class RouteDO{
 				combinedDistance = 0;
 			}			
 		}
+		logger.debug("Ride Finish Time:"+ridesBasicInfo.get(0).getDateTime());
 		for (RidePoint ridePoint : route.getRidePoints()) {
-			logger.trace(ridePoint.toString());
+			logger.debug(ridePoint.toString());
 		}
 		logger.debug("Summary-------------");
 		logger.debug("Minimum distance between two Points:"+minDistance);

@@ -70,7 +70,7 @@ public class Point implements Geometry{
 
 	@Override
 	public String toString(){
-		return "[lng,lat]:"+getLongitude()+","+getLatitude();  
+		return "[lng,lat]:"+String.format("%.4f",getLongitude())+","+String.format("%.4f",getLatitude());  
 	}
 	
 }

@@ -66,7 +66,7 @@ public class RidePointDAO{
 
 	public List<RidePoint> getAllRidePointsOfRide(int rideId) {
 		List<RidePoint> ridePoints = new ArrayList<>();
-		MongoCursor<Document> cursor = collection.find(Filters.eq("rideId", rideId)).iterator();
+		MongoCursor<Document> cursor = collection.find(Filters.eq("rides.id", rideId)).iterator();
 		try {
 			while (cursor.hasNext()){
 				String json = cursor.next().toJson();
