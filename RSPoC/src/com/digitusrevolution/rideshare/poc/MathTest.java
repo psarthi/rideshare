@@ -25,8 +25,7 @@ public class MathTest {
 		Point startPoint = pointDO.getCordinates("Bangalore"); 			
 		Point endPoint = pointDO.getCordinates("New Delhi"); 
 
-		RESTClientUtil restClientUtil = new RESTClientUtil();
-		String json = restClientUtil.getDirection(startPoint.getLatitude(),startPoint.getLongitude(), endPoint.getLatitude(), endPoint.getLongitude());
+		String json = RESTClientUtil.getDirection(startPoint.getLatitude(),startPoint.getLongitude(), endPoint.getLatitude(), endPoint.getLongitude());
 		ObjectMapper objectMapper = new ObjectMapper();
 		GoogleDirection googleDirection =null;
 		try {

@@ -113,8 +113,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	
 	public int offerRide(Ride ride){
 		int userId = ride.getDriver().getId();
-		RESTClientUtil restClientUtil = new RESTClientUtil();
-		Collection<Role> roles = restClientUtil.getRoles(userId);
+		Collection<Role> roles = RESTClientUtil.getRoles(userId);
 		int id = 0;
 		for (Role role : roles) {
 			if (role.getName().equals("Driver")){

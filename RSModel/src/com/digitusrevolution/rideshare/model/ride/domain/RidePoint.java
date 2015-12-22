@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.model.ride.domain;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class RidePoint{
 	
@@ -41,5 +42,12 @@ public class RidePoint{
 		this.sequence = sequence;
 	}
 	
+	@Override
+	public String toString(){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d yyyy hh:mm a");
+		
+		return "[_id,rideId,dateTime,sequence,point]:"+get_id()+","+getRideId()+
+				","+getDateTime().format(formatter)+","+getSequence()+","+getPoint().toString();
+	}
 	
 }

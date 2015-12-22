@@ -10,10 +10,9 @@ public class PointDO{
 	
 	public Point getCordinates(String address){
 		
-		RESTClientUtil restClientUtil = new RESTClientUtil();
-		String json = restClientUtil.getGeocode(address);
-		JSONUtil<GoogleGeocode> jsonUtil = new JSONUtil<>(GoogleGeocode.class);
-		GoogleGeocode googleGeocode = jsonUtil.getModel(json);
+		String json = RESTClientUtil.getGeocode(address);
+		JSONUtil<GoogleGeocode> jsonUtilGoogleGeocode = new JSONUtil<>(GoogleGeocode.class);
+		GoogleGeocode googleGeocode = jsonUtilGoogleGeocode.getModel(json);
 		// This has been added just to get different point object from the same DO,
 		// in case you return the DO point then it gets overwritten when you get another points 
 		Point point = new Point();

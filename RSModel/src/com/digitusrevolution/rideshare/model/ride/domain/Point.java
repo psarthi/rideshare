@@ -68,5 +68,9 @@ public class Point implements Geometry{
 		getCoordinates().set(1, latitude);
 	}
 
+	@Override
+	public String toString(){
+		return "[lng,lat]:"+getLongitude()+","+getLatitude();  
+	}
 	
 }

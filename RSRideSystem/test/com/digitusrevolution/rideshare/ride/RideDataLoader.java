@@ -134,11 +134,10 @@ public class RideDataLoader {
 			RideDO rideDO = new RideDO();
 			Ride ride = new Ride();
 			
-			RESTClientUtil restClientUtil = new RESTClientUtil();
-			User driver = restClientUtil.getUser(1);
+			User driver = RESTClientUtil.getUser(1);
 			ride.setDriver(driver);
 			
-			Vehicle vehicle = restClientUtil.getVehicle(driver.getId(), 1);
+			Vehicle vehicle = RESTClientUtil.getVehicle(driver.getId(), 1);
 			ride.setVehicle(vehicle);
 
 			TrustCategoryDO trustCategoryDO = new TrustCategoryDO();
@@ -246,12 +245,10 @@ public class RideDataLoader {
 			RideRequestDO rideRequestDO = new RideRequestDO();
 			RideRequest rideRequest = new RideRequest();
 			
-			RESTClientUtil restClientUtil = new RESTClientUtil();
-			User passenger = restClientUtil.getUser(2);
+			User passenger = RESTClientUtil.getUser(2);
 			rideRequest.setPassenger(passenger);
 			
-			restClientUtil = new RESTClientUtil();
-			VehicleCategory vehicleCategory = restClientUtil.getVehicleCategory(1);
+			VehicleCategory vehicleCategory = RESTClientUtil.getVehicleCategory(1);
 			rideRequest.setVehicleCategory(vehicleCategory);
 			
 			TrustCategoryDO trustCategoryDO = new TrustCategoryDO();

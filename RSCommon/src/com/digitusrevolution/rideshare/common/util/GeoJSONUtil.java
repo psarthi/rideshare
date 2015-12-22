@@ -26,7 +26,8 @@ public class GeoJSONUtil {
 	}
 	
 	/*
-	 * All Geometry Objects of GeoJSON Library is of type GeoJsonObject, that's why we can pass any Geometry object directly here
+	 * All Geometry Objects of GeoJSON Library is of type GeoJsonObject, 
+	 * that's why we can pass any Geometry object directly here
 	 */
 	public static Feature getFeatureFromGeometry(GeoJsonObject geoJsonObject){
 		Feature feature = new Feature();

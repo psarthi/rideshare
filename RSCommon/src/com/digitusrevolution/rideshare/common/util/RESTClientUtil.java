@@ -20,7 +20,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
  */
 public class RESTClientUtil {
 
-	public User getUser(int id){
+	public static User getUser(int id){
 
 		RESTClientImpl<User> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_USER_URL");
@@ -31,7 +31,7 @@ public class RESTClientUtil {
 		return user;
 	}
 
-	public Collection<Role> getRoles(int id){
+	public static Collection<Role> getRoles(int id){
 
 		RESTClientImpl<Role> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_USER_ROLE_URL");
@@ -42,7 +42,7 @@ public class RESTClientUtil {
 		return roles;
 	}
 
-	public Vehicle getVehicle(int userId, int vehicleId){
+	public static Vehicle getVehicle(int userId, int vehicleId){
 
 		RESTClientImpl<Vehicle> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_VEHICLE_URL");
@@ -53,7 +53,7 @@ public class RESTClientUtil {
 		return vehicle;
 	}
 	
-	public String getGeocode(String address){
+	public static String getGeocode(String address){
 
 		RESTClientImpl<String> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_GOOGLE_GEOCODE_URL");
@@ -65,7 +65,7 @@ public class RESTClientUtil {
 		return json;
 	}
 	
-	public String getDirection(Double originLat, Double originLng, Double destinationLat, Double destinationLng){
+	public static String getDirection(Double originLat, Double originLng, Double destinationLat, Double destinationLng){
 
 		RESTClientImpl<String> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_GOOGLE_DIRECTION_URL");
@@ -77,7 +77,7 @@ public class RESTClientUtil {
 		return json;
 	}
 	
-	public VehicleCategory getVehicleCategory(int id){
+	public static VehicleCategory getVehicleCategory(int id){
 
 		RESTClientImpl<VehicleCategory> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_VEHICLE_CATEGORY_URL");
