@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.ws.rs.NotFoundException;
 
-import com.digitusrevolution.rideshare.common.GenericDAOImpl;
+import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
 import com.digitusrevolution.rideshare.common.mapper.user.CityMapper;

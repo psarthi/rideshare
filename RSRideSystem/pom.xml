@@ -124,5 +124,12 @@
 			<version>3.2.0</version>
 		</dependency>
 		<!-- MongoDB End -->
+		<!-- GeoJSON Java Library Start -->
+		<dependency>
+			<groupId>de.grundid.opendatalab</groupId>
+			<artifactId>geojson-jackson</artifactId>
+			<version>1.5.1</version>
+		</dependency>
+		<!-- GeoJSON Java Library End -->
 	</dependencies>
 </project>

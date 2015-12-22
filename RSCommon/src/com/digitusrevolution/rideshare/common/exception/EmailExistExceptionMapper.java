@@ -7,7 +7,7 @@ import javax.ws.rs.ext.Provider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.digitusrevolution.rideshare.common.PropertyReader;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.common.ErrorMessage;
 
 @Provider

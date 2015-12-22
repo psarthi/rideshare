@@ -6,9 +6,9 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import com.digitusrevolution.rideshare.common.PropertyReader;
-import com.digitusrevolution.rideshare.common.RESTClientImpl;
-import com.digitusrevolution.rideshare.common.RESTClientUtil;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
+import com.digitusrevolution.rideshare.common.util.RESTClientImpl;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;

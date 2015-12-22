@@ -3,7 +3,7 @@ package com.digitusrevolution.rideshare.ride;
 
 import java.util.List;
 
-import com.digitusrevolution.rideshare.common.JSONUtil;
+import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
 

@@ -10,8 +10,8 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
-import com.digitusrevolution.rideshare.common.GenericDAOImpl;
-import com.digitusrevolution.rideshare.common.HibernateUtil;
+import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
+import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
 public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{

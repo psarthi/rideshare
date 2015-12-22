@@ -1,7 +1,7 @@
 package com.digitusrevolution.rideshare.ride.domain;
 
-import com.digitusrevolution.rideshare.common.JSONUtil;
-import com.digitusrevolution.rideshare.common.RESTClientUtil;
+import com.digitusrevolution.rideshare.common.util.JSONUtil;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.ride.dto.google.GoogleGeocode;
 

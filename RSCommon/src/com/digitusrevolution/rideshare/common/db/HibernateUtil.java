@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.common;
+package com.digitusrevolution.rideshare.common.db;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

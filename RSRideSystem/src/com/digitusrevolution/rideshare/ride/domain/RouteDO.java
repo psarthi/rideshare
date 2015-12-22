@@ -2,8 +2,8 @@ package com.digitusrevolution.rideshare.ride.domain;
 
 import java.util.List;
 
-import com.digitusrevolution.rideshare.common.JSONUtil;
-import com.digitusrevolution.rideshare.common.RESTClientUtil;
+import com.digitusrevolution.rideshare.common.util.JSONUtil;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.ride.dto.google.GoogleDirection;

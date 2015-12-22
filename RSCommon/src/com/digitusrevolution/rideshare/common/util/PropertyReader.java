@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.common;
+package com.digitusrevolution.rideshare.common.util;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -5,10 +5,10 @@ import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
 
-import com.digitusrevolution.rideshare.common.RESTClientUtil;
 import com.digitusrevolution.rideshare.common.math.google.LatLng;
 import com.digitusrevolution.rideshare.common.math.google.PolyUtil;
 import com.digitusrevolution.rideshare.common.math.google.SphericalUtil;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.poc.core.SphericalGeometry;
 import com.digitusrevolution.rideshare.ride.domain.PointDO;

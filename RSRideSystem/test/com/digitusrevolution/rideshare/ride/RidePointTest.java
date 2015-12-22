@@ -6,7 +6,12 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import com.digitusrevolution.rideshare.common.JSONUtil;
+import org.geojson.Feature;
+import org.geojson.FeatureCollection;
+import org.geojson.LineString;
+
+import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
+import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
 
@@ -21,7 +26,7 @@ public class RidePointTest {
 		ridePoint.setDateTime(zonedDateTime);
 		ridePoint.setRideId(1);
 		ridePoint.setSequence(1);
-
+		
 		RidePointDAO ridePointDAO = new RidePointDAO();
 		String id = ridePointDAO.create(ridePoint);
 		
@@ -39,9 +44,18 @@ public class RidePointTest {
 		System.out.println("zonedDateTime in IST: " + zonedDateTime1.format(formatter));
 		
 		List<RidePoint> ridePoints = ridePointDAO.getAll();
+		FeatureCollection featureCollection = new FeatureCollection();
+		JSONUtil<FeatureCollection> jsonUtilFeatureCollection = new JSONUtil<>(FeatureCollection.class);
 		for (RidePoint ridePoint2 : ridePoints) {
 			System.out.println(jsonUtil.getJson(ridePoint2));
+			Feature feature = GeoJSONUtil.getFeatureFromRidePoint(ridePoint2);
+			featureCollection.add(feature);
 		}
+		
+		LineString lineString = GeoJSONUtil.getLineStringFromRidePoints(ridePoints);
+		featureCollection.add(GeoJSONUtil.getFeatureFromGeometry(lineString));		
+		System.out.println(jsonUtilFeatureCollection.getJson(featureCollection));
+		
 		System.out.println("----");
 		
 		ridePoints = ridePointDAO.getAllRidePointsOfRide(2);
@@ -49,8 +63,15 @@ public class RidePointTest {
 		for (RidePoint ridePoint2 : ridePoints) {
 			System.out.println(jsonUtil.getJson(ridePoint2));
 		}
+
+		JSONUtil<LineString> jsonUtilLineString = new JSONUtil<>(LineString.class);
+		lineString = GeoJSONUtil.getLineStringFromRidePoints(ridePoints);
+		System.out.println(jsonUtilLineString.getJson(lineString));
+
 	//	ridePointDAO.delete(_id);
+
 		
+		System.out.println("End of Program");
 	}
 
 }

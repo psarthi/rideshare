@@ -6,8 +6,8 @@ import java.util.List;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import com.digitusrevolution.rideshare.common.JSONUtil;
-import com.digitusrevolution.rideshare.common.MongoDBUtil;
+import com.digitusrevolution.rideshare.common.db.MongoDBUtil;
+import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;

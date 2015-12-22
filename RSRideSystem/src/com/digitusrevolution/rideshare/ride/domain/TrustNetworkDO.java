@@ -8,7 +8,7 @@ import javax.ws.rs.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.digitusrevolution.rideshare.common.GenericDAOImpl;
+import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
 import com.digitusrevolution.rideshare.common.mapper.ride.TrustNetworkMapper;
