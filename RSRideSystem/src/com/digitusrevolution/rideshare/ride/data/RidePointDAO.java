@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.ride.data;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.bson.Document;
@@ -26,6 +27,19 @@ public class RidePointDAO{
 		String json = jsonUtil.getJson(ridePoint);
 		collection.insertOne(Document.parse(json));
 		return ridePoint.get_id();
+	}
+	
+	public void createBulk(Collection<RidePoint> ridePoints) {
+		List<Document> documents = new ArrayList<>();
+		for (RidePoint ridePoint : ridePoints) {
+			String json = jsonUtil.getJson(ridePoint);
+			documents.add(Document.parse(json));
+		}
+		if (documents.isEmpty()){
+			throw new IllegalArgumentException("Empty documents is not allowed");
+		} else {
+			collection.insertMany(documents);
+		}
 	}
 
 	public RidePoint get(String _id) {

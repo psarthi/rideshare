@@ -5,6 +5,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
 
 import org.apache.logging.log4j.LogManager;
@@ -66,6 +67,9 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 
 	@Override
 	public void update(RideRequest rideRequest) {
+		if (rideRequest.getId()==0){
+			throw new InvalidKeyException("Updated failed due to Invalid key");
+		}
 		setRideRequest(rideRequest);
 		rideRequestDAO.update(rideRequestEntity);
 	}

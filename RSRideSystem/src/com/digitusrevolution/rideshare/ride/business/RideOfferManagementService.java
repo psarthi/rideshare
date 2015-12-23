@@ -8,12 +8,13 @@ import org.hibernate.Transaction;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
+import com.digitusrevolution.rideshare.ride.dto.google.GoogleDirection;
 
 public class RideOfferManagementService {
 	
 	private static final Logger logger = LogManager.getLogger(RideOfferManagementService.class.getName());
 	
-	public int offerRide(Ride ride){
+	public int offerRide(Ride ride, GoogleDirection direction){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
@@ -22,7 +23,7 @@ public class RideOfferManagementService {
 			transation = session.beginTransaction();
 
 			RideDO rideDO = new RideDO();
-			id = rideDO.offerRide(ride);
+			id = rideDO.offerRide(ride,direction);
 
 			transation.commit();
 		} catch (RuntimeException e) {

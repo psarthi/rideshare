@@ -6,20 +6,28 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.types.ObjectId;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
+import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
+import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.ride.data.RideDAO;
+import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
+import com.digitusrevolution.rideshare.ride.domain.RouteDO;
+import com.digitusrevolution.rideshare.ride.dto.google.GoogleDirection;
 
 public class RideDO implements DomainObjectPKInteger<Ride>{
 	
@@ -65,6 +73,9 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 
 	@Override
 	public void update(Ride ride) {
+		if (ride.getId()==0){
+			throw new InvalidKeyException("Updated failed due to Invalid key");
+		}
 		setRide(ride);
 		rideDAO.update(rideEntity);
 	}
@@ -111,19 +122,75 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return null;
 	}
 	
-	public int offerRide(Ride ride){
+	/*
+	 * Purpose - Goal of this function is to create ride as well as all the associated ride points in database
+	 * 
+	 * High Level Logic - 
+	 * 
+	 * - Check if the user has Driver role
+	 * - if user is not driver, then ride can't be offered
+	 * - if driver, then check for ride recurrence
+	 * - if its recurring ride, generate multiple rides (TBD) 
+	 * - Create all rides in database without start/end point 
+	 * - Get all the ride point and generate the primary key for them for each rides (In case of recurring rides - TBD)
+	 * - Update all the ride point in the database 
+	 * - On success, update the ride with start point and end point primary key  
+	 * 
+	 */
+	public int offerRide(Ride ride, GoogleDirection direction){
 		int userId = ride.getDriver().getId();
 		Collection<Role> roles = RESTClientUtil.getRoles(userId);
 		int id = 0;
+		boolean driverStatus = false;
 		for (Role role : roles) {
 			if (role.getName().equals("Driver")){
+				driverStatus = true;
 				ride.setStatus("planned");
 				ZonedDateTime startTimeUTC = ride.getStartTime().withZoneSameInstant(ZoneOffset.UTC);
-				ride.setStartTime(startTimeUTC);
-				id = create(ride);
-				return id;
+				ride.setStartTime(startTimeUTC);				
+				//Check if ride is recurring, then create multiple rides as per the recurring details
+				//**TBD - Recurring code needs to be written later
+				if (!ride.getRecur()){
+					id = create(ride);		
+					logger.debug("Ride has been created with id:" + id);
+				}
+				RouteDO routeDO = new RouteDO();
+				RideBasicInfo rideBasicInfo = new RideBasicInfo();
+				List<RideBasicInfo> ridesBasicInfo = new ArrayList<>();
+				//In case its a recurring ride, then create multiple rides and add all of them below
+				//**TBD - Recurring scenarios has to be written later
+				if(!ride.getRecur()){
+					rideBasicInfo.setId(id);
+					rideBasicInfo.setDateTime(startTimeUTC);
+					ridesBasicInfo.add(rideBasicInfo);					
+				}
+				Route route = routeDO.getRoute(direction, ridesBasicInfo);
+				Collection<RidePoint> ridePoints = route.getRidePoints();
+				//Insert primary key here itself, so that we can update the start and end location in the ride table
+				String startPointId;
+				String endPointId = null;
+				for (RidePoint ridePoint : ridePoints) {					
+					ObjectId _id = new ObjectId();
+					ridePoint.set_id(_id.toString());
+					//This will keep overwriting the endPointId and last value would be the endPointId
+					//This is done here to avoid reiterating the loop again just to get this id
+					endPointId = _id.toString();
+				}
+				startPointId = ridePoints.iterator().next().get_id();
+				RidePointDAO ridePointDAO = new RidePointDAO();
+				ridePointDAO.createBulk(ridePoints);
+				ride.getStartPoint().set_id(startPointId);
+				ride.getEndPoint().set_id(endPointId);
+				//Below is imp, else it won't be able to update the ride which has been just created
+				ride.setId(id);
+				update(ride);
+				logger.debug("Ride has been updated with id:"+ride.getId());
 			} 
 		}
-		throw new NotAuthorizedException("Can't offer ride unless you are a Driver");
+		if (!driverStatus) {
+			throw new NotAuthorizedException("Can't offer ride unless you are a Driver");
+		} else {
+			return id;
+		}
 	}
 }

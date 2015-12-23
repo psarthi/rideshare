@@ -69,12 +69,12 @@ public class RouteDO{
 	 * - Ensure each point maintains a sequence number
 	 * 
 	 */
-	public Route getRoute(GoogleDirection googleDirection, List<RideBasicInfo> ridesBasicInfo){		
+	public Route getRoute(GoogleDirection direction, List<RideBasicInfo> ridesBasicInfo){		
 
-		Leg leg = googleDirection.getRoutes().get(0).getLegs().get(0);
+		Leg leg = direction.getRoutes().get(0).getLegs().get(0);
 		List<Step> steps = leg.getSteps();
 		//**Start - This is just for analysis purpose, below code is not relevant to the logic
-		String encodedOverallPath = googleDirection.getRoutes().get(0).getOverviewPolyline().getPoints();
+		String encodedOverallPath = direction.getRoutes().get(0).getOverviewPolyline().getPoints();
 		List<LatLng> latLngsOverall = PolyUtil.decode(encodedOverallPath);
 		//Distance is in Meters
 		double totalDistance = leg.getDistance().getValue();
@@ -101,11 +101,11 @@ public class RouteDO{
 				LatLng to = latLngs.get(i);
 				double distance = SphericalUtil.computeDistanceBetween(from, to);
 				if (distance <= minDistance){
-					logger.debug("[Less:distance,seq,skip,from,to]:"+distance+","+seq+","+skip+","+from.toString()+","+to.toString());
+					logger.trace("[Less:distance,seq,skip,from,to]:"+distance+","+seq+","+skip+","+from.toString()+","+to.toString());
 					skip++;
 					continue;
 				} 
-				logger.debug("[More:distance,seq,skip,from,to]:"+distance+","+seq+","+skip+","+from.toString()+","+to.toString());
+				logger.trace("[More:distance,seq,skip,from,to]:"+distance+","+seq+","+skip+","+from.toString()+","+to.toString());
 				logger.trace(distance);				
 
 				double time = MathUtil.getTime(distance, stepSpeed);

@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.ride.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
 
 import org.apache.logging.log4j.LogManager;
@@ -54,6 +55,9 @@ public class TrustCategoryDO implements DomainObjectPKString<TrustCategory>{
 
 	@Override
 	public void update(TrustCategory trustCategory) {
+		if (trustCategory.getName().isEmpty()){
+			throw new InvalidKeyException("Updated failed due to Invalid key");
+		}
 		setTrustCategory(trustCategory);
 		genericDAO.update(trustCategoryEntity);		
 	}

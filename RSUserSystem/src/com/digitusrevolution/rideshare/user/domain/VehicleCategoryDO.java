@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.user.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
@@ -81,6 +82,9 @@ public class VehicleCategoryDO implements DomainObjectPKInteger<VehicleCategory>
 
 	@Override
 	public void update(VehicleCategory vehicleCategory) {
+		if (vehicleCategory.getId()==0){
+			throw new InvalidKeyException("Updated failed due to Invalid key");
+		}
 		setVehicleCategory(vehicleCategory);
 		genericDAO.update(vehicleCategoryEntity);		
 	}

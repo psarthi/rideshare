@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.ride.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
 
 import org.apache.logging.log4j.LogManager;
@@ -60,6 +61,9 @@ public class TrustNetworkDO implements DomainObjectPKInteger<TrustNetwork>{
 
 	@Override
 	public void update(TrustNetwork trustNetwork) {
+		if (trustNetwork.getId()==0){
+			throw new InvalidKeyException("Updated failed due to Invalid key");
+		}
 		setTrustNetwork(trustNetwork);
 		genericDAO.update(trustNetworkEntity);		
 	}

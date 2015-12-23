@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.user.domain.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
 
 import org.apache.logging.log4j.LogManager;
@@ -84,6 +85,9 @@ public class VehicleDO implements DomainObjectPKInteger<Vehicle>{
 
 	@Override
 	public void update(Vehicle vehicle) {
+		if (vehicle.getId()==0){
+			throw new InvalidKeyException("Updated failed due to Invalid key");
+		}
 		setVehicle(vehicle);
 		vehicleDAO.update(vehicleEntity);		
 	}

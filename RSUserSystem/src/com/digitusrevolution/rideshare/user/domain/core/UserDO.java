@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
 
 import org.apache.logging.log4j.LogManager;
@@ -81,6 +82,9 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	
 	@Override
 	public void update(User user){
+		if (user.getId()==0){
+			throw new InvalidKeyException("Updated failed due to Invalid key");
+		}
 		setUser(user);
 		userDAO.update(userEntity);
 	}
