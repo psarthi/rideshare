@@ -1,6 +1,6 @@
 package com.digitusrevolution.rideshare.model.ride.domain;
 
-public class RideRequestPoint {
+public class Location {
 	
 	private String _id;
 	private Point point = new Point();

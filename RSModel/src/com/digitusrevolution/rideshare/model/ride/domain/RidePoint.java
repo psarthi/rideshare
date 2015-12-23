@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class RidePoint{
 	
 	private String _id;
+	//Don't change this to HashMap as serialization / deserialization to JSON would be a problem as 
+	//Jackson by default understand only basic datatypes as key and not custom object
 	@JsonProperty("rides")
 	private List<RideBasicInfo> ridesBasicInfo = new ArrayList<RideBasicInfo>();
 	private Point point = new Point();

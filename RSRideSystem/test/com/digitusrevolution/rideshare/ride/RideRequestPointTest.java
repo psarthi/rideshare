@@ -3,30 +3,30 @@ package com.digitusrevolution.rideshare.ride;
 
 import java.util.List;
 
+import com.digitusrevolution.rideshare.common.db.LocationDAO;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
-import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
-import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
+import com.digitusrevolution.rideshare.model.ride.domain.Location;
 
 public class RideRequestPointTest {
 	
 	public static void main(String[] args) {
 		
-		RideRequestPoint rideRequestPoint = new RideRequestPoint();
+		Location rideRequestPoint = new Location();
 		rideRequestPoint.getPoint().setLongitude(10.12);
 		rideRequestPoint.getPoint().setLatitude(24.23);
 		
-		RideRequestPointDAO rideRequestPointDAO = new RideRequestPointDAO();
+		LocationDAO rideRequestPointDAO = new LocationDAO();
 		String _id = rideRequestPointDAO.create(rideRequestPoint);
 		
 		rideRequestPoint = rideRequestPointDAO.get(_id);
-		JSONUtil<RideRequestPoint> jsonUtil = new JSONUtil<>(RideRequestPoint.class);
+		JSONUtil<Location> jsonUtil = new JSONUtil<>(Location.class);
 		System.out.println(jsonUtil.getJson(rideRequestPoint));
 		
 		rideRequestPoint.getPoint().setLatitude(20.12);
 		rideRequestPointDAO.update(rideRequestPoint);
 		
-		List<RideRequestPoint> rideRequestPoints = rideRequestPointDAO.getAll();
-		for (RideRequestPoint rideRequestPoint2 : rideRequestPoints) {
+		List<Location> rideRequestPoints = rideRequestPointDAO.getAll();
+		for (Location rideRequestPoint2 : rideRequestPoints) {
 			System.out.println(jsonUtil.getJson(rideRequestPoint2));
 			
 		}

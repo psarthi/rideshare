@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.ride.data;
+package com.digitusrevolution.rideshare.common.db;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,21 +6,20 @@ import java.util.List;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import com.digitusrevolution.rideshare.common.db.MongoDBUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
-import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
+import com.digitusrevolution.rideshare.model.ride.domain.Location;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
-public class RideRequestPointDAO{
+public class LocationDAO{
 	
 	private MongoDatabase db = MongoDBUtil.getDatabase();
-	private MongoCollection<Document> collection = db.getCollection("rideRequest_point");
-	private final JSONUtil<RideRequestPoint> jsonUtil = new JSONUtil<>(RideRequestPoint.class);
+	private MongoCollection<Document> collection = db.getCollection("location");
+	private final JSONUtil<Location> jsonUtil = new JSONUtil<>(Location.class);
 
-	public String create(RideRequestPoint rideRequestPoint) {
+	public String create(Location rideRequestPoint) {
 		ObjectId _id = new ObjectId();
 		rideRequestPoint.set_id(_id.toString());
 		String json = jsonUtil.getJson(rideRequestPoint);
@@ -28,14 +27,14 @@ public class RideRequestPointDAO{
 		return rideRequestPoint.get_id();
 	}
 
-	public RideRequestPoint get(String _id) {
+	public Location get(String _id) {
 		Document document = collection.find(Filters.eq("_id", _id)).first();
 		String json = document.toJson();
-		RideRequestPoint rideRequestPoint = jsonUtil.getModel(json);
+		Location rideRequestPoint = jsonUtil.getModel(json);
 		return rideRequestPoint;
 	}
 
-	public void update(RideRequestPoint rideRequestPoint) {
+	public void update(Location rideRequestPoint) {
 		String json = jsonUtil.getJson(rideRequestPoint);
 		String _id = rideRequestPoint.get_id();
 		/*
@@ -49,13 +48,13 @@ public class RideRequestPointDAO{
 		collection.deleteOne(Filters.eq("_id", _id));
 	}
 	
-	public List<RideRequestPoint> getAll() {
-		List<RideRequestPoint> rideRequestPoints = new ArrayList<>();
+	public List<Location> getAll() {
+		List<Location> rideRequestPoints = new ArrayList<>();
 		MongoCursor<Document> cursor = collection.find().iterator();
 		try {
 			while (cursor.hasNext()){
 				String json = cursor.next().toJson();
-				RideRequestPoint rideRequestPoint = jsonUtil.getModel(json);
+				Location rideRequestPoint = jsonUtil.getModel(json);
 				rideRequestPoints.add(rideRequestPoint);
 			}
 		} finally{

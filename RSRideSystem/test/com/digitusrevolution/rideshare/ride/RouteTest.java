@@ -21,7 +21,7 @@ public class RouteTest {
 		GoogleDirection googleDirection = routeDO.getDirection(startPoint, endPoint);
 		RouteTest routeTest = new RouteTest();
 		
-		routeDO.processRoute(googleDirection, routeTest.getSampleRidesBasicInfo());
+		routeDO.getRoute(googleDirection, routeTest.getSampleRidesBasicInfo());
 	}
 	
 	public List<RideBasicInfo> getSampleRidesBasicInfo(){

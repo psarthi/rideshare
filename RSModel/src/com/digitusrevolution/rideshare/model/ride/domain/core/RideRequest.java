@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
-import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
+import com.digitusrevolution.rideshare.model.ride.domain.Location;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
@@ -16,8 +16,8 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 public class RideRequest {
 
 	private int id;
-	private RideRequestPoint pickupPoint = new RideRequestPoint();
-	private RideRequestPoint dropPoint = new RideRequestPoint();
+	private Location pickupPoint = new Location();
+	private Location dropPoint = new Location();
 	private ZonedDateTime pickupTime;
 	private LocalTime pickupTimeVariation;
 	private VehicleCategory vehicleCategory;
@@ -42,16 +42,16 @@ public class RideRequest {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public RideRequestPoint getPickupPoint() {
+	public Location getPickupPoint() {
 		return pickupPoint;
 	}
-	public void setPickupPoint(RideRequestPoint pickupPoint) {
+	public void setPickupPoint(Location pickupPoint) {
 		this.pickupPoint = pickupPoint;
 	}
-	public RideRequestPoint getDropPoint() {
+	public Location getDropPoint() {
 		return dropPoint;
 	}
-	public void setDropPoint(RideRequestPoint dropPoint) {
+	public void setDropPoint(Location dropPoint) {
 		this.dropPoint = dropPoint;
 	}
 	public ZonedDateTime getPickupTime() {
