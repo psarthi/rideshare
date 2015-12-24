@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+
 /*
  * This is based on GeoJSON Point Geometry Object specification
  * http://geojson.org/geojson-spec.html

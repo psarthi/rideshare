@@ -101,11 +101,11 @@ public class RouteDO{
 				LatLng to = latLngs.get(i);
 				double distance = SphericalUtil.computeDistanceBetween(from, to);
 				if (distance <= minDistance){
-					logger.trace("[Less:distance,seq,skip,from,to]:"+distance+","+seq+","+skip+","+from.toString()+","+to.toString());
+					logger.debug("[Less:distance,seq,skip,from,to]:"+distance+","+seq+","+skip+","+from.toString()+","+to.toString());
 					skip++;
 					continue;
 				} 
-				logger.trace("[More:distance,seq,skip,from,to]:"+distance+","+seq+","+skip+","+from.toString()+","+to.toString());
+				logger.debug("[More:distance,seq,skip,from,to]:"+distance+","+seq+","+skip+","+from.toString()+","+to.toString());
 				logger.trace(distance);				
 
 				double time = MathUtil.getTime(distance, stepSpeed);

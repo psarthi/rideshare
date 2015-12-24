@@ -21,20 +21,19 @@ public class RESTClientTest {
 	public static void main (String args[]) throws ClassNotFoundException{
 
 		//Load Class
-		Class.forName("com.digitusrevolution.rideshare.common.PropertyReader");
+	//	Class.forName("com.digitusrevolution.rideshare.common.util.PropertyReader");
 
-	/*
-	 
 		// Get Message 
 		 
 		int id = 1;
-		RESTClientUtil restClientUtil = new RESTClientUtil();
-		User user1 = restClientUtil.getUser(id);
+		User user1 = RESTClientUtil.getUser(id);
 		System.out.println("FirstName: "+user1.getFirstName()+",Email: "+user1.getEmail());
 
-		Collection<Role> roles = restClientUtil.getRoles(id);
+		Collection<Role> roles = RESTClientUtil.getRoles(id);
 		System.out.println("Role size: "+roles.size());
 
+		/*
+		 
 
 		//Post Message
 

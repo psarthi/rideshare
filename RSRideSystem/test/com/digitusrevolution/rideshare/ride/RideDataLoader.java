@@ -58,8 +58,7 @@ public class RideDataLoader {
 			transation = session.beginTransaction();
 			
 			RideDataLoader dataLoader = new RideDataLoader();
-			dataLoader.loadTrustCategory();
-			
+			dataLoader.loadTrustCategory();			
 			transation.commit();
 
 			/*

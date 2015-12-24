@@ -106,15 +106,11 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		}
 		setRideEntity(rideEntity);
 		RidePoint startPoint = ridePointDAO.get(ride.getStartPoint().get_id());
-		RidePoint endPoint = ridePointDAO.get(ride.getEndPoint().get_id());
+		RidePoint endPoint = ridePointDAO.get(ride.getEndPoint().get_id());		
 		ride.setStartPoint(startPoint);
 		JSONUtil<RidePoint> jsonUtilRidePoint = new JSONUtil<>(RidePoint.class);
 		logger.debug("[Ride Start Point]:"+jsonUtilRidePoint.getJson(ride.getStartPoint()));
-		ride.setEndPoint(endPoint);
-		List<RidePoint> ridePoints = ridePointDAO.getAllRidePointsOfRide(ride.getId());
-		Route route = new Route();
-		route.setRidePoints(ridePoints);
-		ride.setRoute(route);
+		ride.setEndPoint(endPoint);	
 		return ride;
 	}
 
@@ -122,6 +118,10 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	public Ride getChild(int id) {
 		get(id);
 		fetchChild();
+		List<RidePoint> ridePoints = ridePointDAO.getAllRidePointsOfRide(ride.getId());
+		Route route = new Route();
+		route.setRidePoints(ridePoints);
+		ride.setRoute(route);
 		return ride;
 	}
 	

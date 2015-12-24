@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.ride.data;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -12,7 +13,6 @@ import org.bson.types.ObjectId;
 import com.digitusrevolution.rideshare.common.db.MongoDBUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
-import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -30,6 +30,7 @@ public class RidePointDAO{
 		ridePoint.set_id(_id.toString());
 		String json = jsonUtil.getJson(ridePoint);
 		collection.insertOne(Document.parse(json));
+		logger.debug(json);
 		return ridePoint.get_id();
 	}
 	
@@ -38,6 +39,7 @@ public class RidePointDAO{
 		for (RidePoint ridePoint : ridePoints) {
 			String json = jsonUtil.getJson(ridePoint);
 			documents.add(Document.parse(json));
+			logger.debug(json);
 		}
 		if (documents.isEmpty()){
 			throw new IllegalArgumentException("Empty documents is not allowed");

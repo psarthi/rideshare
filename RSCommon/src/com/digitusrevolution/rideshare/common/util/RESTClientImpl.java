@@ -14,13 +14,21 @@ import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.filter.LoggingFilter;
 
 import com.digitusrevolution.rideshare.common.inf.RESTClient;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 public class RESTClientImpl<T> implements RESTClient<T>{
 
-
+	/*
+	 * ***This is very important, JacksonJsonProvider is the implementation of
+	 * MessageBodyWriter/Reader which is required for "readEntity" method, 
+	 * else it would throw MessageBodyWriter/Reader not found exception
+	 * 
+	 * https://jersey.java.net/documentation/latest/message-body-workers.html#mbw.ex.client.mbr.reg
+	 */
+	private final Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class)).register(JacksonJsonProvider.class);
+	
 	@Override
 	public Response get(URI uri) {
-		Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class));
 		WebTarget webTarget = client.target(uri);
 		
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
@@ -31,7 +39,6 @@ public class RESTClientImpl<T> implements RESTClient<T>{
 
 	@Override
 	public Response post(URI uri, T model) {
-		Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class));
 		WebTarget webTarget = client.target(uri);
 		
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
@@ -42,7 +49,6 @@ public class RESTClientImpl<T> implements RESTClient<T>{
 
 	@Override
 	public Response put(URI uri, T model) {
-		Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class));
 		WebTarget webTarget = client.target(uri);
 		
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
@@ -53,7 +59,6 @@ public class RESTClientImpl<T> implements RESTClient<T>{
 
 	@Override
 	public Response delete(URI uri) {
-		Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class));
 		WebTarget webTarget = client.target(uri);
 		
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);

@@ -25,14 +25,14 @@
 			</plugin>
 		</plugins>
 	</build>
-	<!-- Version Configuration Start -->
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jackson.version>2.6.3</jackson.version>
-	</properties>
-	<!-- Version Configuration End -->
-
 	<dependencies>
+		<!-- Jackson Start -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.6.4</version>
+		</dependency>
+		<!-- Jackson End -->
 		<!-- Hibernate Start -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -40,22 +40,5 @@
 			<version>5.0.2.Final</version>
 		</dependency>
 		<!-- Hibernate End -->
-		<!-- Jackson Start -->
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.datatype</groupId>
-			<artifactId>jackson-datatype-jsr310</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.jaxrs</groupId>
-			<artifactId>jackson-jaxrs-json-provider</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<!-- Jackson End -->
 	</dependencies>
 </project>
