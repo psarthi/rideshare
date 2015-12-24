@@ -82,7 +82,7 @@ public class CityDO implements DomainObjectPKInteger<City>{
 	@Override
 	public void update(City city) {
 		if (city.getId()==0){
-			throw new InvalidKeyException("Updated failed due to Invalid key");
+			throw new InvalidKeyException("Updated failed due to Invalid key: "+city.getId());
 		}
 		setCity(city);
 		genericDAO.update(cityEntity);				

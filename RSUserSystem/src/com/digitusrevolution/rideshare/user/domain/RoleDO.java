@@ -81,7 +81,7 @@ public class RoleDO implements DomainObjectPKString<Role>{
 	@Override
 	public void update(Role role) {
 		if (role.getName().isEmpty()){
-			throw new InvalidKeyException("Updated failed due to Invalid key");
+			throw new InvalidKeyException("Updated failed due to Invalid key: "+role.getName());
 		}
 		setRole(role);
 		genericDAO.update(roleEntity);				

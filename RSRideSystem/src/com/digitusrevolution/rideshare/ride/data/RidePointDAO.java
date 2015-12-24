@@ -1,6 +1,5 @@
 package com.digitusrevolution.rideshare.ride.data;
 
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -39,7 +38,7 @@ public class RidePointDAO{
 		for (RidePoint ridePoint : ridePoints) {
 			String json = jsonUtil.getJson(ridePoint);
 			documents.add(Document.parse(json));
-			logger.debug(json);
+			logger.trace(json);
 		}
 		if (documents.isEmpty()){
 			throw new IllegalArgumentException("Empty documents is not allowed");
@@ -69,7 +68,7 @@ public class RidePointDAO{
 	public void delete(String _id) {
 		collection.deleteOne(Filters.eq("_id", _id));
 	}
-	
+		
 	public List<RidePoint> getAll() {
 		List<RidePoint> ridePoints = new ArrayList<>();
 		MongoCursor<Document> cursor = collection.find().iterator();
@@ -91,7 +90,7 @@ public class RidePointDAO{
 		try {
 			while (cursor.hasNext()){
 				String json = cursor.next().toJson();
-				logger.debug(json);
+				logger.trace(json);
 				RidePoint ridePoint = jsonUtil.getModel(json);
 				ridePoints.add(ridePoint);
 			}

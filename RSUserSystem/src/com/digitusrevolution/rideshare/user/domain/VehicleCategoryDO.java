@@ -83,7 +83,7 @@ public class VehicleCategoryDO implements DomainObjectPKInteger<VehicleCategory>
 	@Override
 	public void update(VehicleCategory vehicleCategory) {
 		if (vehicleCategory.getId()==0){
-			throw new InvalidKeyException("Updated failed due to Invalid key");
+			throw new InvalidKeyException("Updated failed due to Invalid key "+vehicleCategory.getId());
 		}
 		setVehicleCategory(vehicleCategory);
 		genericDAO.update(vehicleCategoryEntity);		

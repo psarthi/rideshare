@@ -68,7 +68,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	@Override
 	public void update(RideRequest rideRequest) {
 		if (rideRequest.getId()==0){
-			throw new InvalidKeyException("Updated failed due to Invalid key");
+			throw new InvalidKeyException("Updated failed due to Invalid key: "+rideRequest.getId());
 		}
 		setRideRequest(rideRequest);
 		rideRequestDAO.update(rideRequestEntity);

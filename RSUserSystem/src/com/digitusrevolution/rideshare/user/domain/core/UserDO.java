@@ -83,7 +83,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	@Override
 	public void update(User user){
 		if (user.getId()==0){
-			throw new InvalidKeyException("Updated failed due to Invalid key");
+			throw new InvalidKeyException("Updated failed due to Invalid key: "+user.getId());
 		}
 		setUser(user);
 		userDAO.update(userEntity);

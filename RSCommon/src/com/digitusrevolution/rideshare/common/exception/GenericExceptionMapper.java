@@ -5,10 +5,19 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.digitusrevolution.rideshare.model.common.ErrorMessage;
 
-@Provider
+//@Provider
 public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
+
+	private static final Logger logger = LogManager.getLogger(GenericExceptionMapper.class.getName());
+	
+	public GenericExceptionMapper() {
+		logger.debug("GenericExceptionMapper Invoked");
+	}
 
 	@Override
 	public Response toResponse(Throwable exception) {

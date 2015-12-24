@@ -56,7 +56,7 @@ public class TrustCategoryDO implements DomainObjectPKString<TrustCategory>{
 	@Override
 	public void update(TrustCategory trustCategory) {
 		if (trustCategory.getName().isEmpty()){
-			throw new InvalidKeyException("Updated failed due to Invalid key");
+			throw new InvalidKeyException("Updated failed due to Invalid key: "+trustCategory.getName());
 		}
 		setTrustCategory(trustCategory);
 		genericDAO.update(trustCategoryEntity);		

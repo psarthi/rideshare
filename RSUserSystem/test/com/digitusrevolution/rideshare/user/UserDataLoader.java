@@ -171,7 +171,7 @@ public class UserDataLoader {
 			}			
 			city = cityDO.get(i);
 			user.setCity(city);
-			userDO.update(user);
+			userDO.create(user);
 
 		}
 		

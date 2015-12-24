@@ -62,7 +62,7 @@ public class TrustNetworkDO implements DomainObjectPKInteger<TrustNetwork>{
 	@Override
 	public void update(TrustNetwork trustNetwork) {
 		if (trustNetwork.getId()==0){
-			throw new InvalidKeyException("Updated failed due to Invalid key");
+			throw new InvalidKeyException("Updated failed due to Invalid key: "+trustNetwork.getId());
 		}
 		setTrustNetwork(trustNetwork);
 		genericDAO.update(trustNetworkEntity);		

@@ -68,27 +68,31 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		List<RideEntity> rideEntities = rideDAO.getAll();
 		for (RideEntity rideEntity : rideEntities) {
 			setRideEntity(rideEntity);
+			getRidePoints();
+			getRoute();
 			rides.add(ride);
 		}
 		return rides;
 
 	}
 
+	//Update of RidePoints needs to be well thought - TBD
 	@Override
 	public void update(Ride ride) {
 		if (ride.getId()==0){
-			throw new InvalidKeyException("Updated failed due to Invalid key");
+			throw new InvalidKeyException("Updated failed due to Invalid key: "+ride.getId());
 		}
 		setRide(ride);
 		rideDAO.update(rideEntity);
 	}
 
+	//Delete of RidePoints needs to be well thought as it may involves multiple rides as well - TBD
 	@Override
 	public void delete(Ride ride) {
 		setRide(ride);
 		rideDAO.delete(rideEntity);
 	}
-
+	
 	@Override
 	public int create(Ride ride) {
 		logger.entry();
@@ -105,24 +109,30 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 			throw new NotFoundException("No Data found with id: "+id);
 		}
 		setRideEntity(rideEntity);
+		getRidePoints();
+		return ride;
+	}
+	
+	private void getRidePoints(){
 		RidePoint startPoint = ridePointDAO.get(ride.getStartPoint().get_id());
 		RidePoint endPoint = ridePointDAO.get(ride.getEndPoint().get_id());		
 		ride.setStartPoint(startPoint);
-		JSONUtil<RidePoint> jsonUtilRidePoint = new JSONUtil<>(RidePoint.class);
-		logger.debug("[Ride Start Point]:"+jsonUtilRidePoint.getJson(ride.getStartPoint()));
-		ride.setEndPoint(endPoint);	
-		return ride;
+		ride.setEndPoint(endPoint);			
 	}
 
 	@Override
 	public Ride getChild(int id) {
 		get(id);
 		fetchChild();
+		getRoute();
+		return ride;
+	}
+
+	private void getRoute() {
 		List<RidePoint> ridePoints = ridePointDAO.getAllRidePointsOfRide(ride.getId());
 		Route route = new Route();
 		route.setRidePoints(ridePoints);
 		ride.setRoute(route);
-		return ride;
 	}
 	
 	public List<Ride> searchRides(RideRequest rideRequest){

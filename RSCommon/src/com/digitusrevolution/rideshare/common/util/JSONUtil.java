@@ -27,7 +27,7 @@ public class JSONUtil<T> {
 		try {
 			json = mapper.writeValueAsString(model);
 		} catch (IOException e) {
-			throw new WebApplicationException("Unable to convert to JSON from Model",e);
+			throw new WebApplicationException("Unable to convert to JSON from Model:"+model.toString(),e);
 		}
 		return json;
 	}
@@ -40,7 +40,7 @@ public class JSONUtil<T> {
 		try {
 			model = mapper.readValue(json, modelClass);
 		} catch (IOException e) {
-			throw new WebApplicationException("Unable to convert to Model from JSON",e);
+			throw new WebApplicationException("Unable to convert to Model from JSON:"+json,e);
 		}
 		return model;
 		
