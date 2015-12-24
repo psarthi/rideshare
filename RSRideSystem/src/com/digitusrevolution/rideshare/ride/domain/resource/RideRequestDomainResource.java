@@ -31,6 +31,7 @@ public class RideRequestDomainResource implements DomainResource<RideRequest>{
 	}
 
 	@Override
+	@GET
 	public Response getAll() {
 		RideRequestDomainService rideRequestDomainService = new RideRequestDomainService();
 		List<RideRequest> rideRequests = rideRequestDomainService.getAll();

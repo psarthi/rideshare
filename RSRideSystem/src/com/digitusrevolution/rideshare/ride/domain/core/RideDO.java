@@ -16,7 +16,6 @@ import org.bson.types.ObjectId;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
-import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
@@ -68,8 +67,8 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		List<RideEntity> rideEntities = rideDAO.getAll();
 		for (RideEntity rideEntity : rideEntities) {
 			setRideEntity(rideEntity);
+			//Purposefully not getting routes as it would be too much data
 			getRidePoints();
-			getRoute();
 			rides.add(ride);
 		}
 		return rides;

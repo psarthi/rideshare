@@ -19,24 +19,24 @@ public class LocationDAO{
 	private MongoCollection<Document> collection = db.getCollection("location");
 	private final JSONUtil<Location> jsonUtil = new JSONUtil<>(Location.class);
 
-	public String create(Location rideRequestPoint) {
+	public String create(Location location) {
 		ObjectId _id = new ObjectId();
-		rideRequestPoint.set_id(_id.toString());
-		String json = jsonUtil.getJson(rideRequestPoint);
+		location.set_id(_id.toString());
+		String json = jsonUtil.getJson(location);
 		collection.insertOne(Document.parse(json));
-		return rideRequestPoint.get_id();
+		return location.get_id();
 	}
 
 	public Location get(String _id) {
 		Document document = collection.find(Filters.eq("_id", _id)).first();
 		String json = document.toJson();
-		Location rideRequestPoint = jsonUtil.getModel(json);
-		return rideRequestPoint;
+		Location location = jsonUtil.getModel(json);
+		return location;
 	}
 
-	public void update(Location rideRequestPoint) {
-		String json = jsonUtil.getJson(rideRequestPoint);
-		String _id = rideRequestPoint.get_id();
+	public void update(Location location) {
+		String json = jsonUtil.getJson(location);
+		String _id = location.get_id();
 		/*
 		 * Don't use updateOne as it seems there is some bug in the code
 		 * which throws _id field not valid in BSON, so use replaceOne
@@ -49,17 +49,17 @@ public class LocationDAO{
 	}
 	
 	public List<Location> getAll() {
-		List<Location> rideRequestPoints = new ArrayList<>();
+		List<Location> locations = new ArrayList<>();
 		MongoCursor<Document> cursor = collection.find().iterator();
 		try {
 			while (cursor.hasNext()){
 				String json = cursor.next().toJson();
-				Location rideRequestPoint = jsonUtil.getModel(json);
-				rideRequestPoints.add(rideRequestPoint);
+				Location location = jsonUtil.getModel(json);
+				locations.add(location);
 			}
 		} finally{
 			cursor.close();
 		}
-		return rideRequestPoints;
+		return locations;
 	}
 }

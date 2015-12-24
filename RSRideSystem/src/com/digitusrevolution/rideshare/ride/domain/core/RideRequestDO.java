@@ -11,9 +11,11 @@ import javax.ws.rs.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.digitusrevolution.rideshare.common.db.LocationDAO;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.Location;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.ride.data.RideRequestDAO;
@@ -25,12 +27,14 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	private RideRequestEntity rideRequestEntity;
 	private RideRequestMapper rideRequestMapper;
 	private final RideRequestDAO rideRequestDAO;
+	private final LocationDAO locationDAO;
 	
 	public RideRequestDO() {
 		rideRequest = new RideRequest();
 		rideRequestEntity = new RideRequestEntity();
 		rideRequestMapper = new RideRequestMapper();
 		rideRequestDAO = new RideRequestDAO();
+		locationDAO = new LocationDAO();
 	}
 
 	public void setRideRequest(RideRequest rideRequest) {
@@ -60,6 +64,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		List<RideRequestEntity> rideRequestEntities = rideRequestDAO.getAll();
 		for (RideRequestEntity rideRequestEntity : rideRequestEntities) {
 			setRideRequestEntity(rideRequestEntity);
+			getLocations();
 			rideRequests.add(rideRequest);
 		}
 		return rideRequests;
@@ -96,7 +101,15 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			throw new NotFoundException("No Data found with id: "+id);
 		}
 		setRideRequestEntity(rideRequestEntity);
+		getLocations();
 		return rideRequest;
+	}
+
+	private void getLocations() {
+		Location pickupLocation = locationDAO.get(rideRequest.getPickupPoint().get_id());
+		Location dropLocation = locationDAO.get(rideRequest.getDropPoint().get_id());
+		rideRequest.setPickupPoint(pickupLocation);
+		rideRequest.setDropPoint(dropLocation);
 	}
 
 	@Override
@@ -111,8 +124,13 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		rideRequest.setPickupTime(pickupTimeUTC);
 		rideRequest.setStatus("unfulfilled");
 		int id = create(rideRequest);
+		String pickupPointId = locationDAO.create(rideRequest.getPickupPoint());
+		String dropPointId = locationDAO.create(rideRequest.getDropPoint());
+		rideRequest.getPickupPoint().set_id(pickupPointId);
+		rideRequest.getDropPoint().set_id(dropPointId);
+		rideRequest.setId(id);
+		update(rideRequest);
 		return id;
 	}
-	
 
 }

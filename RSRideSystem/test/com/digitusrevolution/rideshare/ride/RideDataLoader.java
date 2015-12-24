@@ -18,6 +18,7 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
+import com.digitusrevolution.rideshare.model.ride.domain.Location;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
@@ -96,7 +97,7 @@ public class RideDataLoader {
 //			dataLoader.loadTrustCategory();
 			
 			dataLoader.loadRide();
-//			dataLoader.loadRideRequest();
+			dataLoader.loadRideRequest();
 
 //			dataLoader.test();
 			
@@ -257,15 +258,16 @@ public class RideDataLoader {
 			PointDO pointDO = new PointDO();
 			Point pickupPoint = pointDO.getCordinates("RMZ Ecospace Bangalore"); 			
 			Point dropPoint = pointDO.getCordinates("NPS HSR Bangalore"); 
-
-			//******Below commented line Needs to be rewritten based on MongoDB implementation
 			
-//			rideRequest.setPickupPoint(pickupPoint);
-//			rideRequest.setDropPoint(dropPoint);
+			Location pickupLocation = new Location();
+			Location dropLocation = new Location();
+			pickupLocation.setPoint(pickupPoint);
+			dropLocation.setPoint(dropPoint);
+			rideRequest.setPickupPoint(pickupLocation);
+			rideRequest.setDropPoint(dropLocation);
 			
 			rideRequest.setPickupPointVariation(1);
-			rideRequest.setDropPointVariation(1);
-			
+			rideRequest.setDropPointVariation(1);			
 			
 			LocalDateTime localDateTime = LocalDateTime.of(2015, Month.DECEMBER, 8, 10, 00);
 			ZoneId india = ZoneId.of("Asia/Kolkata");
