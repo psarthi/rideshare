@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import com.digitusrevolution.rideshare.common.db.MongoDBUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
+import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -20,7 +23,8 @@ public class RidePointDAO{
 	private MongoDatabase db = MongoDBUtil.getDatabase();
 	private MongoCollection<Document> collection = db.getCollection("ride_point");
 	private final JSONUtil<RidePoint> jsonUtil = new JSONUtil<>(RidePoint.class);
-
+	private static final Logger logger = LogManager.getLogger(RidePointDAO.class.getName());
+	
 	public String create(RidePoint ridePoint) {
 		ObjectId _id = new ObjectId();
 		ridePoint.set_id(_id.toString());
@@ -45,6 +49,7 @@ public class RidePointDAO{
 	public RidePoint get(String _id) {
 		Document document = collection.find(Filters.eq("_id", _id)).first();
 		String json = document.toJson();
+		logger.debug(json);
 		RidePoint ridePoint = jsonUtil.getModel(json);
 		return ridePoint;
 	}
@@ -84,6 +89,7 @@ public class RidePointDAO{
 		try {
 			while (cursor.hasNext()){
 				String json = cursor.next().toJson();
+				logger.debug(json);
 				RidePoint ridePoint = jsonUtil.getModel(json);
 				ridePoints.add(ridePoint);
 			}

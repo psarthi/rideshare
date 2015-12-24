@@ -3,18 +3,28 @@ package com.digitusrevolution.rideshare.model.common;
 public class ErrorMessage {
 
 	private int errorCode;
-	private String errorReason;
-	private String errorDetail;
+	private String errorType;
+	private String errorMessage;
+	private String errorCause;
 
 	public ErrorMessage(){
 
 	}
 	
-	public ErrorMessage(int errorCode, String errorReason, String errorDetail) {
+	public ErrorMessage(int errorCode, String errorType, String errorMessage, String errorCause) {
 		this.errorCode = errorCode;
-		this.errorReason = errorReason;
-		this.setErrorDetail(errorDetail);
+		this.errorType = errorType;
+		this.errorMessage = errorMessage;
+		this.errorCause = errorCause;
 	}
+	
+	public ErrorMessage(int errorCode, String errorType, String errorMessage) {
+		this.errorCode = errorCode;
+		this.errorType = errorType;
+		this.errorMessage = errorMessage;
+		this.errorCause = "NA";
+	}
+
 
 	public int getErrorCode() {
 		return errorCode;
@@ -24,21 +34,28 @@ public class ErrorMessage {
 		this.errorCode = errorCode;
 	}
 
-	public String getErrorReason() {
-		return errorReason;
+	public String getErrorType() {
+		return errorType;
 	}
 
-	public void setErrorReason(String errorReason) {
-		this.errorReason = errorReason;
+	public void setErrorType(String errorType) {
+		this.errorType = errorType;
 	}
 
-	public String getErrorDetail() {
-		return errorDetail;
+	public String getErrorMessage() {
+		return errorMessage;
 	}
 
-	public void setErrorDetail(String errorDetail) {
-		this.errorDetail = errorDetail;
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
 	}
 
+	public String getErrorCause() {
+		return errorCause;
+	}
+
+	public void setErrorCause(String errorCause) {
+		this.errorCause = errorCause;
+	}
 
 }

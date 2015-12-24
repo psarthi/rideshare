@@ -27,11 +27,15 @@
 		</plugins>
 	</build>
 
-	<!-- Jersey Version Configuration Start -->
+	<!-- Version Configuration Start -->
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jersey.version>2.21.1</jersey.version>
+		<jackson.version>2.6.3</jackson.version>
+		<log4j.version>2.4.1</log4j.version>
 	</properties>
+	<!-- Version Configuration End -->
+	<!-- Jersey DependencyManagement Configuration Start -->
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -43,19 +47,13 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	<!-- Jersey Version configuration End -->
+	<!-- Jersey DependencyManagement configuration End -->
 	<dependencies>
-		<!-- Jersey Start (Dependent on version configuration) -->
+		<!-- Jersey Start (Dependent on version & DependencyManagement configuration) -->
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet</artifactId>
 		</dependency>
-		<!-- Required for JSON support -->
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-moxy</artifactId>
-		</dependency>
-		<!-- Required only when you are using JAX-RS Client -->
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
@@ -84,17 +82,17 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>2.4.1</version>
+			<version>${log4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.4.1</version>
+			<version>${log4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-web</artifactId>
-			<version>2.4.1</version>
+			<version>${log4j.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<!-- Log4J End -->
@@ -109,12 +107,17 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.6.3</version>
+			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
-			<version>2.6.1</version>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.jaxrs</groupId>
+			<artifactId>jackson-jaxrs-json-provider</artifactId>
+			<version>${jackson.version}</version>
 		</dependency>
 		<!-- Jackson End -->
 		<!-- MongoDB Start -->

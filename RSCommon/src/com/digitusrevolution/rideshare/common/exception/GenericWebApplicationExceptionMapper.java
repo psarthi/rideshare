@@ -12,11 +12,16 @@ public class GenericWebApplicationExceptionMapper implements ExceptionMapper<Web
 
 	@Override
 	public Response toResponse(WebApplicationException exception) {
-				
-		ErrorMessage errorMessage = new ErrorMessage(exception.getResponse().getStatus(), exception.getClass().getSimpleName(), exception.getCause().toString());
+		
+		ErrorMessage errorMessage = null;
+		if (exception.getCause()!=null){
+			errorMessage = new ErrorMessage(exception.getResponse().getStatus(), exception.getClass().getSimpleName(), 
+											exception.getMessage(), exception.getCause().toString());
+		} else {
+			errorMessage = new ErrorMessage(exception.getResponse().getStatus(), exception.getClass().getSimpleName(), exception.getMessage());			
+		}
 		Response response = Response.status(exception.getResponse().getStatus()).entity(errorMessage).build();
 		return response;
-
 	}
 
 }

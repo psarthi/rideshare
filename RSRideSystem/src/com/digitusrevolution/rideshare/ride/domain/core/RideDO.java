@@ -16,6 +16,7 @@ import org.bson.types.ObjectId;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
+import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
@@ -36,12 +37,14 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	private RideEntity rideEntity;
 	private RideMapper rideMapper;
 	private final RideDAO rideDAO;
+	private final RidePointDAO ridePointDAO;
 	
 	public RideDO() {
 		ride = new Ride();
 		rideEntity = new RideEntity();
 		rideMapper = new RideMapper();
 		rideDAO = new RideDAO();
+		ridePointDAO = new RidePointDAO();
 	}
 	
 	public void setRide(Ride ride) {
@@ -102,6 +105,16 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 			throw new NotFoundException("No Data found with id: "+id);
 		}
 		setRideEntity(rideEntity);
+		RidePoint startPoint = ridePointDAO.get(ride.getStartPoint().get_id());
+		RidePoint endPoint = ridePointDAO.get(ride.getEndPoint().get_id());
+		ride.setStartPoint(startPoint);
+		JSONUtil<RidePoint> jsonUtilRidePoint = new JSONUtil<>(RidePoint.class);
+		logger.debug("[Ride Start Point]:"+jsonUtilRidePoint.getJson(ride.getStartPoint()));
+		ride.setEndPoint(endPoint);
+		List<RidePoint> ridePoints = ridePointDAO.getAllRidePointsOfRide(ride.getId());
+		Route route = new Route();
+		route.setRidePoints(ridePoints);
+		ride.setRoute(route);
 		return ride;
 	}
 
@@ -177,7 +190,6 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 					endPointId = _id.toString();
 				}
 				startPointId = ridePoints.iterator().next().get_id();
-				RidePointDAO ridePointDAO = new RidePointDAO();
 				ridePointDAO.createBulk(ridePoints);
 				ride.getStartPoint().set_id(startPointId);
 				ride.getEndPoint().set_id(endPointId);
