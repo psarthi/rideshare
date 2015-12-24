@@ -49,6 +49,9 @@ public class RouteDO{
 	 * 
 	 * High level logic - 
 	 * 
+	 * - Add start location as first point in the route, which will never get added in the below steps
+	 *  	as first point is comparing with itself which would always be Zero distance and hence would not get added 
+	 * - For rest of the ridepoints, follow below steps -
 	 * - Get the steps details from google direction
 	 * - For each steps, decode the polyline path to get all the points in that step
 	 * - Calculate the average speed for that step, based on time and distance provided by google
@@ -85,9 +88,30 @@ public class RouteDO{
 		double sumOfTime = 0;
 		//**End
 		int seq = 1;
-		int skip = 1;
+		int skip = 0;
 		double minDistance = Double.parseDouble(PropertyReader.getInstance().getProperty("MIN_DISTANCE_BETWEEN_ROUTE_POINTS"));
+		//This will add start location to the list, which will get skipped once it enters the 
+		//loop as first point comparision would always be zero, which is less than min distance 
+		//and it would not get added to the route
+		RidePoint startRidePoint = new RidePoint();
+		startRidePoint.getPoint().setLatitude(leg.getStartLocation().getLat());
+		startRidePoint.getPoint().setLongitude(leg.getStartLocation().getLng());
+		startRidePoint.setSequence(seq);
+		//Below is done to have seperate copy of the data, else this would point to the last point due to copy by reference.
+		List<RideBasicInfo> copyOfRidesBasicInfo = new ArrayList<>();
+		for (RideBasicInfo rideBasicInfo : ridesBasicInfo) {
+			ZonedDateTime startPointDateTime = rideBasicInfo.getDateTime();
+			rideBasicInfo.setDateTime(startPointDateTime);
+			RideBasicInfo copyOfRideBasicInfo = new RideBasicInfo();
+			copyOfRideBasicInfo.setId(rideBasicInfo.getId());
+			copyOfRideBasicInfo.setDateTime(rideBasicInfo.getDateTime());
+			copyOfRidesBasicInfo.add(copyOfRideBasicInfo);
+		}
+		startRidePoint.setRidesBasicInfo(copyOfRidesBasicInfo);
 		logger.debug("Ride Start Time:"+ridesBasicInfo.get(0).getDateTime());
+		logger.debug("RidePoint added [point,time]:"+startRidePoint.getPoint().toString()+","+startRidePoint.getRidesBasicInfo().get(0).getDateTime());
+		route.getRidePoints().add(startRidePoint);
+		seq++;
 		for (Step step : steps) {	
 			double stepDistance = step.getDistance().getValue();
 			double stepTime = step.getDuration().getValue();
@@ -130,6 +154,7 @@ public class RouteDO{
 				ridePoint.getPoint().setLongitude(latLngs.get(i).longitude);
 				ridePoint.setSequence(seq);
 				ridePoint.setRidesBasicInfo(updatedRidesBasicInfo);
+				logger.debug("RidePoint added [point,time]:"+ridePoint.getPoint().toString()+","+ridePoint.getRidesBasicInfo().get(0).getDateTime());
 				route.getRidePoints().add(ridePoint);
 				from = to;
 				seq++;
@@ -149,7 +174,8 @@ public class RouteDO{
 		logger.debug("Minimum distance between two Points:"+minDistance);
 		logger.debug("Total Points in Steps:"+steps.size());
 		logger.debug("Total Points in Overall Polyline:"+latLngsOverall.size());
-		logger.debug("Total Points in Steps Polyline:"+(skip+seq)+":Total Skipped Points:"+skip+":Diff:"+(seq));
+		//Reason for deducting "1" as sequence is increment after the last point as well
+		logger.debug("Total Points in Steps Polyline:"+(skip+seq-1)+":Total Skipped Points:"+skip+":Diff:"+(seq-1));
 		logger.debug("Total Points stored in Route:"+route.getRidePoints().size());
 		logger.debug("Total Distance:"+totalDistance+":Sum of calculated distance:"+sumOfDistance+":Diff:"+(totalDistance-sumOfDistance));
 		logger.debug("Total travel time:"+totalTime+":Sum of total time:"+sumOfTime+":Diff:"+(totalTime-sumOfTime));

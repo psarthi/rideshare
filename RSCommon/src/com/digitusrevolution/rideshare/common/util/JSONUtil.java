@@ -5,9 +5,12 @@ import java.io.IOException;
 import javax.ws.rs.WebApplicationException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+/*
+ * This is used internally by the application.
+ * Note - I have not disabled/changed the datetime format and default timestamps (numbers) would be stored instead of textual
+ */
 public class JSONUtil<T> {
 	
 	private final Class<T> modelClass;
@@ -20,7 +23,6 @@ public class JSONUtil<T> {
 		ObjectMapper mapper = new ObjectMapper();
 		//This is required to register JSR310 datatype module to support JDK Date and Time API
 		mapper.registerModule(new JavaTimeModule());
-		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 		String json = null;
 		try {
 			json = mapper.writeValueAsString(model);

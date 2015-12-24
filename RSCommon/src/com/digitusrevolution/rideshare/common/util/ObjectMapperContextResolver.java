@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+/**
+ * This is used by Jersey for JSON conversion for Web services
+ */
 @Provider
 public class ObjectMapperContextResolver implements ContextResolver<ObjectMapper> {  
     private final ObjectMapper MAPPER;
