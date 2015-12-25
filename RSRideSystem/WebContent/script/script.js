@@ -2,9 +2,6 @@ var directionsService;
 var map;
 var stepDisplay;
 var geocoder;
-var start;
-var end;
-var address;
 var image;
 //This markers is for points for events etc.
 var markers = [];
@@ -40,22 +37,23 @@ function initMap() {
 
 	// Add a listener
 	map.addListener('click', function(event){
+		deleteMarkers();
+		//This is to delete previous marker for click event
 		document.getElementById('start').value=event.latLng;
-		start = event.latLng;
 		addMarker(event.latLng);
 	});
 	// Add a listener
 	map.addListener('rightclick',function(event){
+		deleteMarkers();
 		document.getElementById('end').value=event.latLng;
-		end = event.latLng;
 		calculateAndDisplayRoute(directionsService, routeMarkers,
-				stepDisplay, map, start, end);
+				stepDisplay, map, document.getElementById('start').value, document.getElementById('end').value);
 	});
 	// Add a listener
 	map.addListener('dblclick', function(event){
+		deleteMarkers();
 		document.getElementById('address').value=event.latLng;
 		addPermanentMarker(event.latLng, image);
-		deleteMarkers();
 	});
 
 }
@@ -75,7 +73,7 @@ function calculateAndDisplayRoute(directionsService, routeMarkers,
 	for (var i = 0; i < routeMarkers.length; i++) {
 		routeMarkers[i].setMap(null);
 	}
-	
+
 	// Retrieve the start and end locations and create a DirectionsRequest using
 	// WALKING directions.
 	directionsService.route({
@@ -205,10 +203,46 @@ function showMarkers() {
 
 //Deletes all markers in the array by removing references to them.
 function deleteMarkers() {
-	//alert("deleteMarkers");
+//	alert("deleteMarkers");
 	clearMarkers();
 	markers = [];
-	document.getElementById('start').value="";
-	document.getElementById('end').value="";
 }
 
+function get(){
+
+	$.getJSON( "http://localhost:8080/RSUserSystem/api/domain/users/1/roles")
+	
+	.done(function( response ) {
+		//Use jQuery.parseJSON to convert json to javascript Object,
+		//when using getJSON response is already parsed using parseJSON
+		//Use .each to operate on individual data
+		$("#collapseExample").text(JSON.stringify(response));
+		alert("Request Successful");
+		console.log( "Request Successful");
+	})
+	
+	.fail(function( jqxhr, textStatus, error ) {
+		var err = textStatus + ", " + error;
+		console.log( "Request Failed: " + err );
+	});
+}
+
+function post(){
+
+	var obj = { City: 'Moscow', Age: 25 };
+	$.ajax({
+		url: 'http://localhost:8080/RSRideSystem/api/dummy',
+		type: 'POST',
+		data: JSON.stringify(obj),
+		contentType: 'application/json; charset=utf-8',
+		dataType: 'json'})
+
+		.done(function( response ) {
+			alert( "Request successful");
+			$("#collapseExample").text(JSON.stringify(response));
+		})
+
+		.fail(function( jqXHR, textStatus ) {
+			alert( "Request failed:" + textStatus );
+		});
+}

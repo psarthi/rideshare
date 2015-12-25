@@ -4,6 +4,32 @@
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
 <meta charset="utf-8">
 <title>Digitus Revolution - Route Visualizer</title>
+<script type="text/javascript" src="script/script.js">
+	
+</script>
+<script type="text/javascript" src="script/authenticate.js">
+	
+</script>
+<!-- Jquery -->
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+	integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+	crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+	integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
+	crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+	integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
+	crossorigin="anonymous"></script>
 <style>
 html, body {
 	height: 100%;
@@ -40,26 +66,37 @@ html, body {
 	<div id="floating-panel">
 		<font size="1" color="blue">* Input Format (address / Lat,Lng)</font>
 		<b>Start:</b><input type="text" id="start"> <b>End:</b><input
-			type="text" id="end">
+			type="text" id="end"> <input type="datetime-local"
+			id="datetime">
 		<button
 			onclick="calculateAndDisplayRoute(directionsService, routeMarkers,stepDisplay, map, 
 					document.getElementById('start').value, document.getElementById('end').value)">Show
 			Route</button>
-		<b>Address:</b> <input type="text" id="address">
+		<br> <b>Address:</b> <input type="text" id="address">
 		<button
 			onclick="geocodeAddress(document.getElementById('address').value)">Geocode</button>
-			<br>
 		<input onclick="clearMarkers();" type=button value="Hide Markers">
 		<input onclick="showMarkers();" type=button value="Show All Markers">
 		<input onclick="deleteMarkers();" type=button value="Delete Markers">
+		<a class="btn btn-primary" role="button" data-toggle="collapse"
+			href="#collapseExample" aria-expanded="false"
+			aria-controls="collapseExample"> REST Response </a>
+		<div class="collapse" id="collapseExample">
+			<div class="well">...</div>
+		</div>
+		<!-- Single button -->
+		<div class="btn-group">
+			<button type="button" class="btn btn-default dropdown-toggle"
+				data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Action <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu">
+				<li><a href="javascript:get()">GET</a></li>
+				<li><a href="javascript:post()">POST</a></li>
+			</ul>
+		</div>
 	</div>
 	<div id="map"></div>
 	<div id="warnings-panel"></div>
-	<script type="text/javascript" src="script/script.js">
-		
-	</script>
-	<script type="text/javascript" src="script/authenticate.js">
-		
-	</script>
 </body>
 </html>
