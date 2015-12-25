@@ -42,15 +42,16 @@ html, body {
 		<b>Start:</b><input type="text" id="start"> <b>End:</b><input
 			type="text" id="end">
 		<button
-			onclick="calculateAndDisplayRoute(directionsService, markerArray,stepDisplay, map)">Show
-		Route
-		</button>
-		<b>Point:</b> <input type="text" id="point">
-		<button onclick="locatePoint()">Locate Point</button>
+			onclick="calculateAndDisplayRoute(directionsService, routeMarkers,stepDisplay, map, 
+					document.getElementById('start').value, document.getElementById('end').value)">Show
+			Route</button>
+		<b>Address:</b> <input type="text" id="address">
 		<button
-			onclick="loadSampleData()">Load Sample
-		</button>
-		
+			onclick="geocodeAddress(document.getElementById('address').value)">Geocode</button>
+			<br>
+		<input onclick="clearMarkers();" type=button value="Hide Markers">
+		<input onclick="showMarkers();" type=button value="Show All Markers">
+		<input onclick="deleteMarkers();" type=button value="Delete Markers">
 	</div>
 	<div id="map"></div>
 	<div id="warnings-panel"></div>
