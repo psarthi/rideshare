@@ -7,6 +7,10 @@ var image;
 var markers = [];
 //This markers is for route points
 var routeMarkers = [];
+var getURL = "http://localhost:8080/RSUserSystem/api/domain/users/1/roles";
+var postURL = "http://localhost:8080/RSRideSystem/api/dummy";
+var getJSONFormatURL = "http://localhost:8080/RSRideSystem/api/dummy/getjson/ride";
+var postData = { City: 'Bangalore', Age: 25 };
 function initMap() {
 
 	// Instantiate a directions service.
@@ -208,34 +212,34 @@ function deleteMarkers() {
 	markers = [];
 }
 
-function get(){
+function get(url){
+	$.ajax({
+		url: url,
+		type: 'GET',
+		dataType: 'json'
+		})
 
-	$.getJSON( "http://localhost:8080/RSUserSystem/api/domain/users/1/roles")
-	
-	.done(function( response ) {
-		//Use jQuery.parseJSON to convert json to javascript Object,
-		//when using getJSON response is already parsed using parseJSON
-		//Use .each to operate on individual data
-		$("#collapseExample").text(JSON.stringify(response));
-		alert("Request Successful");
-		console.log( "Request Successful");
-	})
-	
-	.fail(function( jqxhr, textStatus, error ) {
-		var err = textStatus + ", " + error;
-		console.log( "Request Failed: " + err );
-	});
+		.done(function( response ) {
+			alert( "Request successful");
+			$("#collapseExample").text(JSON.stringify(response));
+			$.each(response,function(key,val){
+//				alert(JSON.stringify(key)+","+JSON.stringify(val));
+			})
+		})
+
+		.fail(function( jqXHR, textStatus ) {
+			alert( "Request failed:" + textStatus );
+		});
 }
 
-function post(){
-
-	var obj = { City: 'Moscow', Age: 25 };
+function post(url, data){
 	$.ajax({
-		url: 'http://localhost:8080/RSRideSystem/api/dummy',
+		url: url,
 		type: 'POST',
-		data: JSON.stringify(obj),
+		data: JSON.stringify(data),
 		contentType: 'application/json; charset=utf-8',
-		dataType: 'json'})
+		dataType: 'json'
+		})
 
 		.done(function( response ) {
 			alert( "Request successful");
