@@ -7,7 +7,7 @@ var image;
 var markers = [];
 //This markers is for route points
 var routeMarkers = [];
-var getURL = "http://localhost:8080/RSUserSystem/api/domain/users/1/roles";
+var getURL = "http://localhost:8080/RSUserSystem/api/domain/users/1";
 var postURL = "http://localhost:8080/RSRideSystem/api/dummy";
 var getJSONFormatURL = "http://localhost:8080/RSRideSystem/api/dummy/getjson/ride";
 var postData = { City: 'Bangalore', Age: 25 };
@@ -20,8 +20,8 @@ function initMap() {
 	map = new google.maps.Map(document.getElementById('map'), {
 		zoom : 5,
 		center : {
-			lat : 12.970689,
-			lng : 77.589043
+			lat : 22.684827,
+			lng : 78.085976
 		}
 	});
 
@@ -56,7 +56,7 @@ function initMap() {
 	// Add a listener
 	map.addListener('dblclick', function(event){
 		deleteMarkers();
-		document.getElementById('address').value=event.latLng;
+		document.getElementById('location').value=event.latLng;
 		addPermanentMarker(event.latLng, image);
 	});
 
@@ -96,8 +96,12 @@ function calculateAndDisplayRoute(directionsService, routeMarkers,
 			//showAllPolyLinePoints(overview_polyline);
 			//This will show only high level points which is in the steps
 			//showSteps(response, routeMarkers, stepDisplay, map);
+			$("#alert-success").text("Google Direction Request Successfull").show();
+//			$("#alert-success").show();
 		} else {
 			window.alert('Directions request failed due to ' + status);
+			$("#alert-danger").text("Google Direction Request Failed:"+status).show();
+//			$("#alert-danger").show();
 		}
 	});
 }
@@ -220,15 +224,14 @@ function get(url){
 		})
 
 		.done(function( response ) {
-			alert( "Request successful");
-			$("#collapseExample").text(JSON.stringify(response));
+			$("#alert-success").html("Request Successfull:<br/>"+JSON.stringify(response)).show();
 			$.each(response,function(key,val){
 //				alert(JSON.stringify(key)+","+JSON.stringify(val));
 			})
 		})
 
 		.fail(function( jqXHR, textStatus ) {
-			alert( "Request failed:" + textStatus );
+			$("#alert-danger").html("Request Failed:"+textStatus).show();
 		});
 }
 
@@ -242,11 +245,15 @@ function post(url, data){
 		})
 
 		.done(function( response ) {
-			alert( "Request successful");
-			$("#collapseExample").text(JSON.stringify(response));
+			$("#alert-success").html("Request Successfull:<br/>"+JSON.stringify(response)).show();
 		})
 
 		.fail(function( jqXHR, textStatus ) {
-			alert( "Request failed:" + textStatus );
+			$("#alert-danger").html("Request Failed:"+textStatus).show();
 		});
 }
+
+function hideAlert(){
+	$(".alert").hide();
+}
+
