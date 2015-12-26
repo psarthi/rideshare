@@ -96,12 +96,8 @@ function calculateAndDisplayRoute(directionsService, routeMarkers,
 			//showAllPolyLinePoints(overview_polyline);
 			//This will show only high level points which is in the steps
 			//showSteps(response, routeMarkers, stepDisplay, map);
-			$("#alert-success").text("Google Direction Request Successfull").show();
-//			$("#alert-success").show();
 		} else {
 			window.alert('Directions request failed due to ' + status);
-			$("#alert-danger").text("Google Direction Request Failed:"+status).show();
-//			$("#alert-danger").show();
 		}
 	});
 }
@@ -221,18 +217,18 @@ function get(url){
 		url: url,
 		type: 'GET',
 		dataType: 'json'
-		})
+	})
 
-		.done(function( response ) {
-			$("#alert-success").html("Request Successfull:<br/>"+JSON.stringify(response)).show();
-			$.each(response,function(key,val){
-//				alert(JSON.stringify(key)+","+JSON.stringify(val));
-			})
+	.done(function( response ) {
+		$("#alert-success").html("Request Successfull:<br/>"+JSON.stringify(response)).show();
+		$.each(response,function(key,val){
+//			alert(JSON.stringify(key)+","+JSON.stringify(val));
 		})
+	})
 
-		.fail(function( jqXHR, textStatus ) {
-			$("#alert-danger").html("Request Failed:"+textStatus).show();
-		});
+	.fail(function( jqXHR, textStatus ) {
+		$("#alert-danger").html("Request Failed:"+textStatus).show();
+	});
 }
 
 function post(url, data){
@@ -242,18 +238,24 @@ function post(url, data){
 		data: JSON.stringify(data),
 		contentType: 'application/json; charset=utf-8',
 		dataType: 'json'
-		})
+	})
 
-		.done(function( response ) {
-			$("#alert-success").html("Request Successfull:<br/>"+JSON.stringify(response)).show();
-		})
+	.done(function( response ) {
+		$("#alert-success").html("Request Successfull:<br/>"+JSON.stringify(response)).show();
+	})
 
-		.fail(function( jqXHR, textStatus ) {
-			$("#alert-danger").html("Request Failed:"+textStatus).show();
-		});
+	.fail(function( jqXHR, textStatus ) {
+		$("#alert-danger").html("Request Failed:"+textStatus).show();
+	});
 }
 
 function hideAlert(){
 	$(".alert").hide();
 }
+
+//This function not working as expected, close button is not coming up with alert once its closed
+$( "#alert-success-close" ).click(function() {
+	alert("Hide");
+	$( "#alert-success" ).hide();
+});
 

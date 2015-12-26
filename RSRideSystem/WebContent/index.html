@@ -25,7 +25,7 @@ body, html {
 }
 
 .alert {
-	display: none;
+	display:none;
 }
 
 #map {
@@ -36,6 +36,14 @@ body, html {
 	width: 100%;
 	height: 10%;
 	text-align: center;
+}
+
+.alert-container{
+	position: absolute;
+	top: 70px;
+	left: 40%;
+	z-index: 4;
+	width: 100%;
 }
 
 .floating {
@@ -86,14 +94,13 @@ body, html {
 						<input type="text" class="form-control" placeholder="Location"
 							id="location">
 					</div>
-					<button type="submit" class="btn btn-default">Search</button>
+					<button type="button" class="btn btn-default">Search</button>
 				</form>
 				<button class="btn btn-primary navbar-btn" type="button"
 					data-toggle="collapse" data-target="#rideForm"
 					aria-expanded="false" aria-controls="rideForm">Ride Form</button>
 				<button class="btn btn-info navbar-btn" type="button"
-					onclick="hideAlert()">Close Alert</button>
-
+					onclick="hideAlert()">Close Response</button>
 			</div>
 			<!-- /.navbar-collapse -->
 		</div>
@@ -101,24 +108,24 @@ body, html {
 	</nav>
 	<div class="container-fluid" id="map"></div>
 	<div class="container-fluid" id="warnings-panel"></div>
-	<div class="container-fluid floating">
+	<div class="container-fluid alert-container">
 		<div class="col-md-4">
 			<div class="alert alert-success alert-dismissible" role="alert"
 				id="alert-success">
-				<button type="button" class="close" data-dismiss="alert"
-					aria-label="Close">
+				<button type="button" class="close" id="alert-success-close"
+					data-dismiss="alert" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
 				Success.
 			</div>
 		</div>
 	</div>
-	<div class="container-fluid floating">
+	<div class="container-fluid alert-container">
 		<div class="col-md-4">
 			<div class="alert alert-danger alert-dismissible" role="alert"
 				id="alert-danger">
-				<button type="button" class="close" data-dismiss="alert"
-					aria-label="Close">
+				<button type="button" class="close" id="alert-danger-close"
+					data-dismiss="alert" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
 				Error.
@@ -148,13 +155,7 @@ body, html {
 			</form>
 		</div>
 	</div>
-	<script type="text/javascript" src="script/script.js">
-		
-	</script>
-	<script type="text/javascript" src="script/authenticate.js">
-		
-	</script>
-	<!-- Jquery -->
+	<!-- Jquery This has to be loaded first before any bootstrap or jquery function is called by other scripts-->
 	<script
 		src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<!-- Latest compiled and minified JavaScript -->
@@ -162,5 +163,12 @@ body, html {
 		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
 		integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
 		crossorigin="anonymous"></script>
+
+	<script type="text/javascript" src="script/script.js">
+		
+	</script>
+	<script type="text/javascript" src="script/authenticate.js">
+		
+	</script>
 </body>
 </html>
