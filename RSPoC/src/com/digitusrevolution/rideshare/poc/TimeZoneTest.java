@@ -20,7 +20,7 @@ public class TimeZoneTest {
 		ZoneId india = ZoneId.of("Asia/Kolkata");
 		ZoneId australia = ZoneId.of("Australia/Canberra");
 		
-		ZonedDateTime zonedDateTime1 = dateTime1.atZone(utc);
+		ZonedDateTime zonedDateTime1 = dateTime1.atZone(india);
 		System.out.println("zonedDateTime1:" + zonedDateTime1);
 		System.out.println(zonedDateTime1.getOffset()+","+zonedDateTime1.getZone());
 		zonedDateTime1 = zonedDateTime1.withZoneSameInstant(australia);

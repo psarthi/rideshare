@@ -6,7 +6,14 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
+import com.digitusrevolution.rideshare.ride.domain.RouteDO;
+import com.digitusrevolution.rideshare.ride.domain.TrustCategoryDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.dto.google.GoogleDirection;
 
@@ -14,14 +21,32 @@ public class RideOfferManagementService {
 	
 	private static final Logger logger = LogManager.getLogger(RideOfferManagementService.class.getName());
 	
-	public int offerRide(Ride ride, GoogleDirection direction){
+	public int offerRide(Ride ride){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		int id =0;
 		try {
 			transation = session.beginTransaction();
+			
+			//Start - Temp. Code to work with Web frontend, it will be removed and direction needs to be passed as a parameter to this call 
+			RouteDO routeDO = new RouteDO();
+			GoogleDirection direction = routeDO.getDirection(ride.getStartPoint().getPoint(), ride.getEndPoint().getPoint());
+			
+			User driver = RESTClientUtil.getUser(1);
+			ride.setDriver(driver);
+			
+			Vehicle vehicle = RESTClientUtil.getVehicle(driver.getId(), 1);
+			ride.setVehicle(vehicle);
 
+			TrustCategoryDO trustCategoryDO = new TrustCategoryDO();
+			TrustCategory trustCategory = trustCategoryDO.get("Anonymous");
+	 
+			TrustNetwork trustNetwork = new TrustNetwork();
+			trustNetwork.getTrustCategories().add(trustCategory);
+			ride.setTrustNetwork(trustNetwork);
+			//End
+			
 			RideDO rideDO = new RideDO();
 			id = rideDO.offerRide(ride,direction);
 

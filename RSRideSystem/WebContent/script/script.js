@@ -10,6 +10,9 @@ var routeMarkers = [];
 var getURL = "http://localhost:8080/RSUserSystem/api/domain/users/1";
 var postURL = "http://localhost:8080/RSRideSystem/api/dummy";
 var getJSONFormatURL = "http://localhost:8080/RSRideSystem/api/dummy/getjson/ride";
+var postRideURL = "http://localhost:8080/RSRideSystem/api/rides";
+var getRideJSONFormatURL = "http://localhost:8080/RSRideSystem/api/dummy/getjson/ride";
+
 var postData = { City: 'Bangalore', Age: 25 };
 function initMap() {
 
@@ -48,10 +51,8 @@ function initMap() {
 	});
 	// Add a listener
 	map.addListener('rightclick',function(event){
-		deleteMarkers();
 		document.getElementById('end').value=event.latLng;
-		calculateAndDisplayRoute(directionsService, routeMarkers,
-				stepDisplay, map, document.getElementById('start').value, document.getElementById('end').value);
+		addMarker(event.latLng);
 	});
 	// Add a listener
 	map.addListener('dblclick', function(event){
@@ -152,7 +153,8 @@ function getRandomColor() {
 function addMarker(latLng) {
 	var marker = new google.maps.Marker({
 		position: latLng,
-		map: map
+		map: map,
+		title: "Marker"
 	});
 	markers.push(marker);	
 }
@@ -162,7 +164,8 @@ function addPermanentMarker(latLng, image) {
 	var marker = new google.maps.Marker({
 		position: latLng,
 		map: map,
-		icon: image
+		icon: image,
+		title: "Permanent Marker"
 	});	
 }
 
@@ -259,3 +262,63 @@ $( "#alert-success-close" ).click(function() {
 	$( "#alert-success" ).hide();
 });
 
+$("#rideOffer").click(function(){
+	var startLatLng = $("#start").val().replace("(","").replace(")","").split(",");
+	console.log(startLatLng[0]);
+	console.log(startLatLng[1]);
+	var endLatLng = $("#end").val().replace("(","").replace(")","").split(",");
+	console.log(endLatLng[0]);
+	console.log(endLatLng[1]);
+	var dateTimeLocal = $("#dateTime").val();
+	console.log(dateTimeLocal);	
+	//If you don't convert string to the new format as shown below, then you get UTC timezone and not local
+	var dateTimeLocalWithTimezone = new Date(dateTimeLocal.replace(/-/g,'/').replace('T',' '));
+	console.log(dateTimeLocalWithTimezone);
+//	var dateUTC = new Date(dateTimeLocal);
+//	console.log(dateUTC);
+	
+	$.ajax({
+		url: getRideJSONFormatURL,
+		type: 'GET',
+		dataType: 'json'
+	})
+
+	.done(function( ride ) {
+		//$("#alert-success").html("Request Successfull:<br/>"+JSON.stringify(ride)).show();
+		console.log("Request Successfull: Got Ride Object");
+		ride.startTime = dateTimeLocalWithTimezone;
+		ride.startPoint.point.coordinates[0] = startLatLng[1];
+		ride.startPoint.point.coordinates[1] = startLatLng[0];		
+		ride.endPoint.point.coordinates[0] = endLatLng[1];
+		ride.endPoint.point.coordinates[1] = endLatLng[0];
+		console.log(ride);
+		console.log(JSON.stringify(ride));
+		
+		$.ajax({
+			url: postRideURL,
+			type: 'POST',
+			data: JSON.stringify(ride),
+			contentType: 'application/json; charset=utf-8',
+			dataType: 'json'
+		})
+
+		.done(function( response ) {
+			$("#alert-success").html("Request Successfull:<br/>Ride has been successfully created with id:"+JSON.stringify(response)).show();
+			calculateAndDisplayRoute(directionsService, routeMarkers,
+					stepDisplay, map, document.getElementById('start').value, document.getElementById('end').value);
+			deleteMarkers();
+		})
+
+		.fail(function( jqXHR, textStatus ) {
+			$("#alert-danger").html("Request Failed:"+textStatus).show();
+		});
+
+	})
+
+	.fail(function( jqXHR, textStatus ) {
+		$("#alert-danger").html("Request Failed: Unable to get Ride Object"+textStatus).show();
+	});
+	
+
+
+});
