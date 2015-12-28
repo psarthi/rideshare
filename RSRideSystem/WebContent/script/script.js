@@ -7,12 +7,12 @@ var image;
 var markers = [];
 //This markers is for route points
 var routeMarkers = [];
-var getURL = "http://localhost:8080/RSUserSystem/api/domain/users/1";
-var postURL = "http://localhost:8080/RSRideSystem/api/dummy";
-var getJSONFormatURL = "http://localhost:8080/RSRideSystem/api/dummy/getjson/ride";
-var getRideJSONFormatURL = "http://localhost:8080/RSRideSystem/api/dummy/getjson/ride";
+var getURL = "http://localhost:8080/RSUserSystem/api/domain/users/1/roles";
+var postURL = "http://localhost:8080/RSRideSystem/api/model/dummypost";
+var getJSONFormatURL = "http://localhost:8080/RSRideSystem/api/model/ride";
+var getRideJSONFormatURL = "http://localhost:8080/RSRideSystem/api/model/ride";
 var postRideURL = "http://localhost:8080/RSRideSystem/api/rides";
-var getRideRequestJSONFormatURL = "http://localhost:8080/RSRideSystem/api/dummy/getjson/riderequest";
+var getRideRequestJSONFormatURL = "http://localhost:8080/RSRideSystem/api/model/riderequest";
 var postRideRequestURL = "http://localhost:8080/RSRideSystem/api/riderequests";
 var postData = { City: 'Bangalore', Age: 25 };
 var start;
@@ -229,6 +229,11 @@ function deleteMarkers() {
 //	alert("deleteMarkers");
 	clearMarkers();
 	markers = [];
+	document.getElementById('start').value="";
+	start="";
+	document.getElementById('end').value="";
+	end="";
+
 }
 
 function get(url){
