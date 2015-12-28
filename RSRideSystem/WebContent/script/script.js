@@ -10,10 +10,13 @@ var routeMarkers = [];
 var getURL = "http://localhost:8080/RSUserSystem/api/domain/users/1";
 var postURL = "http://localhost:8080/RSRideSystem/api/dummy";
 var getJSONFormatURL = "http://localhost:8080/RSRideSystem/api/dummy/getjson/ride";
-var postRideURL = "http://localhost:8080/RSRideSystem/api/rides";
 var getRideJSONFormatURL = "http://localhost:8080/RSRideSystem/api/dummy/getjson/ride";
-
+var postRideURL = "http://localhost:8080/RSRideSystem/api/rides";
+var getRideRequestJSONFormatURL = "http://localhost:8080/RSRideSystem/api/dummy/getjson/riderequest";
+var postRideRequestURL = "http://localhost:8080/RSRideSystem/api/riderequests";
 var postData = { City: 'Bangalore', Age: 25 };
+var start;
+var end;
 function initMap() {
 
 	// Instantiate a directions service.
@@ -34,31 +37,44 @@ function initMap() {
 	// Instantiate geocoder service
 	geocoder = new google.maps.Geocoder();
 
-	image = {
+	pickupImage = {
 			url: "image/pickup.png",
 			size: new google.maps.Size(71, 71),
 			origin: new google.maps.Point(0, 0),
 			anchor: new google.maps.Point(17, 34),
 			scaledSize: new google.maps.Size(40, 40)
 	};
+	
+	dropImage = {
+			url: "image/drop.png",
+			size: new google.maps.Size(71, 71),
+			origin: new google.maps.Point(0, 0),
+			anchor: new google.maps.Point(17, 34),
+			scaledSize: new google.maps.Size(25, 40)
+	};
+
 
 	// Add a listener
 	map.addListener('click', function(event){
 		deleteMarkers();
 		//This is to delete previous marker for click event
 		document.getElementById('start').value=event.latLng;
+		start=event.latLng;
 		addMarker(event.latLng);
+//		addPermanentMarker(start, image);
 	});
 	// Add a listener
 	map.addListener('rightclick',function(event){
 		document.getElementById('end').value=event.latLng;
+		end=event.latLng;
 		addMarker(event.latLng);
+//		addPermanentMarker(end, image);
 	});
 	// Add a listener
 	map.addListener('dblclick', function(event){
 		deleteMarkers();
 		document.getElementById('location').value=event.latLng;
-		addPermanentMarker(event.latLng, image);
+		addPermanentMarker(event.latLng, pickupImage);
 	});
 
 }
@@ -318,7 +334,68 @@ $("#rideOffer").click(function(){
 	.fail(function( jqXHR, textStatus ) {
 		$("#alert-danger").html("Request Failed: Unable to get Ride Object"+textStatus).show();
 	});
+
+});
+
+
+$("#rideRequest").click(function(){
+	var startLatLng = $("#start").val().replace("(","").replace(")","").split(",");
+	console.log(startLatLng[0]);
+	console.log(startLatLng[1]);
+	var endLatLng = $("#end").val().replace("(","").replace(")","").split(",");
+	console.log(endLatLng[0]);
+	console.log(endLatLng[1]);
+	var dateTimeLocal = $("#dateTime").val();
+	console.log(dateTimeLocal);	
+	//If you don't convert string to the new format as shown below, then you get UTC timezone and not local
+	var dateTimeLocalWithTimezone = new Date(dateTimeLocal.replace(/-/g,'/').replace('T',' '));
+	console.log(dateTimeLocalWithTimezone);
+//	var dateUTC = new Date(dateTimeLocal);
+//	console.log(dateUTC);
+	
+	$.ajax({
+		url: getRideRequestJSONFormatURL,
+		type: 'GET',
+		dataType: 'json'
+	})
+
+	.done(function( rideRequest ) {
+		//$("#alert-success").html("Request Successfull:<br/>"+JSON.stringify(ride)).show();
+		console.log("Request Successfull: Got RideRequest Object");
+		rideRequest.pickupTime = dateTimeLocalWithTimezone;
+		rideRequest.pickupPoint.point.coordinates[0] = startLatLng[1];
+		rideRequest.pickupPoint.point.coordinates[1] = startLatLng[0];		
+		rideRequest.dropPoint.point.coordinates[0] = endLatLng[1];
+		rideRequest.dropPoint.point.coordinates[1] = endLatLng[0];
+		console.log(rideRequest);
+		console.log(JSON.stringify(rideRequest));
+		
+		$.ajax({
+			url: postRideRequestURL,
+			type: 'POST',
+			data: JSON.stringify(rideRequest),
+			contentType: 'application/json; charset=utf-8',
+			dataType: 'json'
+		})
+
+		.done(function( response ) {
+			$("#alert-success").html("Request Successfull:<br/>Ride Request has been successfully created with id:"+JSON.stringify(response)).show();
+			addPermanentMarker(start, pickupImage);
+			addPermanentMarker(end, dropImage);
+			deleteMarkers();
+		})
+
+		.fail(function( jqXHR, textStatus ) {
+			$("#alert-danger").html("Request Failed:"+textStatus).show();
+		});
+
+	})
+
+	.fail(function( jqXHR, textStatus ) {
+		$("#alert-danger").html("Request Failed: Unable to get Ride Request Object"+textStatus).show();
+	});
 	
 
 
 });
+

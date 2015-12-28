@@ -9,6 +9,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 
 @Path("/dummy")
 @Produces(MediaType.APPLICATION_JSON)
@@ -26,4 +27,12 @@ public class DummyRESTService {
 		Ride ride = new Ride();
 		return Response.ok().entity(ride).build();
 	}
+	
+	@GET
+	@Path("/getjson/riderequest")
+	public Response getRideRequest(){
+		RideRequest rideRequest = new RideRequest();
+		return Response.ok().entity(rideRequest).build();
+	}
+
 }

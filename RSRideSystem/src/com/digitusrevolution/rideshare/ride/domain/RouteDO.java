@@ -125,11 +125,11 @@ public class RouteDO{
 				LatLng to = latLngs.get(i);
 				double distance = SphericalUtil.computeDistanceBetween(from, to);
 				if (distance <= minDistance){
-					logger.debug("[Less:distance,seq,skip,from,to]:"+distance+","+seq+","+skip+","+from.toString()+","+to.toString());
+					logger.trace("[Less:distance,seq,skip,from,to]:"+distance+","+seq+","+skip+","+from.toString()+","+to.toString());
 					skip++;
 					continue;
 				} 
-				logger.debug("[More:distance,seq,skip,from,to]:"+distance+","+seq+","+skip+","+from.toString()+","+to.toString());
+				logger.trace("[More:distance,seq,skip,from,to]:"+distance+","+seq+","+skip+","+from.toString()+","+to.toString());
 				logger.trace(distance);				
 
 				double time = MathUtil.getTime(distance, stepSpeed);
@@ -154,7 +154,7 @@ public class RouteDO{
 				ridePoint.getPoint().setLongitude(latLngs.get(i).longitude);
 				ridePoint.setSequence(seq);
 				ridePoint.setRidesBasicInfo(updatedRidesBasicInfo);
-				logger.debug("RidePoint added [point,time]:"+ridePoint.getPoint().toString()+","+ridePoint.getRidesBasicInfo().get(0).getDateTime());
+				logger.trace("RidePoint added [point,time]:"+ridePoint.getPoint().toString()+","+ridePoint.getRidesBasicInfo().get(0).getDateTime());
 				route.getRidePoints().add(ridePoint);
 				from = to;
 				seq++;

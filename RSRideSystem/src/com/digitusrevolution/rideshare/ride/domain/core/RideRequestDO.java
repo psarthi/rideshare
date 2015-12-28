@@ -130,6 +130,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		rideRequest.getDropPoint().set_id(dropPointId);
 		rideRequest.setId(id);
 		update(rideRequest);
+		logger.debug("Ride Request has been created with id:" + id);
 		return id;
 	}
 
