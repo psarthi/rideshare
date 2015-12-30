@@ -8,7 +8,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
-public class TimeZoneTest {
+public class TimeZone {
 
 	public static void main(String[] args) {
 

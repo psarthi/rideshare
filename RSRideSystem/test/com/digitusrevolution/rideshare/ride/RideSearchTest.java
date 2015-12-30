@@ -1,0 +1,70 @@
+package com.digitusrevolution.rideshare.ride;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.TreeSet;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
+import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
+import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
+
+public class RideSearchTest {
+
+	private static final Logger logger = LogManager.getLogger(RideSearchTest.class.getName());
+	
+	public static void main(String[] args) {
+		
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transation = null;	
+		try {
+			transation = session.beginTransaction();
+			
+			RideSearchTest rideSearchTest = new RideSearchTest();
+			rideSearchTest.searchRide();
+			transation.commit();
+
+			/*
+			 * Reason for catching RuntimeException and not HibernateException as all exceptions thrown by Hibernate
+			 * is not of type HibernateException such as NotFoundException
+			 */
+		} catch (RuntimeException e) {
+			if (transation!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transation.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}			
+	}
+	
+	public void searchRide(){
+		
+		RideRequestDO rideRequestDO = new RideRequestDO();
+		RideRequest rideRequest = rideRequestDO.get(30);
+		
+		RidePointDAO ridePointDAO = new RidePointDAO();
+		double maxDistance = 10000;
+		double minDistance = 0;
+		
+		List<RidePoint> ridePoints = ridePointDAO.getAllRidePointNearGivenPoint(rideRequest.getPickupPoint().getPoint(), maxDistance, minDistance);
+		Collection<RidePoint> ridePointsCollection = new TreeSet<>();
+		
+		for (RidePoint ridePoint : ridePoints) {
+			logger.debug(ridePoint.toString());
+		}
+	}
+	
+
+}

@@ -11,11 +11,14 @@ import org.bson.types.ObjectId;
 
 import com.digitusrevolution.rideshare.common.db.MongoDBUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
+import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
+import static com.mongodb.client.model.Filters.*;
+import com.mongodb.client.model.geojson.Geometry;
+import com.mongodb.client.model.geojson.Position;
 
 public class RidePointDAO{
 	
@@ -48,7 +51,7 @@ public class RidePointDAO{
 	}
 
 	public RidePoint get(String _id) {
-		Document document = collection.find(Filters.eq("_id", _id)).first();
+		Document document = collection.find(eq("_id", _id)).first();
 		String json = document.toJson();
 		logger.debug(json);
 		RidePoint ridePoint = jsonUtil.getModel(json);
@@ -62,35 +65,41 @@ public class RidePointDAO{
 		 * Don't use updateOne as it seems there is some bug in the code
 		 * which throws _id field not valid in BSON, so use replaceOne
 		 */
-		collection.replaceOne(Filters.eq("_id", _id), Document.parse(json));
+		collection.replaceOne(eq("_id", _id), Document.parse(json));
 	}
 
 	public void delete(String _id) {
-		collection.deleteOne(Filters.eq("_id", _id));
+		collection.deleteOne(eq("_id", _id));
 	}
 		
 	public List<RidePoint> getAll() {
-		List<RidePoint> ridePoints = new ArrayList<>();
 		MongoCursor<Document> cursor = collection.find().iterator();
-		try {
-			while (cursor.hasNext()){
-				String json = cursor.next().toJson();
-				RidePoint ridePoint = jsonUtil.getModel(json);
-				ridePoints.add(ridePoint);
-			}
-		} finally{
-			cursor.close();
-		}
-		return ridePoints;
+		return getAllRidePointFromBSONDocuments(cursor);
 	}
 
 	public List<RidePoint> getAllRidePointsOfRide(int rideId) {
+		MongoCursor<Document> cursor = collection.find(eq("rides.id", rideId)).iterator();
+		return getAllRidePointFromBSONDocuments(cursor);
+	}
+	
+	public List<RidePoint> getAllRidePointWithinGivenGeometry(Geometry geometry){
+		MongoCursor<Document> cursor = collection.find(geoWithin("point", geometry)).iterator();
+		return getAllRidePointFromBSONDocuments(cursor);
+	}
+	
+	public List<RidePoint> getAllRidePointNearGivenPoint(Point point, double maxDistance, double minDistance){
+		Position coordinate = new Position(point.getCoordinates());
+		com.mongodb.client.model.geojson.Point givenPoint = new com.mongodb.client.model.geojson.Point(coordinate);
+		MongoCursor<Document> cursor = collection.find(nearSphere("point", givenPoint, maxDistance, minDistance)).iterator();
+		return getAllRidePointFromBSONDocuments(cursor);
+	}
+	
+	private List<RidePoint> getAllRidePointFromBSONDocuments(MongoCursor<Document> cursor){
 		List<RidePoint> ridePoints = new ArrayList<>();
-		MongoCursor<Document> cursor = collection.find(Filters.eq("rides.id", rideId)).iterator();
 		try {
 			while (cursor.hasNext()){
 				String json = cursor.next().toJson();
-				logger.trace(json);
+				logger.debug(json);
 				RidePoint ridePoint = jsonUtil.getModel(json);
 				ridePoints.add(ridePoint);
 			}
@@ -99,6 +108,5 @@ public class RidePointDAO{
 		}
 		return ridePoints;
 	}
-	
 
 }

@@ -17,6 +17,7 @@ var postRideRequestURL = "http://localhost:8080/RSRideSystem/api/riderequests";
 var postData = { City: 'Bangalore', Age: 25 };
 var start;
 var end;
+var radius = 5000;
 function initMap() {
 
 	// Instantiate a directions service.
@@ -39,15 +40,13 @@ function initMap() {
 
 	pickupImage = {
 			url: "image/pickup.png",
-			size: new google.maps.Size(71, 71),
 			origin: new google.maps.Point(0, 0),
 			anchor: new google.maps.Point(17, 34),
 			scaledSize: new google.maps.Size(40, 40)
 	};
-	
+
 	dropImage = {
 			url: "image/drop.png",
-			size: new google.maps.Size(71, 71),
 			origin: new google.maps.Point(0, 0),
 			anchor: new google.maps.Point(17, 34),
 			scaledSize: new google.maps.Size(25, 40)
@@ -71,11 +70,12 @@ function initMap() {
 //		addPermanentMarker(end, image);
 	});
 	// Add a listener
+	/*
 	map.addListener('dblclick', function(event){
 		deleteMarkers();
 		document.getElementById('location').value=event.latLng;
 		addPermanentMarker(event.latLng, pickupImage);
-	});
+	});*/
 
 }
 
@@ -110,7 +110,7 @@ function calculateAndDisplayRoute(directionsService, routeMarkers,
 			directionsDisplay.setDirections(response);
 			var overview_polyline = response.routes[0].overview_polyline;
 			//This will show all points returned by Google which is in overview_polyline
-			//showAllPolyLinePoints(overview_polyline);
+			showAllPolyLinePoints(overview_polyline);
 			//This will show only high level points which is in the steps
 			//showSteps(response, routeMarkers, stepDisplay, map);
 		} else {
@@ -185,6 +185,21 @@ function addPermanentMarker(latLng, image) {
 	});	
 }
 
+
+function createCircle(center, radius){
+	// Add the circle
+	var circle = new google.maps.Circle({
+		strokeColor: '#FF0000',
+		strokeOpacity: 0.8,
+		strokeWeight: 2,
+		fillColor: '#FF0000',
+		fillOpacity: 0.35,
+		map: map,
+		center: center,
+		radius: radius
+	});
+}
+
 function showAllPolyLinePoints(ecodedPolyLine) {
 
 	var points = google.maps.geometry.encoding.decodePath(ecodedPolyLine);
@@ -196,8 +211,9 @@ function showAllPolyLinePoints(ecodedPolyLine) {
 		strokeWeight: 2
 	});
 
-	for (var i = 0; i < points.length; i++) {
+	for (var i = 0; i < points.length; i++) {	
 		addMarker(points[i]);
+		createCircle(points[i], radius);
 	}
 
 	// Below line, would draw a full polyline
@@ -297,7 +313,7 @@ $("#rideOffer").click(function(){
 	console.log(dateTimeLocalWithTimezone);
 //	var dateUTC = new Date(dateTimeLocal);
 //	console.log(dateUTC);
-	
+
 	$.ajax({
 		url: getRideJSONFormatURL,
 		type: 'GET',
@@ -314,7 +330,7 @@ $("#rideOffer").click(function(){
 		ride.endPoint.point.coordinates[1] = endLatLng[0];
 		console.log(ride);
 		console.log(JSON.stringify(ride));
-		
+
 		$.ajax({
 			url: postRideURL,
 			type: 'POST',
@@ -357,7 +373,7 @@ $("#rideRequest").click(function(){
 	console.log(dateTimeLocalWithTimezone);
 //	var dateUTC = new Date(dateTimeLocal);
 //	console.log(dateUTC);
-	
+
 	$.ajax({
 		url: getRideRequestJSONFormatURL,
 		type: 'GET',
@@ -374,7 +390,7 @@ $("#rideRequest").click(function(){
 		rideRequest.dropPoint.point.coordinates[1] = endLatLng[0];
 		console.log(rideRequest);
 		console.log(JSON.stringify(rideRequest));
-		
+
 		$.ajax({
 			url: postRideRequestURL,
 			type: 'POST',
@@ -399,8 +415,5 @@ $("#rideRequest").click(function(){
 	.fail(function( jqXHR, textStatus ) {
 		$("#alert-danger").html("Request Failed: Unable to get Ride Request Object"+textStatus).show();
 	});
-	
-
 
 });
-

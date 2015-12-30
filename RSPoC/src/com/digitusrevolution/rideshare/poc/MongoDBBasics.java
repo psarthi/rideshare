@@ -138,8 +138,7 @@ public class MongoDBBasics {
 			cursor.close();
 		}
 		
-		/*		
-		System.out.println("-----------------");
+		System.out.println("Restaurant Example-----------------");
 		
 		database = mongoClient.getDatabase("test");
 		MongoCollection<Document> collectionRestaurant = database.getCollection("restaurants");
@@ -190,7 +189,7 @@ public class MongoDBBasics {
 		} finally{
 			System.out.println("Count" + i);
 			cursor.close();
-		}*/
+		}
 		
 		mongoClient.close();
 
