@@ -33,6 +33,7 @@ public class RidePointTest {
 		String id = ridePointDAO.create(ridePoint);
 		
 		RidePoint ridePoint1 = ridePointDAO.get(id);
+		ridePoint1 = ridePointDAO.get(id, 2);
 		JSONUtil<RidePoint> jsonUtil = new JSONUtil<>(RidePoint.class);
 		System.out.println(jsonUtil.getJson(ridePoint1));
 		
@@ -46,7 +47,7 @@ public class RidePointTest {
 		System.out.println("zonedDateTime in UTC: " + zonedDateTime.format(formatter));
 		System.out.println("zonedDateTime in IST: " + zonedDateTimeIST.format(formatter));
 		
-		List<RidePoint> ridePoints = ridePointDAO.getAll();
+/*		List<RidePoint> ridePoints = ridePointDAO.getAll();
 		FeatureCollection featureCollection = new FeatureCollection();
 		JSONUtil<FeatureCollection> jsonUtilFeatureCollection = new JSONUtil<>(FeatureCollection.class);
 		for (RidePoint ridePoint2 : ridePoints) {
@@ -69,7 +70,7 @@ public class RidePointTest {
 
 		JSONUtil<LineString> jsonUtilLineString = new JSONUtil<>(LineString.class);
 		lineString = GeoJSONUtil.getLineStringFromRidePoints(ridePoints);
-		System.out.println(jsonUtilLineString.getJson(lineString));
+		System.out.println(jsonUtilLineString.getJson(lineString));*/
 
 	//	ridePointDAO.delete(_id);
 

@@ -113,8 +113,8 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	}
 	
 	private void getRidePoints(){
-		RidePoint startPoint = ridePointDAO.get(ride.getStartPoint().get_id());
-		RidePoint endPoint = ridePointDAO.get(ride.getEndPoint().get_id());		
+		RidePoint startPoint = ridePointDAO.get(ride.getStartPoint().get_id(),ride.getId());
+		RidePoint endPoint = ridePointDAO.get(ride.getEndPoint().get_id(), ride.getId());		
 		ride.setStartPoint(startPoint);
 		ride.setEndPoint(endPoint);			
 	}

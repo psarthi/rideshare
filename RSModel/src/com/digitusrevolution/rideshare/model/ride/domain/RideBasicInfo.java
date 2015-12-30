@@ -18,4 +18,8 @@ public class RideBasicInfo {
 	public void setDateTime(ZonedDateTime dateTime) {
 		this.dateTime = dateTime;
 	}		
+	@Override
+	public String toString() {
+		return "[id,datetime]:"+id+","+dateTime;
+	}
 }

@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.ride.data;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +13,7 @@ import org.bson.types.ObjectId;
 import com.digitusrevolution.rideshare.common.db.MongoDBUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
+import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -57,6 +59,30 @@ public class RidePointDAO{
 		RidePoint ridePoint = jsonUtil.getModel(json);
 		return ridePoint;
 	}
+	
+	public RidePoint get(String _id, int rideId) {
+		Document document = collection.find(eq("_id", _id)).first();
+		String json = document.toJson();
+		logger.debug(json);
+		RidePoint ridePoint = jsonUtil.getModel(json);
+		ridePoint = getSpecificRidePoint(ridePoint, rideId);
+		return ridePoint;
+	}
+	
+	private RidePoint getSpecificRidePoint(RidePoint ridePoint, int rideId){
+		List<RideBasicInfo> ridesBasicInfo = ridePoint.getRidesBasicInfo();
+		for(ListIterator<RideBasicInfo> it = ridesBasicInfo.listIterator(); it.hasNext();){
+			int id = it.next().getId();
+			if (id != rideId){
+				logger.debug("Removing Ride Id:" + id);
+				it.remove();
+			} else {
+				logger.debug("Matched Ride Id, so not removing:" + id);
+			}
+		}	
+		logger.debug("Final RidebasicInfo list:"+ridesBasicInfo.toString());
+		return ridePoint;
+	}
 
 	public void update(RidePoint ridePoint) {
 		String json = jsonUtil.getJson(ridePoint);
@@ -79,7 +105,7 @@ public class RidePointDAO{
 
 	public List<RidePoint> getAllRidePointsOfRide(int rideId) {
 		MongoCursor<Document> cursor = collection.find(eq("rides.id", rideId)).iterator();
-		return getAllRidePointFromBSONDocuments(cursor);
+		return getAllSpecificRidePointFromBSONDocuments(cursor, rideId);
 	}
 	
 	public List<RidePoint> getAllRidePointWithinGivenGeometry(Geometry geometry){
@@ -108,5 +134,22 @@ public class RidePointDAO{
 		}
 		return ridePoints;
 	}
+	
+	private List<RidePoint> getAllSpecificRidePointFromBSONDocuments(MongoCursor<Document> cursor, int rideId){
+		List<RidePoint> ridePoints = new ArrayList<>();
+		try {
+			while (cursor.hasNext()){
+				String json = cursor.next().toJson();
+				logger.debug(json);
+				RidePoint ridePoint = jsonUtil.getModel(json);
+				ridePoint = getSpecificRidePoint(ridePoint, rideId);
+				ridePoints.add(ridePoint);
+			}
+		} finally{
+			cursor.close();
+		}
+		return ridePoints;
+	}
+
 
 }
