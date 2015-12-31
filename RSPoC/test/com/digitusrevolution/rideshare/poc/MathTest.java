@@ -1,6 +1,8 @@
 package com.digitusrevolution.rideshare.poc;
 
 import java.io.IOException;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
@@ -25,7 +27,9 @@ public class MathTest {
 		Point startPoint = pointDO.getCordinates("Bangalore"); 			
 		Point endPoint = pointDO.getCordinates("New Delhi"); 
 
-		String json = RESTClientUtil.getDirection(startPoint.getLatitude(),startPoint.getLongitude(), endPoint.getLatitude(), endPoint.getLongitude());
+		ZonedDateTime dateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+		
+		String json = RESTClientUtil.getDirection(startPoint.getLatitude(),startPoint.getLongitude(), endPoint.getLatitude(), endPoint.getLongitude(),dateTime);
 		ObjectMapper objectMapper = new ObjectMapper();
 		GoogleDirection googleDirection =null;
 		try {

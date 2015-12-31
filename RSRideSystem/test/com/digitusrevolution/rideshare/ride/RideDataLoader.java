@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -165,9 +166,10 @@ public class RideDataLoader {
 			ZoneId india = ZoneId.of("Asia/Kolkata");
 			ZonedDateTime startTime = ZonedDateTime.of(localDateTime, india);
 			ride.setStartTime(startTime);
+			ZonedDateTime startTimeUTC = startTime.withZoneSameInstant(ZoneOffset.UTC);
 						
 			RouteDO routeDO = new RouteDO();
-			GoogleDirection direction = routeDO.getDirection(startPoint, endPoint);
+			GoogleDirection direction = routeDO.getDirection(startPoint, endPoint,startTimeUTC);
 			
 			int id = rideDO.offerRide(ride,direction);	
 			System.out.println("Ride has been created: "+id);

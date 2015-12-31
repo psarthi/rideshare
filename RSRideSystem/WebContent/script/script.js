@@ -355,7 +355,7 @@ $("#rideOffer").click(function(){
 	.fail(function( jqXHR, textStatus ) {
 		$("#alert-danger").html("Request Failed: Unable to get Ride Object"+textStatus).show();
 	});
-
+	$("#rideFormButton").click();
 });
 
 
@@ -415,5 +415,6 @@ $("#rideRequest").click(function(){
 	.fail(function( jqXHR, textStatus ) {
 		$("#alert-danger").html("Request Failed: Unable to get Ride Request Object"+textStatus).show();
 	});
+	$("#rideFormButton").click();
 
 });

@@ -126,14 +126,15 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 
 	public int requestRide(RideRequest rideRequest){
 		//Setting the travel time and distance, which would be used for searching ride points by date/time as well as sorting the ride request by distance
+		ZonedDateTime pickupTimeUTC = rideRequest.getPickupTime().withZoneSameInstant(ZoneOffset.UTC);
 		RouteDO routeDO = new RouteDO();
-		GoogleDistance googleDistance = routeDO.getDistance(rideRequest.getPickupPoint().getPoint(), rideRequest.getDropPoint().getPoint());	
+		GoogleDistance googleDistance = routeDO.getDistance(rideRequest.getPickupPoint().getPoint(), rideRequest.getDropPoint().getPoint(),pickupTimeUTC);	
 		int travelDistance = googleDistance.getRows().get(0).getElements().get(0).getDistance().getValue();
 		int travelTime = googleDistance.getRows().get(0).getElements().get(0).getDuration().getValue();
 		rideRequest.setTravelDistance(travelDistance);
 		rideRequest.setTravelTime(travelTime);
 		
-		ZonedDateTime pickupTimeUTC = rideRequest.getPickupTime().withZoneSameInstant(ZoneOffset.UTC);
+
 		rideRequest.setPickupTime(pickupTimeUTC);
 		rideRequest.setStatus("unfulfilled");
 		int id = create(rideRequest);

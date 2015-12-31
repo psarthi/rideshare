@@ -1,5 +1,8 @@
 package com.digitusrevolution.rideshare.ride.business;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
@@ -29,9 +32,10 @@ public class RideOfferManagementService {
 		try {
 			transation = session.beginTransaction();
 			
-			//Start - Temp. Code to work with Web frontend, it will be removed and direction needs to be passed as a parameter to this call 
+			//Start - Temp. Code to work with Web frontend, it will be removed and direction needs to be passed as a parameter to this call
+			ZonedDateTime startTimeUTC = ride.getStartTime().withZoneSameInstant(ZoneOffset.UTC);
 			RouteDO routeDO = new RouteDO();
-			GoogleDirection direction = routeDO.getDirection(ride.getStartPoint().getPoint(), ride.getEndPoint().getPoint());
+			GoogleDirection direction = routeDO.getDirection(ride.getStartPoint().getPoint(), ride.getEndPoint().getPoint(),startTimeUTC);
 			
 			User driver = RESTClientUtil.getUser(1);
 			ride.setDriver(driver);

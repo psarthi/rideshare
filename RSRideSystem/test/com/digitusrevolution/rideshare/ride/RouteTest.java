@@ -1,5 +1,8 @@
 package com.digitusrevolution.rideshare.ride;
 
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -18,7 +21,14 @@ public class RouteTest {
 		PointDO pointDO = new PointDO();
 		Point startPoint = pointDO.getCordinates("Hoodi Circle Bangalore");
 		Point endPoint = pointDO.getCordinates("Silk Board Bangalore");
-		GoogleDirection googleDirection = routeDO.getDirection(startPoint, endPoint);
+		
+		LocalDateTime localDateTime = LocalDateTime.of(2015, Month.DECEMBER, 8, 9, 30);
+		ZoneId india = ZoneId.of("Asia/Kolkata");
+		ZonedDateTime startTime = ZonedDateTime.of(localDateTime, india);
+		ZonedDateTime startTimeUTC = startTime.withZoneSameInstant(ZoneOffset.UTC);
+
+		
+		GoogleDirection googleDirection = routeDO.getDirection(startPoint, endPoint,startTimeUTC);
 		RouteTest routeTest = new RouteTest();
 		
 		routeDO.getRoute(googleDirection, routeTest.getSampleRidesBasicInfo());

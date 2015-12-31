@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.common.util;
 
 import java.net.URI;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 
 import javax.ws.rs.core.GenericType;
@@ -65,25 +66,27 @@ public class RESTClientUtil {
 		return json;
 	}
 	
-	public static String getDirection(Double originLat, Double originLng, Double destinationLat, Double destinationLng){
-
+	public static String getDirection(Double originLat, Double originLng, Double destinationLat, Double destinationLng, ZonedDateTime departureTimeUTC){
+		
+		long departureEpochSecond = departureTimeUTC.toEpochSecond(); 
 		RESTClientImpl<String> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_GOOGLE_DIRECTION_URL");
 		String key = PropertyReader.getInstance().getProperty("GOOGLE_SERVER_KEY");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(originLat,originLng,destinationLat,destinationLng,key);
+		URI uri = uriBuilder.build(originLat,originLng,destinationLat,destinationLng,departureEpochSecond,key);
 		Response response = restClientUtil.get(uri);
 		String json = response.readEntity(String.class);
 		return json;
 	}
 	
-	public static String getDistance(Double originLat, Double originLng, Double destinationLat, Double destinationLng){
-
+	public static String getDistance(Double originLat, Double originLng, Double destinationLat, Double destinationLng, ZonedDateTime departureTimeUTC){
+		
+		long departureEpochSecond = departureTimeUTC.toEpochSecond(); 
 		RESTClientImpl<String> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_GOOGLE_DISTANCE_URL");
 		String key = PropertyReader.getInstance().getProperty("GOOGLE_SERVER_KEY");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(originLat,originLng,destinationLat,destinationLng,key);
+		URI uri = uriBuilder.build(originLat,originLng,destinationLat,destinationLng,departureEpochSecond,key);
 		Response response = restClientUtil.get(uri);
 		String json = response.readEntity(String.class);
 		return json;

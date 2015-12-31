@@ -32,15 +32,15 @@ public class RouteDO{
 		route = new Route();
 	}
 
-	public GoogleDirection getDirection(Point startPoint, Point endPoint){
-		String json = RESTClientUtil.getDirection(startPoint.getLatitude(),startPoint.getLongitude(), endPoint.getLatitude(), endPoint.getLongitude());
+	public GoogleDirection getDirection(Point startPoint, Point endPoint, ZonedDateTime departureTimeUTC){
+		String json = RESTClientUtil.getDirection(startPoint.getLatitude(),startPoint.getLongitude(), endPoint.getLatitude(), endPoint.getLongitude(),departureTimeUTC);
 		JSONUtil<GoogleDirection> jsonUtilGoogleDirection = new JSONUtil<>(GoogleDirection.class);
 		GoogleDirection googleDirection = jsonUtilGoogleDirection.getModel(json);
 		return googleDirection;
 	}
 	
-	public GoogleDistance getDistance(Point startPoint, Point endPoint){
-		String json = RESTClientUtil.getDistance(startPoint.getLatitude(),startPoint.getLongitude(), endPoint.getLatitude(), endPoint.getLongitude());
+	public GoogleDistance getDistance(Point startPoint, Point endPoint, ZonedDateTime departureTimeUTC){
+		String json = RESTClientUtil.getDistance(startPoint.getLatitude(),startPoint.getLongitude(), endPoint.getLatitude(), endPoint.getLongitude(),departureTimeUTC);
 		JSONUtil<GoogleDistance> jsonUtilGoogleDirection = new JSONUtil<>(GoogleDistance.class);
 		GoogleDistance googleDistance = jsonUtilGoogleDirection.getModel(json);
 		return googleDistance;
