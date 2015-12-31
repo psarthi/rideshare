@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.ride.business;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -42,6 +43,11 @@ public class RideRequestManagementService {
 			TrustNetwork trustNetwork = new TrustNetwork();
 			trustNetwork.getTrustCategories().add(trustCategory);
 			rideRequest.setTrustNetwork(trustNetwork);
+			
+			rideRequest.setPickupPointVariation(5000);
+			LocalTime timeVariation = LocalTime.of(0, 30);
+			rideRequest.setPickupTimeVariation(timeVariation);
+			rideRequest.setDropPointVariation(5000);
 			//End
 			
 			RideRequestDO rideRequestDO = new RideRequestDO();

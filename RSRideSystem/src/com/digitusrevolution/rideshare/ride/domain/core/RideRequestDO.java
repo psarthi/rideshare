@@ -3,7 +3,12 @@ package com.digitusrevolution.rideshare.ride.domain.core;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
@@ -14,9 +19,12 @@ import org.apache.logging.log4j.Logger;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.Point;
+import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
 
@@ -132,9 +140,42 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	}
 	
 	public List<Ride> searchRides(RideRequest rideRequest){		
+		
+		Point pickupPoint = rideRequest.getPickupPoint().getPoint();
+		RidePointDAO ridePointDAO = new RidePointDAO();
+		//Get all rides around radius of pickup variation from pickup point
+		List<RidePoint> pickupRidePoints = ridePointDAO.getAllRidePointNearGivenPoint(pickupPoint, rideRequest.getPickupPointVariation(), 0);
+		Point dropPoint = rideRequest.getDropPoint().getPoint();
+		List<RidePoint> dropRidePoints = ridePointDAO.getAllRidePointNearGivenPoint(dropPoint, rideRequest.getDropPointVariation(), 0);
+		Set<RidePoint> pickupRidePointsSet = new HashSet<>(pickupRidePoints);
+		Set<RidePoint> dropRidePointsSet = new HashSet<>(dropRidePoints);
+		//All ride pickup points which has matching drop points from the same ride
+		pickupRidePointsSet.retainAll(dropRidePointsSet);
+		//All ride drop points which has matching pickup points from the same ride
+		dropRidePointsSet.retainAll(pickupRidePointsSet);
+		Iterator<RidePoint> pickupIterator = pickupRidePointsSet.iterator();
+		Iterator<RidePoint> dropIterator = dropRidePointsSet.iterator();
+		Map<RidePoint, RidePoint> dropMap = new HashMap<>();
+		while (dropIterator.hasNext()){
+			RidePoint ridePoint = dropIterator.next();
+			dropMap.put(ridePoint, ridePoint);
+		}
+		
+		while(pickupIterator.hasNext()){
+			RidePoint pickupRidePoint = pickupIterator.next();
+			//This will get the droppoint as "equal" and "hascode" method is based only on ride basic info and not the other details
+			RidePoint dropRidePoint = dropMap.get(pickupRidePoint);
+			if (pickupRidePoint.getSequence() > dropRidePoint.getSequence() || pickupRidePoint.getSequence() == dropRidePoint.getSequence()){
+				//This will remove all ridepoint where drop point comes before pickup point i.e. vehicle going on other direction
+				pickupIterator.remove();
+				dropMap.remove(dropRidePoint);
+			} else {
+				logger.debug("Matching Ride:"+pickupRidePoint.getRidesBasicInfo().get(0).getId());
+				logger.debug("[Pickup Ride Point]:"+pickupRidePoint.toString());
+				logger.debug("[Drop Ride Point]:" + dropRidePoint.toString());
+			}
+		}
 
-		
-		
 		return null;
 	}
 

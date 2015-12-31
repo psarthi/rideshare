@@ -55,6 +55,14 @@ public class RideSearchTest {
 	public void searchRide(){
 		
 		RideRequestDO rideRequestDO = new RideRequestDO();
+		RideRequest rideRequest = rideRequestDO.get(1);
+		rideRequestDO.searchRides(rideRequest);
+		
+	}
+	
+	public void searchRideTest(){
+		
+		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.get(30);
 		
 		RidePointDAO ridePointDAO = new RidePointDAO();

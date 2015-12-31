@@ -2,8 +2,8 @@ package com.digitusrevolution.rideshare.ride.data;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -71,15 +71,16 @@ public class RidePointDAO{
 	
 	private RidePoint getSpecificRidePoint(RidePoint ridePoint, int rideId){
 		List<RideBasicInfo> ridesBasicInfo = ridePoint.getRidesBasicInfo();
-		for(ListIterator<RideBasicInfo> it = ridesBasicInfo.listIterator(); it.hasNext();){
-			int id = it.next().getId();
+		Iterator<RideBasicInfo> iterator = ridesBasicInfo.iterator();
+		while(iterator.hasNext()){
+			int id = iterator.next().getId();
 			if (id != rideId){
 				logger.debug("Removing Ride Id:" + id);
-				it.remove();
+				iterator.remove();
 			} else {
 				logger.debug("Matched Ride Id, so not removing:" + id);
-			}
-		}	
+			}			
+		}
 		logger.debug("Final Ride:"+ridePoint.toString());
 		return ridePoint;
 	}

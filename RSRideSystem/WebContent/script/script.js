@@ -25,10 +25,10 @@ function initMap() {
 
 	// Create a map and center it to specific location as per coordinates.
 	map = new google.maps.Map(document.getElementById('map'), {
-		zoom : 5,
+		zoom : 11,
 		center : {
-			lat : 22.684827,
-			lng : 78.085976
+			lat : 12.971091, 
+			lng : 77.596429
 		}
 	});
 
@@ -110,7 +110,7 @@ function calculateAndDisplayRoute(directionsService, routeMarkers,
 			directionsDisplay.setDirections(response);
 			var overview_polyline = response.routes[0].overview_polyline;
 			//This will show all points returned by Google which is in overview_polyline
-			showAllPolyLinePoints(overview_polyline);
+			//showAllPolyLinePoints(overview_polyline);
 			//This will show only high level points which is in the steps
 			//showSteps(response, routeMarkers, stepDisplay, map);
 		} else {
@@ -213,7 +213,7 @@ function showAllPolyLinePoints(ecodedPolyLine) {
 
 	for (var i = 0; i < points.length; i++) {	
 		addMarker(points[i]);
-		createCircle(points[i], radius);
+		//createCircle(points[i], radius);
 	}
 
 	// Below line, would draw a full polyline
