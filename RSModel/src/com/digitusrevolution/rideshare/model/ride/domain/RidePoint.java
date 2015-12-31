@@ -49,5 +49,26 @@ public class RidePoint{
 			rides += rideBasicInfo.getId()+","+rideBasicInfo.getDateTime().format(formatter) +":";
 		}
 		return "[_id:sequence:point:rides]:"+get_id()+":"+getSequence()+":"+getPoint().toString()+":"+rides;
-	}	
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof RidePoint){
+			RidePoint ridePoint = (RidePoint) obj;
+			return this.ridesBasicInfo.equals(ridePoint.ridesBasicInfo);	
+		}
+		return false;
+	}
+
+	/*
+	 * Reason of using long instead of int, is to avoid issue in case of sum of rides id goes out of range of int  
+	 */
+	@Override
+	public int hashCode() {
+		long sumOfRideHashCode = 0;
+		for (RideBasicInfo rideBasicInfo : ridesBasicInfo) {
+			sumOfRideHashCode += rideBasicInfo.hashCode();
+		}
+		return Long.hashCode(sumOfRideHashCode);
+	}
 }

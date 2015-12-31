@@ -7,7 +7,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
-import com.digitusrevolution.rideshare.model.ride.domain.Location;
+import com.digitusrevolution.rideshare.model.common.Location;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;

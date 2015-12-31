@@ -5,7 +5,9 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
@@ -20,7 +22,7 @@ import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
 public class RidePointTest {
 	
 	public static void main(String[] args) {
-		
+
 		RidePoint ridePoint = new RidePoint();
 		ridePoint.getPoint().setLatitude(12.12);
 		ridePoint.getPoint().setLongitude(13.13);
@@ -31,13 +33,32 @@ public class RidePointTest {
 		
 		RidePointDAO ridePointDAO = new RidePointDAO();
 		String id = ridePointDAO.create(ridePoint);
-		
-		RidePoint ridePoint1 = ridePointDAO.get(id);
-		ridePoint1 = ridePointDAO.get(id, 2);
+
 		JSONUtil<RidePoint> jsonUtil = new JSONUtil<>(RidePoint.class);
+		RidePoint ridePoint1 = ridePointDAO.get(id);
 		System.out.println(jsonUtil.getJson(ridePoint1));
+		RidePoint ridePoint2 = ridePointDAO.getRidePointOfRide(id, 2);
+		System.out.println(jsonUtil.getJson(ridePoint2));
+		System.out.println("ridePoint1.equals(ridePoint2)"+ridePoint1.equals(ridePoint2));
+		System.out.println("ridePoint1.equals(ridePoint1)"+ridePoint1.equals(ridePoint1));
+		System.out.println("ridePoint2.equals(ridePoint2)"+ridePoint2.equals(ridePoint2));
+		RidePoint ridePoint3 = ridePointDAO.get(id);
+		RidePoint ridePoint4 = ridePointDAO.getRidePointOfRide(id,2);
+		ridePoint3.set_id("3");
+		ridePoint4.set_id("4");
+		System.out.println(jsonUtil.getJson(ridePoint3));
+		System.out.println(jsonUtil.getJson(ridePoint4));
 		
-		ridePoint1.setSequence(2);
+		Set<RidePoint> ridePoints = new HashSet<>();
+		ridePoints.add(ridePoint1);
+		ridePoints.add(ridePoint1);
+		ridePoints.add(ridePoint2);
+		ridePoints.add(ridePoint2);
+		
+		
+		System.out.println(ridePoints);
+		
+/*		ridePoint1.setSequence(2);
 		ridePointDAO.update(ridePoint1);
 		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d yyyy hh:mm a");
@@ -47,7 +68,7 @@ public class RidePointTest {
 		System.out.println("zonedDateTime in UTC: " + zonedDateTime.format(formatter));
 		System.out.println("zonedDateTime in IST: " + zonedDateTimeIST.format(formatter));
 		
-/*		List<RidePoint> ridePoints = ridePointDAO.getAll();
+		List<RidePoint> ridePoints = ridePointDAO.getAll();
 		FeatureCollection featureCollection = new FeatureCollection();
 		JSONUtil<FeatureCollection> jsonUtilFeatureCollection = new JSONUtil<>(FeatureCollection.class);
 		for (RidePoint ridePoint2 : ridePoints) {

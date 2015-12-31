@@ -1,7 +1,10 @@
 package com.digitusrevolution.rideshare.ride;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.logging.log4j.LogManager;
@@ -55,15 +58,35 @@ public class RideSearchTest {
 		RideRequest rideRequest = rideRequestDO.get(30);
 		
 		RidePointDAO ridePointDAO = new RidePointDAO();
-		double maxDistance = 10000;
+		double maxDistance = 100000;
 		double minDistance = 0;
 		
 		List<RidePoint> ridePoints = ridePointDAO.getAllRidePointNearGivenPoint(rideRequest.getPickupPoint().getPoint(), maxDistance, minDistance);
-		Collection<RidePoint> ridePointsCollection = new TreeSet<>();
-		
+		Set<RidePoint> ridePointsSet = new HashSet<>();
+		List<RidePoint> ridePointsSorted = new LinkedList<>();
+
 		for (RidePoint ridePoint : ridePoints) {
+			boolean status = ridePointsSet.add(ridePoint);
+			if (status){
+				logger.debug("****"+status+","+ridePoint.toString());
+				ridePointsSorted.add(ridePoint);
+			} else {
+				//logger.debug(status+","+ridePoint.toString());				
+			}
+
+		}
+		
+		logger.debug("Total Ride points:"+ridePoints.size());
+		logger.debug("Total Closest Ride points:"+ridePointsSet.size());
+		for (RidePoint ridePoint : ridePointsSet) {
 			logger.debug(ridePoint.toString());
 		}
+		int i = 0;
+		for (RidePoint ridePoint : ridePointsSorted) {
+			logger.debug("["+i+"]"+ridePoint.toString());
+			i++;
+		}
+		
 	}
 	
 

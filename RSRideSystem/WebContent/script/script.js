@@ -325,7 +325,7 @@ $("#rideOffer").click(function(){
 		console.log("Request Successfull: Got Ride Object");
 		ride.startTime = dateTimeLocalWithTimezone;
 		ride.startPoint.point.coordinates[0] = startLatLng[1];
-		ride.startPoint.point.coordinates[1] = startLatLng[0];		
+		ride.startPoint.point.coordinates[1] = startLatLng[0];
 		ride.endPoint.point.coordinates[0] = endLatLng[1];
 		ride.endPoint.point.coordinates[1] = endLatLng[0];
 		console.log(ride);

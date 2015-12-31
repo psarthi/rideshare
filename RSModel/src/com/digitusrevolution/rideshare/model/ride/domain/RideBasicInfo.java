@@ -22,4 +22,19 @@ public class RideBasicInfo {
 	public String toString() {
 		return "[id,datetime]:"+id+","+dateTime;
 	}
+	
+	//In case id is changed to long, then use Long.hashcode()
+	@Override
+	public int hashCode() {
+		return id;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof RideBasicInfo){
+			RideBasicInfo rideBasicInfo = (RideBasicInfo) obj;
+			return (this.id == rideBasicInfo.id);			
+		}
+		return false;
+	}
 }

@@ -60,7 +60,7 @@ public class RidePointDAO{
 		return ridePoint;
 	}
 	
-	public RidePoint get(String _id, int rideId) {
+	public RidePoint getRidePointOfRide(String _id, int rideId) {
 		Document document = collection.find(eq("_id", _id)).first();
 		String json = document.toJson();
 		logger.debug(json);
@@ -80,7 +80,7 @@ public class RidePointDAO{
 				logger.debug("Matched Ride Id, so not removing:" + id);
 			}
 		}	
-		logger.debug("Final RidebasicInfo list:"+ridesBasicInfo.toString());
+		logger.debug("Final Ride:"+ridePoint.toString());
 		return ridePoint;
 	}
 
@@ -114,6 +114,7 @@ public class RidePointDAO{
 	}
 	
 	public List<RidePoint> getAllRidePointNearGivenPoint(Point point, double maxDistance, double minDistance){
+		logger.debug("Given Point:"+point.toString());
 		Position coordinate = new Position(point.getCoordinates());
 		com.mongodb.client.model.geojson.Point givenPoint = new com.mongodb.client.model.geojson.Point(coordinate);
 		MongoCursor<Document> cursor = collection.find(nearSphere("point", givenPoint, maxDistance, minDistance)).iterator();
@@ -125,7 +126,7 @@ public class RidePointDAO{
 		try {
 			while (cursor.hasNext()){
 				String json = cursor.next().toJson();
-				logger.debug(json);
+				logger.trace(json);
 				RidePoint ridePoint = jsonUtil.getModel(json);
 				ridePoints.add(ridePoint);
 			}
@@ -140,7 +141,7 @@ public class RidePointDAO{
 		try {
 			while (cursor.hasNext()){
 				String json = cursor.next().toJson();
-				logger.debug(json);
+				logger.trace(json);
 				RidePoint ridePoint = jsonUtil.getModel(json);
 				ridePoint = getSpecificRidePoint(ridePoint, rideId);
 				ridePoints.add(ridePoint);

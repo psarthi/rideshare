@@ -113,8 +113,8 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	}
 	
 	private void getRidePoints(){
-		RidePoint startPoint = ridePointDAO.get(ride.getStartPoint().get_id(),ride.getId());
-		RidePoint endPoint = ridePointDAO.get(ride.getEndPoint().get_id(), ride.getId());		
+		RidePoint startPoint = ridePointDAO.getRidePointOfRide(ride.getStartPoint().get_id(),ride.getId());
+		RidePoint endPoint = ridePointDAO.getRidePointOfRide(ride.getEndPoint().get_id(), ride.getId());		
 		ride.setStartPoint(startPoint);
 		ride.setEndPoint(endPoint);			
 	}
@@ -133,17 +133,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		route.setRidePoints(ridePoints);
 		ride.setRoute(route);
 	}
-	
-	public List<Ride> searchRides(RideRequest rideRequest){
 
-		return null;
-	}
-
-	public List<Ride> getUpcomingRides(int userId){
-		
-		return null;
-	}
-	
 	/*
 	 * Purpose - Goal of this function is to create ride as well as all the associated ride points in database
 	 * 
@@ -157,6 +147,11 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	 * - Get all the ride point and generate the primary key for them for each rides (In case of recurring rides - TBD)
 	 * - Update all the ride point in the database 
 	 * - On success, update the ride with start point and end point primary key  
+	 * 
+	 * TBD -
+	 *
+	 * 1. Should we store starttime in Ride DB or it should be part of MongoDB startPoint
+	 *    - Need to think on how to avoid multiple transaction between DBs for basic purpose as its two different DBs
 	 * 
 	 */
 	public int offerRide(Ride ride, GoogleDirection direction){
@@ -214,4 +209,25 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 			return id;
 		}
 	}
+	
+	
+	/*
+	 * High level logic -
+	 * 
+	 * - Get all ride points and for each ride points, find out all the ride request point within a specific distance
+	 * - Other option, would be create a geometry which is square across all points and pass a geometry collection to get all the ride request point within that
+	 * - Once all ride request has been recieved, for each ride request point, check if specific ride is a valid ride by calling standard ride search function
+	 * - Finally, you will get valid ride requests, then for each of them do further validation e.g. seat etc. 
+	 * 
+	 */
+	public List<RideRequest> searchRideRequests(Ride ride){
+
+		return null;
+	}
+
+	public List<Ride> getUpcomingRides(int userId){
+		
+		return null;
+	}
+	
 }

@@ -18,10 +18,9 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
-import com.digitusrevolution.rideshare.model.ride.domain.Location;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
-import com.digitusrevolution.rideshare.model.ride.domain.Route;
+import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
@@ -259,8 +258,8 @@ public class RideDataLoader {
 			Point pickupPoint = pointDO.getCordinates("RMZ Ecospace Bangalore"); 			
 			Point dropPoint = pointDO.getCordinates("NPS HSR Bangalore"); 
 			
-			Location pickupLocation = new Location();
-			Location dropLocation = new Location();
+			RideRequestPoint pickupLocation = new RideRequestPoint();
+			RideRequestPoint dropLocation = new RideRequestPoint();
 			pickupLocation.setPoint(pickupPoint);
 			dropLocation.setPoint(dropPoint);
 			rideRequest.setPickupPoint(pickupLocation);

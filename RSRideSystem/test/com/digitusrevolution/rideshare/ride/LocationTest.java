@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.digitusrevolution.rideshare.common.db.LocationDAO;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
-import com.digitusrevolution.rideshare.model.ride.domain.Location;
+import com.digitusrevolution.rideshare.model.common.Location;
 
 public class LocationTest {
 	

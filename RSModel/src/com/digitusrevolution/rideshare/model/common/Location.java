@@ -1,4 +1,6 @@
-package com.digitusrevolution.rideshare.model.ride.domain;
+package com.digitusrevolution.rideshare.model.common;
+
+import com.digitusrevolution.rideshare.model.ride.domain.Point;
 
 public class Location {
 	
