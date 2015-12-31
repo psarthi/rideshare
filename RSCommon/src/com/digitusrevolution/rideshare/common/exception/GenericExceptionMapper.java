@@ -26,9 +26,11 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 		ErrorMessage errorMessage = null;
 		int errorCode = Status.INTERNAL_SERVER_ERROR.getStatusCode();
 		if (exception.getCause()!=null){
+			exception.printStackTrace();
 			errorMessage = new ErrorMessage(errorCode, exception.getClass().getSimpleName(), 
 											exception.getMessage(), exception.getCause().toString());
 		} else {
+			exception.printStackTrace();
 			errorMessage = new ErrorMessage(errorCode, exception.getClass().getSimpleName(), exception.getMessage());			
 		}
 		Response response = Response.status(errorCode).entity(errorMessage).build();

@@ -4,6 +4,8 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.InternalServerErrorException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,6 +38,9 @@ public class RouteDO{
 		String json = RESTClientUtil.getDirection(startPoint.getLatitude(),startPoint.getLongitude(), endPoint.getLatitude(), endPoint.getLongitude(),departureTimeUTC);
 		JSONUtil<GoogleDirection> jsonUtilGoogleDirection = new JSONUtil<>(GoogleDirection.class);
 		GoogleDirection googleDirection = jsonUtilGoogleDirection.getModel(json);
+		if(!googleDirection.getStatus().equals("OK")){
+			throw new InternalServerErrorException("Exception in getting data from Google Direction Service:[Status,Error Message]"+googleDirection.getStatus()+","+googleDirection.getError_message());
+		}
 		return googleDirection;
 	}
 	
@@ -43,6 +48,9 @@ public class RouteDO{
 		String json = RESTClientUtil.getDistance(startPoint.getLatitude(),startPoint.getLongitude(), endPoint.getLatitude(), endPoint.getLongitude(),departureTimeUTC);
 		JSONUtil<GoogleDistance> jsonUtilGoogleDirection = new JSONUtil<>(GoogleDistance.class);
 		GoogleDistance googleDistance = jsonUtilGoogleDirection.getModel(json);
+		if(!googleDistance.getStatus().equals("OK")){
+			throw new InternalServerErrorException("Exception in getting data from Google Distance Service:[Status,Error Message]"+googleDistance.getStatus()+","+googleDistance.getError_message());
+		}
 		return googleDistance;
 	}
 

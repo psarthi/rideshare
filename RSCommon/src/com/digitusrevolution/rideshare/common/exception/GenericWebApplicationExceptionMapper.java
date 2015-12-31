@@ -15,9 +15,11 @@ public class GenericWebApplicationExceptionMapper implements ExceptionMapper<Web
 		
 		ErrorMessage errorMessage = null;
 		if (exception.getCause()!=null){
+			exception.printStackTrace();
 			errorMessage = new ErrorMessage(exception.getResponse().getStatus(), exception.getClass().getSimpleName(), 
 											exception.getMessage(), exception.getCause().toString());
 		} else {
+			exception.printStackTrace();
 			errorMessage = new ErrorMessage(exception.getResponse().getStatus(), exception.getClass().getSimpleName(), exception.getMessage());			
 		}
 		Response response = Response.status(exception.getResponse().getStatus()).entity(errorMessage).build();
