@@ -35,6 +35,8 @@ public class RideRequest {
 	private Ride acceptedRide;
 	private RidePoint ridePickupPoint = new RidePoint();
 	private RidePoint rideDropPoint = new RidePoint();
+	private int travelTime;
+	private int travelDistance;
 	
 	public int getId() {
 		return id;
@@ -156,6 +158,17 @@ public class RideRequest {
 	public void setRideDropPoint(RidePoint rideDropPoint) {
 		this.rideDropPoint = rideDropPoint;
 	}
+	public int getTravelTime() {
+		return travelTime;
+	}
+	public void setTravelTime(int travelTime) {
+		this.travelTime = travelTime;
+	}
+	public int getTravelDistance() {
+		return travelDistance;
+	}
+	public void setTravelDistance(int travelDistance) {
+		this.travelDistance = travelDistance;
+	}
 
-	
 }

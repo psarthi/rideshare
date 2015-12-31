@@ -77,6 +77,18 @@ public class RESTClientUtil {
 		return json;
 	}
 	
+	public static String getDistance(Double originLat, Double originLng, Double destinationLat, Double destinationLng){
+
+		RESTClientImpl<String> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_GOOGLE_DISTANCE_URL");
+		String key = PropertyReader.getInstance().getProperty("GOOGLE_SERVER_KEY");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(originLat,originLng,destinationLat,destinationLng,key);
+		Response response = restClientUtil.get(uri);
+		String json = response.readEntity(String.class);
+		return json;
+	}
+	
 	public static VehicleCategory getVehicleCategory(int id){
 
 		RESTClientImpl<VehicleCategory> restClientUtil = new RESTClientImpl<>();

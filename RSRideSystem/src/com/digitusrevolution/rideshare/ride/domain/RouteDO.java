@@ -19,6 +19,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.ride.dto.google.GoogleDirection;
+import com.digitusrevolution.rideshare.ride.dto.google.GoogleDistance;
 import com.digitusrevolution.rideshare.ride.dto.google.Leg;
 import com.digitusrevolution.rideshare.ride.dto.google.Step;
 
@@ -37,6 +38,14 @@ public class RouteDO{
 		GoogleDirection googleDirection = jsonUtilGoogleDirection.getModel(json);
 		return googleDirection;
 	}
+	
+	public GoogleDistance getDistance(Point startPoint, Point endPoint){
+		String json = RESTClientUtil.getDistance(startPoint.getLatitude(),startPoint.getLongitude(), endPoint.getLatitude(), endPoint.getLongitude());
+		JSONUtil<GoogleDistance> jsonUtilGoogleDirection = new JSONUtil<>(GoogleDistance.class);
+		GoogleDistance googleDistance = jsonUtilGoogleDirection.getModel(json);
+		return googleDistance;
+	}
+
 
 	/*
 	 * Purpose - This function is responsible for finding out all points which ride 

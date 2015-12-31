@@ -27,6 +27,8 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
+import com.digitusrevolution.rideshare.ride.domain.RouteDO;
+import com.digitusrevolution.rideshare.ride.dto.google.GoogleDistance;
 
 public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	
@@ -123,6 +125,14 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	}
 
 	public int requestRide(RideRequest rideRequest){
+		//Setting the travel time and distance, which would be used for searching ride points by date/time as well as sorting the ride request by distance
+		RouteDO routeDO = new RouteDO();
+		GoogleDistance googleDistance = routeDO.getDistance(rideRequest.getPickupPoint().getPoint(), rideRequest.getDropPoint().getPoint());	
+		int travelDistance = googleDistance.getRows().get(0).getElements().get(0).getDistance().getValue();
+		int travelTime = googleDistance.getRows().get(0).getElements().get(0).getDuration().getValue();
+		rideRequest.setTravelDistance(travelDistance);
+		rideRequest.setTravelTime(travelTime);
+		
 		ZonedDateTime pickupTimeUTC = rideRequest.getPickupTime().withZoneSameInstant(ZoneOffset.UTC);
 		rideRequest.setPickupTime(pickupTimeUTC);
 		rideRequest.setStatus("unfulfilled");
@@ -143,9 +153,11 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		
 		Point pickupPoint = rideRequest.getPickupPoint().getPoint();
 		RidePointDAO ridePointDAO = new RidePointDAO();
+		logger.debug("[Pickup Point]:"+pickupPoint.toString());
 		//Get all rides around radius of pickup variation from pickup point
 		List<RidePoint> pickupRidePoints = ridePointDAO.getAllRidePointNearGivenPoint(pickupPoint, rideRequest.getPickupPointVariation(), 0);
 		Point dropPoint = rideRequest.getDropPoint().getPoint();
+		logger.debug("[Drop Point]:"+dropPoint.toString());
 		List<RidePoint> dropRidePoints = ridePointDAO.getAllRidePointNearGivenPoint(dropPoint, rideRequest.getDropPointVariation(), 0);
 		Set<RidePoint> pickupRidePointsSet = new HashSet<>(pickupRidePoints);
 		Set<RidePoint> dropRidePointsSet = new HashSet<>(dropRidePoints);

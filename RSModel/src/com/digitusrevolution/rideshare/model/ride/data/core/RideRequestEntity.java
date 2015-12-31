@@ -60,6 +60,8 @@ public class RideRequestEntity {
 	//We need to store just ridePointId in Hibernate as ridepoint is getting stored in MonogoDB
 	private String ridePickupPointId;
 	private String rideDropPointId;
+	private int travelTime;
+	private int travelDistance;
 	
 	public int getId() {
 		return id;
@@ -180,6 +182,18 @@ public class RideRequestEntity {
 	}
 	public void setRideDropPointId(String rideDropPointId) {
 		this.rideDropPointId = rideDropPointId;
+	}
+	public int getTravelTime() {
+		return travelTime;
+	}
+	public void setTravelTime(int travelTime) {
+		this.travelTime = travelTime;
+	}
+	public int getTravelDistance() {
+		return travelDistance;
+	}
+	public void setTravelDistance(int travelDistance) {
+		this.travelDistance = travelDistance;
 	}
 
 }
