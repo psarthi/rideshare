@@ -7,6 +7,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -96,8 +97,9 @@ public class RideDataLoader {
 			//Trust Category needs to be loaded only once
 //			dataLoader.loadTrustCategory();
 			
-			dataLoader.loadRide();
-			dataLoader.loadRideRequest();
+//			dataLoader.loadRide();
+//			dataLoader.loadRideRequest();
+			dataLoader.cleanup();
 
 //			dataLoader.test();
 			
@@ -295,4 +297,12 @@ public class RideDataLoader {
 						
 		}
 		
+		public void cleanup(){
+			
+			RideRequestDO rideRequestDO = new RideRequestDO();
+			List<RideRequest> rideRequests = rideRequestDO.getAll();
+			for (RideRequest rideRequest : rideRequests) {
+				rideRequestDO.delete(rideRequest);
+			}			
+		}
 }

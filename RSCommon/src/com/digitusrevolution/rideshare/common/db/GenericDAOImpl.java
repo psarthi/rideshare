@@ -43,7 +43,14 @@ public class GenericDAOImpl<T,ID extends Serializable> implements GenericDAO<T,I
 	@Override
 	public void delete(T entity) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		session.delete(entity);
+		/*
+		 * This is done to avoid NonUnique exception thrown by Hibernate, when it finds two objects with the same Primary key,
+		 * So in case, you first fetch the data based on primary key and then send the data for deletion, you get two objects 
+		 * with same primary key in the session, so by merging the object you get one object and then delete function would work
+		 * 
+		 */
+		Object mergedEntity = session.merge(entity);
+		session.delete(mergedEntity);
 	}
 
 	@SuppressWarnings("unchecked")

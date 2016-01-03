@@ -85,7 +85,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	}
 
 	@Override
-	public void delete(RideRequest model) {
+	public void delete(RideRequest rideRequest) {
 		setRideRequest(rideRequest);
 		rideRequestDAO.delete(rideRequestEntity);
 	}
@@ -124,16 +124,25 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		return rideRequest;
 	}
 
+	/*
+	 * 
+	 * TBD - 
+	 * 
+	 * 1. What needs to be done when riderequest gets deleted in terms of its riderequest point or its updated
+	 */
 	public int requestRide(RideRequest rideRequest){
 		//Setting the travel time and distance, which would be used for searching ride points by date/time as well as sorting the ride request by distance
 		ZonedDateTime pickupTimeUTC = rideRequest.getPickupTime().withZoneSameInstant(ZoneOffset.UTC);
+		//Set pickup time in Riderequest pickup point
+		rideRequest.getPickupPoint().setDateTime(pickupTimeUTC);
 		RouteDO routeDO = new RouteDO();
 		GoogleDistance googleDistance = routeDO.getDistance(rideRequest.getPickupPoint().getPoint(), rideRequest.getDropPoint().getPoint(),pickupTimeUTC);	
 		int travelDistance = googleDistance.getRows().get(0).getElements().get(0).getDistance().getValue();
 		int travelTime = googleDistance.getRows().get(0).getElements().get(0).getDuration().getValue();
 		rideRequest.setTravelDistance(travelDistance);
 		rideRequest.setTravelTime(travelTime);
-		
+		//Set Drop time in Riderequest drop point
+		rideRequest.getDropPoint().setDateTime(pickupTimeUTC.plusSeconds(travelTime));
 
 		rideRequest.setPickupTime(pickupTimeUTC);
 		rideRequest.setStatus("unfulfilled");
@@ -160,12 +169,18 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		Point dropPoint = rideRequest.getDropPoint().getPoint();
 		logger.debug("[Drop Point]:"+dropPoint.toString());
 		List<RidePoint> dropRidePoints = ridePointDAO.getAllRidePointNearGivenPoint(dropPoint, rideRequest.getDropPointVariation(), 0);
+		logger.debug("[Pickup Point count]:"+pickupRidePoints.size());
+		logger.debug("[Drop Point count]:"+dropRidePoints.size());
 		Set<RidePoint> pickupRidePointsSet = new HashSet<>(pickupRidePoints);
 		Set<RidePoint> dropRidePointsSet = new HashSet<>(dropRidePoints);
+		logger.debug("[Unique Pickup Ride count]:"+pickupRidePointsSet.size());
+		logger.debug("[Unique Drop Ride count]:"+dropRidePointsSet.size());
 		//All ride pickup points which has matching drop points from the same ride
 		pickupRidePointsSet.retainAll(dropRidePointsSet);
 		//All ride drop points which has matching pickup points from the same ride
 		dropRidePointsSet.retainAll(pickupRidePointsSet);
+		logger.debug("[Unique Pickup Valid Ride count]:"+pickupRidePointsSet.size());
+		logger.debug("[Unique Drop Valid Ride count]:"+dropRidePointsSet.size());
 		Iterator<RidePoint> pickupIterator = pickupRidePointsSet.iterator();
 		Iterator<RidePoint> dropIterator = dropRidePointsSet.iterator();
 		Map<RidePoint, RidePoint> dropMap = new HashMap<>();
@@ -188,6 +203,9 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 				logger.debug("[Drop Ride Point]:" + dropRidePoint.toString());
 			}
 		}
+		
+		logger.debug("[Unique Pickup Final Valid Ride count]:"+pickupRidePointsSet.size());
+		logger.debug("[Unique Drop Valid Ride count]:"+dropMap.size());
 
 		return null;
 	}

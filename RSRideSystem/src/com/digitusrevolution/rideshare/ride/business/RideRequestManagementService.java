@@ -15,10 +15,8 @@ import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 import com.digitusrevolution.rideshare.ride.domain.TrustCategoryDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
-import com.digitusrevolution.rideshare.ride.dto.google.GoogleDistance;
 
 public class RideRequestManagementService {
 	
@@ -46,10 +44,10 @@ public class RideRequestManagementService {
 			trustNetwork.getTrustCategories().add(trustCategory);
 			rideRequest.setTrustNetwork(trustNetwork);
 			
-			rideRequest.setPickupPointVariation(5000);
+			rideRequest.setPickupPointVariation(500);
 			LocalTime timeVariation = LocalTime.of(0, 30);
 			rideRequest.setPickupTimeVariation(timeVariation);
-			rideRequest.setDropPointVariation(5000);
+			rideRequest.setDropPointVariation(500);
 			
 			//End
 			

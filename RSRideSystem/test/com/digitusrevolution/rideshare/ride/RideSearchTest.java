@@ -14,6 +14,7 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
+import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
@@ -30,7 +31,7 @@ public class RideSearchTest {
 			transation = session.beginTransaction();
 			
 			RideSearchTest rideSearchTest = new RideSearchTest();
-			rideSearchTest.searchRide();
+			rideSearchTest.searchRideTest();
 			transation.commit();
 
 			/*
@@ -55,23 +56,23 @@ public class RideSearchTest {
 	public void searchRide(){
 		
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		RideRequest rideRequest = rideRequestDO.get(1);
+		RideRequest rideRequest = rideRequestDO.get(6);
 		rideRequestDO.searchRides(rideRequest);
-		rideRequest = rideRequestDO.get(2);
-		rideRequestDO.searchRides(rideRequest);
+//		rideRequest = rideRequestDO.get(2);
+//		rideRequestDO.searchRides(rideRequest);
 		
 	}
 	
 	public void searchRideTest(){
 		
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		RideRequest rideRequest = rideRequestDO.get(30);
+		RideRequest rideRequest = rideRequestDO.get(33);
 		
 		RidePointDAO ridePointDAO = new RidePointDAO();
-		double maxDistance = 100000;
+		double maxDistance = 100000000;
 		double minDistance = 0;
 		
-		List<RidePoint> ridePoints = ridePointDAO.getAllRidePointNearGivenPoint(rideRequest.getPickupPoint().getPoint(), maxDistance, minDistance);
+		List<RidePoint> ridePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint(), maxDistance, minDistance);
 		Set<RidePoint> ridePointsSet = new HashSet<>();
 		List<RidePoint> ridePointsSorted = new LinkedList<>();
 

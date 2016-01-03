@@ -152,6 +152,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	 *
 	 * 1. Should we store starttime in Ride DB or it should be part of MongoDB startPoint
 	 *    - Need to think on how to avoid multiple transaction between DBs for basic purpose as its two different DBs
+	 * 2. What needs to be done when ride gets deleted in terms of its ride point or its updated
 	 * 
 	 */
 	public int offerRide(Ride ride, GoogleDirection direction){

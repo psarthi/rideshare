@@ -15,6 +15,7 @@ import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
+import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -101,33 +102,76 @@ public class RidePointDAO{
 		
 	public List<RidePoint> getAll() {
 		MongoCursor<Document> cursor = collection.find().iterator();
-		return getAllRidePointFromBSONDocuments(cursor);
+		return getAllRidePointFromDocuments(cursor);
 	}
 
 	public List<RidePoint> getAllRidePointsOfRide(int rideId) {
 		MongoCursor<Document> cursor = collection.find(eq("rides.id", rideId)).iterator();
-		return getAllSpecificRidePointFromBSONDocuments(cursor, rideId);
+		return getAllSpecificRidePointFromDocuments(cursor, rideId);
 	}
 	
 	public List<RidePoint> getAllRidePointWithinGivenGeometry(Geometry geometry){
 		MongoCursor<Document> cursor = collection.find(geoWithin("point", geometry)).iterator();
-		return getAllRidePointFromBSONDocuments(cursor);
+		return getAllRidePointFromDocuments(cursor);
 	}
 	
-	public List<RidePoint> getAllRidePointNearGivenPoint(Point point, double maxDistance, double minDistance){
-		logger.debug("Given Point:"+point.toString());
-		Position coordinate = new Position(point.getCoordinates());
-		com.mongodb.client.model.geojson.Point givenPoint = new com.mongodb.client.model.geojson.Point(coordinate);
-		MongoCursor<Document> cursor = collection.find(nearSphere("point", givenPoint, maxDistance, minDistance)).iterator();
-		return getAllRidePointFromBSONDocuments(cursor);
+	public List<RidePoint> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, double maxDistance, double minDistance){
+		logger.debug("Ride Request Point:"+rideRequestPoint.getPoint().toString());
+		
+		Document query = new Document("rides.dateTime", new Document("$gte", rideRequestPoint.getDateTime().minusMinutes(30).toEpochSecond())
+									.append("$lte", rideRequestPoint.getDateTime().plusMinutes(30).toEpochSecond()));
+		
+		Point point = rideRequestPoint.getPoint();
+		JSONUtil<Point> jsonUtilPoint = new JSONUtil<>(Point.class);
+		String pointJson = jsonUtilPoint.getJson(point);
+		logger.debug(pointJson);
+		
+		Document geoNear = new Document("$geoNear",new Document("spherical",true)
+										.append("limit", 100000)
+										.append("maxDistance", maxDistance)
+										.append("minDistance", minDistance)
+										.append("query", query)
+										.append("near", new Document(Document.parse(pointJson)))
+										.append("distanceField", "distance"));
+		
+		Document group = new Document("$group", new Document("_id","$rides.id")
+									.append("ridepoint", new Document("$first", "$$CURRENT")));
+		
+		Document sort = new Document("$sort", new Document("ridepoint.distance", 1));
+		
+		logger.debug(geoNear.toJson());
+		logger.debug(group.toJson());
+		logger.debug(sort.toJson());
+		
+		List<Document> pipeline = new ArrayList<>();
+		pipeline.add(geoNear);
+		pipeline.add(group);
+		pipeline.add(sort);
+		
+		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
+		int count =0;
+		try {
+			while (cursor.hasNext()){
+				Document document = cursor.next();
+				String json = document.toJson();
+				logger.debug(json);
+				count++;
+			}
+		} finally{
+			cursor.close();
+		}
+		logger.debug("Total Count" + count);
+		
+		return null;
 	}
 	
-	private List<RidePoint> getAllRidePointFromBSONDocuments(MongoCursor<Document> cursor){
+	private List<RidePoint> getAllRidePointFromDocuments(MongoCursor<Document> cursor){
 		List<RidePoint> ridePoints = new ArrayList<>();
 		try {
 			while (cursor.hasNext()){
-				String json = cursor.next().toJson();
-				logger.trace(json);
+				Document document = cursor.next();
+				String json = document.toJson();
+				logger.debug(json);
 				RidePoint ridePoint = jsonUtil.getModel(json);
 				ridePoints.add(ridePoint);
 			}
@@ -137,11 +181,12 @@ public class RidePointDAO{
 		return ridePoints;
 	}
 	
-	private List<RidePoint> getAllSpecificRidePointFromBSONDocuments(MongoCursor<Document> cursor, int rideId){
+	private List<RidePoint> getAllSpecificRidePointFromDocuments(MongoCursor<Document> cursor, int rideId){
 		List<RidePoint> ridePoints = new ArrayList<>();
 		try {
 			while (cursor.hasNext()){
-				String json = cursor.next().toJson();
+				Document document = cursor.next();
+				String json = document.toJson();
 				logger.trace(json);
 				RidePoint ridePoint = jsonUtil.getModel(json);
 				ridePoint = getSpecificRidePoint(ridePoint, rideId);
@@ -152,6 +197,5 @@ public class RidePointDAO{
 		}
 		return ridePoints;
 	}
-
 
 }
