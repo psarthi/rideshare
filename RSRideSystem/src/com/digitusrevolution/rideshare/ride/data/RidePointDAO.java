@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.ride.data;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,7 +15,9 @@ import org.bson.types.ObjectId;
 import org.dom4j.swing.DocumentTreeModel;
 
 import com.digitusrevolution.rideshare.common.db.MongoDBUtil;
+import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
@@ -119,12 +122,16 @@ public class RidePointDAO{
 		MongoCursor<Document> cursor = collection.find(geoWithin("point", geometry)).iterator();
 		return getAllRidePointFromDocuments(cursor);
 	}
-	
-	public Map<Integer, RidePointDTO> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, double maxDistance, double minDistance){
-		logger.debug("Ride Request Point:"+rideRequestPoint.getPoint().toString());
+	//Reason behind this function in this class instead of riderequestDAO as collection used is ride_point and not rideRequest_point
+	public Map<Integer, RidePointDTO> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, double maxDistance, 
+																			double minDistance, LocalTime timeVariation){
 		
-		Document query = new Document("rides.dateTime", new Document("$gte", rideRequestPoint.getDateTime().minusMinutes(30).toEpochSecond())
-									.append("$lte", rideRequestPoint.getDateTime().plusMinutes(30).toEpochSecond()));
+		logger.debug("Ride Request Point:"+rideRequestPoint.getPoint().toString());	
+		long variationInSeconds = DateTimeUtil.getSeconds(timeVariation);
+		logger.debug("Time Variation in Seconds:" + variationInSeconds);
+		
+		Document query = new Document("rides.dateTime", new Document("$gte", rideRequestPoint.getDateTime().minusSeconds(variationInSeconds).toEpochSecond())
+									.append("$lte", rideRequestPoint.getDateTime().plusSeconds(variationInSeconds).toEpochSecond()));
 		
 		Point point = rideRequestPoint.getPoint();
 		JSONUtil<Point> jsonUtilPoint = new JSONUtil<>(Point.class);
@@ -132,7 +139,7 @@ public class RidePointDAO{
 		logger.debug(pointJson);
 		
 		Document geoNear = new Document("$geoNear",new Document("spherical",true)
-										.append("limit", 100000)
+										.append("limit", PropertyReader.getInstance().getProperty("RIDE_SEARCH_RESULT_LIMIT"))
 										.append("maxDistance", maxDistance)
 										.append("minDistance", minDistance)
 										.append("query", query)

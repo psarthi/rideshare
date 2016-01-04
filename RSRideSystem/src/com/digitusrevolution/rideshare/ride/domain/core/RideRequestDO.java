@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.ride.domain.core;
 
+import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
@@ -163,9 +165,15 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	public List<Ride> searchRides(RideRequest rideRequest){		
 		
 		RidePointDAO ridePointDAO = new RidePointDAO();
+		double minDistance = Double.parseDouble(PropertyReader.getInstance().getProperty("RIDE_SEARCH_MIN_DISTANCE"));
 		//Get all rides around radius of pickup variation from pickup point
-		Map<Integer, RidePointDTO> pickupRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint(), rideRequest.getPickupPointVariation(), 0);
-		Map<Integer, RidePointDTO> dropRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getDropPoint(), rideRequest.getDropPointVariation(), 0);
+		Map<Integer, RidePointDTO> pickupRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint(), 
+													  			   rideRequest.getPickupPointVariation(), minDistance,
+													  			   rideRequest.getPickupTimeVariation());
+		long dropTimeBuffer = Long.parseLong(PropertyReader.getInstance().getProperty("DROP_TIME_BUFFER"));
+		LocalTime dropTimeVariation = rideRequest.getPickupTimeVariation().plusSeconds(dropTimeBuffer);
+		Map<Integer, RidePointDTO> dropRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getDropPoint(), 
+																 rideRequest.getDropPointVariation(), minDistance, dropTimeVariation);
 		logger.debug("[Matching Pickup Rides: Based on Distance]:"+pickupRidePoints.keySet());
 		logger.debug("[Matching Drop Rides: Based on Distance]:"+dropRidePoints.keySet());
 				

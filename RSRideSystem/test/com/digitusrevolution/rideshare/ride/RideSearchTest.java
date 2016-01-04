@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.ride;
 
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -72,8 +73,9 @@ public class RideSearchTest {
 		RidePointDAO ridePointDAO = new RidePointDAO();
 		double maxDistance = 100000000;
 		double minDistance = 0;
+		LocalTime localTime = LocalTime.of(0, 30);
 		
-		ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint(), maxDistance, minDistance);
+		ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint(), maxDistance, minDistance,localTime);
 		Set<RidePoint> ridePointsSet = new HashSet<>();
 		List<RidePoint> ridePointsSorted = new LinkedList<>();
 
