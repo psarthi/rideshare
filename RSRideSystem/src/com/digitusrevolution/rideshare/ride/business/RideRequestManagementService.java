@@ -44,10 +44,10 @@ public class RideRequestManagementService {
 			trustNetwork.getTrustCategories().add(trustCategory);
 			rideRequest.setTrustNetwork(trustNetwork);
 			
-			rideRequest.setPickupPointVariation(500);
+			rideRequest.setPickupPointVariation(2000);
 			LocalTime timeVariation = LocalTime.of(0, 30);
 			rideRequest.setPickupTimeVariation(timeVariation);
-			rideRequest.setDropPointVariation(500);
+			rideRequest.setDropPointVariation(2000);
 			
 			//End
 			

@@ -28,6 +28,7 @@ import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
+import com.digitusrevolution.rideshare.ride.dto.RidePointDTO;
 import com.digitusrevolution.rideshare.ride.dto.google.GoogleDistance;
 
 public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
@@ -161,52 +162,32 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	
 	public List<Ride> searchRides(RideRequest rideRequest){		
 		
-		Point pickupPoint = rideRequest.getPickupPoint().getPoint();
 		RidePointDAO ridePointDAO = new RidePointDAO();
-		logger.debug("[Pickup Point]:"+pickupPoint.toString());
 		//Get all rides around radius of pickup variation from pickup point
-		List<RidePoint> pickupRidePoints = ridePointDAO.getAllRidePointNearGivenPoint(pickupPoint, rideRequest.getPickupPointVariation(), 0);
-		Point dropPoint = rideRequest.getDropPoint().getPoint();
-		logger.debug("[Drop Point]:"+dropPoint.toString());
-		List<RidePoint> dropRidePoints = ridePointDAO.getAllRidePointNearGivenPoint(dropPoint, rideRequest.getDropPointVariation(), 0);
-		logger.debug("[Pickup Point count]:"+pickupRidePoints.size());
-		logger.debug("[Drop Point count]:"+dropRidePoints.size());
-		Set<RidePoint> pickupRidePointsSet = new HashSet<>(pickupRidePoints);
-		Set<RidePoint> dropRidePointsSet = new HashSet<>(dropRidePoints);
-		logger.debug("[Unique Pickup Ride count]:"+pickupRidePointsSet.size());
-		logger.debug("[Unique Drop Ride count]:"+dropRidePointsSet.size());
-		//All ride pickup points which has matching drop points from the same ride
-		pickupRidePointsSet.retainAll(dropRidePointsSet);
-		//All ride drop points which has matching pickup points from the same ride
-		dropRidePointsSet.retainAll(pickupRidePointsSet);
-		logger.debug("[Unique Pickup Valid Ride count]:"+pickupRidePointsSet.size());
-		logger.debug("[Unique Drop Valid Ride count]:"+dropRidePointsSet.size());
-		Iterator<RidePoint> pickupIterator = pickupRidePointsSet.iterator();
-		Iterator<RidePoint> dropIterator = dropRidePointsSet.iterator();
-		Map<RidePoint, RidePoint> dropMap = new HashMap<>();
-		while (dropIterator.hasNext()){
-			RidePoint ridePoint = dropIterator.next();
-			dropMap.put(ridePoint, ridePoint);
-		}
+		Map<Integer, RidePointDTO> pickupRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint(), rideRequest.getPickupPointVariation(), 0);
+		Map<Integer, RidePointDTO> dropRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getDropPoint(), rideRequest.getDropPointVariation(), 0);
+		logger.debug("[Matching Pickup Rides: Based on Distance]:"+pickupRidePoints.keySet());
+		logger.debug("[Matching Drop Rides: Based on Distance]:"+dropRidePoints.keySet());
+				
+		pickupRidePoints.keySet().retainAll(dropRidePoints.keySet());
+		dropRidePoints.keySet().retainAll(pickupRidePoints.keySet());
+		logger.debug("[Valid Pickup Rides: Based on RideIds]:"+pickupRidePoints.keySet());
+		logger.debug("[Valid Drop Rides: Based on RideIds]:"+dropRidePoints.keySet());
 		
-		while(pickupIterator.hasNext()){
-			RidePoint pickupRidePoint = pickupIterator.next();
-			//This will get the droppoint as "equal" and "hascode" method is based only on ride basic info and not the other details
-			RidePoint dropRidePoint = dropMap.get(pickupRidePoint);
-			if (pickupRidePoint.getSequence() > dropRidePoint.getSequence() || pickupRidePoint.getSequence() == dropRidePoint.getSequence()){
-				//This will remove all ridepoint where drop point comes before pickup point i.e. vehicle going on other direction
-				pickupIterator.remove();
-				dropMap.remove(dropRidePoint);
-			} else {
-				logger.debug("Matching Ride:"+pickupRidePoint.getRidesBasicInfo().get(0).getId());
-				logger.debug("[Pickup Ride Point]:"+pickupRidePoint.toString());
-				logger.debug("[Drop Ride Point]:" + dropRidePoint.toString());
+		Iterator<Integer> iterator = pickupRidePoints.keySet().iterator();
+		
+		while (iterator.hasNext()) {			
+			Integer rideId = iterator.next();
+			if (pickupRidePoints.get(rideId).getRidePoint().getSequence() >= dropRidePoints.get(rideId).getRidePoint().getSequence()){
+				iterator.remove();
 			}
 		}
-		
-		logger.debug("[Unique Pickup Final Valid Ride count]:"+pickupRidePointsSet.size());
-		logger.debug("[Unique Drop Valid Ride count]:"+dropMap.size());
 
+		//Remove invalid ride points again based on sequence analysis above
+		dropRidePoints.keySet().retainAll(pickupRidePoints.keySet());
+		logger.debug("[Valid Pickup Rides: Based on Sequence]:"+pickupRidePoints.keySet());
+		logger.debug("[Valid Drop Rides: Based on Sequence]:"+dropRidePoints.keySet());
+		
 		return null;
 	}
 

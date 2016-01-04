@@ -32,7 +32,7 @@ public class RideSearchTest {
 			transation = session.beginTransaction();
 			
 			RideSearchTest rideSearchTest = new RideSearchTest();
-			rideSearchTest.searchRideTest();
+			rideSearchTest.searchRide();
 			transation.commit();
 
 			/*
@@ -57,7 +57,7 @@ public class RideSearchTest {
 	public void searchRide(){
 		
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		RideRequest rideRequest = rideRequestDO.get(6);
+		RideRequest rideRequest = rideRequestDO.get(37);
 		rideRequestDO.searchRides(rideRequest);
 //		rideRequest = rideRequestDO.get(2);
 //		rideRequestDO.searchRides(rideRequest);

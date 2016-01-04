@@ -19,7 +19,21 @@ public class RidePointDTO {
 	public void setDistance(double distance) {
 		this.distance = distance;
 	}
-	
-	
 
+	//This is required for maps to compare with each other using entrySet. Its not required if we compare maps with keyset
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof RidePointDTO){
+			RidePointDTO ridePointDTO = (RidePointDTO) obj;
+			return this.ridePoint.equals(ridePointDTO.ridePoint);	
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.ridePoint.hashCode();	
+	}
+
+	
 }

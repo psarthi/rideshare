@@ -43,10 +43,9 @@ public class RidePoint{
 	}
 	@Override
 	public String toString(){
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d yyyy hh:mm a");
 		String rides = "";
 		for (RideBasicInfo rideBasicInfo : this.ridesBasicInfo) {
-			rides += rideBasicInfo.getId()+","+rideBasicInfo.getDateTime().format(formatter) +":";
+			rides += rideBasicInfo.toString() +":";
 		}
 		return "[_id:sequence:point:rides]:"+get_id()+":"+getSequence()+":"+getPoint().toString()+":"+rides;
 	}

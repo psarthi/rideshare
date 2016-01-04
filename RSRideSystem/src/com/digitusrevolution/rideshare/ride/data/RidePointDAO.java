@@ -173,7 +173,7 @@ public class RidePointDAO{
 				rideSearchResult = jsonUtilRideSearchResult.getModel(json);
 				rideSearchResults.add(rideSearchResult);
 				logger.debug(json);
-				logger.debug(jsonUtilRideSearchResult.getJson(rideSearchResult)); 
+				logger.trace(jsonUtilRideSearchResult.getJson(rideSearchResult)); 
 				count++;
 			}
 		} finally{

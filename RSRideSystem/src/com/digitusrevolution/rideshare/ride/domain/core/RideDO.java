@@ -238,6 +238,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		if (!driverStatus) {
 			throw new NotAuthorizedException("Can't offer ride unless you are a Driver");
 		} else {
+			//**TBD - This will return 0 in case of recurring rides, needs to be thionk through
 			return id;
 		}
 	}
