@@ -2,13 +2,16 @@ package com.digitusrevolution.rideshare.ride.data;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.dom4j.swing.DocumentTreeModel;
 
 import com.digitusrevolution.rideshare.common.db.MongoDBUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
@@ -16,6 +19,8 @@ import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
+import com.digitusrevolution.rideshare.ride.dto.RidePointDTO;
+import com.digitusrevolution.rideshare.ride.dto.RideSearchResult;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -115,7 +120,7 @@ public class RidePointDAO{
 		return getAllRidePointFromDocuments(cursor);
 	}
 	
-	public List<RidePoint> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, double maxDistance, double minDistance){
+	public Map<Integer, RidePointDTO> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, double maxDistance, double minDistance){
 		logger.debug("Ride Request Point:"+rideRequestPoint.getPoint().toString());
 		
 		Document query = new Document("rides.dateTime", new Document("$gte", rideRequestPoint.getDateTime().minusMinutes(30).toEpochSecond())
@@ -135,34 +140,71 @@ public class RidePointDAO{
 										.append("distanceField", "distance"));
 		
 		Document group = new Document("$group", new Document("_id","$rides.id")
-									.append("ridepoint", new Document("$first", "$$CURRENT")));
+									.append("rideSearchPoint", new Document("$first", "$$CURRENT")));
 		
-		Document sort = new Document("$sort", new Document("ridepoint.distance", 1));
+		//Document sort = new Document("$sort", new Document("ridepoint.distance", 1));
+		
+		Document unwind = new Document("$unwind", "$rides");
+		
+		Document match = new Document("$match",query);
 		
 		logger.debug(geoNear.toJson());
+		logger.debug(unwind.toJson());
+		logger.debug(match.toJson());
 		logger.debug(group.toJson());
-		logger.debug(sort.toJson());
+		//logger.debug(sort.toJson());
 		
 		List<Document> pipeline = new ArrayList<>();
 		pipeline.add(geoNear);
+		pipeline.add(unwind);
+		pipeline.add(match);
 		pipeline.add(group);
-		pipeline.add(sort);
+		//pipeline.add(sort);
 		
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
+		List<RideSearchResult> rideSearchResults = new ArrayList<>();
+		JSONUtil<RideSearchResult> jsonUtilRideSearchResult = new JSONUtil<>(RideSearchResult.class);
 		int count =0;
 		try {
 			while (cursor.hasNext()){
+				RideSearchResult rideSearchResult = new RideSearchResult();
 				Document document = cursor.next();
 				String json = document.toJson();
+				rideSearchResult = jsonUtilRideSearchResult.getModel(json);
+				rideSearchResults.add(rideSearchResult);
 				logger.debug(json);
+				logger.debug(jsonUtilRideSearchResult.getJson(rideSearchResult)); 
 				count++;
 			}
 		} finally{
 			cursor.close();
 		}
-		logger.debug("Total Count" + count);
+		logger.debug("Total Count" + count);		
+		return getRideSearchResultMap(rideSearchResults);
+	}
 		
-		return null;
+	private Map<Integer, RidePointDTO> getRideSearchResultMap(List<RideSearchResult> rideSearchResults){
+		Map<Integer, RidePointDTO> rideSearchResultMap = new HashMap<>();
+		
+		for (RideSearchResult rideSearchResult : rideSearchResults) {
+				RidePoint ridePoint = getRidePoint(rideSearchResult);
+				RidePointDTO ridePointDTO = new RidePointDTO();
+				ridePointDTO.setRidePoint(ridePoint);
+				ridePointDTO.setDistance(rideSearchResult.getRideSearchPoint().getDistance());
+				rideSearchResultMap.put(rideSearchResult.getRideId(), ridePointDTO);
+				logger.debug("[ridepoint,distance]:"+ridePoint.toString()+","+ridePointDTO.getDistance());
+		}	
+		return rideSearchResultMap;
+	}
+
+	private RidePoint getRidePoint(RideSearchResult rideSearchResult) {
+		RidePoint ridePoint = new RidePoint();
+		ridePoint.set_id(rideSearchResult.getRideSearchPoint().get_id());
+		ridePoint.setPoint(rideSearchResult.getRideSearchPoint().getPoint());
+		RideBasicInfo ridesBasicInfo = rideSearchResult.getRideSearchPoint().getRideBasicInfo();
+		ridePoint.getRidesBasicInfo().add(ridesBasicInfo);
+		ridePoint.setSequence(rideSearchResult.getRideSearchPoint().getSequence());
+		return ridePoint;
 	}
 	
 	private List<RidePoint> getAllRidePointFromDocuments(MongoCursor<Document> cursor){

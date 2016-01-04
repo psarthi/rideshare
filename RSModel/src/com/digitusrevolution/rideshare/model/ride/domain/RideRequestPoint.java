@@ -8,8 +8,6 @@ public class RideRequestPoint {
 	private Point point = new Point();
 	private int rideRequestId;
 	private ZonedDateTime dateTime;
-	//Distance would hold the distance of this point from any other point during search of nearby points
-	private double distance;
 	
 	public String get_id() {
 		return _id;
@@ -34,12 +32,5 @@ public class RideRequestPoint {
 	}
 	public void setDateTime(ZonedDateTime dateTime) {
 		this.dateTime = dateTime;
-	}
-	public double getDistance() {
-		return distance;
-	}
-	public void setDistance(double distance) {
-		this.distance = distance;
-	}
-	
+	}	
 }

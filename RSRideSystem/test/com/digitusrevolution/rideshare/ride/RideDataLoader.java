@@ -303,6 +303,13 @@ public class RideDataLoader {
 			List<RideRequest> rideRequests = rideRequestDO.getAll();
 			for (RideRequest rideRequest : rideRequests) {
 				rideRequestDO.delete(rideRequest);
+			}
+			
+			RideDO rideDO = new RideDO();
+			List<Ride> rides = rideDO.getAll();
+			for (Ride ride : rides) {
+				rideDO.delete(ride);
 			}			
+
 		}
 }

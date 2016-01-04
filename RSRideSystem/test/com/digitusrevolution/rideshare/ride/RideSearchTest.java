@@ -18,6 +18,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
+import com.digitusrevolution.rideshare.ride.dto.RideSearchResult;
 
 public class RideSearchTest {
 
@@ -66,17 +67,18 @@ public class RideSearchTest {
 	public void searchRideTest(){
 		
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		RideRequest rideRequest = rideRequestDO.get(33);
+		RideRequest rideRequest = rideRequestDO.get(36);
 		
 		RidePointDAO ridePointDAO = new RidePointDAO();
 		double maxDistance = 100000000;
 		double minDistance = 0;
 		
-		List<RidePoint> ridePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint(), maxDistance, minDistance);
+		ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint(), maxDistance, minDistance);
 		Set<RidePoint> ridePointsSet = new HashSet<>();
 		List<RidePoint> ridePointsSorted = new LinkedList<>();
 
-		for (RidePoint ridePoint : ridePoints) {
+
+/*		for (RidePoint ridePoint : ridePoints) {
 			boolean status = ridePointsSet.add(ridePoint);
 			if (status){
 				logger.debug("****"+status+","+ridePoint.toString());
@@ -96,7 +98,7 @@ public class RideSearchTest {
 		for (RidePoint ridePoint : ridePointsSorted) {
 			logger.debug("["+i+"]"+ridePoint.toString());
 			i++;
-		}
+		}*/
 		
 	}
 	

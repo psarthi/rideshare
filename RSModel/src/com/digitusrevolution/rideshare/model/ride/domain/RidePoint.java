@@ -16,8 +16,6 @@ public class RidePoint{
 	private List<RideBasicInfo> ridesBasicInfo = new ArrayList<RideBasicInfo>();
 	private Point point = new Point();
 	private int sequence;
-	//Distance would hold the distance of this point from any other point during search of nearby points
-	private double distance;
 	
 	public String get_id() {
 		return _id;
@@ -72,11 +70,5 @@ public class RidePoint{
 			sumOfRideHashCode += rideBasicInfo.hashCode();
 		}
 		return Long.hashCode(sumOfRideHashCode);
-	}
-	public double getDistance() {
-		return distance;
-	}
-	public void setDistance(double distance) {
-		this.distance = distance;
 	}
 }

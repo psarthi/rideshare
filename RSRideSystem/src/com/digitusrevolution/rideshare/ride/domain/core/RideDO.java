@@ -168,16 +168,36 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 				ride.setStartTime(startTimeUTC);				
 				//Check if ride is recurring, then create multiple rides as per the recurring details
 				//**TBD - Recurring code needs to be written later
+				int[] ids = new int[5];
+				if (ride.getRecur()){
+					//For testing purpose, needs to be written properly
+					for (int i = 0; i<5; i++){
+						ride.setStartTime(startTimeUTC.plusDays(i));
+						ids[i] = create(ride);		
+						logger.debug("Ride has been created with id:" + ids[i]);						
+					}
+				}
+				
 				if (!ride.getRecur()){
 					id = create(ride);		
 					logger.debug("Ride has been created with id:" + id);
 				}
+				
 				RouteDO routeDO = new RouteDO();
-				RideBasicInfo rideBasicInfo = new RideBasicInfo();
 				List<RideBasicInfo> ridesBasicInfo = new ArrayList<>();
 				//In case its a recurring ride, then create multiple rides and add all of them below
 				//**TBD - Recurring scenarios has to be written later
+				if(ride.getRecur()){
+					//For testing purpose, needs to be written properly
+					for (int i = 0; i<5; i++){
+						RideBasicInfo rideBasicInfo = new RideBasicInfo();
+						rideBasicInfo.setId(ids[i]);
+						rideBasicInfo.setDateTime(startTimeUTC.plusDays(i));
+						ridesBasicInfo.add(rideBasicInfo);
+					}					
+				}			
 				if(!ride.getRecur()){
+					RideBasicInfo rideBasicInfo = new RideBasicInfo();
 					rideBasicInfo.setId(id);
 					rideBasicInfo.setDateTime(startTimeUTC);
 					ridesBasicInfo.add(rideBasicInfo);					
@@ -199,9 +219,20 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 				ride.getStartPoint().set_id(startPointId);
 				ride.getEndPoint().set_id(endPointId);
 				//Below is imp, else it won't be able to update the ride which has been just created
-				ride.setId(id);
-				update(ride);
-				logger.debug("Ride has been updated with id:"+ride.getId());
+				if (!ride.getRecur()){
+					ride.setId(id);
+					update(ride);
+					logger.debug("Ride has been updated with id:"+ride.getId());					
+				}
+				//**TBD - Recurring scenarios has to be written later
+				if (ride.getRecur()){
+					//For testing purpose, needs to be written properly
+					for (int i=0; i<5; i++){
+						ride.setId(ids[i]);
+						update(ride);
+						logger.debug("Ride has been updated with id:"+ride.getId());											
+					}
+				}
 			} 
 		}
 		if (!driverStatus) {
