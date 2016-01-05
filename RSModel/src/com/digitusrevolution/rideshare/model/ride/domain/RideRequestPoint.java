@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.model.ride.domain;
 
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 
 public class RideRequestPoint {
@@ -8,6 +9,8 @@ public class RideRequestPoint {
 	private Point point = new Point();
 	private int rideRequestId;
 	private ZonedDateTime dateTime;
+	private LocalTime timeVariation;
+	private int distanceVariation;
 	
 	public String get_id() {
 		return _id;
@@ -32,5 +35,17 @@ public class RideRequestPoint {
 	}
 	public void setDateTime(ZonedDateTime dateTime) {
 		this.dateTime = dateTime;
-	}	
+	}
+	public int getDistanceVariation() {
+		return distanceVariation;
+	}
+	public void setDistanceVariation(int distanceVariation) {
+		this.distanceVariation = distanceVariation;
+	}
+	public LocalTime getTimeVariation() {
+		return timeVariation;
+	}
+	public void setTimeVariation(LocalTime timeVariation) {
+		this.timeVariation = timeVariation;
+	}
 }

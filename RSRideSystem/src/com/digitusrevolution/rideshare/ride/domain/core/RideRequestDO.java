@@ -1,15 +1,11 @@
 package com.digitusrevolution.rideshare.ride.domain.core;
 
-import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
@@ -21,27 +17,25 @@ import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
-import com.digitusrevolution.rideshare.model.ride.domain.Point;
-import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
-import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
+import com.digitusrevolution.rideshare.ride.dto.RideMatchInfo;
 import com.digitusrevolution.rideshare.ride.dto.RidePointDTO;
 import com.digitusrevolution.rideshare.ride.dto.google.GoogleDistance;
 
 public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
-	
+
 	private static final Logger logger = LogManager.getLogger(RideRequestDO.class.getName());
 	private RideRequest rideRequest;
 	private RideRequestEntity rideRequestEntity;
 	private RideRequestMapper rideRequestMapper;
 	private final RideRequestDAO rideRequestDAO;
 	private final RideRequestPointDAO rideRequestPointDAO;
-	
+
 	public RideRequestDO() {
 		rideRequest = new RideRequest();
 		rideRequestEntity = new RideRequestEntity();
@@ -63,9 +57,9 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	@Override
 	public void fetchChild() {
 		rideRequest = rideRequestMapper.getDomainModelChild(rideRequest, rideRequestEntity);
-		
+
 	}
-	
+
 	@Override
 	public List<RideRequest> getAll() {
 		List<RideRequest> rideRequests = new ArrayList<>();
@@ -137,21 +131,21 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		//Setting the travel time and distance, which would be used for searching ride points by date/time as well as sorting the ride request by distance
 		ZonedDateTime pickupTimeUTC = rideRequest.getPickupTime().withZoneSameInstant(ZoneOffset.UTC);
 		//Set pickup time in Riderequest pickup point
-		rideRequest.getPickupPoint().setDateTime(pickupTimeUTC);
 		RouteDO routeDO = new RouteDO();
 		GoogleDistance googleDistance = routeDO.getDistance(rideRequest.getPickupPoint().getPoint(), rideRequest.getDropPoint().getPoint(),pickupTimeUTC);	
 		int travelDistance = googleDistance.getRows().get(0).getElements().get(0).getDistance().getValue();
 		int travelTime = googleDistance.getRows().get(0).getElements().get(0).getDuration().getValue();
+
 		rideRequest.setTravelDistance(travelDistance);
 		rideRequest.setTravelTime(travelTime);
-		//Set Drop time in Riderequest drop point
-		rideRequest.getDropPoint().setDateTime(pickupTimeUTC.plusSeconds(travelTime));
-
+		//Storing dateTime in UTC
 		rideRequest.setPickupTime(pickupTimeUTC);
 		rideRequest.setStatus("unfulfilled");
 		int id = create(rideRequest);
-		rideRequest.getPickupPoint().setRideRequestId(id);
-		rideRequest.getDropPoint().setRideRequestId(id);
+
+		//No need to get update Ride request as return type as in java its pass by reference, so data would be updated in the original ride request
+		setRideRequestPoint(rideRequest, pickupTimeUTC, travelTime, id);
+
 		String pickupPointId = rideRequestPointDAO.create(rideRequest.getPickupPoint());
 		String dropPointId = rideRequestPointDAO.create(rideRequest.getDropPoint());
 		rideRequest.getPickupPoint().set_id(pickupPointId);
@@ -161,33 +155,44 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		logger.debug("Ride Request has been created with id:" + id);
 		return id;
 	}
-	
-	public List<Ride> searchRides(RideRequest rideRequest){		
-		
-		RidePointDAO ridePointDAO = new RidePointDAO();
-		double minDistance = Double.parseDouble(PropertyReader.getInstance().getProperty("RIDE_SEARCH_MIN_DISTANCE"));
-		//Get all rides around radius of pickup variation from pickup point
-		Map<Integer, RidePointDTO> pickupRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint(), 
-													  			   rideRequest.getPickupPointVariation(), minDistance,
-													  			   rideRequest.getPickupTimeVariation());
+
+	private void setRideRequestPoint(RideRequest rideRequest, ZonedDateTime pickupTimeUTC, int travelTime, int id) {
+		rideRequest.getPickupPoint().setDateTime(pickupTimeUTC);		
+		rideRequest.getDropPoint().setDateTime(pickupTimeUTC.plusSeconds(travelTime));
+		rideRequest.getPickupPoint().setRideRequestId(id);
+		rideRequest.getDropPoint().setRideRequestId(id);
+		rideRequest.getPickupPoint().setDistanceVariation(rideRequest.getPickupPointVariation());
+		rideRequest.getDropPoint().setDistanceVariation(rideRequest.getDropPointVariation());
+		rideRequest.getPickupPoint().setTimeVariation(rideRequest.getPickupTimeVariation());
 		long dropTimeBuffer = Long.parseLong(PropertyReader.getInstance().getProperty("DROP_TIME_BUFFER"));
-		LocalTime dropTimeVariation = rideRequest.getPickupTimeVariation().plusSeconds(dropTimeBuffer);
-		Map<Integer, RidePointDTO> dropRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getDropPoint(), 
-																 rideRequest.getDropPointVariation(), minDistance, dropTimeVariation);
+		rideRequest.getDropPoint().setTimeVariation(rideRequest.getPickupTimeVariation().plusSeconds(dropTimeBuffer));
+	}
+
+	public List<RideMatchInfo> searchRides(RideRequest rideRequest){		
+
+		RidePointDAO ridePointDAO = new RidePointDAO();
+		//Get all rides around radius of pickup variation from pickup point
+		Map<Integer, RidePointDTO> pickupRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint());
+		Map<Integer, RidePointDTO> dropRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getDropPoint());
 		logger.debug("[Matching Pickup Rides: Based on Distance]:"+pickupRidePoints.keySet());
 		logger.debug("[Matching Drop Rides: Based on Distance]:"+dropRidePoints.keySet());
-				
+
 		pickupRidePoints.keySet().retainAll(dropRidePoints.keySet());
 		dropRidePoints.keySet().retainAll(pickupRidePoints.keySet());
 		logger.debug("[Valid Pickup Rides: Based on RideIds]:"+pickupRidePoints.keySet());
 		logger.debug("[Valid Drop Rides: Based on RideIds]:"+dropRidePoints.keySet());
-		
+
 		Iterator<Integer> iterator = pickupRidePoints.keySet().iterator();
-		
+		List<RideMatchInfo> rideMatchInfos = new ArrayList<>();
+
+
 		while (iterator.hasNext()) {			
 			Integer rideId = iterator.next();
 			if (pickupRidePoints.get(rideId).getRidePoint().getSequence() >= dropRidePoints.get(rideId).getRidePoint().getSequence()){
 				iterator.remove();
+			} else {
+				RideMatchInfo rideMatchInfo = getRideMatchInfo(rideRequest, pickupRidePoints, dropRidePoints, rideId);
+				rideMatchInfos.add(rideMatchInfo);				
 			}
 		}
 
@@ -195,8 +200,23 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		dropRidePoints.keySet().retainAll(pickupRidePoints.keySet());
 		logger.debug("[Valid Pickup Rides: Based on Sequence]:"+pickupRidePoints.keySet());
 		logger.debug("[Valid Drop Rides: Based on Sequence]:"+dropRidePoints.keySet());
-		
-		return null;
+
+		logger.debug("RideMatch Info List:" + rideMatchInfos);
+
+		return rideMatchInfos;
+	}
+
+	private RideMatchInfo getRideMatchInfo(RideRequest rideRequest, Map<Integer, RidePointDTO> pickupRidePoints,
+			Map<Integer, RidePointDTO> dropRidePoints, Integer rideId) {
+		RideMatchInfo rideMatchInfo = new RideMatchInfo();
+		rideMatchInfo.setRideId(rideId);
+		rideMatchInfo.setRidePickupPoint(pickupRidePoints.get(rideId).getRidePoint());
+		rideMatchInfo.setRideDropPoint(dropRidePoints.get(rideId).getRidePoint());
+		rideMatchInfo.setRideRequestId(rideRequest.getId());
+		rideMatchInfo.setPickupPointDistance(pickupRidePoints.get(rideId).getDistance());
+		rideMatchInfo.setDropPointDistance(dropRidePoints.get(rideId).getDistance());
+		rideMatchInfo.setTravelDistance(rideRequest.getTravelDistance());
+		return rideMatchInfo;
 	}
 
 }

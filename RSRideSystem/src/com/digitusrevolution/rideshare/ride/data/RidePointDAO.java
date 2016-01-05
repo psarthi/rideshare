@@ -1,6 +1,5 @@
 package com.digitusrevolution.rideshare.ride.data;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,7 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.dom4j.swing.DocumentTreeModel;
 
 import com.digitusrevolution.rideshare.common.db.MongoDBUtil;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
@@ -22,22 +20,22 @@ import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
+import com.digitusrevolution.rideshare.ride.dto.RideMatchInfo;
 import com.digitusrevolution.rideshare.ride.dto.RidePointDTO;
-import com.digitusrevolution.rideshare.ride.dto.RideSearchResult;
+import com.digitusrevolution.rideshare.ride.dto.RideSearchPoint;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import static com.mongodb.client.model.Filters.*;
 import com.mongodb.client.model.geojson.Geometry;
-import com.mongodb.client.model.geojson.Position;
 
 public class RidePointDAO{
-	
+
 	private MongoDatabase db = MongoDBUtil.getDatabase();
 	private MongoCollection<Document> collection = db.getCollection("ride_point");
 	private final JSONUtil<RidePoint> jsonUtil = new JSONUtil<>(RidePoint.class);
 	private static final Logger logger = LogManager.getLogger(RidePointDAO.class.getName());
-	
+
 	public String create(RidePoint ridePoint) {
 		ObjectId _id = new ObjectId();
 		ridePoint.set_id(_id.toString());
@@ -46,7 +44,7 @@ public class RidePointDAO{
 		logger.debug(json);
 		return ridePoint.get_id();
 	}
-	
+
 	public void createBulk(Collection<RidePoint> ridePoints) {
 		List<Document> documents = new ArrayList<>();
 		for (RidePoint ridePoint : ridePoints) {
@@ -68,7 +66,7 @@ public class RidePointDAO{
 		RidePoint ridePoint = jsonUtil.getModel(json);
 		return ridePoint;
 	}
-	
+
 	public RidePoint getRidePointOfRide(String _id, int rideId) {
 		Document document = collection.find(eq("_id", _id)).first();
 		String json = document.toJson();
@@ -77,7 +75,7 @@ public class RidePointDAO{
 		ridePoint = getSpecificRidePoint(ridePoint, rideId);
 		return ridePoint;
 	}
-	
+
 	private RidePoint getSpecificRidePoint(RidePoint ridePoint, int rideId){
 		List<RideBasicInfo> ridesBasicInfo = ridePoint.getRidesBasicInfo();
 		Iterator<RideBasicInfo> iterator = ridesBasicInfo.iterator();
@@ -107,7 +105,7 @@ public class RidePointDAO{
 	public void delete(String _id) {
 		collection.deleteOne(eq("_id", _id));
 	}
-		
+
 	public List<RidePoint> getAll() {
 		MongoCursor<Document> cursor = collection.find().iterator();
 		return getAllRidePointFromDocuments(cursor);
@@ -117,103 +115,142 @@ public class RidePointDAO{
 		MongoCursor<Document> cursor = collection.find(eq("rides.id", rideId)).iterator();
 		return getAllSpecificRidePointFromDocuments(cursor, rideId);
 	}
-	
+
 	public List<RidePoint> getAllRidePointWithinGivenGeometry(Geometry geometry){
 		MongoCursor<Document> cursor = collection.find(geoWithin("point", geometry)).iterator();
 		return getAllRidePointFromDocuments(cursor);
 	}
-	//Reason behind this function in this class instead of riderequestDAO as collection used is ride_point and not rideRequest_point
-	public Map<Integer, RidePointDTO> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, double maxDistance, 
-																			double minDistance, LocalTime timeVariation){
-		
+
+	/*
+	 * 
+	 * Purpose: Get all matching rides which is near the pickup/ride point within specified time limit as well
+	 * 
+	 * High level logic -
+	 * 
+	 * - Get all the ride points based on time and distance near a given point using GeoNear
+	 * - Unwind all the matched points, so that we can get exact matched ride instead of all recurring rides which is stored for each point
+	 * - Run the query again to get all matching ride points based on Just time
+	 * - Group all the matching ride points by Ride ID and get the first one as its a sorted list and first one is the closest from the given point
+	 * - Convert the result into the map of Ride id, ridepoint with calculated distance as well
+	 * 
+	 * Key Note - 
+	 * 
+	 * 1. Reason behind using $geoNear command instead of nearSphere as later command is not supported on replica set or in sharding environment
+	 *
+	 * Note -
+	 *  
+	 * 1. Reason behind this function in this class instead of riderequestDAO as collection used is ride_point and not rideRequest_point 
+	 */
+	public Map<Integer, RidePointDTO> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint){
+
 		logger.debug("Ride Request Point:"+rideRequestPoint.getPoint().toString());	
-		long variationInSeconds = DateTimeUtil.getSeconds(timeVariation);
+		long variationInSeconds = DateTimeUtil.getSeconds(rideRequestPoint.getTimeVariation());
 		logger.debug("Time Variation in Seconds:" + variationInSeconds);
-		
+		double minDistance = Double.parseDouble(PropertyReader.getInstance().getProperty("RIDE_SEARCH_MIN_DISTANCE"));
+
 		Document query = new Document("rides.dateTime", new Document("$gte", rideRequestPoint.getDateTime().minusSeconds(variationInSeconds).toEpochSecond())
-									.append("$lte", rideRequestPoint.getDateTime().plusSeconds(variationInSeconds).toEpochSecond()));
-		
+				.append("$lte", rideRequestPoint.getDateTime().plusSeconds(variationInSeconds).toEpochSecond()));
+
 		Point point = rideRequestPoint.getPoint();
 		JSONUtil<Point> jsonUtilPoint = new JSONUtil<>(Point.class);
 		String pointJson = jsonUtilPoint.getJson(point);
 		logger.debug(pointJson);
-		
+
 		Document geoNear = new Document("$geoNear",new Document("spherical",true)
-										.append("limit", PropertyReader.getInstance().getProperty("RIDE_SEARCH_RESULT_LIMIT"))
-										.append("maxDistance", maxDistance)
-										.append("minDistance", minDistance)
-										.append("query", query)
-										.append("near", new Document(Document.parse(pointJson)))
-										.append("distanceField", "distance"));
-		
+				.append("limit", PropertyReader.getInstance().getProperty("RIDE_SEARCH_RESULT_LIMIT"))
+				.append("maxDistance", rideRequestPoint.getDistanceVariation())
+				.append("minDistance", minDistance)
+				.append("query", query)
+				.append("near", new Document(Document.parse(pointJson)))
+				.append("distanceField", "distance"));
+
 		Document group = new Document("$group", new Document("_id","$rides.id")
-									.append("rideSearchPoint", new Document("$first", "$$CURRENT")));
-		
+				.append("rideSearchPoint", new Document("$first", "$$CURRENT")));
+
 		//Document sort = new Document("$sort", new Document("ridepoint.distance", 1));
-		
+
 		Document unwind = new Document("$unwind", "$rides");
-		
+
 		Document match = new Document("$match",query);
-		
+
 		logger.debug(geoNear.toJson());
 		logger.debug(unwind.toJson());
 		logger.debug(match.toJson());
 		logger.debug(group.toJson());
 		//logger.debug(sort.toJson());
-		
+
 		List<Document> pipeline = new ArrayList<>();
 		pipeline.add(geoNear);
 		pipeline.add(unwind);
 		pipeline.add(match);
 		pipeline.add(group);
 		//pipeline.add(sort);
-		
+
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
-		List<RideSearchResult> rideSearchResults = new ArrayList<>();
-		JSONUtil<RideSearchResult> jsonUtilRideSearchResult = new JSONUtil<>(RideSearchResult.class);
+		Map<Integer, RideSearchPoint> rideSearchPointMap = new HashMap<>();
+		JSONUtil<RideSearchPoint> jsonUtilRideSearchPoint = new JSONUtil<>(RideSearchPoint.class);
 		int count =0;
 		try {
 			while (cursor.hasNext()){
-				RideSearchResult rideSearchResult = new RideSearchResult();
+				RideSearchPoint rideSearchPoint = new RideSearchPoint();
 				Document document = cursor.next();
-				String json = document.toJson();
-				rideSearchResult = jsonUtilRideSearchResult.getModel(json);
-				rideSearchResults.add(rideSearchResult);
-				logger.debug(json);
-				logger.trace(jsonUtilRideSearchResult.getJson(rideSearchResult)); 
+				Integer rideId = document.getInteger("_id");
+				Document searchPoint = (Document) document.get("rideSearchPoint");
+				String json = searchPoint.toJson();
+				logger.debug("rideId:" + rideId);
+				logger.debug("searchPoint:" + searchPoint.toJson());
+				rideSearchPoint = jsonUtilRideSearchPoint.getModel(json);
+				rideSearchPointMap.put(rideId, rideSearchPoint); 
 				count++;
 			}
 		} finally{
 			cursor.close();
 		}
 		logger.debug("Total Count" + count);		
-		return getRideSearchResultMap(rideSearchResults);
-	}
-		
-	private Map<Integer, RidePointDTO> getRideSearchResultMap(List<RideSearchResult> rideSearchResults){
-		Map<Integer, RidePointDTO> rideSearchResultMap = new HashMap<>();
-		
-		for (RideSearchResult rideSearchResult : rideSearchResults) {
-				RidePoint ridePoint = getRidePoint(rideSearchResult);
-				RidePointDTO ridePointDTO = new RidePointDTO();
-				ridePointDTO.setRidePoint(ridePoint);
-				ridePointDTO.setDistance(rideSearchResult.getRideSearchPoint().getDistance());
-				rideSearchResultMap.put(rideSearchResult.getRideId(), ridePointDTO);
-				logger.debug("[ridepoint,distance]:"+ridePoint.toString()+","+ridePointDTO.getDistance());
-		}	
-		return rideSearchResultMap;
+		return getRidePointDTOMap(rideSearchPointMap);
 	}
 
-	private RidePoint getRidePoint(RideSearchResult rideSearchResult) {
+	public RidePointDTO getMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, int rideId){
+		
+		logger.debug("Ride Request Point:"+rideRequestPoint.getPoint().toString());	
+		long variationInSeconds = DateTimeUtil.getSeconds(rideRequestPoint.getTimeVariation());
+		logger.debug("Time Variation in Seconds:" + variationInSeconds);
+		double minDistance = Double.parseDouble(PropertyReader.getInstance().getProperty("RIDE_SEARCH_MIN_DISTANCE"));
+
+		Document query = new Document("rides.dateTime", new Document("$gte", rideRequestPoint.getDateTime().minusSeconds(variationInSeconds).toEpochSecond())
+				.append("$lte", rideRequestPoint.getDateTime().plusSeconds(variationInSeconds).toEpochSecond()));
+
+		
+		return null;
+	}
+
+	
+	private Map<Integer, RidePointDTO> getRidePointDTOMap(Map<Integer, RideSearchPoint> rideSearchPointMap){
+		Map<Integer, RidePointDTO> ridePointDTOMap = new HashMap<>();
+
+		for (Map.Entry<Integer, RideSearchPoint> entry: rideSearchPointMap.entrySet() ) {
+			RideSearchPoint rideSearchPoint = entry.getValue();
+			Integer rideId = entry.getKey();
+			RidePoint ridePoint = getRidePoint(rideSearchPoint);
+			RidePointDTO ridePointDTO = new RidePointDTO();
+			ridePointDTO.setRidePoint(ridePoint);
+			ridePointDTO.setDistance(rideSearchPoint.getDistance());
+			ridePointDTOMap.put(rideId, ridePointDTO);
+			logger.debug("[ridepoint,distance]:"+ridePoint.toString()+","+ridePointDTO.getDistance());
+		}	
+		return ridePointDTOMap;
+	}
+
+	private RidePoint getRidePoint(RideSearchPoint rideSearchPoint) {
 		RidePoint ridePoint = new RidePoint();
-		ridePoint.set_id(rideSearchResult.getRideSearchPoint().get_id());
-		ridePoint.setPoint(rideSearchResult.getRideSearchPoint().getPoint());
-		RideBasicInfo ridesBasicInfo = rideSearchResult.getRideSearchPoint().getRideBasicInfo();
+		ridePoint.set_id(rideSearchPoint.get_id());
+		ridePoint.setPoint(rideSearchPoint.getPoint());
+		RideBasicInfo ridesBasicInfo = rideSearchPoint.getRideBasicInfo();
 		ridePoint.getRidesBasicInfo().add(ridesBasicInfo);
-		ridePoint.setSequence(rideSearchResult.getRideSearchPoint().getSequence());
+		ridePoint.setSequence(rideSearchPoint.getSequence());
 		return ridePoint;
 	}
-	
+
 	private List<RidePoint> getAllRidePointFromDocuments(MongoCursor<Document> cursor){
 		List<RidePoint> ridePoints = new ArrayList<>();
 		try {
@@ -229,7 +266,7 @@ public class RidePointDAO{
 		}
 		return ridePoints;
 	}
-	
+
 	private List<RidePoint> getAllSpecificRidePointFromDocuments(MongoCursor<Document> cursor, int rideId){
 		List<RidePoint> ridePoints = new ArrayList<>();
 		try {
@@ -246,5 +283,4 @@ public class RidePointDAO{
 		}
 		return ridePoints;
 	}
-
 }
