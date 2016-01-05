@@ -168,7 +168,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		rideRequest.getDropPoint().setTimeVariation(rideRequest.getPickupTimeVariation().plusSeconds(dropTimeBuffer));
 	}
 
-	public List<RideMatchInfo> searchRides(RideRequest rideRequest){		
+	public List<RideMatchInfo> searchAllRides(RideRequest rideRequest){		
 
 		RidePointDAO ridePointDAO = new RidePointDAO();
 		//Get all rides around radius of pickup variation from pickup point
@@ -192,7 +192,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 				iterator.remove();
 			} else {
 				RideMatchInfo rideMatchInfo = getRideMatchInfo(rideRequest, pickupRidePoints, dropRidePoints, rideId);
-				rideMatchInfos.add(rideMatchInfo);				
+				rideMatchInfos.add(rideMatchInfo);
 			}
 		}
 
@@ -205,7 +205,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 
 		return rideMatchInfos;
 	}
-
+	
 	private RideMatchInfo getRideMatchInfo(RideRequest rideRequest, Map<Integer, RidePointDTO> pickupRidePoints,
 			Map<Integer, RidePointDTO> dropRidePoints, Integer rideId) {
 		RideMatchInfo rideMatchInfo = new RideMatchInfo();

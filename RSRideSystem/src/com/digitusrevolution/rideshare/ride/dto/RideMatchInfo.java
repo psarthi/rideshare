@@ -3,7 +3,7 @@ package com.digitusrevolution.rideshare.ride.dto;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 
 public class RideMatchInfo {
-	
+
 	private int rideId;
 	private int rideRequestId;
 	private RidePoint ridePickupPoint;
@@ -11,7 +11,7 @@ public class RideMatchInfo {
 	private double pickupPointDistance;
 	private double dropPointDistance;
 	private double travelDistance;
-	
+
 	public int getRideId() {
 		return rideId;
 	}
@@ -57,7 +57,7 @@ public class RideMatchInfo {
 	@Override
 	public String toString() {
 		return "[rideId,rideRequestId,RidePickupPoint,RideDropPoint,pickupPointDistance,dropPointDistance,travelDistance]:"+this.rideId+","
-				+this.rideRequestId+","+this.rideDropPoint.toString()+","+this.ridePickupPoint.toString()
+				+this.rideRequestId+","+this.ridePickupPoint.toString()+","+this.rideDropPoint.toString()
 				+","+this.pickupPointDistance+","+this.dropPointDistance+","+this.travelDistance+"\n";
 	}
 
