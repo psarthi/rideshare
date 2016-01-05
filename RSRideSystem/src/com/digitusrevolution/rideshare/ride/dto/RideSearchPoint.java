@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.ride.dto;
 
+import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -48,8 +49,8 @@ public class RideSearchPoint{
 	
 	@Override
 	public String toString() {
-		return "[_id,rides,point,seq,dist]:" + get_id()+","+getRideBasicInfo().toString()+","
-				+getPoint().toString()+","+getSequence()+","+getDistance();
+		JSONUtil<RideSearchPoint> jsonUtil = new JSONUtil<>(RideSearchPoint.class);
+		return jsonUtil.getJson(this);
 	}
 	
 }

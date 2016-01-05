@@ -4,7 +4,9 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotAuthorizedException;
@@ -27,6 +29,8 @@ import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.ride.data.RideDAO;
 import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
+import com.digitusrevolution.rideshare.ride.dto.RideMatchInfo;
+import com.digitusrevolution.rideshare.ride.dto.RidePointDTO;
 import com.digitusrevolution.rideshare.ride.dto.google.GoogleDirection;
 
 public class RideDO implements DomainObjectPKInteger<Ride>{
@@ -244,23 +248,59 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	}
 	
 	
-	/*
-	 * High level logic -
-	 * 
-	 * - Get all ride points and for each ride points, find out all the ride request point within a specific distance
-	 * - Other option, would be create a geometry which is square across all points and pass a geometry collection to get all the ride request point within that
-	 * - Once all ride request has been recieved, for each ride request point, check if specific ride is a valid ride by calling standard ride search function
-	 * - Finally, you will get valid ride requests, then for each of them do further validation e.g. seat etc. 
-	 * 
-	 */
-	public List<RideRequest> searchRideRequests(Ride ride){
-
-		return null;
-	}
-
 	public List<Ride> getUpcomingRides(int userId){
 		
 		return null;
+	}
+	
+	public List<RideMatchInfo> searchRides(RideRequest rideRequest){		
+
+		//Get all rides around radius of pickup variation from pickup point
+		Map<Integer, RidePointDTO> pickupRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint());
+		Map<Integer, RidePointDTO> dropRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getDropPoint());
+		logger.debug("[Matching Pickup Rides: Based on Distance]:"+pickupRidePoints.keySet());
+		logger.debug("[Matching Drop Rides: Based on Distance]:"+dropRidePoints.keySet());
+
+		pickupRidePoints.keySet().retainAll(dropRidePoints.keySet());
+		dropRidePoints.keySet().retainAll(pickupRidePoints.keySet());
+		logger.debug("[Valid Pickup Rides: Based on RideIds]:"+pickupRidePoints.keySet());
+		logger.debug("[Valid Drop Rides: Based on RideIds]:"+dropRidePoints.keySet());
+
+		Iterator<Integer> iterator = pickupRidePoints.keySet().iterator();
+		List<RideMatchInfo> rideMatchInfos = new ArrayList<>();
+
+
+		while (iterator.hasNext()) {			
+			Integer rideId = iterator.next();
+			if (pickupRidePoints.get(rideId).getRidePoint().getSequence() >= dropRidePoints.get(rideId).getRidePoint().getSequence()){
+				iterator.remove();
+			} else {
+				RideMatchInfo rideMatchInfo = getRideMatchInfo(rideRequest, pickupRidePoints, dropRidePoints, rideId);
+				rideMatchInfos.add(rideMatchInfo);
+			}
+		}
+
+		//Remove invalid ride points again based on sequence analysis above
+		dropRidePoints.keySet().retainAll(pickupRidePoints.keySet());
+		logger.debug("[Valid Pickup Rides: Based on Sequence]:"+pickupRidePoints.keySet());
+		logger.debug("[Valid Drop Rides: Based on Sequence]:"+dropRidePoints.keySet());
+
+		logger.debug("RideMatch Info List:" + rideMatchInfos);
+
+		return rideMatchInfos;
+	}
+	
+	private RideMatchInfo getRideMatchInfo(RideRequest rideRequest, Map<Integer, RidePointDTO> pickupRidePoints,
+			Map<Integer, RidePointDTO> dropRidePoints, Integer rideId) {
+		RideMatchInfo rideMatchInfo = new RideMatchInfo();
+		rideMatchInfo.setRideId(rideId);
+		rideMatchInfo.setRidePickupPoint(pickupRidePoints.get(rideId).getRidePoint());
+		rideMatchInfo.setRideDropPoint(dropRidePoints.get(rideId).getRidePoint());
+		rideMatchInfo.setRideRequestId(rideRequest.getId());
+		rideMatchInfo.setPickupPointDistance(pickupRidePoints.get(rideId).getDistance());
+		rideMatchInfo.setDropPointDistance(dropRidePoints.get(rideId).getDistance());
+		rideMatchInfo.setTravelDistance(rideRequest.getTravelDistance());
+		return rideMatchInfo;
 	}
 	
 }

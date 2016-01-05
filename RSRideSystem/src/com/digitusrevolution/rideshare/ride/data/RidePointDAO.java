@@ -122,11 +122,11 @@ public class RidePointDAO{
 
 	/*
 	 * 
-	 * Purpose: Get all/specific matching ride which is near the pickup/ride point within specified time limit as well. 
+	 * Purpose: Get all matching ride which is near the pickup/ride point within specified time limit as well. 
+	 * This function should work for all rides or for specific ride as well.  
 	 * 
 	 * High level logic -
-	 * 
-	 * - Create a query based on whether we need all matching rides or specific ride
+	 *
 	 * - Get all/specific ride points based on time and distance near a given point using GeoNear
 	 * - Unwind all the matched points, so that we can get exact matched ride instead of all recurring rides which is stored for each point
 	 * - Run the query again to get all matching ride points based on Just time
@@ -141,7 +141,7 @@ public class RidePointDAO{
 	 *  
 	 * 1. Reason behind this function in this class instead of riderequestDAO as collection used is ride_point and not rideRequest_point 
 	 */
-	public Map<Integer, RidePointDTO> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, int rideId){
+	private Map<Integer, RidePointDTO> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, int rideId){
 
 		logger.debug("Ride Request Point:"+rideRequestPoint.getPoint().toString());	
 		long variationInSeconds = DateTimeUtil.getSeconds(rideRequestPoint.getTimeVariation());
@@ -150,7 +150,7 @@ public class RidePointDAO{
 		Document query;
 
 		//***This is important, as depending on the input of rideId, it will either get all matching rides or specific ride
-		if (rideId==0){
+		if (rideId==-1){
 			query = new Document("rides.dateTime", new Document("$gte", rideRequestPoint.getDateTime().minusSeconds(variationInSeconds).toEpochSecond())
 					.append("$lte", rideRequestPoint.getDateTime().plusSeconds(variationInSeconds).toEpochSecond()));			
 		} else {
@@ -219,7 +219,7 @@ public class RidePointDAO{
 	}
 
 	public Map<Integer, RidePointDTO> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint){
-		return getAllMatchingRidePointNearGivenPoint(rideRequestPoint,0);
+		return getAllMatchingRidePointNearGivenPoint(rideRequestPoint,-1);
 	}
 	
 	public RidePointDTO getMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, int rideId){
@@ -239,7 +239,7 @@ public class RidePointDAO{
 			ridePointDTO.setRidePoint(ridePoint);
 			ridePointDTO.setDistance(rideSearchPoint.getDistance());
 			ridePointDTOMap.put(rideId, ridePointDTO);
-			logger.debug("[ridepoint,distance]:"+ridePoint.toString()+","+ridePointDTO.getDistance());
+			logger.debug(ridePointDTO.toString());
 		}	
 		return ridePointDTOMap;
 	}

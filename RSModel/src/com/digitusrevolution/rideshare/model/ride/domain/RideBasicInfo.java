@@ -20,7 +20,7 @@ public class RideBasicInfo {
 	}		
 	@Override
 	public String toString() {
-		return "[id,datetime]:"+id+","+dateTime;
+		return "[rideId,datetime]:"+id+","+dateTime;
 	}
 	
 	//In case id is changed to long, then use Long.hashcode()

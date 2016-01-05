@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.ride.dto;
 
+import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 
 public class RidePointDTO {
@@ -33,6 +34,12 @@ public class RidePointDTO {
 	@Override
 	public int hashCode() {
 		return this.ridePoint.hashCode();	
+	}
+	
+	@Override
+	public String toString() {
+		JSONUtil<RidePointDTO> jsonUtil = new JSONUtil<>(RidePointDTO.class);
+		return jsonUtil.getJson(this);
 	}
 
 	

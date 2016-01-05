@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.ride.dto;
 
+import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 
 public class RideMatchInfo {
@@ -56,9 +57,8 @@ public class RideMatchInfo {
 	}
 	@Override
 	public String toString() {
-		return "[rideId,rideRequestId,RidePickupPoint,RideDropPoint,pickupPointDistance,dropPointDistance,travelDistance]:"+this.rideId+","
-				+this.rideRequestId+","+this.ridePickupPoint.toString()+","+this.rideDropPoint.toString()
-				+","+this.pickupPointDistance+","+this.dropPointDistance+","+this.travelDistance+"\n";
+		JSONUtil<RideMatchInfo> jsonUtil = new JSONUtil<>(RideMatchInfo.class);
+		return jsonUtil.getJson(this);
 	}
 
 }
