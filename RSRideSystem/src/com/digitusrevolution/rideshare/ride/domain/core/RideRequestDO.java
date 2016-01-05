@@ -3,18 +3,25 @@ package com.digitusrevolution.rideshare.ride.domain.core;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.geojson.Feature;
+import org.geojson.FeatureCollection;
+import org.geojson.LineString;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
+import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
@@ -163,7 +170,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		long dropTimeBuffer = Long.parseLong(PropertyReader.getInstance().getProperty("DROP_TIME_BUFFER"));
 		rideRequest.getDropPoint().setTimeVariation(rideRequest.getPickupTimeVariation().plusSeconds(dropTimeBuffer));
 	}
-	
+
 	/*
 	 * High level logic -
 	 * 
@@ -178,6 +185,25 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		return null;
 	}
 
-
+	public FeatureCollection getAllRideRequestPoints(){
+		FeatureCollection featureCollection = new FeatureCollection();
+		List<RideRequest> rideRequests = getAll();
+		for (RideRequest rideRequest : rideRequests) {
+			List<RideRequestPoint> requestPoints = rideRequestPointDAO.getRideRequestPointsForRideRequest(rideRequest.getId());
+			List<Point> points = new ArrayList<>();
+			for (RideRequestPoint rideRequestPoint : requestPoints) {
+				points.add(rideRequestPoint.getPoint());
+			}
+			LineString lineString = GeoJSONUtil.getLineStringFromPoints(points);
+			Map<String, Object> properties = new HashMap<>();
+			properties.put("Ride Request Id", rideRequest.getId());
+			properties.put("Start DateTime in UTC", rideRequest.getPickupTime());
+			properties.put("Pickup Variation", rideRequest.getPickupPointVariation());
+			properties.put("Drop Variation", rideRequest.getDropPointVariation());
+			Feature feature = GeoJSONUtil.getFeatureFromGeometry(lineString, properties);
+			featureCollection.add(feature);
+		}
+		return featureCollection;
+	}	
 
 }

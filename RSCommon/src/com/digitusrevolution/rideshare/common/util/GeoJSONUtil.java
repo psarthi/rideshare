@@ -1,7 +1,7 @@
 package com.digitusrevolution.rideshare.common.util;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 import org.geojson.Feature;
 import org.geojson.GeoJsonObject;
@@ -9,31 +9,17 @@ import org.geojson.LineString;
 import org.geojson.LngLatAlt;
 
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
-import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 
 public class GeoJSONUtil {
 
-	public static Feature getFeatureFromRidePoint(RidePoint ridePoint){
-		JSONUtil<Point> jsonUtilPoint = new JSONUtil<>(Point.class);
-		String pointJson = jsonUtilPoint.getJson(ridePoint.getPoint());
-		Feature feature = new Feature();
-		feature.setGeometry(getGeoJsonObject(pointJson));
-		//Needs to be rewritten as object structure has been changed to Map
-//		feature.setProperty("rideId", ridePoint.getRideId());
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d yyyy hh:mm a");
-		//Needs to be rewritten as object structure has been changed to Map
-//		feature.setProperty("dateTime", ridePoint.getDateTime().format(formatter));
-		feature.setProperty("sequence", ridePoint.getSequence());
-		return feature;		
-	}
-	
 	/*
 	 * All Geometry Objects of GeoJSON Library is of type GeoJsonObject, 
 	 * that's why we can pass any Geometry object directly here
 	 */
-	public static Feature getFeatureFromGeometry(GeoJsonObject geoJsonObject){
+	public static Feature getFeatureFromGeometry(GeoJsonObject geoJsonObject, Map<String, Object> properties){
 		Feature feature = new Feature();
 		feature.setGeometry(geoJsonObject);
+		feature.setProperties(properties);
 		return feature;
 	}
 	
@@ -43,12 +29,19 @@ public class GeoJSONUtil {
 		return geoJsonObject;
 	}
 	
-	public static LineString getLineStringFromRidePoints(List<RidePoint> ridePoints){
+	public static String getGeoJsonString(GeoJsonObject geoJsonObject){
+		JSONUtil<GeoJsonObject> jsonUtilGeoJsonObject = new JSONUtil<>(GeoJsonObject.class);
+		String geoJson = jsonUtilGeoJsonObject.getJson(geoJsonObject);
+		return geoJson;
+	}
+
+	
+	public static LineString getLineStringFromPoints(List<Point> points){
 		LineString lineString = new LineString();
-		for (RidePoint ridePoint : ridePoints) {
+		for (Point point : points) {
 			LngLatAlt lngLatAlt = new LngLatAlt();
-			lngLatAlt.setLatitude(ridePoint.getPoint().getLatitude());
-			lngLatAlt.setLongitude(ridePoint.getPoint().getLongitude());
+			lngLatAlt.setLatitude(point.getLatitude());
+			lngLatAlt.setLongitude(point.getLongitude());
 			lineString.add(lngLatAlt);
 		}
 		return lineString;

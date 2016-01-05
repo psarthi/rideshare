@@ -4,9 +4,12 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotAuthorizedException;
@@ -15,11 +18,16 @@ import javax.ws.rs.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.geojson.Feature;
+import org.geojson.FeatureCollection;
+import org.geojson.LineString;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
+import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
@@ -253,6 +261,21 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return null;
 	}
 	
+	/*
+	 * Purpose - Search all rides which is matching ride requests criteria
+	 * 
+	 * High level logic -
+	 * 
+	 * - Get all rides matching pickup points
+	 * - Get all rides matching drop points
+	 * - Remove all the rides from pickup and drop points which is not there in both of them
+	 * - Check if pickup ride point is before the drop ride point to validate the direction of ride
+	 * - Remove all the rides which is not in the right direction
+	 * - Check the availability of rides and remove those which is not available
+	 * - Now all the rides remaining are the valid rides
+	 * 
+	 * 
+	 */
 	public List<RideMatchInfo> searchRides(RideRequest rideRequest){		
 
 		//Get all rides around radius of pickup variation from pickup point
@@ -275,12 +298,20 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 			if (pickupRidePoints.get(rideId).getRidePoint().getSequence() >= dropRidePoints.get(rideId).getRidePoint().getSequence()){
 				iterator.remove();
 			} else {
-				RideMatchInfo rideMatchInfo = getRideMatchInfo(rideRequest, pickupRidePoints, dropRidePoints, rideId);
+				RidePointDTO pickupRidePointDTO = pickupRidePoints.get(rideId);
+				RidePointDTO dropRidePointDTO =  dropRidePoints.get(rideId);
+				RideMatchInfo rideMatchInfo = getRideMatchInfo(rideRequest, pickupRidePointDTO, dropRidePointDTO, rideId);
 				rideMatchInfos.add(rideMatchInfo);
 			}
 		}
-
-		//Remove invalid ride points again based on sequence analysis above
+		
+		Set<Integer> rideIds = pickupRidePoints.keySet();
+		Set<Integer> availableRideIds = getAvailableRides(rideIds);
+		logger.debug("[Available Rides]:"+availableRideIds);
+		//This will remove all unavailable rides from the list
+		pickupRidePoints.keySet().retainAll(availableRideIds);
+		
+		//Remove invalid ride points again based on sequence and availability
 		dropRidePoints.keySet().retainAll(pickupRidePoints.keySet());
 		logger.debug("[Valid Pickup Rides: Based on Sequence]:"+pickupRidePoints.keySet());
 		logger.debug("[Valid Drop Rides: Based on Sequence]:"+dropRidePoints.keySet());
@@ -290,17 +321,69 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return rideMatchInfos;
 	}
 	
-	private RideMatchInfo getRideMatchInfo(RideRequest rideRequest, Map<Integer, RidePointDTO> pickupRidePoints,
-			Map<Integer, RidePointDTO> dropRidePoints, Integer rideId) {
+	private RideMatchInfo getRideMatchInfo(RideRequest rideRequest, RidePointDTO pickupRidePointDTO, RidePointDTO dropRidePointDTO, int rideId) {
 		RideMatchInfo rideMatchInfo = new RideMatchInfo();
 		rideMatchInfo.setRideId(rideId);
-		rideMatchInfo.setRidePickupPoint(pickupRidePoints.get(rideId).getRidePoint());
-		rideMatchInfo.setRideDropPoint(dropRidePoints.get(rideId).getRidePoint());
+		rideMatchInfo.setRidePickupPoint(pickupRidePointDTO.getRidePoint());
+		rideMatchInfo.setRideDropPoint(dropRidePointDTO.getRidePoint());
 		rideMatchInfo.setRideRequestId(rideRequest.getId());
-		rideMatchInfo.setPickupPointDistance(pickupRidePoints.get(rideId).getDistance());
-		rideMatchInfo.setDropPointDistance(dropRidePoints.get(rideId).getDistance());
+		rideMatchInfo.setPickupPointDistance(pickupRidePointDTO.getDistance());
+		rideMatchInfo.setDropPointDistance(dropRidePointDTO.getDistance());
 		rideMatchInfo.setTravelDistance(rideRequest.getTravelDistance());
 		return rideMatchInfo;
+	}	
+	
+	private Set<Integer> getAvailableRides(Set<Integer> rideIds){
+		Set<RideEntity> availableRides = rideDAO.getAvailableRides(rideIds);
+		Set<Integer> availableRideIds = new HashSet<>();
+		for (RideEntity rideEntity : availableRides) {
+			availableRideIds.add(rideEntity.getId());
+		}
+		return availableRideIds;
 	}
 	
+	/*
+	 * This method for testing purpose only
+	 */
+	public FeatureCollection getAllRidePoints(){
+		FeatureCollection featureCollection = new FeatureCollection();
+		List<Ride> rides = getAll();
+		for (Ride ride : rides) {
+			List<RidePoint> ridePoints = ridePointDAO.getAllRidePointsOfRide(ride.getId());
+			List<Point> points = new ArrayList<>();
+			for (RidePoint ridePoint : ridePoints) {
+				points.add(ridePoint.getPoint());
+			}
+			LineString lineString = GeoJSONUtil.getLineStringFromPoints(points);
+			Map<String, Object> properties = new HashMap<>();
+			properties.put("Ride Id", ride.getId());
+			properties.put("Start DateTime in UTC", ride.getStartTime());
+			Feature feature = GeoJSONUtil.getFeatureFromGeometry(lineString, properties);
+			featureCollection.add(feature);
+		}	
+		return featureCollection;
+	}
+	
+	/*
+	 * This method for testing purpose only
+	 */
+	public FeatureCollection getGeoJsonForRideSearch(RideRequest rideRequest){
+		FeatureCollection featureCollection = new FeatureCollection();
+		List<RideMatchInfo> rideMatchInfos = searchRides(rideRequest);
+		for (RideMatchInfo rideMatchInfo : rideMatchInfos) {
+			List<Point> points = new ArrayList<>();
+			points.add(rideMatchInfo.getRidePickupPoint().getPoint());
+			points.add(rideMatchInfo.getRideDropPoint().getPoint());
+			LineString lineString = GeoJSONUtil.getLineStringFromPoints(points);
+			Map<String, Object> properties = new HashMap<>();
+			properties.put("Ride Id", rideMatchInfo.getRideId());
+			properties.put("Ride Request Id", rideMatchInfo.getRideRequestId());
+			properties.put("Pickup Distance", rideMatchInfo.getPickupPointDistance());
+			properties.put("Drop Distance", rideMatchInfo.getDropPointDistance());
+			properties.put("Travel Distance", rideMatchInfo.getTravelDistance());
+			Feature feature = GeoJSONUtil.getFeatureFromGeometry(lineString, properties);
+			featureCollection.add(feature);
+		}
+		return featureCollection;
+	}
 }

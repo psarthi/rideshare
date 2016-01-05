@@ -63,4 +63,20 @@ public class RideRequestPointDAO{
 		}
 		return rideRequestPoints;
 	}
+	
+	public List<RideRequestPoint> getRideRequestPointsForRideRequest(int rideRequestId) {
+		List<RideRequestPoint> rideRequestPoints = new ArrayList<>();
+		MongoCursor<Document> cursor = collection.find(Filters.eq("rideRequestId", rideRequestId)).iterator();
+		try {
+			while (cursor.hasNext()){
+				String json = cursor.next().toJson();
+				RideRequestPoint rideRequestPoint = jsonUtil.getModel(json);
+				rideRequestPoints.add(rideRequestPoint);
+			}
+		} finally{
+			cursor.close();
+		}
+		return rideRequestPoints;
+	}
+
 }
