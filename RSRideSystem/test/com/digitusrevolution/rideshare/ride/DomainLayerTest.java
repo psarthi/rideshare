@@ -55,8 +55,7 @@ public class DomainLayerTest {
 		featureCollection = rideRequestDO.getAllRideRequestPoints();
 		logger.info(GeoJSONUtil.getGeoJsonString(featureCollection));
 		
-		RideRequest rideRequest = rideRequestDO.get(42);
-		featureCollection = rideDO.getGeoJsonForRideSearch(rideRequest);
+		featureCollection = rideDO.getGeoJsonForRideSearch(42);
 		logger.info(GeoJSONUtil.getGeoJsonString(featureCollection));
 	}
 }

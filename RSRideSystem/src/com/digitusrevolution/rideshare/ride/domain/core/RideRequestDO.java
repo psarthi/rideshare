@@ -185,6 +185,9 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		return null;
 	}
 
+	/*
+	 * This method for testing purpose only
+	 */
 	public FeatureCollection getAllRideRequestPoints(){
 		FeatureCollection featureCollection = new FeatureCollection();
 		List<RideRequest> rideRequests = getAll();

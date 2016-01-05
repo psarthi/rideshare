@@ -6,7 +6,13 @@ var postRideURL = "http://localhost:8080/RSRideSystem/api/rides";
 var getRideRequestJSONFormatURL = "http://localhost:8080/RSRideSystem/api/model/riderequest";
 var postRideRequestURL = "http://localhost:8080/RSRideSystem/api/riderequests";
 var postData = { City: 'Bangalore', Age: 25 };
+var getAllRidesURL = "http://localhost:8080/RSRideSystem/api/domain/rides/allpoints";
+var getAllRideRequestURL = "http://localhost:8080/RSRideSystem/api/domain/riderequests/allpoints";
+var searchRidesURL = "http://localhost:8080/RSRideSystem/api/domain/rides/search/{rideRequestId}";
 
+/*
+ * This function is for reference purpose
+ */
 function get(url){
 	$.ajax({
 		url: url,
@@ -26,6 +32,9 @@ function get(url){
 	});
 }
 
+/*
+ * This function is for reference purpose
+ */
 function post(url, data){
 	$.ajax({
 		url: url,
@@ -177,3 +186,56 @@ $("#rideRequest").click(function(){
 	$("#rideFormButton").click();
 
 });
+
+function getAllRide(url){
+	$.ajax({
+		url: url,
+		type: 'GET',
+		dataType: 'json'
+	})
+
+	.done(function( response ) {
+		$("#alert-success").html("Request Successfull").show();
+		loadGeoJsonString(JSON.stringify(response));
+	})
+
+	.fail(function( jqXHR, textStatus ) {
+		$("#alert-danger").html("Request Failed:"+textStatus).show();
+	});
+}
+
+function getAllRideRequest(url){
+	$.ajax({
+		url: url,
+		type: 'GET',
+		dataType: 'json'
+	})
+
+	.done(function( response ) {
+		$("#alert-success").html("Request Successfull").show();
+		loadGeoJsonString(JSON.stringify(response));
+	})
+
+	.fail(function( jqXHR, textStatus ) {
+		$("#alert-danger").html("Request Failed:"+textStatus).show();
+	});
+}
+
+function searchRide(url){
+	var rideRequestId = $("#rideRequestId").val();
+	var url = url.replace("{rideRequestId}",rideRequestId);
+	$.ajax({
+		url: url,
+		type: 'GET',
+		dataType: 'json'
+	})
+
+	.done(function( response ) {
+		$("#alert-success").html("Request Successfull").show();
+		loadGeoJsonString(JSON.stringify(response));
+	})
+
+	.fail(function( jqXHR, textStatus ) {
+		$("#alert-danger").html("Request Failed:"+textStatus).show();
+	});
+}

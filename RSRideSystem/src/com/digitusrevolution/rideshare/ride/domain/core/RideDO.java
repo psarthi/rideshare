@@ -367,8 +367,10 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	/*
 	 * This method for testing purpose only
 	 */
-	public FeatureCollection getGeoJsonForRideSearch(RideRequest rideRequest){
+	public FeatureCollection getGeoJsonForRideSearch(int rideRequestId){
 		FeatureCollection featureCollection = new FeatureCollection();
+		RideRequestDO rideRequestDO = new RideRequestDO();
+		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
 		List<RideMatchInfo> rideMatchInfos = searchRides(rideRequest);
 		for (RideMatchInfo rideMatchInfo : rideMatchInfos) {
 			List<Point> points = new ArrayList<>();

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.geojson.FeatureCollection;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -76,4 +77,35 @@ public class RideRequestDomainService implements DomainService<RideRequest>{
 		return rideRequests;	
 	}
 
+
+	/*
+	 * This method for testing purpose only
+	 */
+	public FeatureCollection getAllRideRequestPoints(){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transation = null;	
+		FeatureCollection featureCollection = new FeatureCollection();
+		try {
+			transation = session.beginTransaction();
+
+			RideRequestDO rideRequestDO = new RideRequestDO();
+			featureCollection = rideRequestDO.getAllRideRequestPoints();			
+
+			transation.commit();
+		} catch (RuntimeException e) {
+			if (transation!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transation.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return featureCollection;	
+
+	}
 }
