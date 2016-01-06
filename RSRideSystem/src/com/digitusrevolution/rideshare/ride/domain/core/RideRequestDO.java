@@ -214,7 +214,10 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		
 		return featureCollection;
 	}
-
+	
+	/*
+	 * This method for testing purpose only
+	 */
 	private Map<String, Object> getRideRequestPointProperties(RideRequestPoint rideRequestPoint, String pointType) {
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("type", pointType);

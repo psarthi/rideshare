@@ -9,7 +9,7 @@ var markers = [];
 var routeMarkers = [];
 var start;
 var end;
-var radius = 5000;
+var infowindow;
 function initMap() {
 
 	// Instantiate a directions service.
@@ -29,7 +29,7 @@ function initMap() {
 
 	// Instantiate geocoder service
 	geocoder = new google.maps.Geocoder();
-	
+
 	setMarkerIcon();
 
 	// Add a listener
@@ -56,22 +56,25 @@ function initMap() {
 		addPermanentMarker(event.latLng, pickupImage);
 	});*/
 
+	// global infowindow
+	infowindow = new google.maps.InfoWindow();	
+
 }
 
 function setMarkerIcon(){
-	
+
 	pickupIcon = {
 			url: "image/pickup.png",
 			origin: new google.maps.Point(0, 0),
 			anchor: new google.maps.Point(17, 34),
-			scaledSize: new google.maps.Size(30, 30)
+			scaledSize: new google.maps.Size(50, 40)
 	};
 
 	dropIcon = {
 			url: "image/drop.png",
 			origin: new google.maps.Point(0, 0),
 			anchor: new google.maps.Point(17, 34),
-			scaledSize: new google.maps.Size(30, 30)
+			scaledSize: new google.maps.Size(50, 40)
 	};
 
 	startIcon = {
@@ -92,14 +95,14 @@ function setMarkerIcon(){
 			url: "image/ridepickup.png",
 			origin: new google.maps.Point(0, 0),
 			anchor: new google.maps.Point(17, 34),
-			scaledSize: new google.maps.Size(30, 30)
+			scaledSize: new google.maps.Size(50, 40)
 	};
 
 	rideDropIcon = {
 			url: "image/ridedrop.png",
 			origin: new google.maps.Point(0, 0),
 			anchor: new google.maps.Point(17, 34),
-			scaledSize: new google.maps.Size(30, 30)
+			scaledSize: new google.maps.Size(50, 40)
 	};
 
 }
@@ -213,12 +216,13 @@ function addPermanentMarker(latLng, image) {
 
 function createCircle(center, radius){
 	// Add the circle
+	// Opacity of 0.0 is for transparent background and higher value between 0 to 1 would fill the color
 	var circle = new google.maps.Circle({
 		strokeColor: '#FF0000',
 		strokeOpacity: 0.8,
 		strokeWeight: 2,
-		fillColor: '#FF0000',
-		fillOpacity: 0.35,
+		fillColor: '#ffffaa',
+		fillOpacity: 0.0,
 		map: map,
 		center: center,
 		radius: radius
@@ -241,6 +245,7 @@ function showAllPolyLinePoints(ecodedPolyLine) {
 
 	var points = google.maps.geometry.encoding.decodePath(ecodedPolyLine);
 	//createPolyLine(points);
+	var radius = 5000;
 	for (var i = 0; i < points.length; i++) {	
 		addMarker(points[i]);
 		//createCircle(points[i], radius);
@@ -306,10 +311,14 @@ function loadRideGeoJsonString(geoString) {
 		});
 	});
 
+
+
 	// Set mouseover event for each feature.
 	rideData.addListener('mouseover', function(event) {
-		document.getElementById('info-box').textContent =
-			event.feature.getProperty('RideId');
+		var RideId = event.feature.getProperty("RideId");
+		var StartDateTimeUTC = event.feature.getProperty("StartDateTimeUTC");		
+		$("#info-box").html("[RideId,StartDateTimeUTC]:"+"<b>"+RideId+"</b>"+","+StartDateTimeUTC);
+
 	});
 
 	zoom(map, rideData);
@@ -343,7 +352,7 @@ function loadRideRequestGeoJsonString(geoString) {
 			console.log("dropppoint");
 			markerIcon = dropIcon;
 		}
-		createCircle(center, radius);
+		//createCircle(center, radius);
 		return /** @type {google.maps.Data.StyleOptions} */({
 			strokeColor: getRandomColor(),
 			strokeWeight: 3,
@@ -352,11 +361,17 @@ function loadRideRequestGeoJsonString(geoString) {
 
 	});
 
-	// Set mouseover event for each feature.
-	rideRequestData.addListener('mouseover', function(event) {
-		document.getElementById('info-box').textContent =
-			event.feature.getProperty('Ride Id');
-	});
+	// When the user clicks, open an infowindow
+	rideRequestData.addListener('click', function(event) {
+		var RideRequestId = event.feature.getProperty("RideRequestId");
+		var DateTimeUTC = event.feature.getProperty("DateTimeUTC");
+		var DistanceVariation = event.feature.getProperty("DistanceVariation");
+		infowindow.setContent("<div style='width:300px; height:50px; text-align: center;'>"
+				+"[RideRequestId,DateTimeUTC,DistanceVariation]:<br>"+"<b>"+RideRequestId+"</b>"+","+DateTimeUTC+","+DistanceVariation+"</div>");
+		infowindow.setPosition(event.feature.getGeometry().get());
+		infowindow.setOptions({pixelOffset: new google.maps.Size(0,-30)});
+		infowindow.open(map);
+	});  
 
 	zoom(map, rideRequestData);
 }
@@ -366,6 +381,8 @@ function loadRideSearchGeoJsonString(geoString) {
 	var type;
 	var markerIcon;
 	var ridePointData = new google.maps.Data();
+	var features = geojson.features;
+	
 	ridePointData.addGeoJson(geojson);
 	//This is very important, as this only draws on specific map
 	ridePointData.setMap(map)
@@ -374,9 +391,8 @@ function loadRideSearchGeoJsonString(geoString) {
 	ridePointData.setStyle(function(feature) {
 		var geometry = feature.getGeometry();
 		var geometryType = geometry.getType();
-		//This will get cordinates of the point
 		var type = feature.getProperty('type');
-
+		
 		console.log(type);
 		if (type=="ridepickuppoint"){
 			console.log("ridepickuppoint");
@@ -386,18 +402,36 @@ function loadRideSearchGeoJsonString(geoString) {
 			console.log("ridedropppoint");
 			markerIcon = rideDropIcon;
 		}
+		if (type=="riderequestpoint"){
+			console.log("riderequestpoint");
+			//This will get cordinates of the point
+			var center = geometry.get();
+			var radius = feature.getProperty('DistanceVariation');
+			createCircle(center, radius);
+			//This will remove the riderequest points, which is required only for creating circle
+			ridePointData.remove(feature);
+		}
 		return /** @type {google.maps.Data.StyleOptions} */({
 			strokeColor: getRandomColor(),
 			strokeWeight: 3,
 			icon: markerIcon
 		});
 	});
+	
 
-	// Set mouseover event for each feature.
-	ridePointData.addListener('mouseover', function(event) {
-		document.getElementById('info-box').textContent =
-			event.feature.getProperty('Ride Id');
-	});
+
+	// When the user clicks, open an infowindow
+	ridePointData.addListener('click', function(event) {
+		var RideId = event.feature.getProperty("RideId");
+		var RideRequestId = event.feature.getProperty("RideRequestId");
+		var Distance = event.feature.getProperty("Distance");
+		var TravelDistance = event.feature.getProperty("TravelDistance");
+		infowindow.setContent("<div style='width:300px; height:50px; text-align: center;'>"
+				+"[RideId,RideRequestId,Distance,TravelDistance]:<br>"+"<b>"+RideId+","+RideRequestId+"</b>"+","+Distance+","+TravelDistance+"</div>");
+		infowindow.setPosition(event.feature.getGeometry().get());
+		infowindow.setOptions({pixelOffset: new google.maps.Size(0,-30)});
+		infowindow.open(map);
+	});  
 
 	zoom(map, ridePointData);
 }

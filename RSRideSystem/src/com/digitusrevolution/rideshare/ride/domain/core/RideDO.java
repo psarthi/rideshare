@@ -31,12 +31,14 @@ import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
+import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.ride.data.RideDAO;
 import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
+import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 import com.digitusrevolution.rideshare.ride.dto.RideMatchInfo;
 import com.digitusrevolution.rideshare.ride.dto.RidePointDTO;
@@ -307,10 +309,13 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		}
 		
 		Set<Integer> rideIds = pickupRidePoints.keySet();
-		Set<Integer> availableRideIds = getAvailableRides(rideIds);
-		logger.debug("[Available Rides]:"+availableRideIds);
-		//This will remove all unavailable rides from the list
-		pickupRidePoints.keySet().retainAll(availableRideIds);
+		
+		if (!rideIds.isEmpty()){
+			Set<Integer> availableRideIds = getAvailableRides(rideIds);
+			logger.debug("[Available Rides]:"+availableRideIds);
+			//This will remove all unavailable rides from the list
+			pickupRidePoints.keySet().retainAll(availableRideIds);
+		}
 		
 		//Remove invalid ride points again based on sequence and availability
 		dropRidePoints.keySet().retainAll(pickupRidePoints.keySet());
@@ -400,9 +405,24 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 			feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, rideDropPointProperties);
 			featureCollection.add(feature);
 		}
+		
+		RideRequestPointDAO rideRequestPointDAO = new RideRequestPointDAO();
+		List<RideRequestPoint> rideRequestPoints = rideRequestPointDAO.getRideRequestPointsForRideRequest(rideRequestId);
+		for (RideRequestPoint rideRequestPoint : rideRequestPoints) {
+			Point point = rideRequestPoint.getPoint();
+			Map<String, Object> properties = new HashMap<>();
+			properties.put("type", "riderequestpoint");
+			properties.put("DistanceVariation", rideRequestPoint.getDistanceVariation());
+			org.geojson.Point geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(point);
+			Feature feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, properties);
+			featureCollection.add(feature);			
+		}
 		return featureCollection;
 	}
 
+	/*
+	 * This method for testing purpose only
+	 */
 	private Map<String, Object> getRideSearchPointProperties(RideMatchInfo rideMatchInfo, String pointType) {
 		Map<String, Object> ridePickupPointProperties = new HashMap<>();
 		ridePickupPointProperties.put("type", pointType);

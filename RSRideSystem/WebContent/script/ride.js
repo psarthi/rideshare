@@ -167,10 +167,6 @@ $("#rideRequest").click(function(){
 			$("#alert-success").html("Request Successfull:<br/>Ride Request has been successfully created with id:"+JSON.stringify(response)).show();
 			addPermanentMarker(start, pickupIcon);
 			addPermanentMarker(end, dropIcon);
-			var points = [];
-			points.push(start);
-			points.push(end);
-			createPolyLine(points);
 			deleteMarkers();
 		})
 
