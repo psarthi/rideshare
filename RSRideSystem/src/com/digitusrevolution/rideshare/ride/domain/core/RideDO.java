@@ -442,7 +442,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		ridePickupPointProperties.put("type", pointType);
 		ridePickupPointProperties.put("RideId", rideMatchInfo.getRideId());
 		ridePickupPointProperties.put("RideRequestId", rideMatchInfo.getRideRequestId());
-		if (pointType.equals("ridepickupoint")){
+		if (pointType.equals("ridepickuppoint")){
 			ridePickupPointProperties.put("Distance", rideMatchInfo.getPickupPointDistance());
 			ridePickupPointProperties.put("DateTimeUTC", rideMatchInfo.getRidePickupPoint().getRidesBasicInfo().get(0).getDateTime());
 		} else {

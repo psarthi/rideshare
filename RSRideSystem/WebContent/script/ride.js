@@ -110,8 +110,10 @@ $("#rideOffer").click(function(){
 
 		.done(function( response ) {
 			$("#alert-success").html("Request Successfull:<br/>Ride has been successfully created with id:"+JSON.stringify(response)).show();
-			calculateAndDisplayRoute(directionsService, routeMarkers,
-					stepDisplay, map, document.getElementById('start').value, document.getElementById('end').value);
+//			calculateAndDisplayRoute(directionsService, routeMarkers,
+//					stepDisplay, map, document.getElementById('start').value, document.getElementById('end').value);
+			addPermanentMarker(start, startIcon);
+			addPermanentMarker(end, endIcon);
 			deleteMarkers();
 		})
 
