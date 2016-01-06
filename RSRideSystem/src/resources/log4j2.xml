@@ -9,7 +9,7 @@
     <Root level="info">
       <AppenderRef ref="Console"/>
     </Root>
-     <Logger name="com.digitusrevolution.rideshare" level="info" additivity="false">
+     <Logger name="com.digitusrevolution.rideshare" level="debug" additivity="false">
       <AppenderRef ref="Console"/>
     </Logger>
   </Loggers>

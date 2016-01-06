@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.LineString;
+import org.geojson.MultiPoint;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
@@ -197,13 +198,14 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			for (RideRequestPoint rideRequestPoint : requestPoints) {
 				points.add(rideRequestPoint.getPoint());
 			}
-			LineString lineString = GeoJSONUtil.getLineStringFromPoints(points);
+			MultiPoint multiPoint = GeoJSONUtil.getMultiFromPoints(points);
 			Map<String, Object> properties = new HashMap<>();
-			properties.put("Ride Request Id", rideRequest.getId());
-			properties.put("Start DateTime in UTC", rideRequest.getPickupTime());
-			properties.put("Pickup Variation", rideRequest.getPickupPointVariation());
-			properties.put("Drop Variation", rideRequest.getDropPointVariation());
-			Feature feature = GeoJSONUtil.getFeatureFromGeometry(lineString, properties);
+			properties.put("type", "riderequest");
+			properties.put("RideRequestId", rideRequest.getId());
+			properties.put("StartDateTimeUTC", rideRequest.getPickupTime());
+			properties.put("PickupVariation", rideRequest.getPickupPointVariation());
+			properties.put("DropVariation", rideRequest.getDropPointVariation());
+			Feature feature = GeoJSONUtil.getFeatureFromGeometry(multiPoint, properties);
 			featureCollection.add(feature);
 		}
 		return featureCollection;

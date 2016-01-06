@@ -7,6 +7,7 @@ import org.geojson.Feature;
 import org.geojson.GeoJsonObject;
 import org.geojson.LineString;
 import org.geojson.LngLatAlt;
+import org.geojson.MultiPoint;
 
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 
@@ -45,6 +46,26 @@ public class GeoJSONUtil {
 			lineString.add(lngLatAlt);
 		}
 		return lineString;
+	}
+	
+	public static MultiPoint getMultiFromPoints(List<Point> points){
+		MultiPoint multiPoint = new MultiPoint();
+		for (Point point : points) {
+			LngLatAlt lngLatAlt = new LngLatAlt();
+			lngLatAlt.setLatitude(point.getLatitude());
+			lngLatAlt.setLongitude(point.getLongitude());
+			multiPoint.add(lngLatAlt);
+		}
+		return multiPoint;
+	}
+
+	public static org.geojson.Point getGeoJsonPointFromPoint(Point point){
+		org.geojson.Point geoJsonPoint = new org.geojson.Point();
+		LngLatAlt lngLatAlt = new LngLatAlt();
+		lngLatAlt.setLatitude(point.getLatitude());
+		lngLatAlt.setLongitude(point.getLongitude());
+		geoJsonPoint.setCoordinates(lngLatAlt);
+		return geoJsonPoint;
 	}
 	
 }

@@ -40,7 +40,7 @@ public class RidePointDAO{
 		ridePoint.set_id(_id.toString());
 		String json = jsonUtil.getJson(ridePoint);
 		collection.insertOne(Document.parse(json));
-		logger.debug(json);
+		logger.trace(json);
 		return ridePoint.get_id();
 	}
 
@@ -61,7 +61,7 @@ public class RidePointDAO{
 	public RidePoint get(String _id) {
 		Document document = collection.find(eq("_id", _id)).first();
 		String json = document.toJson();
-		logger.debug(json);
+		logger.trace(json);
 		RidePoint ridePoint = jsonUtil.getModel(json);
 		return ridePoint;
 	}
@@ -69,7 +69,7 @@ public class RidePointDAO{
 	public RidePoint getRidePointOfRide(String _id, int rideId) {
 		Document document = collection.find(eq("_id", _id)).first();
 		String json = document.toJson();
-		logger.debug(json);
+		logger.trace(json);
 		RidePoint ridePoint = jsonUtil.getModel(json);
 		ridePoint = getSpecificRidePoint(ridePoint, rideId);
 		return ridePoint;
@@ -81,13 +81,13 @@ public class RidePointDAO{
 		while(iterator.hasNext()){
 			int id = iterator.next().getId();
 			if (id != rideId){
-				logger.debug("Removing Ride Id:" + id);
+				logger.trace("Removing Ride Id:" + id);
 				iterator.remove();
 			} else {
-				logger.debug("Matched Ride Id, so not removing:" + id);
+				logger.trace("Matched Ride Id, so not removing:" + id);
 			}			
 		}
-		logger.debug("Final Ride:"+ridePoint.toString());
+		logger.trace("Final Ride:"+ridePoint.toString());
 		return ridePoint;
 	}
 
@@ -143,9 +143,9 @@ public class RidePointDAO{
 	 */
 	private Map<Integer, RidePointDTO> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, int rideId){
 
-		logger.debug("Ride Request Point:"+rideRequestPoint.getPoint().toString());	
+		logger.trace("Ride Request Point:"+rideRequestPoint.getPoint().toString());	
 		long variationInSeconds = DateTimeUtil.getSeconds(rideRequestPoint.getTimeVariation());
-		logger.debug("Time Variation in Seconds:" + variationInSeconds);
+		logger.trace("Time Variation in Seconds:" + variationInSeconds);
 		double minDistance = Double.parseDouble(PropertyReader.getInstance().getProperty("RIDE_SEARCH_MIN_DISTANCE"));
 		Document query;
 
@@ -161,7 +161,7 @@ public class RidePointDAO{
 		Point point = rideRequestPoint.getPoint();
 		JSONUtil<Point> jsonUtilPoint = new JSONUtil<>(Point.class);
 		String pointJson = jsonUtilPoint.getJson(point);
-		logger.debug(pointJson);
+		logger.trace(pointJson);
 
 		Document geoNear = new Document("$geoNear",new Document("spherical",true)
 				.append("limit", PropertyReader.getInstance().getProperty("RIDE_SEARCH_RESULT_LIMIT"))
@@ -180,12 +180,12 @@ public class RidePointDAO{
 
 		Document match = new Document("$match",query);
 
-		logger.debug(query.toJson());
-		logger.debug(geoNear.toJson());
-		logger.debug(unwind.toJson());
-		logger.debug(match.toJson());
-		logger.debug(group.toJson());
-		//logger.debug(sort.toJson());
+		logger.trace(query.toJson());
+		logger.trace(geoNear.toJson());
+		logger.trace(unwind.toJson());
+		logger.trace(match.toJson());
+		logger.trace(group.toJson());
+		//logger.trace(sort.toJson());
 
 		List<Document> pipeline = new ArrayList<>();
 		pipeline.add(geoNear);
@@ -205,8 +205,8 @@ public class RidePointDAO{
 				Integer matchedRideId = document.getInteger("_id");
 				Document searchPoint = (Document) document.get("rideSearchPoint");
 				String json = searchPoint.toJson();
-				logger.debug("rideId:" + matchedRideId);
-				logger.debug("searchPoint:" + searchPoint.toJson());
+				logger.trace("rideId:" + matchedRideId);
+				logger.trace("searchPoint:" + searchPoint.toJson());
 				rideSearchPoint = jsonUtilRideSearchPoint.getModel(json);
 				rideSearchPointMap.put(matchedRideId, rideSearchPoint); 
 				count++;
@@ -214,7 +214,7 @@ public class RidePointDAO{
 		} finally{
 			cursor.close();
 		}
-		logger.debug("Total Count" + count);		
+		logger.trace("Total Count" + count);		
 		return getRidePointDTOMap(rideSearchPointMap);
 	}
 
@@ -239,7 +239,7 @@ public class RidePointDAO{
 			ridePointDTO.setRidePoint(ridePoint);
 			ridePointDTO.setDistance(rideSearchPoint.getDistance());
 			ridePointDTOMap.put(rideId, ridePointDTO);
-			logger.debug(ridePointDTO.toString());
+			logger.trace(ridePointDTO.toString());
 		}	
 		return ridePointDTOMap;
 	}
@@ -260,7 +260,7 @@ public class RidePointDAO{
 			while (cursor.hasNext()){
 				Document document = cursor.next();
 				String json = document.toJson();
-				logger.debug(json);
+				logger.trace(json);
 				RidePoint ridePoint = jsonUtil.getModel(json);
 				ridePoints.add(ridePoint);
 			}

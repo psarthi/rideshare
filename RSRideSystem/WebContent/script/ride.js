@@ -196,7 +196,7 @@ function getAllRide(url){
 
 	.done(function( response ) {
 		$("#alert-success").html("Request Successfull").show();
-		loadGeoJsonString(JSON.stringify(response));
+		loadRideGeoJsonString(JSON.stringify(response));
 	})
 
 	.fail(function( jqXHR, textStatus ) {
@@ -213,7 +213,7 @@ function getAllRideRequest(url){
 
 	.done(function( response ) {
 		$("#alert-success").html("Request Successfull").show();
-		loadGeoJsonString(JSON.stringify(response));
+		loadRideRequestGeoJsonString(JSON.stringify(response));
 	})
 
 	.fail(function( jqXHR, textStatus ) {
@@ -232,7 +232,7 @@ function searchRide(url){
 
 	.done(function( response ) {
 		$("#alert-success").html("Request Successfull").show();
-		loadGeoJsonString(JSON.stringify(response));
+		loadRidePointGeoJsonString(JSON.stringify(response));
 	})
 
 	.fail(function( jqXHR, textStatus ) {

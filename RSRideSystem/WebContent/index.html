@@ -52,6 +52,17 @@ body, html {
 	z-index: 4;
 	width: 100%;
 }
+
+#info-box {
+	background-color: white;
+	border: 1px solid black;
+	bottom: 30px;
+	height: 20px;
+	width: 500px;
+	padding: 10px;
+	position: absolute;
+	left: 30px;
+}
 </style>
 </head>
 <body>
@@ -83,16 +94,20 @@ body, html {
 							<li><a href="javascript:showMarkers()">Show Markers</a></li>
 							<li><a href="javascript:deleteMarkers()">Delete Markers</a></li>
 							<li role="separator" class="divider"></li>
-							<li><a href="javascript:getAllRide(getAllRidesURL)">Show all Rides</a></li>
-							<li><a href="javascript:getAllRideRequest(getAllRideRequestURL)">Show all Ride Requests</a></li>
+							<li><a href="javascript:getAllRide(getAllRidesURL)">Show
+									all Rides</a></li>
+							<li><a
+								href="javascript:getAllRideRequest(getAllRideRequestURL)">Show
+									all Ride Requests</a></li>
 						</ul></li>
 				</ul>
 				<form class="navbar-form navbar-left" role="search">
 					<div class="form-group">
-						<input type="text" class="form-control" placeholder="Ride Request Id"
-							id="rideRequestId">
+						<input type="text" class="form-control"
+							placeholder="Ride Request Id" id="rideRequestId">
 					</div>
-					<button type="button" class="btn btn-default" id="search" onclick="searchRide(searchRidesURL)">Search</button>
+					<button type="button" class="btn btn-default" id="search"
+						onclick="searchRide(searchRidesURL)">Search</button>
 				</form>
 				<button class="btn btn-primary navbar-btn" type="button"
 					data-toggle="collapse" data-target="#rideForm"
@@ -107,6 +122,7 @@ body, html {
 	</nav>
 	<div class="container-fluid" id="map"></div>
 	<div class="container-fluid" id="warnings-panel"></div>
+	<div class="container-fluid" id="info-box">?</div>
 	<div class="container-fluid alert-container">
 		<div class="col-md-4">
 			<div class="alert alert-success alert-dismissible" role="alert"

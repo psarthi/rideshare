@@ -21,6 +21,7 @@ import org.bson.types.ObjectId;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.LineString;
+import org.geojson.MultiPoint;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
@@ -356,9 +357,23 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 			}
 			LineString lineString = GeoJSONUtil.getLineStringFromPoints(points);
 			Map<String, Object> properties = new HashMap<>();
-			properties.put("Ride Id", ride.getId());
-			properties.put("Start DateTime in UTC", ride.getStartTime());
+			properties.put("type", "ride");
+			properties.put("RideId", ride.getId());
+			properties.put("StartDateTimeUTC", ride.getStartTime());
 			Feature feature = GeoJSONUtil.getFeatureFromGeometry(lineString, properties);
+			featureCollection.add(feature);
+			int size = ridePoints.size();
+			Point startPoint = ridePoints.iterator().next().getPoint();
+			Map<String, Object> startPointProperties = new HashMap<>();
+			startPointProperties.put("type", "startpoint");
+			org.geojson.Point geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(startPoint);
+			feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, startPointProperties);
+			featureCollection.add(feature);
+			Point endPoint = ridePoints.get(size-1).getPoint();
+			Map<String, Object> endPointProperties = new HashMap<>();
+			endPointProperties.put("type", "endpoint");
+			geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(endPoint);
+			feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, endPointProperties);
 			featureCollection.add(feature);
 		}	
 		return featureCollection;
@@ -376,14 +391,15 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 			List<Point> points = new ArrayList<>();
 			points.add(rideMatchInfo.getRidePickupPoint().getPoint());
 			points.add(rideMatchInfo.getRideDropPoint().getPoint());
-			LineString lineString = GeoJSONUtil.getLineStringFromPoints(points);
+			MultiPoint multiPoint = GeoJSONUtil.getMultiFromPoints(points);
 			Map<String, Object> properties = new HashMap<>();
-			properties.put("Ride Id", rideMatchInfo.getRideId());
-			properties.put("Ride Request Id", rideMatchInfo.getRideRequestId());
-			properties.put("Pickup Distance", rideMatchInfo.getPickupPointDistance());
-			properties.put("Drop Distance", rideMatchInfo.getDropPointDistance());
-			properties.put("Travel Distance", rideMatchInfo.getTravelDistance());
-			Feature feature = GeoJSONUtil.getFeatureFromGeometry(lineString, properties);
+			properties.put("type", "ridepoint");
+			properties.put("RideId", rideMatchInfo.getRideId());
+			properties.put("RideRequestId", rideMatchInfo.getRideRequestId());
+			properties.put("PickupDistance", rideMatchInfo.getPickupPointDistance());
+			properties.put("DropDistance", rideMatchInfo.getDropPointDistance());
+			properties.put("TravelDistance", rideMatchInfo.getTravelDistance());
+			Feature feature = GeoJSONUtil.getFeatureFromGeometry(multiPoint, properties);
 			featureCollection.add(feature);
 		}
 		return featureCollection;

@@ -245,23 +245,96 @@ function deleteMarkers() {
 	end="";
 }
 
-function loadGeoJsonString(geoString) {
+function loadRideGeoJsonString(geoString) {
 	var geojson = JSON.parse(geoString);
-	map.data.addGeoJson(geojson);
-	map.data.setStyle({
-		strokeColor: getRandomColor(),
-	    strokeWeight: 2
-	  });
-	zoom(map);
+	var type;
+	var rideData = new google.maps.Data();
+	rideData.addGeoJson(geojson);
+	//This is very important, as this only draws on specific map
+	rideData.setMap(map)
+
+	// Add some style.
+	rideData.setStyle(function(feature) {
+		console.log("Style");
+		return /** @type {google.maps.Data.StyleOptions} */({
+			strokeColor: getRandomColor(),
+			strokeWeight: 3
+		});
+	});
+
+	// Set mouseover event for each feature.
+	rideData.addListener('mouseover', function(event) {
+		document.getElementById('info-box').textContent =
+			event.feature.getProperty('Ride Id');
+	});
+
+	zoom(map, rideData);
+
 }
+
+function loadRideRequestGeoJsonString(geoString) {
+	var geojson = JSON.parse(geoString);
+	var type;
+	var rideRequestData = new google.maps.Data();
+	rideRequestData.addGeoJson(geojson);
+	//This is very important, as this only draws on specific map
+	rideRequestData.setMap(map)
+
+	// Add some style.
+	rideRequestData.setStyle(function(feature) {
+		console.log("Style");
+		return /** @type {google.maps.Data.StyleOptions} */({
+			strokeColor: getRandomColor(),
+			strokeWeight: 3,
+			icon: pickupImage
+		});
+	});
+
+	// Set mouseover event for each feature.
+	rideRequestData.addListener('mouseover', function(event) {
+		document.getElementById('info-box').textContent =
+			event.feature.getProperty('Ride Id');
+	});
+
+	zoom(map, rideRequestData);
+}
+
+function loadRidePointGeoJsonString(geoString) {
+	var geojson = JSON.parse(geoString);
+	var type;
+	var ridePointData = new google.maps.Data();
+	ridePointData.addGeoJson(geojson);
+	//This is very important, as this only draws on specific map
+	ridePointData.setMap(map)
+
+	// Add some style.
+	ridePointData.setStyle(function(feature) {
+		console.log("Style");
+		return /** @type {google.maps.Data.StyleOptions} */({
+			strokeColor: getRandomColor(),
+			strokeWeight: 3,
+			icon: dropImage
+		});
+	});
+
+	// Set mouseover event for each feature.
+	ridePointData.addListener('mouseover', function(event) {
+		document.getElementById('info-box').textContent =
+			event.feature.getProperty('Ride Id');
+	});
+
+	zoom(map, ridePointData);
+}
+
+
 
 /**
  * Update a map's viewport to fit each geometry in a dataset
  * @param {google.maps.Map} map The map to adjust
  */
-function zoom(map) {
+function zoom(map, data) {
 	var bounds = new google.maps.LatLngBounds();
-	map.data.forEach(function(feature) {
+	data.forEach(function(feature) {
 		processPoints(feature.getGeometry(), bounds.extend, bounds);
 	});
 	map.fitBounds(bounds);
@@ -276,13 +349,13 @@ function zoom(map) {
  *     myArray)
  */
 function processPoints(geometry, callback, thisArg) {
-  if (geometry instanceof google.maps.LatLng) {
-    callback.call(thisArg, geometry);
-  } else if (geometry instanceof google.maps.Data.Point) {
-    callback.call(thisArg, geometry.get());
-  } else {
-    geometry.getArray().forEach(function(g) {
-      processPoints(g, callback, thisArg);
-    });
-  }
+	if (geometry instanceof google.maps.LatLng) {
+		callback.call(thisArg, geometry);
+	} else if (geometry instanceof google.maps.Data.Point) {
+		callback.call(thisArg, geometry.get());
+	} else {
+		geometry.getArray().forEach(function(g) {
+			processPoints(g, callback, thisArg);
+		});
+	}
 }
