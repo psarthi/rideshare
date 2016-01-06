@@ -389,7 +389,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		List<RideMatchInfo> rideMatchInfos = searchRides(rideRequest);
 		for (RideMatchInfo rideMatchInfo : rideMatchInfos) {
 			Point ridePickupPoint = rideMatchInfo.getRidePickupPoint().getPoint();
-			Map<String, Object> ridePickupPointProperties = getRideSearchPointProperties(rideMatchInfo,"ridepickupoint");
+			Map<String, Object> ridePickupPointProperties = getRideSearchPointProperties(rideMatchInfo,"ridepickuppoint");
 			org.geojson.Point geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(ridePickupPoint);
 			Feature feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, ridePickupPointProperties);
 			featureCollection.add(feature);

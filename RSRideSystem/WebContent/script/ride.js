@@ -232,7 +232,7 @@ function searchRide(url){
 
 	.done(function( response ) {
 		$("#alert-success").html("Request Successfull").show();
-		loadRidePointGeoJsonString(JSON.stringify(response));
+		loadRideSearchGeoJsonString(JSON.stringify(response));
 	})
 
 	.fail(function( jqXHR, textStatus ) {

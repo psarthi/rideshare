@@ -319,6 +319,7 @@ function loadRideGeoJsonString(geoString) {
 function loadRideRequestGeoJsonString(geoString) {
 	var geojson = JSON.parse(geoString);
 	var type;
+	var markerIcon;
 	var rideRequestData = new google.maps.Data();
 	rideRequestData.addGeoJson(geojson);
 	//This is very important, as this only draws on specific map
@@ -326,12 +327,29 @@ function loadRideRequestGeoJsonString(geoString) {
 
 	// Add some style.
 	rideRequestData.setStyle(function(feature) {
-		console.log("Style");
+		var geometry = feature.getGeometry();
+		var geometryType = geometry.getType();
+		//This will get cordinates of the point
+		var center = geometry.get();
+		var type = feature.getProperty('type');
+		var radius = feature.getProperty('DistanceVariation');
+
+		console.log(type);
+		if (type=="pickuppoint"){
+			console.log("pickuppoint");
+			markerIcon = pickupIcon;
+		}
+		if (type=="droppoint"){
+			console.log("dropppoint");
+			markerIcon = dropIcon;
+		}
+		createCircle(center, radius);
 		return /** @type {google.maps.Data.StyleOptions} */({
 			strokeColor: getRandomColor(),
 			strokeWeight: 3,
-			icon: pickupIcon
+			icon: markerIcon
 		});
+
 	});
 
 	// Set mouseover event for each feature.
@@ -343,9 +361,10 @@ function loadRideRequestGeoJsonString(geoString) {
 	zoom(map, rideRequestData);
 }
 
-function loadRidePointGeoJsonString(geoString) {
+function loadRideSearchGeoJsonString(geoString) {
 	var geojson = JSON.parse(geoString);
 	var type;
+	var markerIcon;
 	var ridePointData = new google.maps.Data();
 	ridePointData.addGeoJson(geojson);
 	//This is very important, as this only draws on specific map
@@ -353,11 +372,24 @@ function loadRidePointGeoJsonString(geoString) {
 
 	// Add some style.
 	ridePointData.setStyle(function(feature) {
-		console.log("Style");
+		var geometry = feature.getGeometry();
+		var geometryType = geometry.getType();
+		//This will get cordinates of the point
+		var type = feature.getProperty('type');
+
+		console.log(type);
+		if (type=="ridepickuppoint"){
+			console.log("ridepickuppoint");
+			markerIcon = ridePickupIcon;
+		}
+		if (type=="ridedroppoint"){
+			console.log("ridedropppoint");
+			markerIcon = rideDropIcon;
+		}
 		return /** @type {google.maps.Data.StyleOptions} */({
 			strokeColor: getRandomColor(),
 			strokeWeight: 3,
-			icon: ridePickupIcon
+			icon: markerIcon
 		});
 	});
 
