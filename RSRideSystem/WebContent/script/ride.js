@@ -72,9 +72,13 @@ $("#rideOffer").click(function(){
 	console.log(endLatLng[1]);
 	var dateTimeLocal = $("#dateTime").val();
 	console.log(dateTimeLocal);	
+	//This will get date in UTC, Comment this line if you want local timezone
+	var dateTimeLocalWithTimezone = new Date(dateTimeLocal);
 	//If you don't convert string to the new format as shown below, then you get UTC timezone and not local
+	/* Uncomment this code to take data in local time zone instead of UTC
 	var dateTimeLocalWithTimezone = new Date(dateTimeLocal.replace(/-/g,'/').replace('T',' '));
 	console.log(dateTimeLocalWithTimezone);
+	*/
 //	var dateUTC = new Date(dateTimeLocal);
 //	console.log(dateUTC);
 
@@ -132,9 +136,13 @@ $("#rideRequest").click(function(){
 	console.log(endLatLng[1]);
 	var dateTimeLocal = $("#dateTime").val();
 	console.log(dateTimeLocal);	
+	//This will get date in UTC, Comment this line if you want local timezone
+	var dateTimeLocalWithTimezone = new Date(dateTimeLocal);
 	//If you don't convert string to the new format as shown below, then you get UTC timezone and not local
+	/* Uncomment this code to take data in local time zone instead of UTC
 	var dateTimeLocalWithTimezone = new Date(dateTimeLocal.replace(/-/g,'/').replace('T',' '));
 	console.log(dateTimeLocalWithTimezone);
+	*/
 //	var dateUTC = new Date(dateTimeLocal);
 //	console.log(dateUTC);
 

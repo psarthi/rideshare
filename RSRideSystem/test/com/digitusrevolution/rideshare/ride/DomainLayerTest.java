@@ -48,14 +48,16 @@ public class DomainLayerTest {
 	
 	public void test(){
 		RideDO rideDO = new RideDO();
-		FeatureCollection featureCollection = rideDO.getAllRidePoints();
-		logger.info(GeoJSONUtil.getGeoJsonString(featureCollection));
-		
+//		rideDO.delete(rideDO.get(149));
+//		FeatureCollection featureCollection = rideDO.getAllRidePoints();
+//		logger.info(GeoJSONUtil.getGeoJsonString(featureCollection));
+//		
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		featureCollection = rideRequestDO.getAllRideRequestPoints();
-		logger.info(GeoJSONUtil.getGeoJsonString(featureCollection));
-		
-		featureCollection = rideDO.getGeoJsonForRideSearch(42);
-		logger.info(GeoJSONUtil.getGeoJsonString(featureCollection));
+		rideRequestDO.delete(rideRequestDO.get(46));
+//		featureCollection = rideRequestDO.getAllRideRequestPoints();
+//		logger.info(GeoJSONUtil.getGeoJsonString(featureCollection));
+//		
+//		featureCollection = rideDO.getGeoJsonForRideSearch(42);
+//		logger.info(GeoJSONUtil.getGeoJsonString(featureCollection));
 	}
 }
