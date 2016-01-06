@@ -60,5 +60,4 @@ public class RideMatchInfo {
 		JSONUtil<RideMatchInfo> jsonUtil = new JSONUtil<>(RideMatchInfo.class);
 		return jsonUtil.getJson(this);
 	}
-
 }

@@ -9,6 +9,7 @@ var postData = { City: 'Bangalore', Age: 25 };
 var getAllRidesURL = "http://localhost:8080/RSRideSystem/api/domain/rides/allpoints";
 var getAllRideRequestURL = "http://localhost:8080/RSRideSystem/api/domain/riderequests/allpoints";
 var searchRidesURL = "http://localhost:8080/RSRideSystem/api/domain/rides/search/{rideRequestId}";
+var getRideURL = "http://localhost:8080/RSRideSystem/api/domain/rides/route/{rideId}";
 
 /*
  * This function is for reference purpose
@@ -226,7 +227,7 @@ function getAllRideRequest(url){
 }
 
 function searchRide(url){
-	var rideRequestId = $("#rideRequestId").val();
+	var rideRequestId = $("#ride-request-id").val();
 	var url = url.replace("{rideRequestId}",rideRequestId);
 	$.ajax({
 		url: url,
@@ -237,6 +238,25 @@ function searchRide(url){
 	.done(function( response ) {
 		$("#alert-success").html("Request Successfull").show();
 		loadRideSearchGeoJsonString(JSON.stringify(response));
+	})
+
+	.fail(function( jqXHR, textStatus ) {
+		$("#alert-danger").html("Request Failed:"+textStatus).show();
+	});
+}
+
+function getRide(url){
+	var rideId = $("#ride-request-id").val();
+	var url = url.replace("{rideId}",rideId);
+	$.ajax({
+		url: url,
+		type: 'GET',
+		dataType: 'json'
+	})
+
+	.done(function( response ) {
+		$("#alert-success").html("Request Successfull").show();
+		loadRideGeoJsonString(JSON.stringify(response));
 	})
 
 	.fail(function( jqXHR, textStatus ) {

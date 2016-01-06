@@ -136,5 +136,32 @@ public class RideDomainService implements DomainService<Ride>{
 		}
 		return featureCollection;	
 	}
+	//This method is for testing purpose
+	public FeatureCollection getRidePoints(int rideId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transation = null;	
+		FeatureCollection featureCollection = new FeatureCollection();
+		try {
+			transation = session.beginTransaction();
+
+			RideDO rideDO = new RideDO();
+			featureCollection = rideDO.getRidePoints(rideId);			
+
+			transation.commit();
+		} catch (RuntimeException e) {
+			if (transation!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transation.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return featureCollection;	
+	}
 
 }

@@ -62,5 +62,17 @@ public class RideDomainResource implements DomainResource<Ride>{
 		FeatureCollection featureCollection = rideDomainService.getGeoJsonForRideSearch(rideRequestId);
 		return Response.ok(featureCollection).build();		
 	}
+	
+	/*
+	 * This method for testing purpose only
+	 */
+	@GET
+	@Path("/route/{rideId}")
+	public Response getRidePoints(@PathParam("rideId") int rideId){
+		RideDomainService rideDomainService = new RideDomainService();
+		FeatureCollection featureCollection = rideDomainService.getRidePoints(rideId);
+		return Response.ok(featureCollection).build();
+	}
+
 
 }

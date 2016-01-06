@@ -65,10 +65,8 @@ body, html {
 }
 
 .serif {
-    font-family: "Times New Roman", Times, serif;
+	font-family: "Times New Roman", Times, serif;
 }
-
-
 </style>
 </head>
 <body>
@@ -110,10 +108,13 @@ body, html {
 				<form class="navbar-form navbar-left" role="search">
 					<div class="form-group">
 						<input type="text" class="form-control"
-							placeholder="Ride Request Id" id="rideRequestId">
+							placeholder="Ride Request/Ride Id" id="ride-request-id">
 					</div>
-					<button type="button" class="btn btn-default" id="search"
-						onclick="searchRide(searchRidesURL)">Search</button>
+					<button type="button" class="btn btn-default" id="search-1"
+						onclick="searchRide(searchRidesURL)">Search Ride Request</button>
+					<button type="button" class="btn btn-default" id="search-2"
+						onclick="getRide(getRideURL)">Search Ride</button>
+
 				</form>
 				<button class="btn btn-primary navbar-btn" type="button"
 					data-toggle="collapse" data-target="#rideForm"

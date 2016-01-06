@@ -222,7 +222,7 @@ function createCircle(center, radius){
 		strokeOpacity: 0.8,
 		strokeWeight: 2,
 		fillColor: '#ffffaa',
-		fillOpacity: 0.0,
+		fillOpacity: 0.35,
 		map: map,
 		center: center,
 		radius: radius
@@ -424,10 +424,11 @@ function loadRideSearchGeoJsonString(geoString) {
 	ridePointData.addListener('click', function(event) {
 		var RideId = event.feature.getProperty("RideId");
 		var RideRequestId = event.feature.getProperty("RideRequestId");
-		var Distance = event.feature.getProperty("Distance");
+		var Distance = event.feature.getProperty("Distance").toPrecision(5);
+		var DateTimeUTC = event.feature.getProperty("DateTimeUTC");
 		var TravelDistance = event.feature.getProperty("TravelDistance");
-		infowindow.setContent("<div style='width:300px; height:50px; text-align: center;'>"
-				+"[RideId,RideRequestId,Distance,TravelDistance]:<br>"+"<b>"+RideId+","+RideRequestId+"</b>"+","+Distance+","+TravelDistance+"</div>");
+		infowindow.setContent("<div style='width:350px; height:50px; text-align: center;'>"
+				+"[RideId,RideRequestId,DateTimeUTC,Distance,TravelDistance]:<br>"+"<b>"+RideId+","+RideRequestId+"</b>"+","+DateTimeUTC+","+Distance+","+TravelDistance+"</div>");
 		infowindow.setPosition(event.feature.getGeometry().get());
 		infowindow.setOptions({pixelOffset: new google.maps.Size(0,-30)});
 		infowindow.open(map);
