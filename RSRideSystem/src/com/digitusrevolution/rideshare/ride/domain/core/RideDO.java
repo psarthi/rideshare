@@ -388,20 +388,32 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
 		List<RideMatchInfo> rideMatchInfos = searchRides(rideRequest);
 		for (RideMatchInfo rideMatchInfo : rideMatchInfos) {
-			List<Point> points = new ArrayList<>();
-			points.add(rideMatchInfo.getRidePickupPoint().getPoint());
-			points.add(rideMatchInfo.getRideDropPoint().getPoint());
-			MultiPoint multiPoint = GeoJSONUtil.getMultiFromPoints(points);
-			Map<String, Object> properties = new HashMap<>();
-			properties.put("type", "ridepoint");
-			properties.put("RideId", rideMatchInfo.getRideId());
-			properties.put("RideRequestId", rideMatchInfo.getRideRequestId());
-			properties.put("PickupDistance", rideMatchInfo.getPickupPointDistance());
-			properties.put("DropDistance", rideMatchInfo.getDropPointDistance());
-			properties.put("TravelDistance", rideMatchInfo.getTravelDistance());
-			Feature feature = GeoJSONUtil.getFeatureFromGeometry(multiPoint, properties);
+			Point ridePickupPoint = rideMatchInfo.getRidePickupPoint().getPoint();
+			Map<String, Object> ridePickupPointProperties = getRideSearchPointProperties(rideMatchInfo,"ridepickupoint");
+			org.geojson.Point geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(ridePickupPoint);
+			Feature feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, ridePickupPointProperties);
+			featureCollection.add(feature);
+
+			Point rideDropPoint = rideMatchInfo.getRideDropPoint().getPoint();
+			Map<String, Object> rideDropPointProperties = getRideSearchPointProperties(rideMatchInfo,"ridedroppoint");
+			geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(rideDropPoint);
+			feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, rideDropPointProperties);
 			featureCollection.add(feature);
 		}
 		return featureCollection;
+	}
+
+	private Map<String, Object> getRideSearchPointProperties(RideMatchInfo rideMatchInfo, String pointType) {
+		Map<String, Object> ridePickupPointProperties = new HashMap<>();
+		ridePickupPointProperties.put("type", pointType);
+		ridePickupPointProperties.put("RideId", rideMatchInfo.getRideId());
+		ridePickupPointProperties.put("RideRequestId", rideMatchInfo.getRideRequestId());
+		if (pointType.equals("ridepickupoint")){
+			ridePickupPointProperties.put("Distance", rideMatchInfo.getPickupPointDistance());			
+		} else {
+			ridePickupPointProperties.put("Distance", rideMatchInfo.getDropPointDistance());
+		}
+		ridePickupPointProperties.put("TravelDistance", rideMatchInfo.getTravelDistance());
+		return ridePickupPointProperties;
 	}
 }

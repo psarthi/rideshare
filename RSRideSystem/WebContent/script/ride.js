@@ -165,8 +165,8 @@ $("#rideRequest").click(function(){
 
 		.done(function( response ) {
 			$("#alert-success").html("Request Successfull:<br/>Ride Request has been successfully created with id:"+JSON.stringify(response)).show();
-			addPermanentMarker(start, pickupImage);
-			addPermanentMarker(end, dropImage);
+			addPermanentMarker(start, pickupIcon);
+			addPermanentMarker(end, dropIcon);
 			var points = [];
 			points.push(start);
 			points.push(end);

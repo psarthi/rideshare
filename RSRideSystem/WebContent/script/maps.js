@@ -29,21 +29,8 @@ function initMap() {
 
 	// Instantiate geocoder service
 	geocoder = new google.maps.Geocoder();
-
-	pickupImage = {
-			url: "image/pickup.png",
-			origin: new google.maps.Point(0, 0),
-			anchor: new google.maps.Point(17, 34),
-			scaledSize: new google.maps.Size(40, 40)
-	};
-
-	dropImage = {
-			url: "image/drop.png",
-			origin: new google.maps.Point(0, 0),
-			anchor: new google.maps.Point(17, 34),
-			scaledSize: new google.maps.Size(25, 40)
-	};
-
+	
+	setMarkerIcon();
 
 	// Add a listener
 	map.addListener('click', function(event){
@@ -68,6 +55,52 @@ function initMap() {
 		document.getElementById('location').value=event.latLng;
 		addPermanentMarker(event.latLng, pickupImage);
 	});*/
+
+}
+
+function setMarkerIcon(){
+	
+	pickupIcon = {
+			url: "image/pickup.png",
+			origin: new google.maps.Point(0, 0),
+			anchor: new google.maps.Point(17, 34),
+			scaledSize: new google.maps.Size(30, 30)
+	};
+
+	dropIcon = {
+			url: "image/drop.png",
+			origin: new google.maps.Point(0, 0),
+			anchor: new google.maps.Point(17, 34),
+			scaledSize: new google.maps.Size(30, 30)
+	};
+
+	startIcon = {
+			url: "image/start.png",
+			origin: new google.maps.Point(0, 0),
+			anchor: new google.maps.Point(17, 34),
+			scaledSize: new google.maps.Size(30, 30)
+	};
+
+	endIcon = {
+			url: "image/end.png",
+			origin: new google.maps.Point(0, 0),
+			anchor: new google.maps.Point(17, 34),
+			scaledSize: new google.maps.Size(30, 30)
+	};
+
+	ridePickupIcon = {
+			url: "image/ridepickup.png",
+			origin: new google.maps.Point(0, 0),
+			anchor: new google.maps.Point(17, 34),
+			scaledSize: new google.maps.Size(30, 30)
+	};
+
+	rideDropIcon = {
+			url: "image/ridedrop.png",
+			origin: new google.maps.Point(0, 0),
+			anchor: new google.maps.Point(17, 34),
+			scaledSize: new google.maps.Size(30, 30)
+	};
 
 }
 
@@ -249,23 +282,34 @@ function loadRideGeoJsonString(geoString) {
 	var geojson = JSON.parse(geoString);
 	var type;
 	var rideData = new google.maps.Data();
+	var markerIcon;
 	rideData.addGeoJson(geojson);
 	//This is very important, as this only draws on specific map
 	rideData.setMap(map)
 
 	// Add some style.
 	rideData.setStyle(function(feature) {
-		console.log("Style");
+		var geometryType = feature.getGeometry().getType();
+		var type = feature.getProperty('type');
+		if (type=="startpoint"){
+			console.log("startpoint");
+			markerIcon = startIcon;
+		}
+		if (type=="endpoint"){
+			console.log("endpoint");
+			markerIcon = endIcon;
+		}
 		return /** @type {google.maps.Data.StyleOptions} */({
 			strokeColor: getRandomColor(),
-			strokeWeight: 3
+			strokeWeight: 3,
+			icon: markerIcon
 		});
 	});
 
 	// Set mouseover event for each feature.
 	rideData.addListener('mouseover', function(event) {
 		document.getElementById('info-box').textContent =
-			event.feature.getProperty('Ride Id');
+			event.feature.getProperty('RideId');
 	});
 
 	zoom(map, rideData);
@@ -286,7 +330,7 @@ function loadRideRequestGeoJsonString(geoString) {
 		return /** @type {google.maps.Data.StyleOptions} */({
 			strokeColor: getRandomColor(),
 			strokeWeight: 3,
-			icon: pickupImage
+			icon: pickupIcon
 		});
 	});
 
@@ -313,7 +357,7 @@ function loadRidePointGeoJsonString(geoString) {
 		return /** @type {google.maps.Data.StyleOptions} */({
 			strokeColor: getRandomColor(),
 			strokeWeight: 3,
-			icon: dropImage
+			icon: ridePickupIcon
 		});
 	});
 

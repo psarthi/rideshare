@@ -191,24 +191,36 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 */
 	public FeatureCollection getAllRideRequestPoints(){
 		FeatureCollection featureCollection = new FeatureCollection();
+
 		List<RideRequest> rideRequests = getAll();
 		for (RideRequest rideRequest : rideRequests) {
-			List<RideRequestPoint> requestPoints = rideRequestPointDAO.getRideRequestPointsForRideRequest(rideRequest.getId());
-			List<Point> points = new ArrayList<>();
+			List<RideRequestPoint> requestPoints = rideRequestPointDAO.getRideRequestPointsForRideRequest(rideRequest.getId());			
 			for (RideRequestPoint rideRequestPoint : requestPoints) {
-				points.add(rideRequestPoint.getPoint());
+				if (rideRequestPoint.get_id().equals(rideRequest.getPickupPoint().get_id())){
+					Point pickupPoint = rideRequestPoint.getPoint();
+					Map<String, Object> properties = getRideRequestPointProperties(rideRequestPoint, "pickuppoint");
+					org.geojson.Point geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(pickupPoint);
+					Feature feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, properties);
+					featureCollection.add(feature);
+				} else {					
+					Point dropPoint = rideRequestPoint.getPoint();
+					Map<String, Object> properties = getRideRequestPointProperties(rideRequestPoint, "droppoint");
+					org.geojson.Point geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(dropPoint);
+					Feature feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, properties);
+					featureCollection.add(feature);
+				}
 			}
-			MultiPoint multiPoint = GeoJSONUtil.getMultiFromPoints(points);
-			Map<String, Object> properties = new HashMap<>();
-			properties.put("type", "riderequest");
-			properties.put("RideRequestId", rideRequest.getId());
-			properties.put("StartDateTimeUTC", rideRequest.getPickupTime());
-			properties.put("PickupVariation", rideRequest.getPickupPointVariation());
-			properties.put("DropVariation", rideRequest.getDropPointVariation());
-			Feature feature = GeoJSONUtil.getFeatureFromGeometry(multiPoint, properties);
-			featureCollection.add(feature);
-		}
+		}	
+		
 		return featureCollection;
-	}	
+	}
 
+	private Map<String, Object> getRideRequestPointProperties(RideRequestPoint rideRequestPoint, String pointType) {
+		Map<String, Object> properties = new HashMap<>();
+		properties.put("type", pointType);
+		properties.put("RideRequestId", rideRequestPoint.getRideRequestId());
+		properties.put("DateTimeUTC", rideRequestPoint.getDateTime());
+		properties.put("DistanceVariation", rideRequestPoint.getDistanceVariation());
+		return properties;
+	}
 }
