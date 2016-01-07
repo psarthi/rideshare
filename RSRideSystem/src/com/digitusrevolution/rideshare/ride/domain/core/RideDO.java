@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 
@@ -37,21 +36,20 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.ride.data.RideDAO;
 import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
-import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 import com.digitusrevolution.rideshare.ride.dto.RideMatchInfo;
 import com.digitusrevolution.rideshare.ride.dto.RidePointDTO;
 import com.digitusrevolution.rideshare.ride.dto.google.GoogleDirection;
 
 public class RideDO implements DomainObjectPKInteger<Ride>{
-	
+
 	private static final Logger logger = LogManager.getLogger(RideDO.class.getName());
 	private Ride ride;
 	private RideEntity rideEntity;
 	private RideMapper rideMapper;
 	private final RideDAO rideDAO;
 	private final RidePointDAO ridePointDAO;
-	
+
 	public RideDO() {
 		ride = new Ride();
 		rideEntity = new RideEntity();
@@ -59,7 +57,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		rideDAO = new RideDAO();
 		ridePointDAO = new RidePointDAO();
 	}
-	
+
 	public void setRide(Ride ride) {
 		this.ride = ride;
 		rideEntity = rideMapper.getEntity(ride);
@@ -82,30 +80,50 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		for (RideEntity rideEntity : rideEntities) {
 			setRideEntity(rideEntity);
 			//Purposefully not getting routes as it would be too much data
-			setRidePoints();
+			getRidePickupAndDropPoints();
 			rides.add(ride);
 		}
 		return rides;
 
 	}
 
-	//Update of RidePoints needs to be well thought - TBD
+	/*
+	 * This method is not supported i.e. ride once created can't be updated due to complexity involved
+	 * 
+	 * Note -
+	 *
+	 * 1. Update of RidePoints needs to be well thought - TBD
+	 * 
+	 */
 	@Override
 	public void update(Ride ride) {
-		if (ride.getId()==0){
+		throw new NotAuthorizedException("Ride update is not supported");
+
+		//Below code needs to be uncommented and modified as per business rules required for update
+		/*		if (ride.getId()==0){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+ride.getId());
 		}
 		setRide(ride);
 		rideDAO.update(rideEntity);
-	}
+		 */	}
 
 	//Delete of RidePoints needs to be well thought as it may involves multiple rides as well - TBD
 	@Override
-	public void delete(Ride ride) {
+	public void delete(int id) {
+		ride = get(id);
 		setRide(ride);
 		rideDAO.delete(rideEntity);
 	}
-	
+
+	/*
+	 * This method should not be used from external classes and instead use offerRide method
+	 * This method is only used internally from offerRide
+	 * 
+	 * Issue - 
+	 * 
+	 * 1. How to make this method private
+	 * 
+	 */
 	@Override
 	public int create(Ride ride) {
 		logger.entry();
@@ -122,11 +140,15 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 			throw new NotFoundException("No Data found with id: "+id);
 		}
 		setRideEntity(rideEntity);
-		setRidePoints();
+		//Purposefully not getting routes as it would be too much data
+		getRidePickupAndDropPoints();
 		return ride;
 	}
-	
-	private void setRidePoints(){
+
+	/*
+	 * This method doesn't return anything, but actually set the ride points in the ride object itself
+	 */
+	private void getRidePickupAndDropPoints(){
 		RidePoint startPoint = ridePointDAO.getRidePointOfRide(ride.getStartPoint().get_id(),ride.getId());
 		RidePoint endPoint = ridePointDAO.getRidePointOfRide(ride.getEndPoint().get_id(), ride.getId());		
 		ride.setStartPoint(startPoint);
@@ -141,6 +163,9 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return ride;
 	}
 
+	/*
+	 * This method doesn't return anything, but actually set route in the ride object itself
+	 */
 	private void getRoute() {
 		List<RidePoint> ridePoints = ridePointDAO.getAllRidePointsOfRide(ride.getId());
 		Route route = new Route();
@@ -169,10 +194,13 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	 * 2. What needs to be done when ride gets deleted in terms of its ride point or its updated
 	 * 
 	 */
-	public int offerRide(Ride ride, GoogleDirection direction){
+	public List<Integer> offerRide(Ride ride, GoogleDirection direction){
 		int userId = ride.getDriver().getId();
 		Collection<Role> roles = RESTClientUtil.getRoles(userId);
 		int id = 0;
+		//**This field should be replaced by actual ride recurring information
+		int recurringDays = 5;
+		List<Integer> rideIds = new ArrayList<>();
 		boolean driverStatus = false;
 		for (Role role : roles) {
 			if (role.getName().equals("Driver")){
@@ -182,30 +210,34 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 				ride.setStartTime(startTimeUTC);				
 				//Check if ride is recurring, then create multiple rides as per the recurring details
 				//**TBD - Recurring code needs to be written later
-				int[] ids = new int[5];
 				if (ride.getRecur()){
 					//For testing purpose, needs to be written properly
-					for (int i = 0; i<5; i++){
+					for (int i = 0; i<recurringDays; i++){
+						//No need to create multiple ride object as the change is only time
 						ride.setStartTime(startTimeUTC.plusDays(i));
-						ids[i] = create(ride);		
-						logger.debug("Ride has been created with id:" + ids[i]);						
+						id = create(ride);	
+						rideIds.add(id);
+						logger.debug("Ride has been created with id:" + id);						
 					}
 				}
-				
+
 				if (!ride.getRecur()){
-					id = create(ride);		
+					id = create(ride);	
+					rideIds.add(id);
+					//Below is imp, else it won't be able to update the ride which has been just created
+					ride.setId(id);
 					logger.debug("Ride has been created with id:" + id);
 				}
-				
+
 				RouteDO routeDO = new RouteDO();
 				List<RideBasicInfo> ridesBasicInfo = new ArrayList<>();
 				//In case its a recurring ride, then create multiple rides and add all of them below
 				//**TBD - Recurring scenarios has to be written later
 				if(ride.getRecur()){
 					//For testing purpose, needs to be written properly
-					for (int i = 0; i<5; i++){
+					for (int i = 0; i<recurringDays; i++){
 						RideBasicInfo rideBasicInfo = new RideBasicInfo();
-						rideBasicInfo.setId(ids[i]);
+						rideBasicInfo.setId(rideIds.get(i));
 						rideBasicInfo.setDateTime(startTimeUTC.plusDays(i));
 						ridesBasicInfo.add(rideBasicInfo);
 					}					
@@ -232,19 +264,19 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 				ridePointDAO.createBulk(ridePoints);
 				ride.getStartPoint().set_id(startPointId);
 				ride.getEndPoint().set_id(endPointId);
-				//Below is imp, else it won't be able to update the ride which has been just created
 				if (!ride.getRecur()){
-					ride.setId(id);
 					update(ride);
 					logger.debug("Ride has been updated with id:"+ride.getId());					
 				}
 				//**TBD - Recurring scenarios has to be written later
 				if (ride.getRecur()){
 					//For testing purpose, needs to be written properly
-					for (int i=0; i<5; i++){
-						ride.setId(ids[i]);
+					for (Integer rideId : rideIds) {
+						//Here we need to just update start and end point reference
+						//Ride timings for all rides are already set while creating ride
+						ride.setId(rideId);
 						update(ride);
-						logger.debug("Ride has been updated with id:"+ride.getId());											
+						logger.debug("Ride has been updated with id:"+rideId);											
 					}
 				}
 			} 
@@ -252,17 +284,16 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		if (!driverStatus) {
 			throw new NotAuthorizedException("Can't offer ride unless you are a Driver");
 		} else {
-			//**TBD - This will return 0 in case of recurring rides, needs to be thionk through
-			return id;
+			return rideIds;
 		}
 	}
-	
-	
+
+
 	public List<Ride> getUpcomingRides(int userId){
-		
+
 		return null;
 	}
-	
+
 	/*
 	 * Purpose - Search all rides which is matching ride requests criteria
 	 * 
@@ -278,8 +309,10 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	 * 
 	 * 
 	 */
-	public List<RideMatchInfo> searchRides(RideRequest rideRequest){		
+	public List<RideMatchInfo> searchRides(int rideRequestId){		
 
+		RideRequestDO rideRequestDO = new RideRequestDO();
+		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
 		//Get all rides around radius of pickup variation from pickup point
 		Map<Integer, RidePointDTO> pickupRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint());
 		Map<Integer, RidePointDTO> dropRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getDropPoint());
@@ -288,8 +321,8 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 
 		pickupRidePoints.keySet().retainAll(dropRidePoints.keySet());
 		dropRidePoints.keySet().retainAll(pickupRidePoints.keySet());
-		logger.debug("[Valid Pickup Rides: Based on RideIds]:"+pickupRidePoints.keySet());
-		logger.debug("[Valid Drop Rides: Based on RideIds]:"+dropRidePoints.keySet());
+		logger.debug("[Valid Pickup Rides: Based on Matching Pickup and Drop Point]:"+pickupRidePoints.keySet());
+		logger.debug("[Valid Drop Rides: Based on Matching Pickup and Drop Point]:"+dropRidePoints.keySet());
 
 		Iterator<Integer> iterator = pickupRidePoints.keySet().iterator();
 		List<RideMatchInfo> rideMatchInfos = new ArrayList<>();
@@ -306,26 +339,26 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 				rideMatchInfos.add(rideMatchInfo);
 			}
 		}
-		
+
 		Set<Integer> rideIds = pickupRidePoints.keySet();
-		
+
 		if (!rideIds.isEmpty()){
 			Set<Integer> availableRideIds = getAvailableRides(rideIds);
 			logger.debug("[Available Rides]:"+availableRideIds);
 			//This will remove all unavailable rides from the list
 			pickupRidePoints.keySet().retainAll(availableRideIds);
 		}
-		
+
 		//Remove invalid ride points again based on sequence and availability
 		dropRidePoints.keySet().retainAll(pickupRidePoints.keySet());
-		logger.debug("[Valid Pickup Rides: Based on Sequence]:"+pickupRidePoints.keySet());
-		logger.debug("[Valid Drop Rides: Based on Sequence]:"+dropRidePoints.keySet());
+		logger.debug("[Valid Pickup Rides: Based on Sequence of Pickup and Drop Points]:"+pickupRidePoints.keySet());
+		logger.debug("[Valid Drop Rides: Based on Sequence of Pickup and Drop Points]:"+dropRidePoints.keySet());
 
-		logger.debug("RideMatch Info List:" + rideMatchInfos);
+		logger.debug("Final RideMatch List:" + rideMatchInfos);
 
 		return rideMatchInfos;
 	}
-	
+
 	private RideMatchInfo getRideMatchInfo(RideRequest rideRequest, RidePointDTO pickupRidePointDTO, RidePointDTO dropRidePointDTO, int rideId) {
 		RideMatchInfo rideMatchInfo = new RideMatchInfo();
 		rideMatchInfo.setRideId(rideId);
@@ -337,7 +370,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		rideMatchInfo.setTravelDistance(rideRequest.getTravelDistance());
 		return rideMatchInfo;
 	}	
-	
+
 	private Set<Integer> getAvailableRides(Set<Integer> rideIds){
 		Set<RideEntity> availableRides = rideDAO.getAvailableRides(rideIds);
 		Set<Integer> availableRideIds = new HashSet<>();
@@ -346,10 +379,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		}
 		return availableRideIds;
 	}
-	
-	/*
-	 * This method for testing purpose only
-	 */
+
 	public FeatureCollection getAllRidePoints(){
 		FeatureCollection featureCollection = new FeatureCollection();
 		List<Ride> rides = getAll();
@@ -360,7 +390,6 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return featureCollection;
 	}
 
-	//This method is for testing purpose
 	private List<Feature> getRidePoints(Ride ride) {
 		List<Feature> features = new ArrayList<>();
 		List<RidePoint> ridePoints = ridePointDAO.getAllRidePointsOfRide(ride.getId());
@@ -391,37 +420,32 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return features;
 	}
 
-	//This method for testing purpose
 	public FeatureCollection getRidePoints(int rideId){
 		FeatureCollection featureCollection = new FeatureCollection();
 		featureCollection.addAll(getRidePoints(get(rideId)));
 		return featureCollection;
 	}
-	
-	/*
-	 * This method for testing purpose only
-	 */
-	public FeatureCollection getGeoJsonForRideSearch(int rideRequestId){
+
+	public FeatureCollection getMatchingRides(int rideRequestId){
 		FeatureCollection featureCollection = new FeatureCollection();
-		RideRequestDO rideRequestDO = new RideRequestDO();
-		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
-		List<RideMatchInfo> rideMatchInfos = searchRides(rideRequest);
+
+		List<RideMatchInfo> rideMatchInfos = searchRides(rideRequestId);
 		for (RideMatchInfo rideMatchInfo : rideMatchInfos) {
 			Point ridePickupPoint = rideMatchInfo.getRidePickupPoint().getPoint();
-			Map<String, Object> ridePickupPointProperties = getRideSearchPointProperties(rideMatchInfo,"ridepickuppoint");
+			Map<String, Object> ridePickupPointProperties = getRideProperties(rideMatchInfo,"ridepickuppoint");
 			org.geojson.Point geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(ridePickupPoint);
 			Feature feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, ridePickupPointProperties);
 			featureCollection.add(feature);
 
 			Point rideDropPoint = rideMatchInfo.getRideDropPoint().getPoint();
-			Map<String, Object> rideDropPointProperties = getRideSearchPointProperties(rideMatchInfo,"ridedroppoint");
+			Map<String, Object> rideDropPointProperties = getRideProperties(rideMatchInfo,"ridedroppoint");
 			geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(rideDropPoint);
 			feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, rideDropPointProperties);
 			featureCollection.add(feature);
 		}
-		
-		RideRequestPointDAO rideRequestPointDAO = new RideRequestPointDAO();
-		List<RideRequestPoint> rideRequestPoints = rideRequestPointDAO.getRideRequestPointsForRideRequest(rideRequestId);
+
+		RideRequestDO rideRequestDO = new RideRequestDO();
+		List<RideRequestPoint> rideRequestPoints = rideRequestDO.getPointsOfRideRequest(rideRequestId);
 		for (RideRequestPoint rideRequestPoint : rideRequestPoints) {
 			Point point = rideRequestPoint.getPoint();
 			Map<String, Object> properties = new HashMap<>();
@@ -434,10 +458,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return featureCollection;
 	}
 
-	/*
-	 * This method for testing purpose only
-	 */
-	private Map<String, Object> getRideSearchPointProperties(RideMatchInfo rideMatchInfo, String pointType) {
+	private Map<String, Object> getRideProperties(RideMatchInfo rideMatchInfo, String pointType) {
 		Map<String, Object> ridePickupPointProperties = new HashMap<>();
 		ridePickupPointProperties.put("type", pointType);
 		ridePickupPointProperties.put("RideId", rideMatchInfo.getRideId());

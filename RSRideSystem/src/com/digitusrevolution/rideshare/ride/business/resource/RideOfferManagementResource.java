@@ -1,5 +1,7 @@
 package com.digitusrevolution.rideshare.ride.business.resource;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -19,8 +21,8 @@ public class RideOfferManagementResource {
 	public Response offerRide(Ride ride){
 	
 		RideOfferManagementService rideOfferManagementService = new RideOfferManagementService();
-		int id = rideOfferManagementService.offerRide(ride);
-		return Response.ok().entity(Integer.toString(id)).build();
+		List<Integer> rideIds = rideOfferManagementService.offerRide(ride);
+		return Response.ok().entity(rideIds).build();
 	}
 
 }

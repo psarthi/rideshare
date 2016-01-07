@@ -7,8 +7,6 @@ public interface DomainObject<T>{
 	List<T> getAll();
 
 	void update(T model);
-
-	void delete(T model);
 	
 	/**
      * Fetch domain model child

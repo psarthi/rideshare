@@ -69,7 +69,8 @@ public class TrustNetworkDO implements DomainObjectPKInteger<TrustNetwork>{
 	}
 
 	@Override
-	public void delete(TrustNetwork trustNetwork) {
+	public void delete(int id) {
+		trustNetwork = get(id);
 		setTrustNetwork(trustNetwork);
 		genericDAO.delete(trustNetworkEntity);		
 	}

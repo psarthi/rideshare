@@ -7,15 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.openmbean.InvalidKeyException;
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
-import org.geojson.LineString;
-import org.geojson.MultiPoint;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
@@ -24,12 +22,10 @@ import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
-import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.ride.data.RideRequestDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
-import com.digitusrevolution.rideshare.ride.domain.RouteDO;
-import com.digitusrevolution.rideshare.ride.dto.google.GoogleDistance;
+
 
 public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 
@@ -76,21 +72,44 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		return rideRequests;
 	}
 
+	/*
+	 * This method is not supported i.e. riderequest once created can't be updated due to complexity involved
+	 * 
+	 * Note -
+	 *
+	 * 1. Update of Ride Request Points needs to be well thought - TBD
+	 * 
+	 */
 	@Override
 	public void update(RideRequest rideRequest) {
-		if (rideRequest.getId()==0){
+		throw new NotAuthorizedException("Ride Request update is not supported");
+		
+		//Below code needs to be uncommented and modified as per business rules required for update
+		/*		if (rideRequest.getId()==0){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+rideRequest.getId());
 		}
 		setRideRequest(rideRequest);
 		rideRequestDAO.update(rideRequestEntity);
+		 */	
 	}
 
 	@Override
-	public void delete(RideRequest rideRequest) {
+	public void delete(int id) {
+		rideRequest = get(id);
 		setRideRequest(rideRequest);
 		rideRequestDAO.delete(rideRequestEntity);
+		rideRequestPointDAO.deletePointsOfRideRequest(id);
 	}
-
+	
+	/*
+	 * This method should not be used from external classes and instead use requestRide method
+	 * This method is only used internally from requestRide
+	 * 
+	 * Issue - 
+	 * 
+	 * 1. How to make this method private
+	 * 
+	 */
 	@Override
 	public int create(RideRequest rideRequest) {
 		logger.entry();
@@ -111,6 +130,9 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		return rideRequest;
 	}
 
+	/*
+	 * This method doesn't return but set ride request points in the ride request object itself 
+	 */
 	private void getRideRequestPoint() {
 		RideRequestPoint pickupPoint = rideRequestPointDAO.get(rideRequest.getPickupPoint().get_id());
 		RideRequestPoint dropPoint = rideRequestPointDAO.get(rideRequest.getDropPoint().get_id());
@@ -125,31 +147,28 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		return rideRequest;
 	}
 
-	/*
+	/* 
+	 * Purpose - Ride Request needs to be created with corresponding ride request points
 	 * 
-	 * TBD - 
+	 * High Level Logic -
 	 * 
-	 * 1. What needs to be done when riderequest gets deleted in terms of its riderequest point or its updated
+	 * - Convert pickup time to UTC
+	 * - Set the status
+	 * - Create Ride Request in DB
+	 * - Set Ride Request point properties and then create them in NoSQL DB 
+	 * 
 	 */
 	public int requestRide(RideRequest rideRequest){
-		//Setting the travel time and distance, which would be used for searching ride points by date/time as well as sorting the ride request by distance
 		ZonedDateTime pickupTimeUTC = rideRequest.getPickupTime().withZoneSameInstant(ZoneOffset.UTC);
-		//Set pickup time in Riderequest pickup point
-		RouteDO routeDO = new RouteDO();
-		GoogleDistance googleDistance = routeDO.getDistance(rideRequest.getPickupPoint().getPoint(), rideRequest.getDropPoint().getPoint(),pickupTimeUTC);	
-		int travelDistance = googleDistance.getRows().get(0).getElements().get(0).getDistance().getValue();
-		int travelTime = googleDistance.getRows().get(0).getElements().get(0).getDuration().getValue();
-
-		rideRequest.setTravelDistance(travelDistance);
-		rideRequest.setTravelTime(travelTime);
 		//Storing dateTime in UTC
 		rideRequest.setPickupTime(pickupTimeUTC);
 		rideRequest.setStatus("unfulfilled");
 		int id = create(rideRequest);
+		rideRequest.setId(id);
 
 		//No need to get update Ride request as return type as in java its pass by reference, so data would be updated in the original ride request
-		setRideRequestPoint(rideRequest, pickupTimeUTC, travelTime, id);
-
+		setRideRequestPoint(rideRequest);
+		
 		String pickupPointId = rideRequestPointDAO.create(rideRequest.getPickupPoint());
 		String dropPointId = rideRequestPointDAO.create(rideRequest.getDropPoint());
 		rideRequest.getPickupPoint().set_id(pickupPointId);
@@ -160,11 +179,11 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		return id;
 	}
 
-	private void setRideRequestPoint(RideRequest rideRequest, ZonedDateTime pickupTimeUTC, int travelTime, int id) {
-		rideRequest.getPickupPoint().setDateTime(pickupTimeUTC);		
-		rideRequest.getDropPoint().setDateTime(pickupTimeUTC.plusSeconds(travelTime));
-		rideRequest.getPickupPoint().setRideRequestId(id);
-		rideRequest.getDropPoint().setRideRequestId(id);
+	private void setRideRequestPoint(RideRequest rideRequest) {
+		rideRequest.getPickupPoint().setDateTime(rideRequest.getPickupTime());		
+		rideRequest.getDropPoint().setDateTime(rideRequest.getPickupTime().plusSeconds(rideRequest.getTravelTime()));
+		rideRequest.getPickupPoint().setRideRequestId(rideRequest.getId());
+		rideRequest.getDropPoint().setRideRequestId(rideRequest.getId());
 		rideRequest.getPickupPoint().setDistanceVariation(rideRequest.getPickupPointVariation());
 		rideRequest.getDropPoint().setDistanceVariation(rideRequest.getDropPointVariation());
 		rideRequest.getPickupPoint().setTimeVariation(rideRequest.getPickupTimeVariation());
@@ -181,20 +200,17 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * - Finally, you will get valid ride requests, then for each of them do further validation e.g. seat etc. 
 	 * 
 	 */
-	public List<RideRequest> searchRideRequests(Ride ride){
+	public List<RideRequest> searchRideRequests(int rideId){
 
 		return null;
 	}
 
-	/*
-	 * This method for testing purpose only
-	 */
 	public FeatureCollection getAllRideRequestPoints(){
 		FeatureCollection featureCollection = new FeatureCollection();
 
 		List<RideRequest> rideRequests = getAll();
 		for (RideRequest rideRequest : rideRequests) {
-			List<RideRequestPoint> requestPoints = rideRequestPointDAO.getRideRequestPointsForRideRequest(rideRequest.getId());			
+			List<RideRequestPoint> requestPoints = getPointsOfRideRequest(rideRequest.getId());			
 			for (RideRequestPoint rideRequestPoint : requestPoints) {
 				if (rideRequestPoint.get_id().equals(rideRequest.getPickupPoint().get_id())){
 					Point pickupPoint = rideRequestPoint.getPoint();
@@ -211,13 +227,10 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 				}
 			}
 		}	
-		
+
 		return featureCollection;
 	}
-	
-	/*
-	 * This method for testing purpose only
-	 */
+
 	private Map<String, Object> getRideRequestPointProperties(RideRequestPoint rideRequestPoint, String pointType) {
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("type", pointType);
@@ -226,4 +239,9 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		properties.put("DistanceVariation", rideRequestPoint.getDistanceVariation());
 		return properties;
 	}
+
+	public List<RideRequestPoint> getPointsOfRideRequest(int rideRequestId) {
+		return rideRequestPointDAO.getPointsOfRideRequest(rideRequestId);
+	}
+
 }

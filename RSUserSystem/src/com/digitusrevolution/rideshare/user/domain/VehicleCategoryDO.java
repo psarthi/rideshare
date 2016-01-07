@@ -90,7 +90,8 @@ public class VehicleCategoryDO implements DomainObjectPKInteger<VehicleCategory>
 	}
 
 	@Override
-	public void delete(VehicleCategory vehicleCategory) {
+	public void delete(int id) {
+		vehicleCategory = get(id);
 		setVehicleCategory(vehicleCategory);
 		genericDAO.delete(vehicleCategoryEntity);		
 	}

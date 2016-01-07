@@ -93,7 +93,8 @@ public class VehicleDO implements DomainObjectPKInteger<Vehicle>{
 	}
 
 	@Override
-	public void delete(Vehicle vehicle) {
+	public void delete(int id) {
+		vehicle = get(id);
 		setVehicle(vehicle);
 		vehicleDAO.delete(vehicleEntity);		
 	}

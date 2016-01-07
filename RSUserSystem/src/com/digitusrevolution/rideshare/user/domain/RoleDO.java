@@ -88,7 +88,8 @@ public class RoleDO implements DomainObjectPKString<Role>{
 	}
 
 	@Override
-	public void delete(Role role) {
+	public void delete(String name) {
+		role = get(name);
 		setRole(role);
 		genericDAO.delete(roleEntity);				
 	}

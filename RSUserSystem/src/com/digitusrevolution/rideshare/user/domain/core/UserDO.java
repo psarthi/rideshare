@@ -90,7 +90,8 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	}
 	
 	@Override
-	public void delete(User user){
+	public void delete(int id){
+		user = get(id);
 		setUser(user);
 		userDAO.delete(userEntity);
 	}

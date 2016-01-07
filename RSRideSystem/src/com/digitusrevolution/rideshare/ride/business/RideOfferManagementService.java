@@ -2,6 +2,7 @@ package com.digitusrevolution.rideshare.ride.business;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,11 +25,11 @@ public class RideOfferManagementService {
 	
 	private static final Logger logger = LogManager.getLogger(RideOfferManagementService.class.getName());
 	
-	public int offerRide(Ride ride){
+	public List<Integer> offerRide(Ride ride){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
-		int id =0;
+		List<Integer> rideIds = null;
 		try {
 			transation = session.beginTransaction();
 			
@@ -54,7 +55,7 @@ public class RideOfferManagementService {
 			//End
 			
 			RideDO rideDO = new RideDO();
-			id = rideDO.offerRide(ride,direction);
+			rideIds = rideDO.offerRide(ride,direction);
 
 			transation.commit();
 		} catch (RuntimeException e) {
@@ -71,7 +72,7 @@ public class RideOfferManagementService {
 			}
 		}
 		
-		return id;
+		return rideIds;
 	}
 
 }

@@ -27,6 +27,7 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import static com.mongodb.client.model.Filters.*;
 import com.mongodb.client.model.geojson.Geometry;
+import com.mongodb.client.result.DeleteResult;
 
 public class RidePointDAO{
 
@@ -104,6 +105,13 @@ public class RidePointDAO{
 	public void delete(String _id) {
 		collection.deleteOne(eq("_id", _id));
 	}
+	
+	public void deleteAllRidePointsOfRide(int rideId) {
+		Document query = new Document("rides.id",rideId);
+		DeleteResult result = collection.deleteMany(query);
+		logger.debug("Total ride points deleted for ride:"+rideId+" is: "+result.getDeletedCount());
+	}
+
 
 	public List<RidePoint> getAll() {
 		MongoCursor<Document> cursor = collection.find().iterator();

@@ -53,7 +53,7 @@ public class DomainLayerTest {
 //		logger.info(GeoJSONUtil.getGeoJsonString(featureCollection));
 //		
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		rideRequestDO.delete(rideRequestDO.get(46));
+		rideRequestDO.delete(46);
 //		featureCollection = rideRequestDO.getAllRideRequestPoints();
 //		logger.info(GeoJSONUtil.getGeoJsonString(featureCollection));
 //		

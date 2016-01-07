@@ -63,7 +63,8 @@ public class TrustCategoryDO implements DomainObjectPKString<TrustCategory>{
 	}
 
 	@Override
-	public void delete(TrustCategory trustCategory) {
+	public void delete(String name) {
+		trustCategory = get(name);
 		setTrustCategory(trustCategory);
 		genericDAO.delete(trustCategoryEntity);		
 	}

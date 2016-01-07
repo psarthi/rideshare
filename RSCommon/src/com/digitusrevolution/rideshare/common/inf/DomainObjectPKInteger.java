@@ -7,5 +7,7 @@ public interface DomainObjectPKInteger<T> extends DomainObject<T>{
 	T get(int id);
 
 	T getChild(int id);
+	
+	void delete(int id);
 
 }

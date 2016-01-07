@@ -173,8 +173,8 @@ public class RideDataLoader {
 			RouteDO routeDO = new RouteDO();
 			GoogleDirection direction = routeDO.getDirection(startPoint, endPoint,startTimeUTC);
 			
-			int id = rideDO.offerRide(ride,direction);	
-			System.out.println("Ride has been created: "+id);
+			List<Integer> rideIds= rideDO.offerRide(ride,direction);	
+			System.out.println("Ride has been created: "+rideIds);
 
 /*			// Ride - 2
 
@@ -302,13 +302,13 @@ public class RideDataLoader {
 			RideRequestDO rideRequestDO = new RideRequestDO();
 			List<RideRequest> rideRequests = rideRequestDO.getAll();
 			for (RideRequest rideRequest : rideRequests) {
-				rideRequestDO.delete(rideRequest);
+				rideRequestDO.delete(rideRequest.getId());
 			}
 			
 			RideDO rideDO = new RideDO();
 			List<Ride> rides = rideDO.getAll();
 			for (Ride ride : rides) {
-				rideDO.delete(ride);
+				rideDO.delete(ride.getId());
 			}			
 
 		}

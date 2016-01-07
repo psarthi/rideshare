@@ -11,10 +11,10 @@ import javax.ws.rs.core.Response;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 
-@Path("/model")
+@Path("/domain/ridesystem")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class RideModelDomainResource {
+public class RideSystemDomainResource {
 
 	@POST
 	@Path("/dummypost")
@@ -23,14 +23,14 @@ public class RideModelDomainResource {
 	}
 	
 	@GET
-	@Path("/ride")
+	@Path("/model/ride")
 	public Response getRide(){
 		Ride ride = new Ride();
 		return Response.ok().entity(ride).build();
 	}
 	
 	@GET
-	@Path("/riderequest")
+	@Path("/model/riderequest")
 	public Response getRideRequest(){
 		RideRequest rideRequest = new RideRequest();
 		return Response.ok().entity(rideRequest).build();

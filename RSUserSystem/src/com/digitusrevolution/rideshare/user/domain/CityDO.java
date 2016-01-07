@@ -89,7 +89,8 @@ public class CityDO implements DomainObjectPKInteger<City>{
 	}
 
 	@Override
-	public void delete(City city) {
+	public void delete(int id) {
+		city = get(id);
 		setCity(city);
 		genericDAO.delete(cityEntity);			
 	}

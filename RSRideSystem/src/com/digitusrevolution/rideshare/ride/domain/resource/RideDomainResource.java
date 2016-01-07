@@ -12,8 +12,6 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.geojson.FeatureCollection;
-
 import com.digitusrevolution.rideshare.common.inf.DomainResource;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.ride.domain.service.RideDomainService;
@@ -40,39 +38,5 @@ public class RideDomainResource implements DomainResource<Ride>{
 		GenericEntity<List<Ride>> entity = new GenericEntity<List<Ride>>(rides) {};
 		return Response.ok(entity).build();
 	}
-	
-	/*
-	 * This method for testing purpose only
-	 */
-	@GET
-	@Path("/allpoints")
-	public Response getAllRidePoints(){
-		RideDomainService rideDomainService = new RideDomainService();
-		FeatureCollection featureCollection = rideDomainService.getAllRidePoints();
-		return Response.ok(featureCollection).build();
-	}
-	
-	/*
-	 * This method for testing purpose only
-	 */
-	@GET
-	@Path("/search/{rideRequestId}")
-	public Response getGeoJsonForRideSearch(@PathParam("rideRequestId") int rideRequestId){
-		RideDomainService rideDomainService = new RideDomainService();
-		FeatureCollection featureCollection = rideDomainService.getGeoJsonForRideSearch(rideRequestId);
-		return Response.ok(featureCollection).build();		
-	}
-	
-	/*
-	 * This method for testing purpose only
-	 */
-	@GET
-	@Path("/route/{rideId}")
-	public Response getRidePoints(@PathParam("rideId") int rideId){
-		RideDomainService rideDomainService = new RideDomainService();
-		FeatureCollection featureCollection = rideDomainService.getRidePoints(rideId);
-		return Response.ok(featureCollection).build();
-	}
-
 
 }

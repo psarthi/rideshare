@@ -3,6 +3,8 @@ package com.digitusrevolution.rideshare.ride.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -13,12 +15,14 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.DeleteResult;
 
 public class RideRequestPointDAO{
 	
 	private MongoDatabase db = MongoDBUtil.getDatabase();
 	private MongoCollection<Document> collection = db.getCollection("rideRequest_point");
 	private final JSONUtil<RideRequestPoint> jsonUtil = new JSONUtil<>(RideRequestPoint.class);
+	private static final Logger logger = LogManager.getLogger(RideRequestPointDAO.class.getName());
 
 	public String create(RideRequestPoint rideRequestPoint) {
 		ObjectId _id = new ObjectId();
@@ -49,6 +53,12 @@ public class RideRequestPointDAO{
 		collection.deleteOne(Filters.eq("_id", _id));
 	}
 	
+	public void deletePointsOfRideRequest(int rideRequestId) {
+		Document query = new Document("rideRequestId",rideRequestId);
+		DeleteResult result = collection.deleteMany(query);
+		logger.debug("Total points deleted for Ride Request:"+rideRequestId+" is: "+result.getDeletedCount());
+	}
+	
 	public List<RideRequestPoint> getAll() {
 		List<RideRequestPoint> rideRequestPoints = new ArrayList<>();
 		MongoCursor<Document> cursor = collection.find().iterator();
@@ -64,7 +74,7 @@ public class RideRequestPointDAO{
 		return rideRequestPoints;
 	}
 	
-	public List<RideRequestPoint> getRideRequestPointsForRideRequest(int rideRequestId) {
+	public List<RideRequestPoint> getPointsOfRideRequest(int rideRequestId) {
 		List<RideRequestPoint> rideRequestPoints = new ArrayList<>();
 		MongoCursor<Document> cursor = collection.find(Filters.eq("rideRequestId", rideRequestId)).iterator();
 		try {

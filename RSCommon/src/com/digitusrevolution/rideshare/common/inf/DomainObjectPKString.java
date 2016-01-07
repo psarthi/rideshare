@@ -8,4 +8,6 @@ public interface DomainObjectPKString<T> extends DomainObject<T>{
 
 	T getChild(String name);	
 	
+	void delete(String name);
+	
 }

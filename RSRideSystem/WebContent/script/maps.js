@@ -95,14 +95,14 @@ function setMarkerIcon(){
 			url: "image/ridepickup.png",
 			origin: new google.maps.Point(0, 0),
 			anchor: new google.maps.Point(17, 34),
-			scaledSize: new google.maps.Size(50, 40)
+			scaledSize: new google.maps.Size(50, 70)
 	};
 
 	rideDropIcon = {
 			url: "image/ridedrop.png",
 			origin: new google.maps.Point(0, 0),
 			anchor: new google.maps.Point(17, 34),
-			scaledSize: new google.maps.Size(50, 40)
+			scaledSize: new google.maps.Size(50, 70)
 	};
 
 }
@@ -321,7 +321,7 @@ function loadRideGeoJsonString(geoString) {
 
 	});
 
-	zoom(map, rideData);
+	//zoom(map, rideData);
 
 }
 
@@ -373,7 +373,7 @@ function loadRideRequestGeoJsonString(geoString) {
 		infowindow.open(map);
 	});  
 
-	zoom(map, rideRequestData);
+	//zoom(map, rideRequestData);
 }
 
 function loadRideSearchGeoJsonString(geoString) {
