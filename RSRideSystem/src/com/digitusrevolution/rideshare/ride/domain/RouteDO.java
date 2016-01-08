@@ -66,9 +66,6 @@ public class RouteDO{
 	 * 
 	 * High level logic - 
 	 * 
-	 * - Add start location as first point in the route, which will never get added in the below steps
-	 *  	as first point is comparing with itself which would always be Zero distance and hence would not get added 
-	 * - For rest of the ridepoints, follow below steps -
 	 * - Get the steps details from google direction
 	 * - For each steps, decode the polyline path to get all the points in that step
 	 * - Calculate the average speed for that step, based on time and distance provided by google
@@ -80,9 +77,11 @@ public class RouteDO{
 	 * - Store each point as "to" location
 	 * - Calculate the distance between last point and this point i.e. between "from" to "to"
 	 * - Compare the distance with minimum required distance between points
-	 * - In case, its less move to the next point and calculate the distance again from that same earlier location
+	 * - In case, its less, then check if this point is not first point or last point. If all condition is true, then only 
+	 *      move to the next point and calculate the distance again from that same earlier location
 	 * 		Note - Don't change the from location as the distance calculation is between last stored point to this point
-	 * - In case, if its more then calculate the time to travel based on step speed calculated earlier    
+	 * - In case, if its more or point is first or last point, then calculate the time to travel based on step speed calculated earlier 
+	 * - **Reason for validating the last point or first point, as its mandatory to store those point irrespective of the distance   
 	 * - Get the time of last point and increment that by the time calculated above
 	 * - Add the point to the route and ensure that each point is different as by just adding point to the route would 
 	 * 	 	result into wrong data, as all points would point to the last point as Java is copy by reference
@@ -93,6 +92,12 @@ public class RouteDO{
 
 		Leg leg = direction.getRoutes().get(0).getLegs().get(0);
 		List<Step> steps = leg.getSteps();
+		// This is done to get lastpoint of the ride from decoding last step polyline, 
+		// as double value which comes from [step.getEndLocation().getLat() and getLng()]
+		// has different precision than decoded LatLnt, which can't be compared for equality as it would return always false
+		Step lastStep = steps.get(steps.size()-1);
+		List<LatLng> lastStepLatLngs = PolyUtil.decode(lastStep.getPolyline().getPoints());
+		LatLng lastPoint = lastStepLatLngs.get(lastStepLatLngs.size()-1);
 		//**Start - This is just for analysis purpose, below code is not relevant to the logic
 		String encodedOverallPath = direction.getRoutes().get(0).getOverviewPolyline().getPoints();
 		List<LatLng> latLngsOverall = PolyUtil.decode(encodedOverallPath);
@@ -107,28 +112,7 @@ public class RouteDO{
 		int seq = 1;
 		int skip = 0;
 		double minDistance = Double.parseDouble(PropertyReader.getInstance().getProperty("MIN_DISTANCE_BETWEEN_ROUTE_POINTS"));
-		//This will add start location to the list, which will get skipped once it enters the 
-		//loop as first point comparision would always be zero, which is less than min distance 
-		//and it would not get added to the route
-		RidePoint startRidePoint = new RidePoint();
-		startRidePoint.getPoint().setLatitude(leg.getStartLocation().getLat());
-		startRidePoint.getPoint().setLongitude(leg.getStartLocation().getLng());
-		startRidePoint.setSequence(seq);
-		//Below is done to have seperate copy of the data, else this would point to the last point due to copy by reference.
-		List<RideBasicInfo> copyOfRidesBasicInfo = new ArrayList<>();
-		for (RideBasicInfo rideBasicInfo : ridesBasicInfo) {
-			ZonedDateTime startPointDateTime = rideBasicInfo.getDateTime();
-			rideBasicInfo.setDateTime(startPointDateTime);
-			RideBasicInfo copyOfRideBasicInfo = new RideBasicInfo();
-			copyOfRideBasicInfo.setId(rideBasicInfo.getId());
-			copyOfRideBasicInfo.setDateTime(rideBasicInfo.getDateTime());
-			copyOfRidesBasicInfo.add(copyOfRideBasicInfo);
-		}
-		startRidePoint.setRidesBasicInfo(copyOfRidesBasicInfo);
 		logger.debug("Ride Start Time:"+ridesBasicInfo.get(0).getDateTime());
-		logger.debug("RidePoint added [point,time]:"+startRidePoint.getPoint().toString()+","+startRidePoint.getRidesBasicInfo().get(0).getDateTime());
-		route.getRidePoints().add(startRidePoint);
-		seq++;
 		for (Step step : steps) {	
 			double stepDistance = step.getDistance().getValue();
 			double stepTime = step.getDuration().getValue();
@@ -141,20 +125,27 @@ public class RouteDO{
 			for (int i = 0; i < latLngs.size(); i++) {
 				LatLng to = latLngs.get(i);
 				double distance = SphericalUtil.computeDistanceBetween(from, to);
-				if (distance <= minDistance){
+				logger.trace("lastPointLat,toLat:lastPointLon,toLon"+
+						lastPoint.latitude+","+to.latitude+":"+lastPoint.longitude+","+to.longitude);				
+				boolean lastPointStatus = ((lastPoint.latitude == to.latitude) && (lastPoint.longitude == to.longitude));
+				boolean firstPointStatus = from.equals(to);
+				logger.trace("First,Last Point Status:" + firstPointStatus+","+lastPointStatus);
+				//**First point condition has been added, as for first point distance is always 0, so it gets skipped. So with this condition it will not
+				//**Last Point condition has been added, as if last point distance is less than min distance, then last point would be skipped
+				if (distance <= minDistance && !lastPointStatus && !firstPointStatus){
 					logger.trace("[Less:distance,seq,skip,from,to]:"+distance+","+seq+","+skip+","+from.toString()+","+to.toString());
 					skip++;
 					continue;
 				} 
 				logger.trace("[More:distance,seq,skip,from,to]:"+distance+","+seq+","+skip+","+from.toString()+","+to.toString());
-				logger.trace(distance);				
+				logger.trace("distance:"+distance);				
 
 				double time = MathUtil.getTime(distance, stepSpeed);
 
 				//**Start - This is just for analysis purpose, below code is not relevant to the logic
 				double timeBasedOnOverallSpeed = MathUtil.getTime(distance, overallSpeed);
 				logger.trace("timeBasedOnOverallSpeed:"+timeBasedOnOverallSpeed+":timeBasedOnStepSpeed:"+time+":Diff:"+(timeBasedOnOverallSpeed-time));
-				logger.trace(timeBasedOnOverallSpeed-time);
+				logger.trace("time difference:"+(timeBasedOnOverallSpeed-time));
 				//**End
 				List<RideBasicInfo> updatedRidesBasicInfo = new ArrayList<>();
 				for (RideBasicInfo rideBasicInfo : ridesBasicInfo) {
@@ -181,6 +172,7 @@ public class RouteDO{
 				//**End
 			}			
 		}
+		
 		logger.debug("Ride Finish Time:"+ridesBasicInfo.get(0).getDateTime());
 		//**Start - This is just for analysis purpose, below code is not relevant to the logic
 		for (RidePoint ridePoint : route.getRidePoints()) {
