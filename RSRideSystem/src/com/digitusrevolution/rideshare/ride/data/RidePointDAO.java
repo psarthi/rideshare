@@ -230,7 +230,7 @@ public class RidePointDAO{
 		return getAllMatchingRidePointNearGivenPoint(rideRequestPoint,-1);
 	}
 	
-	public RidePointDTO getMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, int rideId){
+	public RidePointDTO getRidePointOfSpecificRideNearGivenPoint(RideRequestPoint rideRequestPoint, int rideId){
 		Map<Integer, RidePointDTO> ridePointDTOMap = getAllMatchingRidePointNearGivenPoint(rideRequestPoint,rideId);	
 		return ridePointDTOMap.get(rideId);
 	}

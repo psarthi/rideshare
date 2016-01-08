@@ -47,17 +47,7 @@ public class DomainLayerTest {
 	}
 	
 	public void test(){
-		RideDO rideDO = new RideDO();
-//		rideDO.delete(rideDO.get(149));
-//		FeatureCollection featureCollection = rideDO.getAllRidePoints();
-//		logger.info(GeoJSONUtil.getGeoJsonString(featureCollection));
-//		
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		rideRequestDO.delete(46);
-//		featureCollection = rideRequestDO.getAllRideRequestPoints();
-//		logger.info(GeoJSONUtil.getGeoJsonString(featureCollection));
-//		
-//		featureCollection = rideDO.getGeoJsonForRideSearch(42);
-//		logger.info(GeoJSONUtil.getGeoJsonString(featureCollection));
+		rideRequestDO.searchRideRequests(160);
 	}
 }

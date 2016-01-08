@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 
@@ -88,7 +89,8 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	}
 
 	/*
-	 * This method is not supported i.e. ride once created can't be updated due to complexity involved
+	 * This method should be only used internally by this class only. 
+	 * Update functionality is not supported once ride is created as its too complex
 	 * 
 	 * Note -
 	 *
@@ -97,15 +99,12 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	 */
 	@Override
 	public void update(Ride ride) {
-		throw new NotAuthorizedException("Ride update is not supported");
-
-		//Below code needs to be uncommented and modified as per business rules required for update
-		/*		if (ride.getId()==0){
+		if (ride.getId()==0){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+ride.getId());
 		}
 		setRide(ride);
 		rideDAO.update(rideEntity);
-		 */	}
+	}
 
 	//Delete of RidePoints needs to be well thought as it may involves multiple rides as well - TBD
 	@Override
@@ -472,5 +471,9 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		}
 		ridePickupPointProperties.put("TravelDistance", rideMatchInfo.getTravelDistance());
 		return ridePickupPointProperties;
+	}
+
+	public List<RidePoint> getAllRidePointsOfRide(int rideId) {
+		return ridePointDAO.getAllRidePointsOfRide(rideId);
 	}
 }

@@ -9,6 +9,7 @@ import org.geojson.LineString;
 import org.geojson.LngLatAlt;
 import org.geojson.MultiPoint;
 
+import com.digitusrevolution.rideshare.common.math.google.LatLng;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 
 public class GeoJSONUtil {
@@ -68,4 +69,13 @@ public class GeoJSONUtil {
 		return geoJsonPoint;
 	}
 	
+	public static LatLng getLatLng(Point point){
+		LatLng latLng = new LatLng(point.getLatitude(), point.getLongitude());
+		return latLng;
+	}
+	
+	public static Point getPoint(LatLng latLng){
+		Point point = new Point(latLng.longitude, latLng.latitude);
+		return point;
+	}
 }
