@@ -4,21 +4,18 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
 import javax.management.openmbean.InvalidKeyException;
-import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
-import org.geojson.GeoJsonObject;
 import org.geojson.GeometryCollection;
 import org.geojson.LineString;
 import org.geojson.Polygon;
@@ -240,6 +237,10 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	public List<RideRequestPoint> getPointsOfRideRequest(int rideRequestId) {
 		return rideRequestPointDAO.getPointsOfRideRequest(rideRequestId);
 	}
+	
+	public void searchRides(int rideId){
+		
+	}
 
 	/*
 	 * High level logic -
@@ -250,7 +251,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * - Finally, you will get valid ride requests, then for each of them do further validation e.g. seat etc. 
 	 * 
 	 */
-	public List<RideRequest> searchRideRequests(int rideId){
+	public void createPolylineAroundRoute(int rideId){
 
 		RideDO rideDO = new RideDO();
 		List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(rideId);
@@ -320,8 +321,6 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 
 		logger.trace("leftPoint size:"+leftPoints.size());
 		createGeoJSONGeometry(leftPoints, rightPoints, centerReferencePoints);
-
-		return null;
 	}
 
 	private void addPointsAtIntersectionAngle(double previousLineHeading, double currentLineHeading, LatLng from, double distance, 

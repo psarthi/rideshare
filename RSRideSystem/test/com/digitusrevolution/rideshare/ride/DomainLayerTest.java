@@ -1,5 +1,7 @@
 package com.digitusrevolution.rideshare.ride;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.geojson.FeatureCollection;
@@ -8,7 +10,9 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
+import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
 
@@ -47,7 +51,11 @@ public class DomainLayerTest {
 	}
 	
 	public void test(){
-		RideRequestDO rideRequestDO = new RideRequestDO();
-		rideRequestDO.searchRideRequests(161);
+
+			RideDO rideDO = new RideDO();
+			List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(114);
+			RideRequestPointDAO rideRequestPointDAO = new RideRequestPointDAO();
+			rideRequestPointDAO.getAllMatchingRideRequestPointNearGivenPoint(ridePoints);
+
 	}
 }

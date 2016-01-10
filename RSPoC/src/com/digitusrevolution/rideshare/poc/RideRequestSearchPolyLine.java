@@ -25,7 +25,7 @@ public class RideRequestSearchPolyLine {
 	
 	private static final Logger logger = LogManager.getLogger(RideRequestSearchPolyLine.class.getName());
 	
-	public void createParallelPolyLine(int rideId){
+	public void createPolylineAroundRoute(int rideId){
 
 		RideDO rideDO = new RideDO();
 		List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(rideId);

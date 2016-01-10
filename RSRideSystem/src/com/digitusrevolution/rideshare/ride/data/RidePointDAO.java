@@ -119,7 +119,9 @@ public class RidePointDAO{
 	}
 
 	public List<RidePoint> getAllRidePointsOfRide(int rideId) {
+		logger.debug("Start - Searching Ride Points of Ride");
 		MongoCursor<Document> cursor = collection.find(eq("rides.id", rideId)).iterator();
+		logger.debug("End - Searching Ride Points of Ride");
 		return getAllSpecificRidePointFromDocuments(cursor, rideId);
 	}
 
