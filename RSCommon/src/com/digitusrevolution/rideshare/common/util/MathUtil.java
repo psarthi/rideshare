@@ -26,4 +26,8 @@ public class MathUtil {
 	public static double convertToCompassBearing(double degree){
 		return (degree+360) % 360;		
 	}
+	
+	public static double getMod360(double degree){
+		return degree % 360;
+	}
 }

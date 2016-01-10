@@ -48,6 +48,6 @@ public class DomainLayerTest {
 	
 	public void test(){
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		rideRequestDO.searchRideRequests(160);
+		rideRequestDO.searchRideRequests(162);
 	}
 }

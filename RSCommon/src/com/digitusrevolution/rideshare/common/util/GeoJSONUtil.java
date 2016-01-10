@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.common.util;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +9,7 @@ import org.geojson.GeoJsonObject;
 import org.geojson.LineString;
 import org.geojson.LngLatAlt;
 import org.geojson.MultiPoint;
+import org.geojson.Polygon;
 
 import com.digitusrevolution.rideshare.common.math.google.LatLng;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
@@ -78,4 +80,19 @@ public class GeoJSONUtil {
 		Point point = new Point(latLng.longitude, latLng.latitude);
 		return point;
 	}
+	
+	public static Polygon getPolygonFromPoints(List<Point> points){
+		Polygon polygon = new Polygon();
+		List<LngLatAlt> lngLatAlts = new LinkedList<>();
+		for (Point point : points) {
+			LngLatAlt lngLatAlt = new LngLatAlt();
+			lngLatAlt.setLatitude(point.getLatitude());
+			lngLatAlt.setLongitude(point.getLongitude());
+			lngLatAlts.add(lngLatAlt);
+		}
+		polygon.add(lngLatAlts);
+		return polygon;
+	}
+
+
 }
