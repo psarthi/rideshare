@@ -77,10 +77,10 @@ public class RouteDO{
 	 * - Store each point as "to" location
 	 * - Calculate the distance between last point and this point i.e. between "from" to "to"
 	 * - Compare the distance with minimum required distance between points
-	 * - In case, its less, then check if this point is not first point or last point. If all condition is true, then only 
+	 * - In case, its less, then check if this point is not step first point or last point. If all condition is true, then only 
 	 *      move to the next point and calculate the distance again from that same earlier location
 	 * 		Note - Don't change the from location as the distance calculation is between last stored point to this point
-	 * - In case, if its more or point is first or last point, then calculate the time to travel based on step speed calculated earlier 
+	 * - In case, if its more or point is step first or last point, then calculate the time to travel based on step speed calculated earlier 
 	 * - **Reason for validating the last point or first point, as its mandatory to store those point irrespective of the distance   
 	 * - Get the time of last point and increment that by the time calculated above
 	 * - Add the point to the route and ensure that each point is different as by just adding point to the route would 
@@ -92,12 +92,6 @@ public class RouteDO{
 
 		Leg leg = direction.getRoutes().get(0).getLegs().get(0);
 		List<Step> steps = leg.getSteps();
-		// This is done to get lastpoint of the ride from decoding last step polyline, 
-		// as double value which comes from [step.getEndLocation().getLat() and getLng()]
-		// has different precision than decoded LatLnt, which can't be compared for equality as it would return always false
-		Step lastStep = steps.get(steps.size()-1);
-		List<LatLng> lastStepLatLngs = PolyUtil.decode(lastStep.getPolyline().getPoints());
-		LatLng lastPoint = lastStepLatLngs.get(lastStepLatLngs.size()-1);
 		//**Start - This is just for analysis purpose, below code is not relevant to the logic
 		String encodedOverallPath = direction.getRoutes().get(0).getOverviewPolyline().getPoints();
 		List<LatLng> latLngsOverall = PolyUtil.decode(encodedOverallPath);
@@ -111,7 +105,8 @@ public class RouteDO{
 		//**End
 		int seq = 1;
 		int skip = 0;
-		double minDistance = Double.parseDouble(PropertyReader.getInstance().getProperty("MIN_DISTANCE_BETWEEN_ROUTE_POINTS"));
+		double minDistancePercentage = Double.parseDouble(PropertyReader.getInstance().getProperty("MIN_DISTANCE_BETWEEN_ROUTE_POINTS_PERCENT_OF_OVERALL_DISTANCE"));
+		double minDistance = totalDistance * minDistancePercentage / 100;
 		logger.debug("Ride Start Time:"+ridesBasicInfo.get(0).getDateTime());
 		for (Step step : steps) {	
 			double stepDistance = step.getDistance().getValue();
@@ -121,24 +116,36 @@ public class RouteDO{
 			logger.trace("encodedPath:"+encodedPath);
 			List<LatLng> latLngs = PolyUtil.decode(encodedPath);
 			logger.trace("encodedPath Points Count:"+latLngs.size());
+			//This is the first point of the step
 			LatLng from = latLngs.get(0);
+			logger.trace("Step First Point from Decoding:"+from);
+			logger.trace("Step First Point from Google lat,lng:" + step.getStartLocation().getLat()+","+step.getStartLocation().getLng());
+			logger.trace("Step End Point from Decoding:"+latLngs.get(latLngs.size()-1));
+			logger.trace("Step End Point from Google lat,lng:" + step.getEndLocation().getLat()+","+step.getEndLocation().getLng());
+			//This is the last point of the step
+			LatLng stepLastPoint = latLngs.get(latLngs.size()-1);
 			for (int i = 0; i < latLngs.size(); i++) {
 				LatLng to = latLngs.get(i);
 				double distance = SphericalUtil.computeDistanceBetween(from, to);
-				logger.trace("lastPointLat,toLat:lastPointLon,toLon"+
-						lastPoint.latitude+","+to.latitude+":"+lastPoint.longitude+","+to.longitude);				
-				boolean lastPointStatus = ((lastPoint.latitude == to.latitude) && (lastPoint.longitude == to.longitude));
-				boolean firstPointStatus = from.equals(to);
-				logger.trace("First,Last Point Status:" + firstPointStatus+","+lastPointStatus);
-				//**First point condition has been added, as for first point distance is always 0, so it gets skipped. So with this condition it will not
-				//**Last Point condition has been added, as if last point distance is less than min distance, then last point would be skipped
-				if (distance <= minDistance && !lastPointStatus && !firstPointStatus){
+				boolean stepLastPointStatus = ((stepLastPoint.latitude == to.latitude) && (stepLastPoint.longitude == to.longitude));
+				boolean stepFirstPointStatus = from.equals(to);
+				logger.trace("Step First, Last Point Status:" + stepFirstPointStatus+","+stepLastPointStatus);
+				//**First & Last point condition has been added, so that first step point is always added irrespective of 
+				// distance which will capture google L1 point sets, which is bare minimum points required for travel a route and include all turning points
+				if (distance <= minDistance && !stepLastPointStatus && !stepFirstPointStatus){
 					logger.trace("[Less:distance,seq,skip,from,to]:"+distance+","+seq+","+skip+","+from.toString()+","+to.toString());
 					skip++;
 					continue;
 				} 
 				logger.trace("[More:distance,seq,skip,from,to]:"+distance+","+seq+","+skip+","+from.toString()+","+to.toString());
-				logger.trace("distance:"+distance);				
+				logger.trace("distance:"+distance);		
+				
+				if (stepFirstPointStatus){
+					logger.trace("Adding Step First Point irrespective of distance criteria");
+				}
+				if (stepLastPointStatus){
+					logger.trace("Adding Step Last Point irrespective of distance criteria");
+				}
 
 				double time = MathUtil.getTime(distance, stepSpeed);
 
@@ -180,14 +187,15 @@ public class RouteDO{
 		}
 		//**End
 		logger.debug("Summary-------------");
+		logger.debug("Total Distance:"+totalDistance+":Sum of calculated distance:"+sumOfDistance+":Diff:"+(totalDistance-sumOfDistance));
+		logger.debug("Total travel time:"+totalTime+":Sum of total time:"+sumOfTime+":Diff:"+(totalTime-sumOfTime));
+		logger.debug("Minimum distance % of overall distance:"+minDistancePercentage);
 		logger.debug("Minimum distance between two Points:"+minDistance);
 		logger.debug("Total Points in Steps:"+steps.size());
 		logger.debug("Total Points in Overall Polyline:"+latLngsOverall.size());
 		//Reason for deducting "1" as sequence is increment after the last point as well
 		logger.debug("Total Points in Steps Polyline:"+(skip+seq-1)+":Total Skipped Points:"+skip+":Diff:"+(seq-1));
 		logger.debug("Total Points stored in Route:"+route.getRidePoints().size());
-		logger.debug("Total Distance:"+totalDistance+":Sum of calculated distance:"+sumOfDistance+":Diff:"+(totalDistance-sumOfDistance));
-		logger.debug("Total travel time:"+totalTime+":Sum of total time:"+sumOfTime+":Diff:"+(totalTime-sumOfTime));
 
 		return route;
 	}
