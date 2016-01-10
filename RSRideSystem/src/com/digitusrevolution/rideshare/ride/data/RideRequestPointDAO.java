@@ -1,12 +1,8 @@
 package com.digitusrevolution.rideshare.ride.data;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -17,14 +13,11 @@ import org.bson.types.ObjectId;
 import com.digitusrevolution.rideshare.common.db.MongoDBUtil;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
-import com.digitusrevolution.rideshare.common.util.MathUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
-import com.digitusrevolution.rideshare.ride.dto.RidePointDTO;
 import com.digitusrevolution.rideshare.ride.dto.RideRequestSearchPoint;
-import com.digitusrevolution.rideshare.ride.dto.RideSearchPoint;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -137,40 +130,31 @@ public class RideRequestPointDAO{
 			MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
 		
 			JSONUtil<RideRequestSearchPoint> jsonUtilRideRequestSearchPoint = new JSONUtil<>(RideRequestSearchPoint.class);
-			List<RideRequestSearchPoint> rideRequestSearchPoints = new LinkedList<>();
 			int count =0;
 			try {
 				while (cursor.hasNext()){
 					Document document = cursor.next();
 					logger.trace("document:"+document.toJson());
 					RideRequestSearchPoint rideRequestSearchPoint = jsonUtilRideRequestSearchPoint.getModel(document.toJson());
-					rideRequestSearchPoints.add(rideRequestSearchPoint);
+					long timeVariation = DateTimeUtil.getSeconds(rideRequestSearchPoint.getTimeVariation());
+					long rideDateTime = ridePoint.getRidesBasicInfo().get(0).getDateTime().toEpochSecond();
+					boolean dateTimeCondition = (rideDateTime >= rideRequestSearchPoint.getDateTime().minusSeconds(timeVariation).toEpochSecond() && 
+												 rideDateTime <= rideRequestSearchPoint.getDateTime().plusSeconds(timeVariation).toEpochSecond());
+					boolean distanceCondition = (rideRequestSearchPoint.getDistance() <= rideRequestSearchPoint.getDistanceVariation());
+					logger.trace("RideRequest Search Point:"+jsonUtilRideRequestSearchPoint.getJson(rideRequestSearchPoint));
+					if (distanceCondition && dateTimeCondition){
+						logger.trace("Datetime or Distance condition passsed, so adding rideRequest Id:" + rideRequestSearchPoint.getRideRequestId());
+						rideRequestSearchPointsSet.add(rideRequestSearchPoint);
+						rideRequestIdsSet.add(rideRequestSearchPoint.getRideRequestId());
+					} else {
+						logger.trace("Datetime or Distance condition failed, so invalid rideRequest Id:" + rideRequestSearchPoint.getRideRequestId());
+					}
 					count++;
 				}
 			} finally{
 				cursor.close();
 			}
 			logger.trace("Total Count" + count);	
-
-			Iterator<RideRequestSearchPoint> iterator = rideRequestSearchPoints.iterator();
-
-			while (iterator.hasNext()){
-				RideRequestSearchPoint rideRequestSearchPoint = iterator.next();
-				long timeVariation = DateTimeUtil.getSeconds(rideRequestSearchPoint.getTimeVariation());
-				long rideDateTime = ridePoint.getRidesBasicInfo().get(0).getDateTime().toEpochSecond();
-				boolean dateTimeCondition = (rideDateTime >= rideRequestSearchPoint.getDateTime().minusSeconds(timeVariation).toEpochSecond() && 
-											 rideDateTime <= rideRequestSearchPoint.getDateTime().plusSeconds(timeVariation).toEpochSecond());
-				boolean distanceCondition = (rideRequestSearchPoint.getDistance() <= rideRequestSearchPoint.getDistanceVariation());
-				logger.trace("RideRequest Search Point:"+jsonUtilRideRequestSearchPoint.getJson(rideRequestSearchPoint));
-				if (distanceCondition && dateTimeCondition){
-					logger.trace("Datetime or Distance condition passsed, so adding rideRequest Id:" + rideRequestSearchPoint.getRideRequestId());
-					rideRequestSearchPointsSet.add(rideRequestSearchPoint);
-					rideRequestIdsSet.add(rideRequestSearchPoint.getRideRequestId());
-				} else {
-					logger.trace("Datetime or Distance condition failed, so Removing rideRequest Id:" + rideRequestSearchPoint.getRideRequestId());
-					iterator.remove();
-				}
-			}
 		}
 		logger.debug("End - Searching Ride Request Points");
 		logger.debug("Matching Unique Ride Request Points Ids:" + rideRequestIdsSet);

@@ -53,7 +53,7 @@ public class DomainLayerTest {
 	public void test(){
 
 			RideDO rideDO = new RideDO();
-			List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(114);
+			List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(109);
 			RideRequestPointDAO rideRequestPointDAO = new RideRequestPointDAO();
 			rideRequestPointDAO.getAllMatchingRideRequestPointNearGivenPoint(ridePoints);
 
