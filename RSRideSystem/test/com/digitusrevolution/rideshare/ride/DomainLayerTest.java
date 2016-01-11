@@ -65,15 +65,8 @@ public class DomainLayerTest {
 
 	public void test(){
 
-		RideDO rideDO = new RideDO();
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(190);
-		MultiPolygon polygonAroundRouteUsingRouteBoxer = rideRequestDO.getPolygonAroundRouteUsingRouteBoxer(ridePoints, 5000);
-		RideRequestPointDAO rideRequestPointDAO = new RideRequestPointDAO();
-		rideRequestPointDAO.getAllMatchingRideRequestWithinMultiPolygon(polygonAroundRouteUsingRouteBoxer);
-		
-
-//		rideRequestDO.searchRides(190);
+		rideRequestDO.searchRides(160);
 		
 	}
 

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import javax.management.openmbean.InvalidKeyException;
@@ -242,7 +241,10 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	}
 	
 	public void searchRides(int rideId){
-		MultiPolygon polygonAroundRoute = getPolygonAroundRoute(rideId);
+		RideDO rideDO = new RideDO();
+		List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(rideId);
+		double distance = Double.parseDouble(PropertyReader.getInstance().getProperty("MAX_DISTANCE_VARIATION_FROM_RIDE_REQUEST_POINT"));
+		MultiPolygon polygonAroundRoute = getPolygonAroundRouteUsingRouteBoxer(ridePoints, distance);
 		rideRequestPointDAO.getAllMatchingRideRequestWithinMultiPolygon(polygonAroundRoute);
 	}
 
@@ -267,7 +269,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * - Generate outer polygon from set of all points (This step is pending)
 	 * 
 	 */
-	public MultiPolygon getPolygonAroundRoute(int rideId){
+	private MultiPolygon getPolygonAroundRoute(int rideId){
 		
 		logger.debug("Entry CreatePolyLine");
 		
@@ -478,6 +480,18 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		addQuadrilateral(leftPoints, rightPoints, multiPolygon);
 	}
 	
+	/*
+	 * Purpose: Get polygons around the route to cover specific distance around the route
+	 * Reference - http://google-maps-utility-library-v3.googlecode.com/svn/trunk/routeboxer/docs/examples.html
+	 * High Level Logic -
+	 * 
+	 * - Get Rectangles based on RouteBoxer Logic
+	 * - Create Polygon from the rectangle and add it to the multi-polygon
+	 *
+	 * Note - You can't just take top corners of each rectangle and keep traversing to get the top line 
+	 * as rectangles can be any order, so the only option is to create individual polygon from each rectangle latlngs.
+	 * 
+	 */
 	public MultiPolygon getPolygonAroundRouteUsingRouteBoxer(List<RidePoint> ridePoints, double distance){
 		
 		RouteBoxer routeBoxer = new RouteBoxer();
@@ -525,11 +539,11 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		
 		JSONUtil<MultiPolygon> jsonUtilMultiPolygon = new JSONUtil<>(MultiPolygon.class);
 		logger.debug("Rectangle Box Count:" + latLngBounds.size());
-		logger.debug("Rectangle Box:"+jsonUtilMultiPolygon.getJson(multiPolygon));
+		logger.debug("MultiPolygon:"+jsonUtilMultiPolygon.getJson(multiPolygon));
 		
 		LineString routeLineString = GeoJSONUtil.getLineStringFromPoints(routePoints);
 		JSONUtil<LineString> jsonUtilLineString = new JSONUtil<>(LineString.class);
-		logger.trace("route line:"+jsonUtilLineString.getJson(routeLineString));
+		logger.trace("Route line:"+jsonUtilLineString.getJson(routeLineString));
 		
 		GeometryCollection geometryCollection = new GeometryCollection();
 		geometryCollection.add(routeLineString);
