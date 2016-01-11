@@ -18,6 +18,7 @@ import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 import org.geojson.GeometryCollection;
 import org.geojson.LineString;
+import org.geojson.MultiPolygon;
 import org.geojson.Polygon;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
@@ -28,6 +29,8 @@ import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.MathUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
+import com.digitusrevolution.rideshare.common.util.external.RouteBoxer;
+import com.digitusrevolution.rideshare.common.util.external.RouteBoxer.LatLngBounds;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
@@ -251,8 +254,10 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * - Finally, you will get valid ride requests, then for each of them do further validation e.g. seat etc. 
 	 * 
 	 */
-	public void createPolylineAroundRoute(int rideId){
-
+	public void createPolygonAroundRoute(int rideId){
+		
+		logger.debug("Entry CreatePolyLine");
+		
 		RideDO rideDO = new RideDO();
 		List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(rideId);
 		List<Point> centerPoints = new LinkedList<>();
@@ -274,7 +279,8 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		double SouthHeading = 180;
 		double NorthHeading = 0;
 		logger.trace("[size]:"+size);
-
+		//This will hold all the polygons around the route
+		MultiPolygon multiPolygon = new MultiPolygon();
 
 		for (Point point : centerPoints) {
 			to = GeoJSONUtil.getLatLng(point);
@@ -293,7 +299,8 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			}
 			if (i==1){
 				addFirstPointAndExtension(leftPoints, rightPoints, centerReferencePoints, from, currentLineHeading,
-						distance, NorthHeading);
+						distance, NorthHeading,multiPolygon);	
+				
 				from = to;
 				previousLineHeading = currentLineHeading;
 				i++;				
@@ -301,18 +308,19 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			}
 
 			addPointsAtPerpendicularFromLine(leftPoints, rightPoints, centerReferencePoints, from,
-					previousLineHeading, distance);
+					previousLineHeading, distance,multiPolygon);
+			
 			
 			addPointsAtIntersectionAngle(previousLineHeading, currentLineHeading, from, distance, 
-					leftPoints, rightPoints, centerReferencePoints);
+					leftPoints, rightPoints, centerReferencePoints,multiPolygon);
 
 			addPointsAtPerpendicularFromLine(leftPoints, rightPoints, centerReferencePoints, from,
-					currentLineHeading, distance);
+					currentLineHeading, distance,multiPolygon);
 
 			//This is to get points around last point as well as extension point
 			if (i == (size-1)){
 				addLastPointAndExtension(leftPoints, rightPoints, centerReferencePoints, to, currentLineHeading,
-						distance, SouthHeading);
+						distance, SouthHeading,multiPolygon);
 			}
 			previousLineHeading = currentLineHeading;
 			from = to;
@@ -320,11 +328,37 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		}
 
 		logger.trace("leftPoint size:"+leftPoints.size());
-		createGeoJSONGeometry(leftPoints, rightPoints, centerReferencePoints);
+		createGeoJSONGeometry(centerReferencePoints,multiPolygon);
+		logger.debug("Exit CreatePolyLine");
+	}
+	
+	private void addQuadrilateral(List<Point> leftPoints, List<Point> rightPoints, MultiPolygon multiPolygon){
+		List<Point> rectangleBox = new LinkedList<>();
+		int currentLineIndex = leftPoints.size()-1;
+		
+		if (currentLineIndex > 0){
+		int previousLineIndex = currentLineIndex - 1;		
+		Point NWPoint = leftPoints.get(previousLineIndex);
+		Point NEPoint = leftPoints.get(currentLineIndex);
+		Point SEPoint = rightPoints.get(currentLineIndex);
+		Point SWPoint = rightPoints.get(previousLineIndex);
+		//Rectangle Box
+		rectangleBox.add(NWPoint);
+		rectangleBox.add(NEPoint);
+		rectangleBox.add(SEPoint);
+		rectangleBox.add(SWPoint);
+		//This will complete the polygon by closing at start point
+		rectangleBox.add(NWPoint);	
+		Polygon polygon = GeoJSONUtil.getPolygonFromPoints(rectangleBox);
+		logger.trace("Adding Quadrilateral of line having index (m,n):" + currentLineIndex + ","+previousLineIndex);
+		multiPolygon.add(polygon);
+		} else {
+			logger.trace("There is only one line exist, so quadrilateral can not be created");
+		}
 	}
 
 	private void addPointsAtIntersectionAngle(double previousLineHeading, double currentLineHeading, LatLng from, double distance, 
-			List<Point> leftPoints, List<Point> rightPoints,List<Point> centerReferencePoints){
+			List<Point> leftPoints, List<Point> rightPoints,List<Point> centerReferencePoints,MultiPolygon multiPolygon){
 		//This will get angle between two lines (Current and Previous line)
 		double angleBetweenLines = 180 + previousLineHeading - currentLineHeading;
 		logger.trace("[angleBetweenLines]:"+angleBetweenLines);
@@ -342,12 +376,12 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		logger.trace("[Final - angleBetweenLines, intersectionHeading]:"+angleBetweenLines+","+intersectionHeading);
 		logger.trace("Adding Angle Intersection Points");
 		//This will add left/right points at intersection angle between lines on the point
-		addLeftRightPoints(from, distance, intersectionHeading, leftPoints, rightPoints, centerReferencePoints);
+		addLeftRightPoints(from, distance, intersectionHeading, leftPoints, rightPoints, centerReferencePoints,multiPolygon);
 
 	}
 
 	private void addPointsAtPerpendicularFromLine(List<Point> leftPoints, List<Point> rightPoints,
-			List<Point> centerReferencePoints, LatLng from, double currentLineHeading, double distance) {
+			List<Point> centerReferencePoints, LatLng from, double currentLineHeading, double distance,MultiPolygon multiPolygon) {
 		double perpendicularLeftHeading;
 		//This will add left/right perpendicular to the line on the point
 		//Adding 270 so that we get left point towards North
@@ -356,28 +390,28 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		perpendicularLeftHeading = MathUtil.getMod360(perpendicularLeftHeading);
 		logger.trace("Mod360(perpendicularLeftHeading)"+perpendicularLeftHeading);
 		logger.trace("Adding Perpendicular Points");
-		addLeftRightPoints(from, distance, perpendicularLeftHeading, leftPoints, rightPoints, centerReferencePoints);
+		addLeftRightPoints(from, distance, perpendicularLeftHeading, leftPoints, rightPoints, centerReferencePoints,multiPolygon);
 	}
 
 	private void addLastPointAndExtension(List<Point> leftPoints, List<Point> rightPoints,
 			List<Point> centerReferencePoints, LatLng to, double currentLineHeading, double distance,
-			double NorthHeading) {
+			double NorthHeading,MultiPolygon multiPolygon) {
 		//This will get left/right point from last point
-		logger.debug("Adding Last Point");
+		logger.trace("Adding Last Point");
 		//This will add left points towards North i.e. Vertical line parallel to North/South pole
-		addLeftRightPoints(to, distance, NorthHeading, leftPoints, rightPoints, centerReferencePoints);
+		addLeftRightPoints(to, distance, NorthHeading, leftPoints, rightPoints, centerReferencePoints,multiPolygon);
 
-		logger.debug("Adding Last Point Extension");
+		logger.trace("Adding Last Point Extension");
 		//This will get extension point with the same heading as last point
 		LatLng lastExtensionPoint = SphericalUtil.computeOffset(to, distance, currentLineHeading);
 		//This will get left/right point from last extension point
 		//This will add left points towards North i.e. Vertical line parallel to North/South pole
-		addLeftRightPoints(lastExtensionPoint, distance, NorthHeading, leftPoints, rightPoints,centerReferencePoints);
+		addLeftRightPoints(lastExtensionPoint, distance, NorthHeading, leftPoints, rightPoints,centerReferencePoints,multiPolygon);
 	}
 
 	private void addFirstPointAndExtension(List<Point> leftPoints, List<Point> rightPoints,
 			List<Point> centerReferencePoints, LatLng from, double currentLineHeading, double distance,
-			double NorthHeading) {
+			double NorthHeading, MultiPolygon multiPolygon) {
 		logger.trace("Adding First Point Extension");
 		//This is to get first extension point based on first two points
 		//Adding 180 to get heading in opposite direction on the same line, so that we can find a point on that line before first point
@@ -389,56 +423,34 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		LatLng firstExtensionPoint = SphericalUtil.computeOffset(from, distance, oppsiteDirectionHeading);
 		//This will get left/right point from first extension point. 
 		//This will add left points towards North i.e. Vertical line parallel to North/South pole
-		addLeftRightPoints(firstExtensionPoint, distance, NorthHeading, leftPoints, rightPoints,centerReferencePoints);
+		addLeftRightPoints(firstExtensionPoint, distance, NorthHeading, leftPoints, rightPoints,centerReferencePoints,multiPolygon);
 		//This is important as from here, all the points require previous heading details 
 		//as well as from point needs to be changed to current point
 		logger.trace("Adding First Point");
 		//This will add left points towards North i.e. Vertical line parallel to North/South pole
-		addLeftRightPoints(from, distance, NorthHeading, leftPoints, rightPoints, centerReferencePoints);
+		addLeftRightPoints(from, distance, NorthHeading, leftPoints, rightPoints, centerReferencePoints,multiPolygon);
 	}
 
-	private void createGeoJSONGeometry(List<Point> leftPoints, List<Point> rightPoints,
-			List<Point> centerReferencePoints) {
-		List<Point> reverseRightPoints = new LinkedList<>();
-		ListIterator<Point> iterator = rightPoints.listIterator(rightPoints.size());
-		while (iterator.hasPrevious()) {
-			reverseRightPoints.add(iterator.previous());		
-		}
+	private void createGeoJSONGeometry(List<Point> centerReferencePoints, MultiPolygon multiPolygon) {
 
-		List<Point> allPoints = new LinkedList<>();
-		allPoints.addAll(leftPoints);				
-		allPoints.addAll(reverseRightPoints);
-		allPoints.add(leftPoints.get(0));
+		
+		JSONUtil<MultiPolygon> jsonUtilMultiPolygon = new JSONUtil<>(MultiPolygon.class);
+		String multiPolygonGeoJson = jsonUtilMultiPolygon.getJson(multiPolygon);
+		logger.trace("Multi Polygon:"+multiPolygonGeoJson);
 
-		Polygon polygon = GeoJSONUtil.getPolygonFromPoints(allPoints);
-		JSONUtil<Polygon> jsonUtilPolygon = new JSONUtil<>(Polygon.class);
-		String polygonGeoJson = jsonUtilPolygon.getJson(polygon);
-		logger.trace("polygonGeoJson:"+polygonGeoJson);
-
-		int startIndex = 0;
-		int endIndex = leftPoints.size();
-
-		LineString leftLineString = GeoJSONUtil.getLineStringFromPoints(leftPoints.subList(startIndex, endIndex));
-		LineString rightLineString = GeoJSONUtil.getLineStringFromPoints(rightPoints.subList(startIndex, endIndex));
-		LineString centerLineString = GeoJSONUtil.getLineStringFromPoints(centerReferencePoints.subList(startIndex, endIndex));
-		String geoJsonLeftLineString = GeoJSONUtil.getGeoJsonString(leftLineString);
-		String geoJsonRightLineString = GeoJSONUtil.getGeoJsonString(rightLineString);
+		LineString centerLineString = GeoJSONUtil.getLineStringFromPoints(centerReferencePoints);
 		String geoJsonCenterLineString = GeoJSONUtil.getGeoJsonString(centerLineString);
+		logger.trace("Route:"+geoJsonCenterLineString);
 
 		GeometryCollection geometryCollection = new GeometryCollection();
-		geometryCollection.add(leftLineString);
-		geometryCollection.add(rightLineString);
 		geometryCollection.add(centerLineString);
-		geometryCollection.add(polygon);
+		geometryCollection.add(multiPolygon);
 		JSONUtil<GeometryCollection> jsonUtil = new JSONUtil<>(GeometryCollection.class);
-		logger.trace("Geometry Collection:"+jsonUtil.getJson(geometryCollection));
-		logger.trace("Left  :"+geoJsonLeftLineString);
-		logger.trace("Right :"+geoJsonRightLineString);
-		logger.trace("Center:"+geoJsonCenterLineString);
+		logger.debug("Geometry Collection:"+jsonUtil.getJson(geometryCollection));
 	}
 
 	private void addLeftRightPoints(LatLng from, double distance, double leftHeading, 
-			List<Point> leftPoints, List<Point> rightPoints, List<Point> centerReferencePoints){
+			List<Point> leftPoints, List<Point> rightPoints, List<Point> centerReferencePoints, MultiPolygon multiPolygon){
 		double rightHeading = leftHeading + 180;
 		rightHeading = MathUtil.getMod360(rightHeading);
 		logger.trace("leftHeading,rightHeading:"+leftHeading+","+rightHeading);
@@ -447,6 +459,100 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		leftPoints.add(GeoJSONUtil.getPoint(left));
 		rightPoints.add(GeoJSONUtil.getPoint(right));
 		centerReferencePoints.add(GeoJSONUtil.getPoint(from));
-		logger.debug("[Count]:[center,left,right]:"+leftPoints.size()+":["+from+","+left+","+right+"]");
+		logger.trace("[Count]:[center,left,right]:"+leftPoints.size()+":["+from+","+left+","+right+"]");
+		//This will add polygon of current line & previous line from Left/Right points
+		addQuadrilateral(leftPoints, rightPoints, multiPolygon);
 	}
+	
+	public void createPolygonAroundRouteUsingRouteBoxer(List<RidePoint> ridePoints, double distance){
+		
+		RouteBoxer routeBoxer = new RouteBoxer();
+		List<Point> routePoints = new LinkedList<>();
+		List<com.digitusrevolution.rideshare.common.util.external.RouteBoxer.LatLng> latLngs = new LinkedList<>();
+		for (RidePoint ridePoint : ridePoints) {
+			double lat = ridePoint.getPoint().getLatitude();
+			double lng = ridePoint.getPoint().getLongitude();
+			Point point = new Point(lng, lat);
+			com.digitusrevolution.rideshare.common.util.external.RouteBoxer.LatLng latLng = routeBoxer.new LatLng(lat,lng);
+			latLngs.add(latLng);
+			routePoints.add(point);
+		}
+		
+		List<LatLngBounds> latLngBounds = routeBoxer.box(latLngs, distance);		
+		MultiPolygon multiPolygon = new MultiPolygon();
+		
+		for (LatLngBounds latLngBound : latLngBounds) {
+			double SWLat = latLngBound.getSouthWest().lat;
+			double SWLng = latLngBound.getSouthWest().lng;
+			double NELat = latLngBound.getNorthEast().lat;
+			double NELng = latLngBound.getNorthEast().lng;
+			double NWLat = NELat;
+			double NWLng = SWLng;
+			double SELat = SWLat;
+			double SELng = NELng;
+			Point SWPoint = new Point(SWLng, SWLat);
+			Point SEPoint = new Point(SELng, SELat);
+			Point NEPoint = new Point(NELng, NELat);
+			Point NWPoint = new Point(NWLng, NWLat);
+
+			List<Point> rectangleBox = new LinkedList<>();
+			//Rectangle Box
+			rectangleBox.add(NWPoint);
+			rectangleBox.add(NEPoint);
+			rectangleBox.add(SEPoint);
+			rectangleBox.add(SWPoint);
+			//This will complete the polygon by closing at start point
+			rectangleBox.add(NWPoint);
+			
+			Polygon polygon = GeoJSONUtil.getPolygonFromPoints(rectangleBox);
+			multiPolygon.add(polygon);
+			
+		}
+		
+		JSONUtil<MultiPolygon> jsonUtilMultiPolygon = new JSONUtil<>(MultiPolygon.class);
+		logger.debug("Rectangle Box:"+jsonUtilMultiPolygon.getJson(multiPolygon));
+		
+		LineString routeLineString = GeoJSONUtil.getLineStringFromPoints(routePoints);
+		JSONUtil<LineString> jsonUtilLineString = new JSONUtil<>(LineString.class);
+		logger.trace("route line:"+jsonUtilLineString.getJson(routeLineString));
+		
+		GeometryCollection geometryCollection = new GeometryCollection();
+		geometryCollection.add(routeLineString);
+		geometryCollection.add(multiPolygon);
+		JSONUtil<GeometryCollection> jsonUtilGeometryCollection = new JSONUtil<>(GeometryCollection.class);
+		logger.trace("Geomtry:"+jsonUtilGeometryCollection.getJson(geometryCollection));
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

@@ -382,7 +382,7 @@ function loadRideSearchGeoJsonString(geoString) {
 	var markerIcon;
 	var ridePointData = new google.maps.Data();
 	var features = geojson.features;
-	
+
 	ridePointData.addGeoJson(geojson);
 	//This is very important, as this only draws on specific map
 	ridePointData.setMap(map)
@@ -392,7 +392,7 @@ function loadRideSearchGeoJsonString(geoString) {
 		var geometry = feature.getGeometry();
 		var geometryType = geometry.getType();
 		var type = feature.getProperty('type');
-		
+
 		console.log(type);
 		if (type=="ridepickuppoint"){
 			console.log("ridepickuppoint");
@@ -417,7 +417,7 @@ function loadRideSearchGeoJsonString(geoString) {
 			icon: markerIcon
 		});
 	});
-	
+
 
 
 	// When the user clicks, open an infowindow
@@ -470,3 +470,4 @@ function processPoints(geometry, callback, thisArg) {
 		});
 	}
 }
+

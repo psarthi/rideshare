@@ -108,7 +108,7 @@ public class RideRequestPointDAO{
 		
 		logger.debug("Start - Searching Ride Request Points");
 		for (RidePoint ridePoint : ridePoints) {
-			logger.trace("Ride Point:"+ridePoint.getPoint().toString());	
+			logger.debug("Ride Point:"+ridePoint.getPoint().toString());	
 			Point point = ridePoint.getPoint();
 			JSONUtil<Point> jsonUtilPoint = new JSONUtil<>(Point.class);
 			String pointJson = jsonUtilPoint.getJson(point);

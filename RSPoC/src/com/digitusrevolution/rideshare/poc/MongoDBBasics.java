@@ -2,6 +2,7 @@ package com.digitusrevolution.rideshare.poc;
 
 import java.io.IOException;
 import java.text.Format;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
+import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,7 +43,7 @@ public class MongoDBBasics {
 	public static void main(String[] args) {
 		
 		MongoDBBasics mongoDBBasics = new MongoDBBasics();
-		mongoDBBasics.advanced();
+		mongoDBBasics.geoSpatial();
 
 	}
 	
@@ -182,63 +184,74 @@ public class MongoDBBasics {
 	} finally{
 		cursor.close();
 	}
-	
-	System.out.println("Restaurant Example-----------------");
-	
-	database = mongoClient.getDatabase("test");
-	MongoCollection<Document> collectionRestaurant = database.getCollection("restaurants");
-	MongoCollection<Document> collectionNeighborhoods = database.getCollection("neighborhoods");
-
-	for (final Document index : collectionRestaurant.listIndexes()) {
-	    System.out.println(index.toJson());
-	}
-
-	for (final Document index : collectionNeighborhoods.listIndexes()) {
-	    System.out.println(index.toJson());
-	}
-	
-	document = collectionRestaurant.find().first();
-	System.out.println(document.toJson());
-	document = collectionNeighborhoods.find().first();
-	System.out.println(document.toJson());
-	
-	document = collectionNeighborhoods.find(Filters.geoIntersects("geometry", new Point(new Position(-73.93414657, 40.82302903)))).first();
-	System.out.println(document.toJson());
-	
-	System.out.println(document.get("geometry").toString());
-	System.out.println(document.get("geometry").getClass().getName());
-
-	Document geometry = (Document) document.get("geometry");
-	
-	cursor = collectionRestaurant.find(Filters.geoWithin("location", geometry)).iterator();
-//	try {
-//		while (cursor.hasNext()){
-//			System.out.println(cursor.next().toJson());
-//		}
-//	} finally{
-//		cursor.close();
-//	}
-
-	//geoWithinCenterSphere will get unsorted list
-//	cursor = collectionRestaurant.find(Filters.geoWithinCenterSphere("location", -73.93414657, 40.82302903, 5 / 3963.2)).iterator();
-
-	//nearSphere will get sorted list
-	cursor = collectionRestaurant.find(Filters.nearSphere("location", new Point(new Position(-73.93414657, 40.82302903)), 8046.5,0.0)).iterator();
-	System.out.println("----");
-	int i=0;
-	try {
-		while (cursor.hasNext()){
-			System.out.println(cursor.next().toJson());
-			i++;
-		}
-	} finally{
-		System.out.println("Count" + i);
-		cursor.close();
-	}
-	
 	mongoClient.close();
 
 	}
 
+	
+	public void geoSpatial(){
+		
+		System.out.println("Restaurant Example-----------------");
+		
+		MongoClient mongoClient = new MongoClient( "localhost" , 27017 );
+		MongoDatabase database = mongoClient.getDatabase("test");
+		MongoCollection<Document> collectionRestaurant = database.getCollection("restaurants");
+		MongoCollection<Document> collectionNeighborhoods = database.getCollection("neighborhoods");
+
+		for (final Document index : collectionRestaurant.listIndexes()) {
+		    System.out.println(index.toJson());
+		}
+
+		for (final Document index : collectionNeighborhoods.listIndexes()) {
+		    System.out.println(index.toJson());
+		}
+		
+		Document document = collectionRestaurant.find().first();
+		System.out.println(document.toJson());
+		document = collectionNeighborhoods.find().first();
+		System.out.println(document.toJson());
+		
+		document = collectionNeighborhoods.find(Filters.geoIntersects("geometry", new Point(new Position(-73.93414657, 40.82302903)))).first();
+		System.out.println(document.toJson());
+		
+		System.out.println(document.get("geometry").toString());
+		System.out.println(document.get("geometry").getClass().getName());
+
+		Document geometry = (Document) document.get("geometry");
+		
+		System.out.println(ZonedDateTime.now() + ":Start Query geoWithin");
+		MongoCursor<Document> cursor = collectionRestaurant.find(Filters.geoWithin("location", geometry)).iterator();
+		System.out.println(ZonedDateTime.now() +":End Query geoWithin");
+		int i=0;
+		try {
+			while (cursor.hasNext()){
+				System.out.println(cursor.next().toJson());
+				i++;
+			}
+		} finally{
+			System.out.println("Count" + i);
+			cursor.close();
+		}
+
+		//geoWithinCenterSphere will get unsorted list
+		//cursor = collectionRestaurant.find(Filters.geoWithinCenterSphere("location", -73.93414657, 40.82302903, 5 / 3963.2)).iterator();
+
+/*		//nearSphere will get sorted list
+		cursor = collectionRestaurant.find(Filters.nearSphere("location", new Point(new Position(-73.93414657, 40.82302903)), 8046.5,0.0)).iterator();
+		System.out.println("----");
+		i=0;
+		try {
+			while (cursor.hasNext()){
+				System.out.println(cursor.next().toJson());
+				i++;
+			}
+		} finally{
+			System.out.println("Count" + i);
+			cursor.close();
+		}
+*/		
+		mongoClient.close();
+		
+	}
 
 }

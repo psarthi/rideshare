@@ -51,7 +51,7 @@ public class GeoJSONUtil {
 		return lineString;
 	}
 	
-	public static MultiPoint getMultiFromPoints(List<Point> points){
+	public static MultiPoint getMultiPointFromPoints(List<Point> points){
 		MultiPoint multiPoint = new MultiPoint();
 		for (Point point : points) {
 			LngLatAlt lngLatAlt = new LngLatAlt();
