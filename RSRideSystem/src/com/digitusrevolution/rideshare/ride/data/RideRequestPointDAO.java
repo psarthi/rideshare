@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.geojson.MultiPolygon;
 
 import com.digitusrevolution.rideshare.common.db.MongoDBUtil;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
@@ -96,7 +97,6 @@ public class RideRequestPointDAO{
 		return rideRequestPoints;
 	}
 
-
 	public void getAllMatchingRideRequestPointNearGivenPoint(List<RidePoint> ridePoints){
 
 		double maxRideRequestDistanceVariation = Double.parseDouble(PropertyReader.getInstance().getProperty("MAX_DISTANCE_VARIATION_FROM_RIDE_REQUEST_POINT"));
@@ -159,5 +159,78 @@ public class RideRequestPointDAO{
 		logger.debug("End - Searching Ride Request Points");
 		logger.debug("Matching Unique Ride Request Points Ids:" + rideRequestIdsSet);
 	}
-
+	
+	public List<RideRequestPoint> getAllMatchingRideRequestWithinMultiPolygon(MultiPolygon multiPolygon){
+		
+		JSONUtil<MultiPolygon> jsonUtilMultiPolygon = new JSONUtil<>(MultiPolygon.class);
+		String jsonMultipPolygon = jsonUtilMultiPolygon.getJson(multiPolygon);
+		
+		Document query = new Document("point", new Document("$geoWithin", new Document("$geometry", new Document(Document.parse(jsonMultipPolygon)))));
+		MongoCursor<Document> cursor = collection.find(query).iterator();
+		List<RideRequestPoint> rideRequestPoints = getAllRideRequestPointFromDocuments(cursor);
+		logger.debug("Total Ride Request Point Found:"+rideRequestPoints.size());
+		List<Integer> rideIds = new ArrayList<>();
+		for (RideRequestPoint rideRequestPoint : rideRequestPoints) {
+			rideIds.add(rideRequestPoint.getRideRequestId());
+		}		
+		logger.debug("Ride Request Ids are:"+rideIds);
+		return rideRequestPoints;
+	}
+	
+	private List<RideRequestPoint> getAllRideRequestPointFromDocuments(MongoCursor<Document> cursor){
+		List<RideRequestPoint> rideRequestPoints = new ArrayList<>();
+		try {
+			while (cursor.hasNext()){
+				Document document = cursor.next();
+				String json = document.toJson();
+				logger.trace(json);
+				RideRequestPoint rideRequestPoint = jsonUtil.getModel(json);
+				rideRequestPoints.add(rideRequestPoint);
+			}
+		} finally{
+			cursor.close();
+		}
+		return rideRequestPoints;
+	}
+		
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

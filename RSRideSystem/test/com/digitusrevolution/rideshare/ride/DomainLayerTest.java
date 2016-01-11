@@ -10,6 +10,7 @@ import org.geojson.FeatureCollection;
 import org.geojson.GeometryCollection;
 import org.geojson.LineString;
 import org.geojson.MultiPoint;
+import org.geojson.MultiPolygon;
 import org.geojson.Polygon;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -64,16 +65,16 @@ public class DomainLayerTest {
 
 	public void test(){
 
-//		RideDO rideDO = new RideDO();
-//		List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(200);
-//		RideRequestDO rideRequestDO = new RideRequestDO();
-//		rideRequestDO.createPolygonAroundRouteUsingRouteBoxer(ridePoints, 2000);
-		
-		
-//		RideRequestPointDAO rideRequestPointDAO = new RideRequestPointDAO();
-//		rideRequestPointDAO.getAllMatchingRideRequestPointNearGivenPoint(ridePoints);
+		RideDO rideDO = new RideDO();
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		rideRequestDO.createPolygonAroundRoute(199);
+		List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(190);
+		MultiPolygon polygonAroundRouteUsingRouteBoxer = rideRequestDO.getPolygonAroundRouteUsingRouteBoxer(ridePoints, 5000);
+		RideRequestPointDAO rideRequestPointDAO = new RideRequestPointDAO();
+		rideRequestPointDAO.getAllMatchingRideRequestWithinMultiPolygon(polygonAroundRouteUsingRouteBoxer);
+		
+
+//		rideRequestDO.searchRides(190);
+		
 	}
 
 	public void routebox(){
