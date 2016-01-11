@@ -240,6 +240,16 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		return rideRequestPointDAO.getPointsOfRideRequest(rideRequestId);
 	}
 	
+	/*
+	 * Key Strategy -
+	 * 
+	 * - Get all the points at min. distance and then increment the distance till we find certain number of matching ride requests.
+	 * - Don't get all the points first with max distance else number of points may be too high and complexity of finding the matching
+	 * 	 rides would be MxN i.e. for 1 million ride request point in a 400 ride points of ride would cost 400 Millions times Big O time complexity
+	 * 
+	 * 
+	 * 
+	 */
 	public void searchRides(int rideId){
 		RideDO rideDO = new RideDO();
 		List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(rideId);
