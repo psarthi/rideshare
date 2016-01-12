@@ -338,31 +338,31 @@ public class RouteBoxer {
 
 		// Create a LatLngBounds object that contains the whole path
 		LatLngBounds routeBounds = new LatLngBounds();
-		//logger.trace("vertices[0]"+vertices.get(0).toString()+" vertices["+(vertices.size()-1)+"] "+vertices.get(vertices.size()-1).toString());
+		logger.trace("vertices[0]"+vertices.get(0).toString()+" vertices["+(vertices.size()-1)+"] "+vertices.get(vertices.size()-1).toString());
 		for (int i = 0; i < vertices.size(); i++) {
 			routeBounds.extend(vertices.get(i));
 		}
-		//logger.trace("routeBounds "+routeBounds.toString());
+		logger.trace("routeBounds "+routeBounds.toString());
 		// Find the center of the bounding box of the path
 		LatLng routeBoundsCenter = routeBounds.getCenter();
-		//logger.trace("routeBoundsCenter "+routeBoundsCenter.toString());
+		logger.trace("routeBoundsCenter "+routeBoundsCenter.toString());
 		// Starting from the center define grid lines outwards vertically until they
 		//  extend beyond the edge of the bounding box by more than one cell
 		this.latGrid_.add(routeBoundsCenter.lat());
 		LatLng rhumb = routeBoundsCenter.rhumbDestinationPoint(0, range);
-		//logger.trace("rhumb 1 "+rhumb.toString());
+		logger.trace("rhumb 1 "+rhumb.toString());
 		// Add lines from the center out to the north
 		this.latGrid_.add(rhumb.lat());
 		for (int i = 2; this.latGrid_.get(i - 2) < routeBounds.getNorthEast().lat(); i++) {
 			this.latGrid_.add(routeBoundsCenter.rhumbDestinationPoint(0, range * i).lat());
 			
 		}
-		//logger.trace("pass1 latGrid size"+latGrid_.size());
+		logger.trace("pass1 latGrid size"+latGrid_.size());
 		// Add lines from the center out to the south  
 		for (int i1 = 1; this.latGrid_.get(1) > routeBounds.getSouthWest().lat(); i1++) {
 			this.latGrid_.add(0,routeBoundsCenter.rhumbDestinationPoint(180, range * i1).lat());
 		}
-		//logger.trace("pass2 latGrid size"+latGrid_.size());
+		logger.trace("pass2 latGrid size"+latGrid_.size());
 		// Starting from the center define grid lines outwards horizontally until they
 		//  extend beyond the edge of the bounding box by more than one cell  
 		this.lngGrid_.add(routeBoundsCenter.lng());
@@ -372,12 +372,12 @@ public class RouteBoxer {
 		for (int i2 = 2; this.lngGrid_.get(i2 - 2) < routeBounds.getNorthEast().lng(); i2++) {
 			this.lngGrid_.add(routeBoundsCenter.rhumbDestinationPoint(90, range * i2).lng());
 		}
-		//logger.trace("pass1 lngGrid_ size"+lngGrid_.size());
+		logger.trace("pass1 lngGrid_ size"+lngGrid_.size());
 		// Add lines from the center out to the west
 		for (int i3 = 1; this.lngGrid_.get(1) > routeBounds.getSouthWest().lng(); i3++) {
 			this.lngGrid_.add(0,routeBoundsCenter.rhumbDestinationPoint(270, range * i3).lng());
 		}
-		//logger.trace("pass2 lngGrid_ size"+lngGrid_.size());
+		logger.trace("pass2 lngGrid_ size"+lngGrid_.size());
 
 		// Create a two dimensional array representing this grid
 		this.grid_ = new int[this.lngGrid_.size()][this.latGrid_.size()];
@@ -397,10 +397,10 @@ public class RouteBoxer {
 
 		// Work through each vertex on the path identifying which grid cell it is in
 		for (int i = 1; i < vertices.size(); i++) {
-			//logger.trace("findIntersectingCells_ i "+i);
+			logger.trace("findIntersectingCells_ i "+i);
 			// Use the known cell of the previous vertex to help find the cell of this vertex
 			int[] gridXY = this.getGridCoordsFromHint_(vertices.get(i), vertices.get(i - 1), hintXY);
-			//logger.trace("findIntersectingCells_ gridXY "+gridXY[0]+" "+gridXY[1]);
+			logger.trace("findIntersectingCells_ gridXY "+gridXY[0]+" "+gridXY[1]);
 			if (gridXY[0] == hintXY[0] && gridXY[1] == hintXY[1]) {
 				// This vertex is in the same cell as the previous vertex
 				// The cell will already have been marked for inclusion in the boxes
@@ -574,7 +574,7 @@ public class RouteBoxer {
 	 * @param {Number} y The row of the cells to include
 	 */ 
 	private void fillInGridSquares_(int startx, int endx, int y) {
-		//logger.trace("fillInGridSquares_ startx"+startx+" endx "+endx+" y "+y);
+		logger.trace("fillInGridSquares_ startx"+startx+" endx "+endx+" y "+y);
 		int x;
 		if (startx < endx) {
 			for (x = startx; x <= endx; x++) {
@@ -598,7 +598,7 @@ public class RouteBoxer {
 		int x = cell[0];
 		int y = cell[1];
 		try {
-		//logger.trace("markCell x"+x+" y "+y);
+		logger.trace("markCell x"+x+" y "+y);
 		this.grid_[x - 1][y - 1] = 1;
 		this.grid_[x][y - 1] = 1;
 		this.grid_[x + 1][y - 1] = 1;
