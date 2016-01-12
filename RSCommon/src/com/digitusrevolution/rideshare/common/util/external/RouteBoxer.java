@@ -58,8 +58,8 @@ public class RouteBoxer {
 		 * @return
 		 */
 		public LatLng rhumbDestinationPoint(double brng, double dist) {
-			double R = 6378137;
-			double d = dist/R;  // d = angular distance covered on earth’s surface
+			//double R = 6378137;
+			double d = dist/EarthRadiusKm;  // d = angular distance covered on earth’s surface
 			double lat1 = latRad(), lon1 = lngRad();
 			brng = toRad(brng);
 
@@ -107,30 +107,8 @@ public class RouteBoxer {
 			return nf.format(latOrLng);
 		}
 		
-/*		public JSONArray toJSONArray() {
-			JSONArray latLngJSON = new JSONArray();
-			try {
-				latLngJSON.put(0, Double.toString(lat));
-				latLngJSON.put(1, Double.toString(lng));
-			} catch (JSONException e) {
-				
-			}
-			return latLngJSON;
-		}
-*/
 		public LatLng clone() {
 			return new LatLng(lat,lng);
-		}
-		
-		public double distanceFrom(LatLng otherLatLng) {
-				double b = lat() * Math.PI / 180.;
-				double c = otherLatLng.lat() * Math.PI / 180.;
-				double d = b - c;
-				double e = lng() * Math.PI / 180. - otherLatLng.lng() * Math.PI / 180.;
-
-				double f = 2. * Math.asin(Math.sqrt(Math.pow(Math.sin(d / 2.), 2.) + Math.cos(b) * Math.cos(c)
-						* Math.pow(Math.sin(e / 2.), 2.)));
-				return f * 6378137.;
 		}
 	}
 
@@ -612,7 +590,51 @@ public class RouteBoxer {
 			logger.warn("markCell_ IndexOutOfBoundsException x"+x+" y "+y);
 		}
 	};
+/*
+	private void markCell_(int[] cell) {
+		int x = cell[0];
+		int y = cell[1];
+		logger.trace("[x][y]:"+x+","+y);
 
+		this.grid_[x][y] = 1;
+		logger.trace("Marked - [x][y]"+x+","+y);
+
+		if (x!=0 && y !=0) 	{
+			this.grid_[x - 1][y - 1] = 1;
+			logger.trace("Marked - [x-1][y-1]"+(x-1)+","+(y-1));
+		}
+		if (y!=0){
+			this.grid_[x][y - 1] = 1;
+			logger.trace("Marked - [x][y-1]"+(x)+","+(y-1));
+		}
+		if (x<lngGrid_.size()-1 && y!=0) {
+			this.grid_[x + 1][y - 1] = 1;
+			logger.trace("Marked - [x+1][y-1]"+(x+1)+","+(y-1));
+		}
+		if (x!=0) {
+			this.grid_[x - 1][y] = 1;
+			logger.trace("Marked - [x-1][y]"+(x-1)+","+(y));
+		}
+		if (x<lngGrid_.size()-1) {
+			this.grid_[x + 1][y] = 1;
+			logger.trace("Marked - [x+1][y]"+(x+1)+","+(y));
+		}
+		if (x!=0) {
+			this.grid_[x - 1][y + 1] = 1;
+			logger.trace("Marked - [x-1][y+1]"+(x-1)+","+(y+1));
+		}
+		if (y == latGrid_.size()-1) {
+			this.grid_[x][y + 1] = 1;
+			logger.trace("Marked - [x][y+1]"+(x)+","+(y+1));
+		}
+		if (x == lngGrid_.size()-1 && y == latGrid_.size()-1){
+			this.grid_[x + 1][y + 1] = 1;			
+			logger.trace("Marked - [x+1][y+1]"+(x+1)+","+(y+1));
+		}
+
+	}
+*/
+	
 	/**
 	 * Create two sets of bounding boxes, both of which cover all of the cells that
 	 *   have been marked for inclusion.

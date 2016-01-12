@@ -179,16 +179,19 @@ public class RouteBoxer {
 		for (int i = 1; i < vertices.size(); i++) {
 			// Use the known cell of the previous vertex to help find the cell of this vertex
 			int[] gridXY = this.getGridCoordsFromHint_(vertices.get(i), vertices.get(i - 1), hintXY);
+			logger.trace("[i]:gridXY[x][y]:"+"["+i+"]:"+gridXY[0]+","+gridXY[1]);
 
 			if (gridXY[0] == hintXY[0] && gridXY[1] == hintXY[1]) {
 				// This vertex is in the same cell as the previous vertex
 				// The cell will already have been marked for inclusion in the boxes
+				logger.trace("Same Cell");
 				continue;
 
 			} else if ((Math.abs(hintXY[0] - gridXY[0]) == 1 && hintXY[1] == gridXY[1]) ||
 					(hintXY[0] == gridXY[0] && Math.abs(hintXY[1] - gridXY[1]) == 1)) {
 				// This vertex is in a cell that shares an edge with the previous cell
 				// Mark this cell and it's neighbours for inclusion in the boxes
+				logger.trace("Neighbour Cell");
 				this.markCell_(gridXY);
 
 			} else {
@@ -196,6 +199,8 @@ public class RouteBoxer {
 				//  cell. This means that the path passes through other cells between
 				//  this vertex and the previous vertex, and we must determine which cells
 				//  it passes through
+				logger.trace("Other Cell");
+				logger.trace("hintXY[x][y]:"+hintXY[0]+","+hintXY[1]);
 				this.getGridIntersects_(vertices.get(i - 1), vertices.get(i), hintXY, gridXY);
 			}
 
@@ -214,6 +219,22 @@ public class RouteBoxer {
 		int x,y;
 		for (x = 0; this.lngGrid_.get(x) < latlng.lng(); x++) {}
 		for (y = 0; this.latGrid_.get(y) < latlng.lat(); y++) {}
+		//		if (x==0 && y==0){
+		//			logger.trace("if (x==0 && y==0):"+x+","+y);
+		//			int[] cellCoordinate = {(x), (y)};
+		//			return cellCoordinate;
+		//		}
+		//		if (x==0 && y!=0){
+		//			logger.trace("if (x==0 && y!=0)"+x+","+y);
+		//			int[] cellCoordinate = {(x), (y - 1)};
+		//			return cellCoordinate;			
+		//		}
+		//		if (x!=0 && y==0){
+		//			logger.trace("if (x!=0 && y==0)"+x+","+y);
+		//			int[] cellCoordinate = {(x - 1), (y)};
+		//			return cellCoordinate;
+		//		}
+		logger.trace("if (x!=0 && y!=0)"+x+","+y);
 		int[] cellCoordinate = {(x - 1), (y - 1)};
 		return cellCoordinate;
 	}
@@ -229,30 +250,47 @@ public class RouteBoxer {
 	 * @return {Number[]} The cell coordinates of the vertex to locate in the grid
 	 */ 
 	private int[] getGridCoordsFromHint_(LatLng latlng, LatLng hintlatlng, int[] hint) {
+		logger.trace("latlng,hintlatlng,hint[x][y]:"+latlng.toString()+","+hintlatlng.toString()+","+hint[0]+","+hint[1]);
 		int x = 0;
 		int y=0;
-			if (latlng.lng() > hintlatlng.lng()) {
-				for (x = hint[0]; x < lngGrid_.size()-1 ? this.lngGrid_.get(x + 1) < latlng.lng() : false ; x++) {
-					logger.trace("If - latlng.lng() > hintlatlng.lng() - x:"+x);
-				}
-			} else {
-				for (x = hint[0]; x > 0 ? this.lngGrid_.get(x)  > latlng.lng() : false; x--) {
-					logger.trace("Else - latlng.lng() > hintlatlng.lng() - x:"+x);
-				}
+		if (latlng.lng() > hintlatlng.lng()) {
+			for (x = hint[0]; x < lngGrid_.size()-1 ? this.lngGrid_.get(x + 1) < latlng.lng() : false ; x++) {
+				logger.trace("If - latlng.lng() > hintlatlng.lng() - x:"+x);
 			}
+		} else {
+			for (x = hint[0]; x >= 0 ? this.lngGrid_.get(x)  > latlng.lng() : false; x--) {
+				logger.trace("Else - latlng.lng() > hintlatlng.lng() - x:"+x);
+			}
+		}
 
-			if (latlng.lat() > hintlatlng.lat()) {
-				for (y = hint[1]; y < latGrid_.size()-1 ? this.latGrid_.get(y + 1) < latlng.lat() : false ; y++) {
-					logger.trace("If - latlng.lat() > hintlatlng.lat() - y:"+y);
-				}
-			} else {        
-				for (y = hint[1]; y >0 ? this.latGrid_.get(y) > latlng.lat() : false ; y--) {
-					logger.trace("Else - latlng.lat() > hintlatlng.lat() - y:"+y);
-				}
+		if (latlng.lat() > hintlatlng.lat()) {
+			for (y = hint[1]; y < latGrid_.size()-1 ? this.latGrid_.get(y + 1) < latlng.lat() : false ; y++) {
+				logger.trace("If - latlng.lat() > hintlatlng.lat() - y:"+y);
 			}
-			int[] gridCoordinate = {x,y};
+		} else {        
+			for (y = hint[1]; y >= 0 ? this.latGrid_.get(y) > latlng.lat() : false ; y--) {
+				logger.trace("Else - latlng.lat() > hintlatlng.lat() - y:"+y);
+			}
+		}
+		if (x<0 && y<0){
+			int[] gridCoordinate = {x+1,y+1};
+			logger.trace("Grid Cordinates x,y:"+x+","+y);
+			return gridCoordinate;				
+		} 
+		if (x<0 && y>0){
+			logger.trace("x<0");
+			int[] gridCoordinate = {x+1,y};
 			logger.trace("Grid Cordinates x,y:"+x+","+y);
 			return gridCoordinate;
+		}
+		if (x>0 && y<0){
+			int[] gridCoordinate = {x,y+1};
+			logger.trace("Grid Cordinates x,y:"+x+","+y);
+			return gridCoordinate;
+		}
+		int[] gridCoordinate = {x,y};
+		logger.trace("Grid Cordinates x,y:"+x+","+y);
+		return gridCoordinate;
 	}
 
 
@@ -296,6 +334,7 @@ public class RouteBoxer {
 
 				// Mark every cell the path has crossed between this grid and the start,
 				//   or the previous east to west grid line it crossed (Step 5)
+				logger.trace("x,y:"+hintXY[0]+","+edgeXY[0]);
 				this.fillInGridSquares_(hintXY[0], edgeXY[0], i - 1);
 
 				// Use the point where it crossed this grid line as the reference for the
@@ -384,10 +423,10 @@ public class RouteBoxer {
 		int x = cell[0];
 		int y = cell[1];
 		logger.trace("[x][y]:"+x+","+y);
-		
+
 		this.grid_[x][y] = 1;
 		logger.trace("Marked - [x][y]"+x+","+y);
-		
+
 		if (x!=0 && y !=0) 	{
 			this.grid_[x - 1][y - 1] = 1;
 			logger.trace("Marked - [x-1][y-1]"+(x-1)+","+(y-1));
@@ -448,16 +487,18 @@ public class RouteBoxer {
 				logger.trace("Grid"+"["+x+"]["+y+"]:"+this.grid_[x][y]);
 			}
 		}
-		
+
 		// Traverse the grid a row at a time
+		logger.trace("Traverse the grid a row at a time");
 		for (y = 0; y < this.grid_[0].length; y++) {
 			for (x = 0; x < this.grid_.length; x++) {
-
+				logger.trace("Cell[x][y]:"+x+","+y);
 				if (this.grid_[x][y]==1) {
+					logger.trace("Cell Marked for Inclusion");
 					// This cell is marked for inclusion. If the previous cell in this
 					//   row was also marked for inclusion, merge this cell into it's box.
 					// Otherwise start a new box.
-					int[] cell = {x, y};
+					int[] cell = {x, y};									
 					box = this.getCellBounds_(cell);
 					if (currentBox!=null) {
 						currentBox.extend(box.getNorthEast());
@@ -466,6 +507,7 @@ public class RouteBoxer {
 					}
 
 				} else {
+					logger.trace("Cell Not marked for Inclusion");
 					// This cell is not marked for inclusion. If the previous cell was
 					//  marked for inclusion, merge it's box with a box that spans the same
 					//  columns from the row below if possible.
@@ -479,15 +521,19 @@ public class RouteBoxer {
 			currentBox = null;
 		}
 
+		logger.trace("Traverse the grid a column at a time");
 		// Traverse the grid a column at a time
 		for (x = 0; x < this.grid_.length; x++) {
 			for (y = 0; y < this.grid_[0].length; y++) {
-				if (this.grid_[x][y]==1) {
+				logger.trace("Cell[x][y]:"+x+","+y);
 
+				if (this.grid_[x][y]==1) {
+					logger.trace("Cell Marked for Inclusion");			
 					// This cell is marked for inclusion. If the previous cell in this
 					//   column was also marked for inclusion, merge this cell into it's box.
 					// Otherwise start a new box.
 					if (currentBox!=null) {
+
 						int[] cell = {x, y};
 						box = this.getCellBounds_(cell);
 						currentBox.extend(box.getNorthEast());
@@ -497,6 +543,7 @@ public class RouteBoxer {
 					}
 
 				} else {
+					logger.trace("Cell Not marked for Inclusion");
 					// This cell is not marked for inclusion. If the previous cell was
 					//  marked for inclusion, merge it's box with a box that spans the same
 					//  rows from the column to the left if possible.
@@ -561,8 +608,16 @@ public class RouteBoxer {
 	 * @return {LatLngBounds} The latlngBounds of a cell on the grid
 	 */ 
 	private LatLngBounds getCellBounds_(int[] cell) {
-		return new LatLngBounds(
-				new LatLng(this.latGrid_.get(cell[1]), this.lngGrid_.get(cell[0])),
-				new LatLng(this.latGrid_.get(cell[1] + 1), this.lngGrid_.get(cell[0] + 1)));
+		logger.trace("cell[x][y]:"+cell[0]+","+cell[1]);
+		if (cell[0] < lngGrid_.size()-1 && cell[1]< latGrid_.size()-1){
+			return new LatLngBounds(
+					new LatLng(this.latGrid_.get(cell[1]), this.lngGrid_.get(cell[0])),
+					new LatLng(this.latGrid_.get(cell[1] + 1), this.lngGrid_.get(cell[0] + 1)));
+		} else {
+			return new LatLngBounds(
+					new LatLng(this.latGrid_.get(cell[1]), this.lngGrid_.get(cell[0])),
+					new LatLng(this.latGrid_.get(cell[1]), this.lngGrid_.get(cell[0])));
+		}
+
 	}
 }

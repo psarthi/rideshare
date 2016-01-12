@@ -30,6 +30,8 @@ import com.digitusrevolution.rideshare.common.util.MathUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.external.tmp.LatLngBounds;
 import com.digitusrevolution.rideshare.common.util.external.tmp.RouteBoxer;
+//import com.digitusrevolution.rideshare.common.util.external.RouteBoxer;
+//import com.digitusrevolution.rideshare.common.util.external.RouteBoxer.LatLngBounds;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
@@ -513,7 +515,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			double lat = ridePoint.getPoint().getLatitude();
 			double lng = ridePoint.getPoint().getLongitude();
 			Point point = new Point(lng, lat);
-			//com.digitusrevolution.rideshare.common.util.external.RouteBoxer.LatLng latLng = routeBoxer.new LatLng(lat,lng);
+		//	com.digitusrevolution.rideshare.common.util.external.RouteBoxer.LatLng latLng = routeBoxer.new LatLng(lat,lng);
 			com.digitusrevolution.rideshare.common.util.external.tmp.LatLng latLng = new com.digitusrevolution.rideshare.common.util.external.tmp.LatLng(lat,lng);
 			latLngs.add(latLng);
 			routePoints.add(point);
