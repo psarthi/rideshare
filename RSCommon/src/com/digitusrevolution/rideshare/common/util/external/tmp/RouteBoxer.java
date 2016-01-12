@@ -92,13 +92,16 @@ public class RouteBoxer {
 		List<LatLng> vertices = path;
 
 		// Build the grid that is overlaid on the route
+		logger.trace("buildGrid_");
 		this.buildGrid_(vertices, range);
 
 		// Identify the grid cells that the route intersects
+		logger.trace("findIntersectingCells_");
 		this.findIntersectingCells_(vertices);
 
 		// Merge adjacent intersected grid cells (and their neighbours) into two sets
 		//  of bounds, both of which cover them completely
+		logger.trace("mergeIntersectingCells_");
 		this.mergeIntersectingCells_();
 
 		// Return the set of merged bounds that has the fewest elements
@@ -156,8 +159,8 @@ public class RouteBoxer {
 
 		// Create a two dimensional array representing this grid
 		this.grid_ = new int[this.lngGrid_.size()][this.latGrid_.size()];
-		
-		logger.trace("latGrid_.size,lngGrid_.size,grid.length:"+latGrid_.size()+","+lngGrid_.size()+","+grid_.length);
+
+		logger.trace("lngGrid_.size,latGrid_.size,grid.length[x-LngSize][y-LatSize]:"+lngGrid_.size()+","+latGrid_.size()+"["+grid_.length + ","+grid_[0].length+"]");
 	}
 
 	/**
@@ -228,34 +231,28 @@ public class RouteBoxer {
 	private int[] getGridCoordsFromHint_(LatLng latlng, LatLng hintlatlng, int[] hint) {
 		int x = 0;
 		int y=0;
-		try {
 			if (latlng.lng() > hintlatlng.lng()) {
-				for (x = hint[0]; this.lngGrid_.get(x + 1) < latlng.lng(); x++) {
+				for (x = hint[0]; x < lngGrid_.size()-1 ? this.lngGrid_.get(x + 1) < latlng.lng() : false ; x++) {
 					logger.trace("If - latlng.lng() > hintlatlng.lng() - x:"+x);
 				}
 			} else {
-				for (x = hint[0]; this.lngGrid_.get(x) > latlng.lng(); x--) {
+				for (x = hint[0]; x > 0 ? this.lngGrid_.get(x)  > latlng.lng() : false; x--) {
 					logger.trace("Else - latlng.lng() > hintlatlng.lng() - x:"+x);
 				}
 			}
 
 			if (latlng.lat() > hintlatlng.lat()) {
-				for (y = hint[1]; this.latGrid_.get(y + 1) < latlng.lat(); y++) {
+				for (y = hint[1]; y < latGrid_.size()-1 ? this.latGrid_.get(y + 1) < latlng.lat() : false ; y++) {
 					logger.trace("If - latlng.lat() > hintlatlng.lat() - y:"+y);
 				}
 			} else {        
-				for (y = hint[1]; this.latGrid_.get(y) > latlng.lat(); y--) {
+				for (y = hint[1]; y >0 ? this.latGrid_.get(y) > latlng.lat() : false ; y--) {
 					logger.trace("Else - latlng.lat() > hintlatlng.lat() - y:"+y);
 				}
 			}
 			int[] gridCoordinate = {x,y};
+			logger.trace("Grid Cordinates x,y:"+x+","+y);
 			return gridCoordinate;
-		} catch (Exception e) {
-			logger.trace("Exception: Value of [x,y]:"+x+","+y);
-			e.printStackTrace();
-			return null;
-		}
-
 	}
 
 
@@ -366,11 +363,13 @@ public class RouteBoxer {
 		if (startx < endx) {
 			for (x = startx; x <= endx; x++) {
 				int[] cell = {x,y};
+				logger.trace("x,y:"+x+","+y);
 				this.markCell_(cell);
 			}
 		} else {
 			for (x = startx; x >= endx; x--) {
 				int[] cell = {x,y};
+				logger.trace("x,y:"+x+","+y);
 				this.markCell_(cell);
 			}            
 		}      
@@ -384,15 +383,44 @@ public class RouteBoxer {
 	private void markCell_(int[] cell) {
 		int x = cell[0];
 		int y = cell[1];
-		this.grid_[x - 1][y - 1] = 1;
-		this.grid_[x][y - 1] = 1;
-		this.grid_[x + 1][y - 1] = 1;
-		this.grid_[x - 1][y] = 1;
+		logger.trace("[x][y]:"+x+","+y);
+		
 		this.grid_[x][y] = 1;
-		this.grid_[x + 1][y] = 1;
-		this.grid_[x - 1][y + 1] = 1;
-		this.grid_[x][y + 1] = 1;
-		this.grid_[x + 1][y + 1] = 1;
+		logger.trace("Marked - [x][y]"+x+","+y);
+		
+		if (x!=0 && y !=0) 	{
+			this.grid_[x - 1][y - 1] = 1;
+			logger.trace("Marked - [x-1][y-1]"+(x-1)+","+(y-1));
+		}
+		if (y!=0){
+			this.grid_[x][y - 1] = 1;
+			logger.trace("Marked - [x][y-1]"+(x)+","+(y-1));
+		}
+		if (x<lngGrid_.size()-1 && y!=0) {
+			this.grid_[x + 1][y - 1] = 1;
+			logger.trace("Marked - [x+1][y-1]"+(x+1)+","+(y-1));
+		}
+		if (x!=0) {
+			this.grid_[x - 1][y] = 1;
+			logger.trace("Marked - [x-1][y]"+(x-1)+","+(y));
+		}
+		if (x<lngGrid_.size()-1) {
+			this.grid_[x + 1][y] = 1;
+			logger.trace("Marked - [x+1][y]"+(x+1)+","+(y));
+		}
+		if (x!=0) {
+			this.grid_[x - 1][y + 1] = 1;
+			logger.trace("Marked - [x-1][y+1]"+(x-1)+","+(y+1));
+		}
+		if (y == latGrid_.size()-1) {
+			this.grid_[x][y + 1] = 1;
+			logger.trace("Marked - [x][y+1]"+(x)+","+(y+1));
+		}
+		if (x == lngGrid_.size()-1 && y == latGrid_.size()-1){
+			this.grid_[x + 1][y + 1] = 1;			
+			logger.trace("Marked - [x+1][y+1]"+(x+1)+","+(y+1));
+		}
+
 	}
 
 	/**
@@ -415,6 +443,12 @@ public class RouteBoxer {
 		// The box we are currently expanding with new cells
 		LatLngBounds currentBox = null;
 
+		for (y = 0; y < this.grid_[0].length; y++) {
+			for (x = 0; x < this.grid_.length; x++) {
+				logger.trace("Grid"+"["+x+"]["+y+"]:"+this.grid_[x][y]);
+			}
+		}
+		
 		// Traverse the grid a row at a time
 		for (y = 0; y < this.grid_[0].length; y++) {
 			for (x = 0; x < this.grid_.length; x++) {
