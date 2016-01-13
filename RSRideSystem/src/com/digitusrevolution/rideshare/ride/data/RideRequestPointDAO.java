@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.ride.data;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,10 +15,12 @@ import org.geojson.MultiPolygon;
 import com.digitusrevolution.rideshare.common.db.MongoDBUtil;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
+import com.digitusrevolution.rideshare.common.util.MathUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.ride.dto.RideRequestSearchPoint;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -97,6 +100,9 @@ public class RideRequestPointDAO{
 		return rideRequestPoints;
 	}
 
+	/*
+	 * Purpose - Get all ride request point by going through each ride points and find the ride request point around it
+	 */
 	public void getAllMatchingRideRequestPointNearGivenPoint(List<RidePoint> ridePoints){
 
 		double maxRideRequestDistanceVariation = Double.parseDouble(PropertyReader.getInstance().getProperty("MAX_DISTANCE_VARIATION_FROM_RIDE_REQUEST_POINT"));
@@ -105,7 +111,7 @@ public class RideRequestPointDAO{
 
 		Set<RideRequestSearchPoint> rideRequestSearchPointsSet = new HashSet<>();
 		Set<Integer> rideRequestIdsSet = new HashSet<>();
-		
+
 		logger.debug("Start - Searching Ride Request Points");
 		for (RidePoint ridePoint : ridePoints) {
 			logger.debug("Ride Point:"+ridePoint.getPoint().toString());	
@@ -126,9 +132,9 @@ public class RideRequestPointDAO{
 
 			List<Document> pipeline = new ArrayList<>();
 			pipeline.add(geoNear);
-			
+
 			MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
-		
+
 			JSONUtil<RideRequestSearchPoint> jsonUtilRideRequestSearchPoint = new JSONUtil<>(RideRequestSearchPoint.class);
 			int count =0;
 			try {
@@ -139,7 +145,7 @@ public class RideRequestPointDAO{
 					long timeVariation = DateTimeUtil.getSeconds(rideRequestSearchPoint.getTimeVariation());
 					long rideDateTime = ridePoint.getRidesBasicInfo().get(0).getDateTime().toEpochSecond();
 					boolean dateTimeCondition = (rideDateTime >= rideRequestSearchPoint.getDateTime().minusSeconds(timeVariation).toEpochSecond() && 
-												 rideDateTime <= rideRequestSearchPoint.getDateTime().plusSeconds(timeVariation).toEpochSecond());
+							rideDateTime <= rideRequestSearchPoint.getDateTime().plusSeconds(timeVariation).toEpochSecond());
 					boolean distanceCondition = (rideRequestSearchPoint.getDistance() <= rideRequestSearchPoint.getDistanceVariation());
 					logger.trace("RideRequest Search Point:"+jsonUtilRideRequestSearchPoint.getJson(rideRequestSearchPoint));
 					if (distanceCondition && dateTimeCondition){
@@ -159,14 +165,31 @@ public class RideRequestPointDAO{
 		logger.debug("End - Searching Ride Request Points");
 		logger.debug("Matching Unique Ride Request Points Ids:" + rideRequestIdsSet);
 	}
-	
-	public List<RideRequestPoint> getAllMatchingRideRequestWithinMultiPolygon(MultiPolygon multiPolygon){
-		
+
+	public List<RideRequestPoint> getAllMatchingRideRequestWithinMultiPolygonOfRide(Ride ride, MultiPolygon multiPolygon){
+
 		JSONUtil<MultiPolygon> jsonUtilMultiPolygon = new JSONUtil<>(MultiPolygon.class);
 		String jsonMultipPolygon = jsonUtilMultiPolygon.getJson(multiPolygon);
-		
-		Document query = new Document("point", new Document("$geoWithin", new Document("$geometry", new Document(Document.parse(jsonMultipPolygon)))));
-		MongoCursor<Document> cursor = collection.find(query).iterator();
+		long maxTimeVariation = Long.parseLong(PropertyReader.getInstance().getProperty("MAX_PICKUP_TIME_VARIATION"));
+		long dropTimeBuffer = Long.parseLong(PropertyReader.getInstance().getProperty("DROP_TIME_BUFFER"));
+		ZonedDateTime endTime = ride.getEndPoint().getRidesBasicInfo().get(0).getDateTime();
+
+		Document geoWithinQuery = new Document("point", new Document("$geoWithin", new Document("$geometry", new Document(Document.parse(jsonMultipPolygon)))));
+		Document dateTimeFilter = new Document("dateTime", new Document("$gte", ride.getStartTime().minusSeconds(maxTimeVariation).toEpochSecond())
+				.append("$lte", endTime.plusSeconds(maxTimeVariation).plusSeconds(dropTimeBuffer).toEpochSecond()));
+
+		Document matchGeoWithin = new Document("$match",geoWithinQuery);
+		Document matchDateTimeFilter = new Document("$match",dateTimeFilter);
+
+		logger.trace(matchGeoWithin.toJson());
+		logger.trace(matchDateTimeFilter.toJson());
+
+		List<Document> pipeline = new ArrayList<>();
+		pipeline.add(matchGeoWithin);
+		pipeline.add(matchDateTimeFilter);
+
+		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
+
 		List<RideRequestPoint> rideRequestPoints = getAllRideRequestPointFromDocuments(cursor);
 		logger.debug("Total Ride Request Point Found:"+rideRequestPoints.size());
 		List<Integer> rideIds = new ArrayList<>();
@@ -176,14 +199,14 @@ public class RideRequestPointDAO{
 		logger.debug("Ride Request Ids are:"+rideIds);
 		return rideRequestPoints;
 	}
-	
+
 	private List<RideRequestPoint> getAllRideRequestPointFromDocuments(MongoCursor<Document> cursor){
 		List<RideRequestPoint> rideRequestPoints = new ArrayList<>();
 		try {
 			while (cursor.hasNext()){
 				Document document = cursor.next();
 				String json = document.toJson();
-				logger.trace(json);
+				logger.trace("Document:"+json);
 				RideRequestPoint rideRequestPoint = jsonUtil.getModel(json);
 				rideRequestPoints.add(rideRequestPoint);
 			}
@@ -192,7 +215,7 @@ public class RideRequestPointDAO{
 		}
 		return rideRequestPoints;
 	}
-		
+
 }
 
 

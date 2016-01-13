@@ -20,11 +20,11 @@
 		</Logger>
 		<Logger
 			name="com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO"
-			level="debug" additivity="false">
+			level="trace" additivity="false">
 			<AppenderRef ref="Console" />
 		</Logger>
 		<Logger
-			name="com.digitusrevolution.rideshare.common.util.external.tmp.RouteBoxer"
+			name="com.digitusrevolution.rideshare.common.util.external.RouteBoxer"
 			level="debug" additivity="false">
 			<AppenderRef ref="Console" />
 		</Logger>
