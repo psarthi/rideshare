@@ -25,7 +25,7 @@
 		</Logger>
 		<Logger
 			name="com.digitusrevolution.rideshare.common.util.external.tmp.RouteBoxer"
-			level="trace" additivity="false">
+			level="debug" additivity="false">
 			<AppenderRef ref="Console" />
 		</Logger>
 	</Loggers>

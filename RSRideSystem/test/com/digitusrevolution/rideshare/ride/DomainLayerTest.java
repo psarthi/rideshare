@@ -66,10 +66,7 @@ public class DomainLayerTest {
 	public void test(){
 
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		//Start Point - 12.853310028976468, 77.66372680664062
-		//End Point - 12.910875267801023, 77.62527465820312
-		rideRequestDO.searchRides(203);
-		
+		rideRequestDO.getPolygonAroundRouteUsingRouteBoxer(0.016093);
 	}
 
 	public void routebox(){

@@ -95,6 +95,12 @@ public class RouteBoxer {
 		logger.trace("buildGrid_");
 		this.buildGrid_(vertices, range);
 
+		int i=0;
+		for (LatLng latLng : vertices) {
+			logger.trace("Vertex ["+i+"]:"+latLng.toString());
+			i++;
+		}
+		
 		// Identify the grid cells that the route intersects
 		logger.trace("findIntersectingCells_");
 		this.findIntersectingCells_(vertices);
@@ -171,6 +177,7 @@ public class RouteBoxer {
 	private void findIntersectingCells_(List<LatLng> vertices) {
 		// Find the cell where the path begins
 		int[] hintXY = this.getCellCoords_(vertices.get(0));
+		logger.trace("Vertex- Cell Cordinate[0]:"+vertices.get(0).toString()+":"+hintXY[0]+","+hintXY[1]);
 
 		// Mark that cell and it's neighbours for inclusion in the boxes
 		this.markCell_(hintXY);
@@ -179,7 +186,7 @@ public class RouteBoxer {
 		for (int i = 1; i < vertices.size(); i++) {
 			// Use the known cell of the previous vertex to help find the cell of this vertex
 			int[] gridXY = this.getGridCoordsFromHint_(vertices.get(i), vertices.get(i - 1), hintXY);
-			logger.trace("[i]:gridXY[x][y]:"+"["+i+"]:"+gridXY[0]+","+gridXY[1]);
+			logger.trace("Vertex- Cell Cordinate["+i+"]:"+vertices.get(i).toString()+":"+gridXY[0]+","+gridXY[1]);
 
 			if (gridXY[0] == hintXY[0] && gridXY[1] == hintXY[1]) {
 				// This vertex is in the same cell as the previous vertex
@@ -234,7 +241,7 @@ public class RouteBoxer {
 		//			int[] cellCoordinate = {(x - 1), (y)};
 		//			return cellCoordinate;
 		//		}
-		logger.trace("if (x!=0 && y!=0)"+x+","+y);
+		//logger.trace("Vertex-Cell Cordinate"+latlng.toString()+"-"+x+","+y);
 		int[] cellCoordinate = {(x - 1), (y - 1)};
 		return cellCoordinate;
 	}
@@ -250,26 +257,30 @@ public class RouteBoxer {
 	 * @return {Number[]} The cell coordinates of the vertex to locate in the grid
 	 */ 
 	private int[] getGridCoordsFromHint_(LatLng latlng, LatLng hintlatlng, int[] hint) {
-		logger.trace("latlng,hintlatlng,hint[x][y]:"+latlng.toString()+","+hintlatlng.toString()+","+hint[0]+","+hint[1]);
+		logger.trace("latlng,hintlatlng,hint[x][y]:"+latlng.toString()+","+hintlatlng.toString()+":"+hint[0]+","+hint[1]);
 		int x = 0;
 		int y=0;
 		if (latlng.lng() > hintlatlng.lng()) {
-			for (x = hint[0]; x < lngGrid_.size()-1 ? this.lngGrid_.get(x + 1) < latlng.lng() : false ; x++) {
-				logger.trace("If - latlng.lng() > hintlatlng.lng() - x:"+x);
+			logger.trace("If - latlng.lng() > hintlatlng.lng()");
+			for (x = hint[0]; this.lngGrid_.get(x + 1) < latlng.lng() ; x++) {
+				logger.trace("x:"+x);
 			}
 		} else {
-			for (x = hint[0]; x >= 0 ? this.lngGrid_.get(x)  > latlng.lng() : false; x--) {
-				logger.trace("Else - latlng.lng() > hintlatlng.lng() - x:"+x);
+			logger.trace("Else - latlng.lng() > hintlatlng.lng()");
+			for (x = hint[0]; this.lngGrid_.get(x)  > latlng.lng(); x--) {
+				logger.trace("x:"+x);
 			}
 		}
 
 		if (latlng.lat() > hintlatlng.lat()) {
-			for (y = hint[1]; y < latGrid_.size()-1 ? this.latGrid_.get(y + 1) < latlng.lat() : false ; y++) {
-				logger.trace("If - latlng.lat() > hintlatlng.lat() - y:"+y);
+			logger.trace("If - latlng.lat() > hintlatlng.lat()");
+			for (y = hint[1]; this.latGrid_.get(y + 1) < latlng.lat() ; y++) {
+				logger.trace("y:"+y);
 			}
 		} else {        
-			for (y = hint[1]; y >= 0 ? this.latGrid_.get(y) > latlng.lat() : false ; y--) {
-				logger.trace("Else - latlng.lat() > hintlatlng.lat() - y:"+y);
+			logger.trace("Else - latlng.lat() > hintlatlng.lat()");
+			for (y = hint[1]; this.latGrid_.get(y) > latlng.lat() ; y--) {
+				logger.trace("y:"+y);
 			}
 		}
 		if (x<0 && y<0){
@@ -290,6 +301,7 @@ public class RouteBoxer {
 		}
 		int[] gridCoordinate = {x,y};
 		logger.trace("Grid Cordinates x,y:"+x+","+y);
+		//logger.trace("Vertex-Cell Cordinate"+latlng.toString()+"-"+x+","+y);
 		return gridCoordinate;
 	}
 
@@ -317,6 +329,7 @@ public class RouteBoxer {
 		int[] edgeXY;
 		int i;
 		double brng = start.rhumbBearingTo(end);         // Step 1.
+		logger.trace("brng:"+brng);
 
 		LatLng hint = start;
 		int[] hintXY = startXY;
@@ -328,6 +341,7 @@ public class RouteBoxer {
 				// Find the latlng of the point where the path segment intersects with
 				//  this grid line (Step 2 & 3)
 				edgePoint = this.getGridIntersect_(start, brng, this.latGrid_.get(i));
+				logger.trace("edgePoint:"+edgePoint.toString());
 
 				// Find the cell containing this intersect point (Step 4)
 				edgeXY = this.getGridCoordsFromHint_(edgePoint, hint, hintXY);
@@ -385,7 +399,11 @@ public class RouteBoxer {
 	 *                    the grid line
 	 */ 
 	private LatLng getGridIntersect_(LatLng start, double brng, double gridLineLat) {
-		double d = this.R * ((MathUtil.toRad(gridLineLat) - MathUtil.toRad(start.lat()) / Math.cos(MathUtil.toRad(brng))));
+		double d = this.R * (((MathUtil.toRad(gridLineLat) - MathUtil.toRad(start.lat())) / Math.cos(MathUtil.toRad(brng))));
+		logger.trace("MathUtil.toRad(gridLineLat)"+MathUtil.toRad(gridLineLat));
+		logger.trace("MathUtil.toRad(start.lat()"+MathUtil.toRad(start.lat()));
+		logger.trace("Math.cos(MathUtil.toRad(brng))"+Math.cos(MathUtil.toRad(brng)));
+		
 		return start.rhumbDestinationPoint(brng, d);
 	}
 
