@@ -15,7 +15,6 @@ import org.geojson.MultiPolygon;
 import com.digitusrevolution.rideshare.common.db.MongoDBUtil;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
-import com.digitusrevolution.rideshare.common.util.MathUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
@@ -174,34 +173,46 @@ public class RideRequestPointDAO{
 		long dropTimeBuffer = Long.parseLong(PropertyReader.getInstance().getProperty("DROP_TIME_BUFFER"));
 		ZonedDateTime endTime = ride.getEndPoint().getRidesBasicInfo().get(0).getDateTime();
 
+		//This will get ride request point inside the polygons
 		Document geoWithinQuery = new Document("point", new Document("$geoWithin", new Document("$geometry", new Document(Document.parse(jsonMultipPolygon)))));
+		//This will filter ride request point based on ride start and end time by adding max pickup variation and drop buffer as well
+		//for e.g. If a ride is starting at 8 AM and ending at 9 AM, so with max variation added (2 Hrs) and (30Mins drop buffer to cover up route variation) 
+		//valid ride request points would be >=6 AM and <=11:30AM, so if someone has requested for pickup at 5:30 AM, so max pickup time would be 7:30AM
+		//Based on that, 8AM ride would not be valid
 		Document dateTimeFilter = new Document("dateTime", new Document("$gte", ride.getStartTime().minusSeconds(maxTimeVariation).toEpochSecond())
 											  .append("$lte", endTime.plusSeconds(maxTimeVariation).plusSeconds(dropTimeBuffer).toEpochSecond()));
 
 		Document matchGeoWithin = new Document("$match",geoWithinQuery);
 		Document matchDateTimeFilter = new Document("$match",dateTimeFilter);
 		
-		Document group = new Document("$group", new Document("_id","$rideRequestId")
+		//This will group ride request points by its id
+		Document groupByRideRequestId = new Document("$group", new Document("_id","$rideRequestId")
 									 .append("rideRequestSearchPoint", new Document("$push", "$$CURRENT")));
 
-		Document project = new Document("$project", new Document("rideRequestSearchPoint", 1)
+		//This will add additional count field which shows the number of ride request points available for a particular ride request Id
+		Document projectRideRequestPointCount = new Document("$project", new Document("rideRequestSearchPoint", 1)
 								.append("count", new Document("$size", "$rideRequestSearchPoint")));
 		
+		//This will filter those ride requests which doesn't have pickup and drop both available
 		Document rideRequestPointCountFilter = new Document("count", new Document("$eq", 2));
 		Document matchrideRequestPointCountFilter = new Document("$match",rideRequestPointCountFilter);
 		
+		Document projectResult = new Document("$project", new Document("rideRequestSearchPoint", 1));
+		
 		logger.trace(matchGeoWithin.toJson());
 		logger.trace(matchDateTimeFilter.toJson());
-		logger.trace(group.toJson());
-		logger.trace(project.toJson());
+		logger.trace(groupByRideRequestId.toJson());
+		logger.trace(projectRideRequestPointCount.toJson());
 		logger.trace(matchrideRequestPointCountFilter.toJson());
+		logger.trace(projectResult.toJson());
 
 		List<Document> pipeline = new ArrayList<>();
 		pipeline.add(matchGeoWithin);
 		pipeline.add(matchDateTimeFilter);
-		pipeline.add(group);
-		pipeline.add(project);
+		pipeline.add(groupByRideRequestId);
+		pipeline.add(projectRideRequestPointCount);
 		pipeline.add(matchrideRequestPointCountFilter);
+		pipeline.add(projectResult);
 
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
 
