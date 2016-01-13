@@ -176,17 +176,32 @@ public class RideRequestPointDAO{
 
 		Document geoWithinQuery = new Document("point", new Document("$geoWithin", new Document("$geometry", new Document(Document.parse(jsonMultipPolygon)))));
 		Document dateTimeFilter = new Document("dateTime", new Document("$gte", ride.getStartTime().minusSeconds(maxTimeVariation).toEpochSecond())
-				.append("$lte", endTime.plusSeconds(maxTimeVariation).plusSeconds(dropTimeBuffer).toEpochSecond()));
+											  .append("$lte", endTime.plusSeconds(maxTimeVariation).plusSeconds(dropTimeBuffer).toEpochSecond()));
 
 		Document matchGeoWithin = new Document("$match",geoWithinQuery);
 		Document matchDateTimeFilter = new Document("$match",dateTimeFilter);
+		
+		Document group = new Document("$group", new Document("_id","$rideRequestId")
+									 .append("rideRequestSearchPoint", new Document("$push", "$$CURRENT")));
 
+		Document project = new Document("$project", new Document("rideRequestSearchPoint", 1)
+								.append("count", new Document("$size", "$rideRequestSearchPoint")));
+		
+		Document rideRequestPointCountFilter = new Document("count", new Document("$eq", 2));
+		Document matchrideRequestPointCountFilter = new Document("$match",rideRequestPointCountFilter);
+		
 		logger.trace(matchGeoWithin.toJson());
 		logger.trace(matchDateTimeFilter.toJson());
+		logger.trace(group.toJson());
+		logger.trace(project.toJson());
+		logger.trace(matchrideRequestPointCountFilter.toJson());
 
 		List<Document> pipeline = new ArrayList<>();
 		pipeline.add(matchGeoWithin);
 		pipeline.add(matchDateTimeFilter);
+		pipeline.add(group);
+		pipeline.add(project);
+		pipeline.add(matchrideRequestPointCountFilter);
 
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
 
@@ -207,8 +222,8 @@ public class RideRequestPointDAO{
 				Document document = cursor.next();
 				String json = document.toJson();
 				logger.trace("Document:"+json);
-				RideRequestPoint rideRequestPoint = jsonUtil.getModel(json);
-				rideRequestPoints.add(rideRequestPoint);
+//				RideRequestPoint rideRequestPoint = jsonUtil.getModel(json);				
+//				rideRequestPoints.add(rideRequestPoint);
 			}
 		} finally{
 			cursor.close();
