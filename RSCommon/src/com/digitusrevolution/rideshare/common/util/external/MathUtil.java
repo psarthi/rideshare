@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.common.util.external.tmp;
+package com.digitusrevolution.rideshare.common.util.external;
 
 public class MathUtil {
 	
@@ -31,5 +31,5 @@ public class MathUtil {
 	public static double toBrng(double value) {
 		return (toDeg(value) + 360) % 360;
 	};
-
+	
 }

@@ -19,8 +19,6 @@ import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.external.RouteBoxer;
-import com.digitusrevolution.rideshare.common.util.external.RouteBoxer.LatLng;
-import com.digitusrevolution.rideshare.common.util.external.RouteBoxer.LatLngBounds;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
@@ -66,74 +64,6 @@ public class DomainLayerTest {
 	public void test(){
 
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		rideRequestDO.getPolygonAroundRouteUsingRouteBoxer(0.016093);
-	}
-
-	public void routebox(){
-		RideDO rideDO = new RideDO();
-		List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(160);
-		RouteBoxer routeBoxer = new RouteBoxer();
-		List<LatLng> latLngs = new LinkedList<>();
-		List<Point> routePoints = new LinkedList<>();
-		for (RidePoint ridePoint : ridePoints) {
-			LatLng latLng = routeBoxer.new LatLng(ridePoint.getPoint().getLatitude(), ridePoint.getPoint().getLongitude());
-			Point point = new Point(ridePoint.getPoint().getLongitude(), ridePoint.getPoint().getLatitude());
-			latLngs.add(latLng);
-			routePoints.add(point);
-		}
-
-		List<LatLngBounds> boxes = routeBoxer.box(latLngs, 10000);
-		logger.debug("boxes:" + boxes);
-		logger.debug("Total Box:" + boxes.size());
-
-		List<Point> boxSWPoints = new LinkedList<>();
-		List<Point> boxNEPoints = new LinkedList<>();
-		List<Point> boxNWPoints = new LinkedList<>();
-		List<Point> boxSEPoints = new LinkedList<>();
-		List<Point> boxTopPoints = new LinkedList<>();
-		List<Point> boxBottomPoints = new LinkedList<>();
-		List<Point> sqPoints = new LinkedList<>();
-		for (LatLngBounds latLngBounds : boxes) {
-			Point southWestPoint = new Point(latLngBounds.getSouthWest().lng, latLngBounds.getSouthWest().lat);
-			Point northEastPoint = new Point(latLngBounds.getNorthEast().lng, latLngBounds.getNorthEast().lat);
-			Point northWestPoint = new Point(latLngBounds.getSouthWest().lng, latLngBounds.getNorthEast().lat);
-			Point southEastPoint = new Point(latLngBounds.getNorthEast().lng, latLngBounds.getSouthWest().lat);
-			boxSWPoints.add(southWestPoint);
-			boxNEPoints.add(northEastPoint);
-			boxNWPoints.add(northWestPoint);
-			boxSEPoints.add(southEastPoint);
-			sqPoints.add(northWestPoint);
-			sqPoints.add(northEastPoint);
-			sqPoints.add(southEastPoint);
-			sqPoints.add(southWestPoint);
-			sqPoints.add(northWestPoint);
-		}
-
-		List<Point> reverseBottomPoints = new LinkedList<>();
-		ListIterator<Point> iterator = boxBottomPoints.listIterator(boxBottomPoints.size());
-		while (iterator.hasPrevious()) {
-			reverseBottomPoints.add(iterator.previous());		
-		}
-
-		List<Point> allPoints = new LinkedList<>();
-		allPoints.addAll(sqPoints);				
-//		allPoints.addAll(reverseBottomPoints);
-		allPoints.add(sqPoints.get(0));
-
-		Polygon polygon = GeoJSONUtil.getPolygonFromPoints(allPoints);
-		JSONUtil<Polygon> jsonUtilPolygon = new JSONUtil<>(Polygon.class);
-		String polygonGeoJson = jsonUtilPolygon.getJson(polygon);
-		logger.debug("polygonGeoJson:"+polygonGeoJson);
-
-		LineString routeLineString = GeoJSONUtil.getLineStringFromPoints(routePoints);
-		JSONUtil<LineString> jsonUtilLineString = new JSONUtil<>(LineString.class);
-		logger.debug("Route:"+jsonUtilLineString.getJson(routeLineString));
-
-		GeometryCollection geometryCollection = new GeometryCollection();
-		geometryCollection.add(polygon);
-		geometryCollection.add(routeLineString);
-		JSONUtil<GeometryCollection> jsonUtilGeometryCollection = new JSONUtil<>(GeometryCollection.class);
-		logger.debug("Geometry:" + jsonUtilGeometryCollection.getJson(geometryCollection));
-
+		rideRequestDO.searchRides(199);
 	}
 }

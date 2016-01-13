@@ -1,8 +1,5 @@
 package com.digitusrevolution.rideshare.ride.domain.core;
 
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -26,16 +23,13 @@ import org.geojson.Polygon;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
 import com.digitusrevolution.rideshare.common.math.google.LatLng;
-import com.digitusrevolution.rideshare.common.math.google.PolyUtil;
 import com.digitusrevolution.rideshare.common.math.google.SphericalUtil;
 import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.MathUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
-import com.digitusrevolution.rideshare.common.util.external.tmp.LatLngBounds;
-import com.digitusrevolution.rideshare.common.util.external.tmp.RouteBoxer;
-//import com.digitusrevolution.rideshare.common.util.external.RouteBoxer;
-//import com.digitusrevolution.rideshare.common.util.external.RouteBoxer.LatLngBounds;
+import com.digitusrevolution.rideshare.common.util.external.LatLngBounds;
+import com.digitusrevolution.rideshare.common.util.external.RouteBoxer;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
@@ -43,9 +37,6 @@ import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.ride.data.RideRequestDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
-import com.digitusrevolution.rideshare.ride.domain.PointDO;
-import com.digitusrevolution.rideshare.ride.domain.RouteDO;
-import com.digitusrevolution.rideshare.ride.dto.google.GoogleDirection;
 
 
 public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
@@ -263,8 +254,8 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		RideDO rideDO = new RideDO();
 		List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(rideId);
 		double distance = Double.parseDouble(PropertyReader.getInstance().getProperty("MAX_DISTANCE_VARIATION_FROM_RIDE_REQUEST_POINT"));
-//		MultiPolygon polygonAroundRoute = getPolygonAroundRouteUsingRouteBoxer(ridePoints, distance);
-//		rideRequestPointDAO.getAllMatchingRideRequestWithinMultiPolygon(polygonAroundRoute);
+		MultiPolygon polygonAroundRoute = getPolygonAroundRouteUsingRouteBoxer(ridePoints, distance);
+		rideRequestPointDAO.getAllMatchingRideRequestWithinMultiPolygon(polygonAroundRoute);
 	}
 
 	
@@ -511,45 +502,20 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * as rectangles can be any order, so the only option is to create individual polygon from each rectangle latlngs.
 	 * 
 	 */
-	public MultiPolygon getPolygonAroundRouteUsingRouteBoxer(double distance){
+	public MultiPolygon getPolygonAroundRouteUsingRouteBoxer(List<RidePoint> ridePoints, double distance){
 		
-//		RouteBoxer routeBoxer = new RouteBoxer();
 		RouteBoxer routeBoxer = new RouteBoxer();
 		List<Point> routePoints = new LinkedList<>();
-//		List<com.digitusrevolution.rideshare.common.util.external.RouteBoxer.LatLng> latLngs = new LinkedList<>();
-		List<com.digitusrevolution.rideshare.common.util.external.tmp.LatLng> latLngs = new LinkedList<>();
-/*		for (RidePoint ridePoint : ridePoints) {
+		List<com.digitusrevolution.rideshare.common.util.external.LatLng> latLngs = new LinkedList<>();
+		for (RidePoint ridePoint : ridePoints) {
 			double lat = ridePoint.getPoint().getLatitude();
 			double lng = ridePoint.getPoint().getLongitude();
 			Point point = new Point(lng, lat);
-		//	com.digitusrevolution.rideshare.common.util.external.RouteBoxer.LatLng latLng = routeBoxer.new LatLng(lat,lng);
-			com.digitusrevolution.rideshare.common.util.external.tmp.LatLng latLng = new com.digitusrevolution.rideshare.common.util.external.tmp.LatLng(lat,lng);
+			com.digitusrevolution.rideshare.common.util.external.LatLng latLng = new com.digitusrevolution.rideshare.common.util.external.LatLng(lat,lng);
 			latLngs.add(latLng);
 			routePoints.add(point);
-		}*/
-		
-		
-		//Start Point - 12.853310028976468, 77.66372680664062
-		//End Point - 12.910875267801023, 77.62527465820312
-
-		Point startPoint = new Point(77.66372680664062, 12.853310028976468);  			
-		Point endPoint = new Point(77.62527465820312, 12.910875267801023);
-		ZonedDateTime startTimeUTC = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
-					
-		RouteDO routeDO = new RouteDO();
-		GoogleDirection direction = routeDO.getDirection(startPoint, endPoint,startTimeUTC);
-		String encodedOverallPath = direction.getRoutes().get(0).getOverviewPolyline().getPoints();
-		List<LatLng> latLngsOverall = PolyUtil.decode(encodedOverallPath);
-		
-		for (LatLng latLng : latLngsOverall) {
-			double lat = latLng.latitude;
-			double lng = latLng.longitude;
-			com.digitusrevolution.rideshare.common.util.external.tmp.LatLng latLngRouteBoxer = new com.digitusrevolution.rideshare.common.util.external.tmp.LatLng(lat,lng);
-			latLngs.add(latLngRouteBoxer);
 		}
 		
-		
-//		List<LatLngBounds> latLngBounds = routeBoxer.box(latLngs, distance);
 		List<LatLngBounds> latLngBounds = routeBoxer.box(latLngs, distance);
 		MultiPolygon multiPolygon = new MultiPolygon();
 		

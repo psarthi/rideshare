@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.common.util.external.tmp;
+package com.digitusrevolution.rideshare.common.util.external;
 
 public class LatLngBounds {
 	private LatLng southwest, northeast;

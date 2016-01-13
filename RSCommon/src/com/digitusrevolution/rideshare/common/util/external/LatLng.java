@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.common.util.external.tmp;
+package com.digitusrevolution.rideshare.common.util.external;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;

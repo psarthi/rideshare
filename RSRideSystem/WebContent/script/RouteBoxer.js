@@ -359,6 +359,7 @@ RouteBoxer.prototype.getGridIntersect_ = function (start, brng, gridLineLat) {
   console.log("gridLineLat.toRad()"+gridLineLat.toRad());
   console.log("start.lat().toRad()"+start.lat().toRad());
   console.log("Math.cos(brng.toRad())"+Math.cos(brng.toRad()));
+  console.log("d:"+d);
   return start.rhumbDestinationPoint(brng, d);
 };
 
