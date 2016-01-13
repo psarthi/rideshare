@@ -3,7 +3,9 @@ package com.digitusrevolution.rideshare.ride.data;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -165,7 +167,7 @@ public class RideRequestPointDAO{
 		logger.debug("Matching Unique Ride Request Points Ids:" + rideRequestIdsSet);
 	}
 
-	public List<RideRequestPoint> getAllMatchingRideRequestWithinMultiPolygonOfRide(Ride ride, MultiPolygon multiPolygon){
+	public Map<Integer, List<RideRequestPoint>> getAllMatchingRideRequestWithinMultiPolygonOfRide(Ride ride, MultiPolygon multiPolygon){
 
 		JSONUtil<MultiPolygon> jsonUtilMultiPolygon = new JSONUtil<>(MultiPolygon.class);
 		String jsonMultipPolygon = jsonUtilMultiPolygon.getJson(multiPolygon);
@@ -215,33 +217,49 @@ public class RideRequestPointDAO{
 		pipeline.add(projectResult);
 
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
-
-		List<RideRequestPoint> rideRequestPoints = getAllRideRequestPointFromDocuments(cursor);
-		logger.debug("Total Ride Request Point Found:"+rideRequestPoints.size());
-		List<Integer> rideIds = new ArrayList<>();
-		for (RideRequestPoint rideRequestPoint : rideRequestPoints) {
-			rideIds.add(rideRequestPoint.getRideRequestId());
-		}		
-		logger.debug("Ride Request Ids are:"+rideIds);
-		return rideRequestPoints;
-	}
-
-	private List<RideRequestPoint> getAllRideRequestPointFromDocuments(MongoCursor<Document> cursor){
-		List<RideRequestPoint> rideRequestPoints = new ArrayList<>();
+		
 		try {
 			while (cursor.hasNext()){
 				Document document = cursor.next();
 				String json = document.toJson();
 				logger.trace("Document:"+json);
+				Integer rideRequestId = document.getInteger("_id");
+				List<Document> rideRequestPointsBSON = (List<Document>) document.get("rideRequestSearchPoint");
+				JSONUtil<RideRequestPoint> jsonUtilRideRequestPoint = new JSONUtil<>(RideRequestPoint.class);
+				List<RideRequestPoint> rideRequestPoints = new LinkedList<>();
+				RideRequestPoint rideRequestPoint1 = jsonUtilRideRequestPoint.getModel(rideRequestPointsBSON.get(0).toJson());
+				RideRequestPoint rideRequestPoint2 = jsonUtilRideRequestPoint.getModel(rideRequestPointsBSON.get(1).toJson());
+				//Checking if point 1 is the pickup point or not. If point 1 is pickup point, then its datetime would be less than point 2
+				//We need to add pickup point first and then drop point just to maintain the sequence and consistency
+				if (rideRequestPoint1.getDateTime().toEpochSecond() < rideRequestPoint2.getDateTime().toEpochSecond()){
+					logger.trace("Point 1 is the pickup and Point 2 is the drop");
+					//Point 1 is the pickup and Point 2 is the drop
+					rideRequestPoints.add(rideRequestPoint1);
+					rideRequestPoints.add(rideRequestPoint2);
+				} else {
+					logger.trace("Point 2 is the pickup and Point 1 is the drop");
+					//Point 2 is the pickup and Point 1 is the drop
+					rideRequestPoints.add(rideRequestPoint2);
+					rideRequestPoints.add(rideRequestPoint1);
+				}
+				logger.debug("Total Ride Request Point Found:"+rideRequestPoints.size());
 //				RideRequestPoint rideRequestPoint = jsonUtil.getModel(json);				
 //				rideRequestPoints.add(rideRequestPoint);
 			}
 		} finally{
 			cursor.close();
 		}
-		return rideRequestPoints;
-	}
 
+
+//		List<RideRequestPoint> rideRequestPoints = getAllRideRequestPointFromDocuments(cursor);
+//		logger.debug("Total Ride Request Point Found:"+rideRequestPoints.size());
+//		List<Integer> rideIds = new ArrayList<>();
+//		for (RideRequestPoint rideRequestPoint : rideRequestPoints) {
+//			rideIds.add(rideRequestPoint.getRideRequestId());
+//		}		
+//		logger.debug("Ride Request Ids are:"+rideIds);
+		return null;
+	}
 }
 
 
