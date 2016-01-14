@@ -11,7 +11,7 @@ public class RideMatchInfo {
 	private RidePoint rideDropPoint;
 	private double pickupPointDistance;
 	private double dropPointDistance;
-	private double travelDistance;
+	private double rideRequestTravelDistance;
 
 	public int getRideId() {
 		return rideId;
@@ -37,11 +37,11 @@ public class RideMatchInfo {
 	public void setRideDropPoint(RidePoint rideDropPoint) {
 		this.rideDropPoint = rideDropPoint;
 	}
-	public double getTravelDistance() {
-		return travelDistance;
+	public double getRideRequestTravelDistance() {
+		return rideRequestTravelDistance;
 	}
-	public void setTravelDistance(double travelDistance) {
-		this.travelDistance = travelDistance;
+	public void setRideRequestTravelDistance(double rideRequestTravelDistance) {
+		this.rideRequestTravelDistance = rideRequestTravelDistance;
 	}
 	public double getPickupPointDistance() {
 		return pickupPointDistance;

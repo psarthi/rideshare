@@ -4,9 +4,11 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
@@ -38,6 +40,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.ride.data.RideRequestDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
+import com.digitusrevolution.rideshare.ride.dto.RideMatchInfo;
 
 
 public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
@@ -240,15 +243,13 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	public List<RideRequestPoint> getPointsOfRideRequest(int rideRequestId) {
 		return rideRequestPointDAO.getPointsOfRideRequest(rideRequestId);
 	}
-	
+
 	/*
 	 * Key Strategy -
 	 * 
 	 * - Get all the points at min. distance and then increment the distance till we find certain number of matching ride requests.
 	 * - Don't get all the points first with max distance else number of points may be too high and complexity of finding the matching
 	 * 	 rides would be MxN i.e. for 1 million ride request point in a 400 ride points of ride would cost 400 Millions times Big O time complexity
-	 * 
-	 * 
 	 * 
 	 */
 	public void searchRides(int rideId){
@@ -259,15 +260,124 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		double maxDistancePercent = Double.parseDouble(PropertyReader.getInstance().getProperty("RIDE_REQUEST_MAX_DISTANCE_VARIATION"));
 		double minDistance = ride.getTravelDistance() * minDistancePercent;
 		double maxDistance = ride.getTravelDistance() * maxDistancePercent;
-		
+
 		MultiPolygon polygonAroundRoute = getPolygonAroundRouteUsingRouteBoxer(ridePoints, minDistance);
+		Map<Integer, List<RideRequestPoint>> rideRequestsMap = rideRequestPointDAO.getAllMatchingRideRequestWithinMultiPolygonOfRide(ride,polygonAroundRoute);
+		int count=0;
+
+		Map<Integer, RideMatchInfo> rideMatchInfoMap = new HashMap<>();
+
+		//This will get ridepoint which is having shortest distance from pickup and drop point of each ride requests
+		//Final result would be stored into RideMatchInfo Map
+		for (RidePoint ridePoint : ridePoints) {
+			LatLng from = new LatLng(ridePoint.getPoint().getLatitude(), ridePoint.getPoint().getLongitude());
+
+			for (Map.Entry<Integer, List<RideRequestPoint>> entry: rideRequestsMap.entrySet()) {
+				//Pickup and drop point would always be in the same order which is taken care by rideRequestPointDAO
+				RideRequestPoint pickupPoint = entry.getValue().get(0);
+				RideRequestPoint dropPoint = entry.getValue().get(1);
+				Integer rideRequestId = entry.getKey();
+				LatLng pickupPointCordinates = new LatLng(pickupPoint.getPoint().getLatitude(), pickupPoint.getPoint().getLongitude());
+				double pickupDistance = SphericalUtil.computeDistanceBetween(from, pickupPointCordinates);
+				LatLng dropPointCordinates = new LatLng(dropPoint.getPoint().getLatitude(), dropPoint.getPoint().getLongitude());
+				double dropDistance = SphericalUtil.computeDistanceBetween(from, dropPointCordinates);
+
+				//Don't use ridePoints.getIndex(0).equals(ridepoint) or ridePoints.lastIndexOf(ridePoint)==0
+				//as ride points equal method has been overridden to compare only by ride Id
+				//So in that case, all ride points would match 
+				if (count==0){
+					//This will add an entry to the map while going through first ride point only
+					RideMatchInfo rideMatchInfo = new RideMatchInfo();	
+					rideMatchInfoMap.put(rideRequestId, rideMatchInfo);
+				} 				
+				logger.trace("[Ride RequestId]:"+rideRequestId);
+				logger.trace("[Pickup Distance, Variation]:"+pickupDistance+","+pickupPoint.getDistanceVariation());
+				//This will validate if pickupDistance is within the pickup variation range
+				if (pickupDistance <= pickupPoint.getDistanceVariation()){
+					logger.trace("Pickup Distance is within range");
+					logger.trace("[Previous Distance, Current Distance]:"+pickupDistance+","+rideMatchInfoMap.get(rideRequestId).getPickupPointDistance());
+					//This will validate if pickupDistance from current ridePoint is smallest as of this iteration
+					if (pickupDistance < rideMatchInfoMap.get(rideRequestId).getPickupPointDistance() || rideMatchInfoMap.get(rideRequestId).getPickupPointDistance() == 0){
+						
+						if (rideMatchInfoMap.get(rideRequestId).getPickupPointDistance() == 0){
+							logger.trace("First Matched Pickup Point for ride point Sequence:"+ridePoint.getSequence());
+						}else {
+							logger.trace("Pickup Distance is smaller that previous smallest distance for ride point Sequence:"+ridePoint.getSequence());
+						}
+						logger.trace("Updating new Ride Pickup Point");
+						//This will overwrite the previous values, so that at the end we will have smallest distance ride point
+						rideMatchInfoMap.get(rideRequestId).setRidePickupPoint(ridePoint);
+						rideMatchInfoMap.get(rideRequestId).setPickupPointDistance(pickupDistance);
+					} else {
+						logger.trace("Pickup Distance is bigger that previous smallest distance");
+					}					
+				} else {
+					logger.trace("Pickup Distance out of range");
+				}			
+				logger.trace("[Drop Distance, Variation]:"+dropDistance+","+dropPoint.getDistanceVariation());
+				//This will validate if dropDistance is within the drop variation range
+				if (dropDistance <= dropPoint.getDistanceVariation()){
+					logger.trace("Drop Distance is within range");
+					logger.trace("[Previous Distance, Current Distance]:"+dropDistance+","+rideMatchInfoMap.get(rideRequestId).getDropPointDistance());
+					//This will validate if dropDistance from current ridePoint is smallest as of this iteration
+					if (dropDistance < rideMatchInfoMap.get(rideRequestId).getDropPointDistance() || rideMatchInfoMap.get(rideRequestId).getDropPointDistance() == 0){
+
+						if (rideMatchInfoMap.get(rideRequestId).getDropPointDistance() == 0){
+							logger.trace("First Matched Drop Point for ride point Sequence:"+ridePoint.getSequence());
+						}else {
+							logger.trace("Drop Distance is smaller that previous smallest distance for ride point Sequence:"+ridePoint.getSequence());
+						}
+						logger.trace("Updating new Ride Drop Point");
+						//This will overwrite the previous values, so that at the end we will have smallest distance ride point
+						rideMatchInfoMap.get(rideRequestId).setRideDropPoint(ridePoint);
+						rideMatchInfoMap.get(rideRequestId).setDropPointDistance(dropDistance);
+					} else {
+						logger.trace("Drop Distance is bigger that previous smallest distance");
+					}					
+				} else {
+					logger.trace("Drop Distance out of range");
+				}					
+			}
+			count++;
+		}
+
+		//Use iterator instead of using for loop with entrySet as you can't remove an entry while iterating on the same Map
+		Iterator<Map.Entry<Integer, RideMatchInfo>> iterator = rideMatchInfoMap.entrySet().iterator();
 		
-		
-		
-		rideRequestPointDAO.getAllMatchingRideRequestWithinMultiPolygonOfRide(ride,polygonAroundRoute);
+		//This will get all valid ride requests based on ride pickup and drop point availability as well as sequence of ride pickup and drop point 
+		while(iterator.hasNext()){
+			 Entry<Integer, RideMatchInfo> entry = iterator.next();
+			 RideMatchInfo rideMatchInfo = entry.getValue();
+			//Validate if Ride pickup and Ride drop both exist
+			//If there is any valid Ride pickup or Ride drop point then value would not be null
+			//i.e. both point exist
+			if (rideMatchInfo.getRidePickupPoint()!=null && rideMatchInfo.getRideDropPoint()!=null){
+				//Validate if Ride pickup is before Ride drop
+				//Ride pickup sequence number should be smaller than drop sequence number, then we can say pickup point is before drop point
+				if (rideMatchInfo.getRidePickupPoint().getSequence() < rideMatchInfo.getRideDropPoint().getSequence()){
+					logger.trace("Valid Ride Request Id:"+entry.getKey());
+					logger.trace("Ride Pickup and Drop Sequence number:"+rideMatchInfo.getRidePickupPoint().getSequence()+","
+							+rideMatchInfo.getRideDropPoint().getSequence());
+				} else {
+					//Remove the invalid ride request ids entry from the map
+					logger.trace("InValid Ride Request Id as its going in opp direction:"+entry.getKey());
+					logger.trace("Ride Pickup and Drop Sequence number:"+rideMatchInfo.getRidePickupPoint().getSequence()+","
+							+rideMatchInfo.getRideDropPoint().getSequence());
+					iterator.remove();
+				}
+			}
+			else {
+				//Remove the invalid ride request ids entry from the map
+				logger.trace("InValid Ride Request Id as there is no matching ride pickup and drop point :"+entry.getKey());
+				iterator.remove();
+			}
+		}
+
+		logger.trace("Valid Ride Request Ids:"+rideMatchInfoMap.keySet());
+
 	}
 
-	
+
 	/*
 	 * State: ****Not ready and should not be used. Instead use RouteBoxer mechanism to get polygons
 	 * Purpose: Get polygon around route at a specific distance
@@ -289,9 +399,9 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * 
 	 */
 	private MultiPolygon getPolygonAroundRoute(int rideId){
-		
+
 		logger.debug("Entry CreatePolyLine");
-		
+
 		RideDO rideDO = new RideDO();
 		List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(rideId);
 		List<Point> centerPoints = new LinkedList<>();
@@ -335,7 +445,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			if (i==1){
 				addFirstPointAndExtension(leftPoints, rightPoints, centerReferencePoints, from, currentLineHeading,
 						distance, NorthHeading,multiPolygon);	
-				
+
 				from = to;
 				previousLineHeading = currentLineHeading;
 				i++;				
@@ -344,8 +454,8 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 
 			addPointsAtPerpendicularFromLine(leftPoints, rightPoints, centerReferencePoints, from,
 					previousLineHeading, distance,multiPolygon);
-			
-			
+
+
 			addPointsAtIntersectionAngle(previousLineHeading, currentLineHeading, from, distance, 
 					leftPoints, rightPoints, centerReferencePoints,multiPolygon);
 
@@ -367,27 +477,27 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		logger.debug("Exit CreatePolyLine");
 		return multiPolygon;
 	}
-	
+
 	private void addQuadrilateral(List<Point> leftPoints, List<Point> rightPoints, MultiPolygon multiPolygon){
 		List<Point> rectangleBox = new LinkedList<>();
 		int currentLineIndex = leftPoints.size()-1;
-		
+
 		if (currentLineIndex > 0){
-		int previousLineIndex = currentLineIndex - 1;		
-		Point NWPoint = leftPoints.get(previousLineIndex);
-		Point NEPoint = leftPoints.get(currentLineIndex);
-		Point SEPoint = rightPoints.get(currentLineIndex);
-		Point SWPoint = rightPoints.get(previousLineIndex);
-		//Rectangle Box
-		rectangleBox.add(NWPoint);
-		rectangleBox.add(NEPoint);
-		rectangleBox.add(SEPoint);
-		rectangleBox.add(SWPoint);
-		//This will complete the polygon by closing at start point
-		rectangleBox.add(NWPoint);	
-		Polygon polygon = GeoJSONUtil.getPolygonFromPoints(rectangleBox);
-		logger.trace("Adding Quadrilateral of line having index (m,n):" + currentLineIndex + ","+previousLineIndex);
-		multiPolygon.add(polygon);
+			int previousLineIndex = currentLineIndex - 1;		
+			Point NWPoint = leftPoints.get(previousLineIndex);
+			Point NEPoint = leftPoints.get(currentLineIndex);
+			Point SEPoint = rightPoints.get(currentLineIndex);
+			Point SWPoint = rightPoints.get(previousLineIndex);
+			//Rectangle Box
+			rectangleBox.add(NWPoint);
+			rectangleBox.add(NEPoint);
+			rectangleBox.add(SEPoint);
+			rectangleBox.add(SWPoint);
+			//This will complete the polygon by closing at start point
+			rectangleBox.add(NWPoint);	
+			Polygon polygon = GeoJSONUtil.getPolygonFromPoints(rectangleBox);
+			logger.trace("Adding Quadrilateral of line having index (m,n):" + currentLineIndex + ","+previousLineIndex);
+			multiPolygon.add(polygon);
 		} else {
 			logger.trace("There is only one line exist, so quadrilateral can not be created");
 		}
@@ -469,7 +579,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 
 	private void createGeoJSONGeometry(List<Point> centerReferencePoints, MultiPolygon multiPolygon) {
 
-		
+
 		JSONUtil<MultiPolygon> jsonUtilMultiPolygon = new JSONUtil<>(MultiPolygon.class);
 		String multiPolygonGeoJson = jsonUtilMultiPolygon.getJson(multiPolygon);
 		logger.debug("Multi Polygon:"+multiPolygonGeoJson);
@@ -499,7 +609,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		//This will add polygon of current line & previous line from Left/Right points
 		addQuadrilateral(leftPoints, rightPoints, multiPolygon);
 	}
-	
+
 	/*
 	 * Purpose: Get polygons around the route to cover specific distance around the route
 	 * Reference - http://google-maps-utility-library-v3.googlecode.com/svn/trunk/routeboxer/docs/examples.html
@@ -513,7 +623,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * 
 	 */
 	public MultiPolygon getPolygonAroundRouteUsingRouteBoxer(List<RidePoint> ridePoints, double distance){
-		
+
 		RouteBoxer routeBoxer = new RouteBoxer();
 		List<Point> routePoints = new LinkedList<>();
 		List<com.digitusrevolution.rideshare.common.util.external.LatLng> latLngs = new LinkedList<>();
@@ -525,10 +635,10 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			latLngs.add(latLng);
 			routePoints.add(point);
 		}
-		
+
 		List<LatLngBounds> latLngBounds = routeBoxer.box(latLngs, distance);
 		MultiPolygon multiPolygon = new MultiPolygon();
-		
+
 		for (LatLngBounds latLngBound : latLngBounds) {
 			double SWLat = latLngBound.getSouthWest().lat;
 			double SWLng = latLngBound.getSouthWest().lng;
@@ -551,20 +661,20 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			rectangleBox.add(SWPoint);
 			//This will complete the polygon by closing at start point
 			rectangleBox.add(NWPoint);
-			
+
 			Polygon polygon = GeoJSONUtil.getPolygonFromPoints(rectangleBox);
 			multiPolygon.add(polygon);
-			
+
 		}
-		
+
 		JSONUtil<MultiPolygon> jsonUtilMultiPolygon = new JSONUtil<>(MultiPolygon.class);
 		logger.debug("Rectangle Box Count:" + latLngBounds.size());
 		logger.debug("MultiPolygon:"+jsonUtilMultiPolygon.getJson(multiPolygon));
-		
+
 		LineString routeLineString = GeoJSONUtil.getLineStringFromPoints(routePoints);
 		JSONUtil<LineString> jsonUtilLineString = new JSONUtil<>(LineString.class);
 		logger.trace("Route line:"+jsonUtilLineString.getJson(routeLineString));
-		
+
 		GeometryCollection geometryCollection = new GeometryCollection();
 		geometryCollection.add(routeLineString);
 		geometryCollection.add(multiPolygon);

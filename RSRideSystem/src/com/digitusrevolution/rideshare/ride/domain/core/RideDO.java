@@ -369,7 +369,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		rideMatchInfo.setRideRequestId(rideRequest.getId());
 		rideMatchInfo.setPickupPointDistance(pickupRidePointDTO.getDistance());
 		rideMatchInfo.setDropPointDistance(dropRidePointDTO.getDistance());
-		rideMatchInfo.setTravelDistance(rideRequest.getTravelDistance());
+		rideMatchInfo.setRideRequestTravelDistance(rideRequest.getTravelDistance());
 		return rideMatchInfo;
 	}	
 
@@ -472,7 +472,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 			ridePickupPointProperties.put("Distance", rideMatchInfo.getDropPointDistance());
 			ridePickupPointProperties.put("DateTimeUTC", rideMatchInfo.getRideDropPoint().getRidesBasicInfo().get(0).getDateTime());
 		}
-		ridePickupPointProperties.put("TravelDistance", rideMatchInfo.getTravelDistance());
+		ridePickupPointProperties.put("TravelDistance", rideMatchInfo.getRideRequestTravelDistance());
 		return ridePickupPointProperties;
 	}
 
