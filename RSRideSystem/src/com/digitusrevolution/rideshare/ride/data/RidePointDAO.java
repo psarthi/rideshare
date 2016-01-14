@@ -160,6 +160,8 @@ public class RidePointDAO{
 		Document query;
 
 		//***This is important, as depending on the input of rideId, it will either get all matching rides or specific ride
+		//This will get all ride points based on ride request point date time and its variation
+		//Note - we don't have to specifically add drop buffer as its already included while creating the ride request
 		if (rideId==-1){
 			query = new Document("rides.dateTime", new Document("$gte", rideRequestPoint.getDateTime().minusSeconds(variationInSeconds).toEpochSecond())
 					.append("$lte", rideRequestPoint.getDateTime().plusSeconds(variationInSeconds).toEpochSecond()));			
@@ -173,6 +175,8 @@ public class RidePointDAO{
 		String pointJson = jsonUtilPoint.getJson(point);
 		logger.trace(pointJson);
 
+		//This will get all the ride points based on max distance from ride request point 
+		//i.e circle with center as ride request point and radius as max distance 
 		Document geoNear = new Document("$geoNear",new Document("spherical",true)
 				.append("limit", PropertyReader.getInstance().getProperty("RIDE_SEARCH_RESULT_LIMIT"))
 				.append("maxDistance", rideRequestPoint.getDistanceVariation())
@@ -181,13 +185,19 @@ public class RidePointDAO{
 				.append("near", new Document(Document.parse(pointJson)))
 				.append("distanceField", "distance"));
 
+		//This will group by ride ids, and get the first point which is at the shortest distance
+		//Result from geoNear would be sorted and that's why first point is the nearest
 		Document group = new Document("$group", new Document("_id","$rides.id")
 				.append("rideSearchPoint", new Document("$first", "$$CURRENT")));
 
+		//Nor required, its here for just for reference
 		//Document sort = new Document("$sort", new Document("ridepoint.distance", 1));
 
+		//This will create individual ride points by ride id
+		//Unwind command, create multiple document for each array item i.e. array item would be different but rest of the property would be same
 		Document unwind = new Document("$unwind", "$rides");
 
+		//This will filter all the ride points by date and time again post the unwind command
 		Document match = new Document("$match",query);
 
 		logger.trace(query.toJson());

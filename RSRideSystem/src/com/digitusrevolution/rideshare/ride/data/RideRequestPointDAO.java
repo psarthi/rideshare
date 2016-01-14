@@ -2,6 +2,7 @@ package com.digitusrevolution.rideshare.ride.data;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -102,9 +103,12 @@ public class RideRequestPointDAO{
 	}
 
 	/*
+	 * Status - Not for production use, its only for experiment
 	 * Purpose - Get all ride request point by going through each ride points and find the ride request point around it
+	 * Note - This function should not be used as it makes multiple calls to database which is time consuming, 
+	 * instead use getAllMatchingRideRequestWithinMultiPolygonOfRide which will make only one DB call 
 	 */
-	public void getAllMatchingRideRequestPointNearGivenPoint(List<RidePoint> ridePoints){
+	private void getAllMatchingRideRequestPointNearGivenPoint(List<RidePoint> ridePoints){
 
 		double maxRideRequestDistanceVariation = Double.parseDouble(PropertyReader.getInstance().getProperty("MAX_DISTANCE_VARIATION_FROM_RIDE_REQUEST_POINT"));
 		double minDistance = Double.parseDouble(PropertyReader.getInstance().getProperty("RIDE_REQUEST_SEARCH_MIN_DISTANCE"));
@@ -167,6 +171,22 @@ public class RideRequestPointDAO{
 		logger.debug("Matching Unique Ride Request Points Ids:" + rideRequestIdsSet);
 	}
 
+	/*
+	 * Purpose - Get all valid ride request points which is inside multiple polygons created around the route
+	 * Return - It will return a map of Ride Request id and value as ride request points, 
+	 * 			***where first point in the list would be pickup and 2nd one is drop point
+	 * 
+	 * High Level Logic -
+	 * 
+	 * - Get all ride request points which is inside multi polygon
+	 * - Filter all the points which is outside the date time range of ride start and end point with variation and drop buffer added
+	 * - Group by the ride request Ids and then calculate the number of ride request points in the array of ride ids
+	 * - Filter all those ride request ids where count is not equal to 2 i.e. it doesn't have both pickup and drop point within the polygon
+	 * - So final result would get all the valid ride request points
+	 * - Create a map with key as ride request id and value as ride request points 
+	 * 	 (Store as a list, where 1st item in the list is the pickup point and 2nd as drop point)    
+	 * 
+	 */
 	public Map<Integer, List<RideRequestPoint>> getAllMatchingRideRequestWithinMultiPolygonOfRide(Ride ride, MultiPolygon multiPolygon){
 
 		JSONUtil<MultiPolygon> jsonUtilMultiPolygon = new JSONUtil<>(MultiPolygon.class);
@@ -191,20 +211,26 @@ public class RideRequestPointDAO{
 		Document groupByRideRequestId = new Document("$group", new Document("_id","$rideRequestId")
 									 .append("rideRequestSearchPoint", new Document("$push", "$$CURRENT")));
 
+		//This will filter those ride requests which doesn't have pickup and drop both available
+		Document rideRequestPointCountFilter = new Document("rideRequestSearchPoint", new Document("$size", 2));
+		Document matchrideRequestPointCountFilter = new Document("$match",rideRequestPointCountFilter);
+
+		/* Below code block is just for reference purpose, which will achieve the same result as matchrideRequestPointCountFilter above statement-
 		//This will add additional count field which shows the number of ride request points available for a particular ride request Id
 		Document projectRideRequestPointCount = new Document("$project", new Document("rideRequestSearchPoint", 1)
-								.append("count", new Document("$size", "$rideRequestSearchPoint")));
-		
+															  .append("count", new Document("$size", "$rideRequestSearchPoint")));
+	
 		//This will filter those ride requests which doesn't have pickup and drop both available
 		Document rideRequestPointCountFilter = new Document("count", new Document("$eq", 2));
 		Document matchrideRequestPointCountFilter = new Document("$match",rideRequestPointCountFilter);
+		*/
 		
 		Document projectResult = new Document("$project", new Document("rideRequestSearchPoint", 1));
+
 		
 		logger.trace(matchGeoWithin.toJson());
 		logger.trace(matchDateTimeFilter.toJson());
 		logger.trace(groupByRideRequestId.toJson());
-		logger.trace(projectRideRequestPointCount.toJson());
 		logger.trace(matchrideRequestPointCountFilter.toJson());
 		logger.trace(projectResult.toJson());
 
@@ -212,11 +238,11 @@ public class RideRequestPointDAO{
 		pipeline.add(matchGeoWithin);
 		pipeline.add(matchDateTimeFilter);
 		pipeline.add(groupByRideRequestId);
-		pipeline.add(projectRideRequestPointCount);
 		pipeline.add(matchrideRequestPointCountFilter);
 		pipeline.add(projectResult);
 
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
+		Map<Integer, List<RideRequestPoint>> rideRequestMap = new HashMap<>();
 		
 		try {
 			while (cursor.hasNext()){
@@ -224,6 +250,8 @@ public class RideRequestPointDAO{
 				String json = document.toJson();
 				logger.trace("Document:"+json);
 				Integer rideRequestId = document.getInteger("_id");
+				//This will get only the ride request point in the original form
+				@SuppressWarnings("unchecked")
 				List<Document> rideRequestPointsBSON = (List<Document>) document.get("rideRequestSearchPoint");
 				JSONUtil<RideRequestPoint> jsonUtilRideRequestPoint = new JSONUtil<>(RideRequestPoint.class);
 				List<RideRequestPoint> rideRequestPoints = new LinkedList<>();
@@ -242,23 +270,14 @@ public class RideRequestPointDAO{
 					rideRequestPoints.add(rideRequestPoint2);
 					rideRequestPoints.add(rideRequestPoint1);
 				}
-				logger.debug("Total Ride Request Point Found:"+rideRequestPoints.size());
-//				RideRequestPoint rideRequestPoint = jsonUtil.getModel(json);				
-//				rideRequestPoints.add(rideRequestPoint);
+				logger.trace("Adding Ride Request points in the map for ride request Id:"+rideRequestId);
+				//Adding ride request points by ride request Id
+				rideRequestMap.put(rideRequestId, rideRequestPoints);
 			}
 		} finally{
 			cursor.close();
 		}
-
-
-//		List<RideRequestPoint> rideRequestPoints = getAllRideRequestPointFromDocuments(cursor);
-//		logger.debug("Total Ride Request Point Found:"+rideRequestPoints.size());
-//		List<Integer> rideIds = new ArrayList<>();
-//		for (RideRequestPoint rideRequestPoint : rideRequestPoints) {
-//			rideIds.add(rideRequestPoint.getRideRequestId());
-//		}		
-//		logger.debug("Ride Request Ids are:"+rideIds);
-		return null;
+		return rideRequestMap;
 	}
 }
 
