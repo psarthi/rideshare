@@ -68,7 +68,7 @@ public class DomainLayerTest {
 	public void test(){
 
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		rideRequestDO.searchRides(160);
+		rideRequestDO.searchRides(190);
 		
 /*		RideDO rideDO = new RideDO();
 		List<Ride> rides = rideDO.getAll();

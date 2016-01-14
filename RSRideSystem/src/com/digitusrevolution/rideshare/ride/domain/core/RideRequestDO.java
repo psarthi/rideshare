@@ -261,6 +261,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		double minDistance = ride.getTravelDistance() * minDistancePercent;
 		double maxDistance = ride.getTravelDistance() * maxDistancePercent;
 
+		logger.debug("Ride Id and Distance:" + rideId+","+minDistance);
 		MultiPolygon polygonAroundRoute = getPolygonAroundRouteUsingRouteBoxer(ridePoints, minDistance);
 		Map<Integer, List<RideRequestPoint>> rideRequestsMap = rideRequestPointDAO.getAllMatchingRideRequestWithinMultiPolygonOfRide(ride,polygonAroundRoute);
 		int count=0;
@@ -355,25 +356,25 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 				//Validate if Ride pickup is before Ride drop
 				//Ride pickup sequence number should be smaller than drop sequence number, then we can say pickup point is before drop point
 				if (rideMatchInfo.getRidePickupPoint().getSequence() < rideMatchInfo.getRideDropPoint().getSequence()){
-					logger.trace("Valid Ride Request Id:"+entry.getKey());
-					logger.trace("Ride Pickup and Drop Sequence number:"+rideMatchInfo.getRidePickupPoint().getSequence()+","
+					logger.debug("Valid Ride Request Id:"+entry.getKey());
+					logger.debug("Ride Pickup and Drop Sequence number:"+rideMatchInfo.getRidePickupPoint().getSequence()+","
 							+rideMatchInfo.getRideDropPoint().getSequence());
 				} else {
 					//Remove the invalid ride request ids entry from the map
-					logger.trace("InValid Ride Request Id as its going in opp direction:"+entry.getKey());
-					logger.trace("Ride Pickup and Drop Sequence number:"+rideMatchInfo.getRidePickupPoint().getSequence()+","
+					logger.debug("InValid Ride Request Id as its going in opp direction:"+entry.getKey());
+					logger.debug("Ride Pickup and Drop Sequence number:"+rideMatchInfo.getRidePickupPoint().getSequence()+","
 							+rideMatchInfo.getRideDropPoint().getSequence());
 					iterator.remove();
 				}
 			}
 			else {
 				//Remove the invalid ride request ids entry from the map
-				logger.trace("InValid Ride Request Id as there is no matching ride pickup and drop point :"+entry.getKey());
+				logger.debug("InValid Ride Request Id as there is no matching ride pickup and drop point :"+entry.getKey());
 				iterator.remove();
 			}
 		}
 
-		logger.trace("Valid Ride Request Ids:"+rideMatchInfoMap.keySet());
+		logger.debug("Valid Ride Request Ids of Ride Id["+ride.getId()+"]:"+rideMatchInfoMap.keySet());
 
 	}
 
@@ -578,7 +579,6 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	}
 
 	private void createGeoJSONGeometry(List<Point> centerReferencePoints, MultiPolygon multiPolygon) {
-
 
 		JSONUtil<MultiPolygon> jsonUtilMultiPolygon = new JSONUtil<>(MultiPolygon.class);
 		String multiPolygonGeoJson = jsonUtilMultiPolygon.getJson(multiPolygon);

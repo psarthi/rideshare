@@ -245,6 +245,8 @@ public class RideRequestPointDAO{
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
 		Map<Integer, List<RideRequestPoint>> rideRequestMap = new HashMap<>();
 		
+		logger.trace("Ride Id:"+ride.getId());
+		
 		try {
 			while (cursor.hasNext()){
 				Document document = cursor.next();
@@ -278,6 +280,9 @@ public class RideRequestPointDAO{
 		} finally{
 			cursor.close();
 		}
+		
+		logger.debug("Ride Request Ids inside multi polygon of Ride Id["+ride.getId()+"]:"+rideRequestMap.keySet());
+		
 		return rideRequestMap;
 	}
 }

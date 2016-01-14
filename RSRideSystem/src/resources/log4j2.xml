@@ -15,12 +15,12 @@
 			<AppenderRef ref="Console" />
 		</Logger>
 		<Logger name="com.digitusrevolution.rideshare.ride.domain"
-			level="trace" additivity="false">
+			level="debug" additivity="false">
 			<AppenderRef ref="Console" />
 		</Logger>
 		<Logger
 			name="com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO"
-			level="trace" additivity="false">
+			level="debug" additivity="false">
 			<AppenderRef ref="Console" />
 		</Logger>
 		<Logger
