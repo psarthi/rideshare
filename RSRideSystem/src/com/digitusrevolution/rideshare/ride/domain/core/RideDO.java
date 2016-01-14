@@ -216,6 +216,8 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 					//For testing purpose, needs to be written properly
 					for (int i = 0; i<recurringDays; i++){
 						//No need to create multiple ride object as the change is only time
+						//This time needs to updated again while updating at later part else all rides would get
+						//last ride date and time
 						ride.setStartTime(startTimeUTC.plusDays(i));
 						id = create(ride);	
 						rideIds.add(id);
@@ -273,12 +275,18 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 				//**TBD - Recurring scenarios has to be written later
 				if (ride.getRecur()){
 					//For testing purpose, needs to be written properly
-					for (Integer rideId : rideIds) {
-						//Here we need to just update start and end point reference
-						//Ride timings for all rides are already set while creating ride
-						ride.setId(rideId);
+					for (int i = 0; i<recurringDays; i++){
+						//Here we need to update start and end point reference
+						//Apart from ride start and end point reference, which is same for all rides, 
+						//We also need to update ride start time again else all rides would get the last ride start time
+						//While creating multiple rides, we used the same ride object and only changed the start time
+						//so current ride object is having last ride date and time
+						//Other option is to deep copy ride object and create multiple rides while creating
+						//This option can be relooked later but for now, we can just update the starttime again while updating
+						ride.setId(rideIds.get(i));
+						ride.setStartTime(startTimeUTC.plusDays(i));
 						update(ride);
-						logger.debug("Ride has been updated with id:"+rideId);											
+						logger.debug("Ride has been updated with id:"+rideIds.get(i));
 					}
 				}
 			} 
@@ -467,9 +475,11 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		ridePickupPointProperties.put("RideRequestId", rideMatchInfo.getRideRequestId());
 		if (pointType.equals("ridepickuppoint")){
 			ridePickupPointProperties.put("Distance", rideMatchInfo.getPickupPointDistance());
+			ridePickupPointProperties.put("Sequence", rideMatchInfo.getRidePickupPoint().getSequence());
 			ridePickupPointProperties.put("DateTimeUTC", rideMatchInfo.getRidePickupPoint().getRidesBasicInfo().get(0).getDateTime());
 		} else {
 			ridePickupPointProperties.put("Distance", rideMatchInfo.getDropPointDistance());
+			ridePickupPointProperties.put("Sequence", rideMatchInfo.getRideDropPoint().getSequence());
 			ridePickupPointProperties.put("DateTimeUTC", rideMatchInfo.getRideDropPoint().getRidesBasicInfo().get(0).getDateTime());
 		}
 		ridePickupPointProperties.put("TravelDistance", rideMatchInfo.getRideRequestTravelDistance());
