@@ -426,11 +426,11 @@ function loadRideSearchGeoJsonString(geoString) {
 		var RideRequestId = event.feature.getProperty("RideRequestId");
 		var Distance = event.feature.getProperty("Distance").toPrecision(5);
 		var DateTimeUTC = event.feature.getProperty("DateTimeUTC");
-		var TravelDistance = event.feature.getProperty("TravelDistance");
+		var RideRequestTravelDistance = event.feature.getProperty("RideRequestTravelDistance");
 		var Sequence = event.feature.getProperty("Sequence");
-		infowindow.setContent("<div style='width:450px; height:50px; text-align: center;'>"
-				+"[RideId,RideRequestId,DateTimeUTC,Distance,TravelDistance,Sequence]:<br>"+"<b>"+RideId+","
-				+RideRequestId+"</b>"+","+DateTimeUTC+","+Distance+","+TravelDistance+","+Sequence+"</div>");
+		infowindow.setContent("<div style='width:500px; height:50px; text-align: center;'>"
+				+"[RideId,RideRequestId,DateTimeUTC,Distance,RideRequestTravelDistance,Sequence]:<br>"+"<b>"+RideId+","
+				+RideRequestId+"</b>"+","+DateTimeUTC+","+Distance+","+RideRequestTravelDistance+","+Sequence+"</div>");
 		infowindow.setPosition(event.feature.getGeometry().get());
 		infowindow.setOptions({pixelOffset: new google.maps.Size(0,-30)});
 		infowindow.open(map);

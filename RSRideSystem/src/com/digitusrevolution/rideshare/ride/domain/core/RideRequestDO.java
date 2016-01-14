@@ -43,6 +43,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.ride.data.RideRequestDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
 import com.digitusrevolution.rideshare.ride.dto.RideMatchInfo;
+import com.digitusrevolution.rideshare.ride.dto.RideRequestSearchResult;
 
 
 public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
@@ -256,16 +257,18 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * - Get the slice count and expected result count, which would be used to compare the result count with final valid ride requests 
 	 *   as well as incrementing the distance for search in case result is less than expected
 	 * - Get the multi polygon for minimum distance from the ride [Multi polygon is created around route using routeboxer, 
-	 * 	 so that minimum distance is covered and in general its around 3x the required distance
+	 * 	 so that minimum distance is covered and in general its around 3x the required distance]
 	 * - Pass the multi polygon to mongoDB and get all the valid ride requests within the polygon
 	 * - Check if the result set is less than required result count
 	 * - If its less, then check if its below 50% of the required count and if the answer is yes, then increment the distance at higher proportion
-	 * 	 Else, increment at normal rate e.g. 10% [Proportional rate is 10%, 30%, 50%, 70%, 90%, 100%] and [Normal is 10, 20, 30 ... 100]
+	 * 	 Else, increment at normal rate. [Normal is 10, 20, 30 ... 100] vs [Proportional rate is 10%, 30%, 50%, 70%, 90%, 100%]
 	 * - Increase the polygon size based on incremental distance and get the ride requests for the same
 	 * - Repeat this, till you get the result set greater than equal to expected count or you have searched at max distance
-	 * - Once you get the result set more than expected count, then process all the ride requests
+	 * - In case you have completed the search at max distance and result set is still less than expected count, then also process all the ride requests
+	 * - Once you get the result set more than expected count, then process all the ride requests and stop searching further
 	 *   Note - For incremental processing, ensure only new ride requests are getting processed
 	 * - First remove the old ones which has already been processed, so that we process only new ones
+	 *   **** Ride Request Process Logic ****
 	 * - For each ride points, calculate the ride pickup and drop distance
 	 * - Compare those distance with earlier distances and ensure you store the shortest distance for pickup and drop point and its associated ride points
 	 * - Once all ride request points are processed against each ride points, you will have shortest ride pickup and drop points against each ride request
@@ -287,7 +290,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * 	 rides would be MxN i.e. for 1 million ride request point in a 400 ride points of ride would cost 400 Millions times Big O time complexity
 	 * 
 	 */
-	public void searchRideRequests(int rideId){
+	public RideRequestSearchResult searchRideRequests(int rideId){
 		logger.debug("[Searching Rides Requests for Ride Id]:"+ rideId);
 		RideDO rideDO = new RideDO();
 		List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(rideId);
@@ -310,9 +313,10 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		//This will hold the ride requests Ids from the previous ride search based on distance, which would be used to get incremental ids only
 		Set<Integer> rideRequestsIdsFromPreviousResult = new HashSet<>();
 		//This will hold the final valid ride requests
-		Set<RideMatchInfo> rideMatchInfoFinalResultSet = new HashSet<>();
+		List<RideMatchInfo> rideMatchInfoFinalResultSet = new LinkedList<>();
 		//This will define if the ride search has been completed at max distance
 		boolean rideRequestSearchCompleted = false;
+		MultiPolygon polygonAroundRoute = new MultiPolygon();
 
 		//Reason for having value 0 so that first distance is the min distance only 
 		int counter = 0;
@@ -326,7 +330,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			rideRequestResultCountByDistance = 0;
 			//Run this loop till the time we have reached max distance or result set is more than expected result count
 			//***Getting Ride Requests based on Distance
-			while (rideRequestResultCountByDistance <= expectedResultCount && distance <= maxDistance){
+			while (rideRequestResultCountByDistance <= expectedResultCount && !rideRequestSearchCompleted){
 				if (rideRequestResultValidCount <= expectedResultCount / 2){
 					logger.debug("Multiple Increment:"+counter);
 					//This will increment at higher rates than standard value i.e. 10% , 30%, 50%, 70%, 90%, 100%
@@ -339,10 +343,11 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 				if (distance >= maxDistance){
 					//This will ensure we don't search for larger distance than required
 					distance = maxDistance;
+					//***Imp - This value is very important else it will get into infinite loop
 					rideRequestSearchCompleted = true;
 				}
 				logger.debug("Ride Id and Distance:" + rideId+","+distance);
-				MultiPolygon polygonAroundRoute = getPolygonAroundRouteUsingRouteBoxer(ridePoints, distance);
+				polygonAroundRoute = getPolygonAroundRouteUsingRouteBoxer(ridePoints, distance);
 				rideRequestsMap = rideRequestPointDAO.getAllMatchingRideRequestWithinMultiPolygonOfRide(ride,polygonAroundRoute);
 				rideRequestResultCountByDistance = rideRequestsMap.size();
 				logger.debug("Ride Request Result Count Based on Distance:"+rideRequestResultCountByDistance);
@@ -486,21 +491,56 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 				if (!rideMatchInfoMap.keySet().isEmpty()){
 					//Getting valid ride request Ids based on all business criteria
 					Set<Integer> validRideRequestIds = getValidRideRequests(rideMatchInfoMap.keySet());
-					logger.debug("Valid Request Ids based on all business criteria:"+validRideRequestIds);
 					//Removing all the invalid ride request Ids
 					rideMatchInfoMap.keySet().retainAll(validRideRequestIds);
-					logger.debug("Phase 2 - Valid Ride Request Ids of Ride Id["+ride.getId()+"]:"+rideMatchInfoMap.keySet());
+					logger.debug("Phase 2 - Valid Ride Request Ids based on all business criteria of Ride Id["+ride.getId()+"]:"+rideMatchInfoMap.keySet());
 				}
 				//*** Adding valid points to the final result set
 				rideMatchInfoFinalResultSet.addAll(rideMatchInfoMap.values());
-				logger.debug("Final Ride Request Result Ids:");
 				for (RideMatchInfo rideMatchInfo : rideMatchInfoFinalResultSet) {
-					logger.debug("[Id]:"+rideMatchInfo.getRideRequestId());	
+					logger.debug("Final Ride Request [Id]:"+rideMatchInfo.getRideRequestId());	
 				}
 				rideRequestResultValidCount = rideMatchInfoFinalResultSet.size();
 				logger.trace("Ride Request Result Valid Count:"+rideRequestResultValidCount);
 			}
 		}//End of loop for (rideRequestResultValidCount < expectedResultCount)
+		
+		//This will update the ride request travel distance which can be used for sorting
+		for (RideMatchInfo rideMatchInfo : rideMatchInfoFinalResultSet) {
+			double rideRequestTravelDistance = get(rideMatchInfo.getRideRequestId()).getTravelDistance();
+			rideMatchInfo.setRideRequestTravelDistance(rideRequestTravelDistance);
+		}	
+		//Preparing Search result
+		//Need to decide on Pagination - TBD
+		RideRequestSearchResult rideRequestSearchResult = new RideRequestSearchResult();
+		rideRequestSearchResult.setRideMatchInfos(rideMatchInfoFinalResultSet);
+		rideRequestSearchResult.setSearchDistance(distance);
+		rideRequestSearchResult.setResultLastIndex(rideMatchInfoFinalResultSet.size());
+		rideRequestSearchResult.setMultiPolygon(polygonAroundRoute);
+		return rideRequestSearchResult;
+	}
+	
+	/*
+	 * Purpose - Get feature collection of all ride pickup and drop points, ride request pickup and drop points, multi polygon around route
+	 * 
+	 */
+	public FeatureCollection getMatchingRideRequests(int rideId){
+		RideRequestSearchResult rideRequestSearchResult = searchRideRequests(rideId);
+		RideDO rideDO = new RideDO();
+		//This will get ride pickup and drop points 
+		FeatureCollection featureCollection = rideDO.getRideMatchInfoGeoJSON(rideRequestSearchResult.getRideMatchInfos());
+		for (RideMatchInfo rideMatchInfo : rideRequestSearchResult.getRideMatchInfos()) {
+			//This will get ride request pickup and drop points 
+			List<Feature> rideRequestGeoJSONFeatures = rideDO.getRideRequestGeoJSONFeature(rideMatchInfo.getRideRequestId());
+			featureCollection.addAll(rideRequestGeoJSONFeatures);
+		}
+		//This will get polygon around route
+		Feature featureMultiPolygon = new Feature();
+		featureMultiPolygon.setGeometry(rideRequestSearchResult.getMultiPolygon());
+		featureCollection.add(featureMultiPolygon);
+		JSONUtil<FeatureCollection> jsonUtilFeatureCollection = new JSONUtil<>(FeatureCollection.class);
+		logger.debug("Ride Request Search Result:"+jsonUtilFeatureCollection.getJson(featureCollection));
+		return featureCollection;
 	}
 
 

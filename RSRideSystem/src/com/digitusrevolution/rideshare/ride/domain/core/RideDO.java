@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -460,9 +461,38 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	 * This function internally calls search ride and convert the data into GeoJson format 
 	 */
 	public FeatureCollection getMatchingRides(int rideRequestId){
-		FeatureCollection featureCollection = new FeatureCollection();
-
 		List<RideMatchInfo> rideMatchInfos = searchRides(rideRequestId);
+		FeatureCollection featureCollection = getRideMatchInfoGeoJSON(rideMatchInfos);		
+		List<Feature> rideRequestGeoJSONFeatures = getRideRequestGeoJSONFeature(rideRequestId);
+		featureCollection.addAll(rideRequestGeoJSONFeatures);
+		return featureCollection;
+	}
+
+	/*
+	 * Purpose - This will get feature for ride request pickup and drop point
+	 */
+	List<Feature> getRideRequestGeoJSONFeature(int rideRequestId) {
+		//This will add ride request point to the feature collection
+		RideRequestDO rideRequestDO = new RideRequestDO();
+		List<RideRequestPoint> rideRequestPoints = rideRequestDO.getPointsOfRideRequest(rideRequestId);
+		List<Feature> features = new LinkedList<>();
+		for (RideRequestPoint rideRequestPoint : rideRequestPoints) {
+			Point point = rideRequestPoint.getPoint();
+			Map<String, Object> properties = new HashMap<>();
+			properties.put("type", "riderequestpoint");
+			properties.put("DistanceVariation", rideRequestPoint.getDistanceVariation());
+			org.geojson.Point geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(point);
+			Feature feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, properties);
+			features.add(feature);
+		}
+		return features;
+	}
+	
+	/*
+	 * Purpose - Get GeoJSON format for all matching rides or ride requests
+	 */
+	FeatureCollection getRideMatchInfoGeoJSON(List<RideMatchInfo> rideMatchInfos) {
+		FeatureCollection featureCollection = new FeatureCollection();
 		for (RideMatchInfo rideMatchInfo : rideMatchInfos) {
 			Point ridePickupPoint = rideMatchInfo.getRidePickupPoint().getPoint();
 			Map<String, Object> ridePickupPointProperties = getRideProperties(rideMatchInfo,"ridepickuppoint");
@@ -475,18 +505,6 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 			geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(rideDropPoint);
 			feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, rideDropPointProperties);
 			featureCollection.add(feature);
-		}
-
-		RideRequestDO rideRequestDO = new RideRequestDO();
-		List<RideRequestPoint> rideRequestPoints = rideRequestDO.getPointsOfRideRequest(rideRequestId);
-		for (RideRequestPoint rideRequestPoint : rideRequestPoints) {
-			Point point = rideRequestPoint.getPoint();
-			Map<String, Object> properties = new HashMap<>();
-			properties.put("type", "riderequestpoint");
-			properties.put("DistanceVariation", rideRequestPoint.getDistanceVariation());
-			org.geojson.Point geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(point);
-			Feature feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, properties);
-			featureCollection.add(feature);			
 		}
 		return featureCollection;
 	}
@@ -505,7 +523,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 			ridePickupPointProperties.put("Sequence", rideMatchInfo.getRideDropPoint().getSequence());
 			ridePickupPointProperties.put("DateTimeUTC", rideMatchInfo.getRideDropPoint().getRidesBasicInfo().get(0).getDateTime());
 		}
-		ridePickupPointProperties.put("TravelDistance", rideMatchInfo.getRideRequestTravelDistance());
+		ridePickupPointProperties.put("RideRequestTravelDistance", rideMatchInfo.getRideRequestTravelDistance());
 		return ridePickupPointProperties;
 	}
 
