@@ -247,6 +247,12 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	}
 
 	/*
+	 * Purpose - 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
 	 * Key Strategy -
 	 * 
 	 * - Get all the points at min. distance and then increment the distance till we find certain number of matching ride requests.
@@ -254,7 +260,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * 	 rides would be MxN i.e. for 1 million ride request point in a 400 ride points of ride would cost 400 Millions times Big O time complexity
 	 * 
 	 */
-	public void searchRides(int rideId){
+	public void searchRideRequests(int rideId){
 		logger.debug("[Searching Rides Requests for Ride Id]:"+ rideId);
 		RideDO rideDO = new RideDO();
 		List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(rideId);
@@ -263,131 +269,207 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		double maxDistancePercent = Double.parseDouble(PropertyReader.getInstance().getProperty("RIDE_REQUEST_MAX_DISTANCE_VARIATION"));
 		double minDistance = ride.getTravelDistance() * minDistancePercent;
 		double maxDistance = ride.getTravelDistance() * maxDistancePercent;
+		int sliceCount = Integer.parseInt(PropertyReader.getInstance().getProperty("RIDE_REQUEST_DISTANCE_VARIATION_SLICE_COUNT"));
+		//Slice the max distance by slice count, so that we can increment by each slice e.g. 10% for every loop 
+		//Our main objective is to increment distance by specific percentage for each iteration and that's what is incremental distance
+		double incrementalDistance = maxDistance / sliceCount;
+		int expectedResultCount = Integer.parseInt(PropertyReader.getInstance().getProperty("RIDE_REQUEST_RESULT_COUNT"));
+		//Not initializing this as its getting initialized later on, so not required here
+		int rideRequestResultCountByDistance;
+		int rideRequestResultValidCount = 0;
 
-		logger.debug("Ride Id and Distance:" + rideId+","+minDistance);
-		MultiPolygon polygonAroundRoute = getPolygonAroundRouteUsingRouteBoxer(ridePoints, minDistance);
-		Map<Integer, List<RideRequestPoint>> rideRequestsMap = rideRequestPointDAO.getAllMatchingRideRequestWithinMultiPolygonOfRide(ride,polygonAroundRoute);
-		int count=0;
+		//This will hold the ride requests which is inside multi polygon
+		Map<Integer, List<RideRequestPoint>> rideRequestsMap = new HashMap<>();
+		//This will hold the ride requests Ids from the previous ride search based on distance, which would be used to get incremental ids only
+		Set<Integer> rideRequestsIdsFromPreviousResult = new HashSet<>();
+		//This will hold the final valid ride requests
+		Set<RideMatchInfo> rideMatchInfoFinalResultSet = new HashSet<>();
+		//This will define if the ride search has been completed at max distance
+		boolean rideRequestSearchCompleted = false;
 
-		Map<Integer, RideMatchInfo> rideMatchInfoMap = new HashMap<>();
-
-		//This will get ridepoint which is having shortest distance from pickup and drop point of each ride requests
-		//Final result would be stored into RideMatchInfo Map
-		for (RidePoint ridePoint : ridePoints) {
-			LatLng from = new LatLng(ridePoint.getPoint().getLatitude(), ridePoint.getPoint().getLongitude());
-
-			for (Map.Entry<Integer, List<RideRequestPoint>> entry: rideRequestsMap.entrySet()) {
-				//Pickup and drop point would always be in the same order which is taken care by rideRequestPointDAO
-				RideRequestPoint pickupPoint = entry.getValue().get(0);
-				RideRequestPoint dropPoint = entry.getValue().get(1);
-				Integer rideRequestId = entry.getKey();
-				LatLng pickupPointCordinates = new LatLng(pickupPoint.getPoint().getLatitude(), pickupPoint.getPoint().getLongitude());
-				double pickupDistance = SphericalUtil.computeDistanceBetween(from, pickupPointCordinates);
-				LatLng dropPointCordinates = new LatLng(dropPoint.getPoint().getLatitude(), dropPoint.getPoint().getLongitude());
-				double dropDistance = SphericalUtil.computeDistanceBetween(from, dropPointCordinates);
-
-				//Don't use ridePoints.getIndex(0).equals(ridepoint) or ridePoints.lastIndexOf(ridePoint)==0
-				//as ride points equal method has been overridden to compare only by ride Id
-				//So in that case, all ride points would match 
-				if (count==0){
-					//This will add an entry to the map while going through first ride point only
-					RideMatchInfo rideMatchInfo = new RideMatchInfo();	
-					rideMatchInfoMap.put(rideRequestId, rideMatchInfo);
-				} 				
-				logger.trace("[Ride RequestId]:"+rideRequestId);
-				logger.trace("[Pickup Distance, Variation]:"+pickupDistance+","+pickupPoint.getDistanceVariation());
-				//This will validate if pickupDistance is within the pickup variation range
-				if (pickupDistance <= pickupPoint.getDistanceVariation()){
-					logger.trace("Pickup Distance is within range");
-					logger.trace("[Previous Distance, Current Distance]:"+pickupDistance+","+rideMatchInfoMap.get(rideRequestId).getPickupPointDistance());
-					//This will validate if pickupDistance from current ridePoint is smallest as of this iteration
-					if (pickupDistance < rideMatchInfoMap.get(rideRequestId).getPickupPointDistance() || rideMatchInfoMap.get(rideRequestId).getPickupPointDistance() == 0){
-
-						if (rideMatchInfoMap.get(rideRequestId).getPickupPointDistance() == 0){
-							logger.trace("First Matched Pickup Point for ride point Sequence:"+ridePoint.getSequence());
-						}else {
-							logger.trace("Pickup Distance is smaller that previous smallest distance for ride point Sequence:"+ridePoint.getSequence());
-						}
-						logger.trace("Updating new Ride Pickup Point");
-						//This will overwrite the previous values, so that at the end we will have smallest distance ride point
-						rideMatchInfoMap.get(rideRequestId).setRidePickupPoint(ridePoint);
-						rideMatchInfoMap.get(rideRequestId).setPickupPointDistance(pickupDistance);
-					} else {
-						logger.trace("Pickup Distance is bigger that previous smallest distance");
-					}					
+		//Reason for having value 0 so that first distance is the min distance only 
+		int counter = 0;
+		//Distance from route
+		double distance = 0;
+		//Run this loop till the time we have got valid request more than or equal expected result count or search is completed at max distance
+		//In case search is not completed at max distance and valid result count has not exceeded expected count, then fetch more result and process it
+		logger.debug("Min, Max, Incremental Distance:" + minDistance+","+maxDistance +","+incrementalDistance);
+		while (rideRequestResultValidCount <= expectedResultCount && !rideRequestSearchCompleted){
+			//Resetting this value to 0 so that after last iteration at max distance, it should not try to process data 
+			rideRequestResultCountByDistance = 0;
+			//Run this loop till the time we have reached max distance or result set is more than expected result count
+			while (rideRequestResultCountByDistance <= expectedResultCount && distance <= maxDistance){
+				if (rideRequestResultValidCount <= expectedResultCount / 2){
+					logger.debug("Multiple Increment:"+counter);
+					//This will increment at higher rates than standard value i.e. 10% , 30%, 50%, 70%, 90%, 100%
+					distance = minDistance + counter * incrementalDistance * 2;
 				} else {
-					logger.trace("Pickup Distance out of range");
-				}			
-				logger.trace("[Drop Distance, Variation]:"+dropDistance+","+dropPoint.getDistanceVariation());
-				//This will validate if dropDistance is within the drop variation range
-				if (dropDistance <= dropPoint.getDistanceVariation()){
-					logger.trace("Drop Distance is within range");
-					logger.trace("[Previous Distance, Current Distance]:"+dropDistance+","+rideMatchInfoMap.get(rideRequestId).getDropPointDistance());
-					//This will validate if dropDistance from current ridePoint is smallest as of this iteration
-					if (dropDistance < rideMatchInfoMap.get(rideRequestId).getDropPointDistance() || rideMatchInfoMap.get(rideRequestId).getDropPointDistance() == 0){
-
-						if (rideMatchInfoMap.get(rideRequestId).getDropPointDistance() == 0){
-							logger.trace("First Matched Drop Point for ride point Sequence:"+ridePoint.getSequence());
-						}else {
-							logger.trace("Drop Distance is smaller that previous smallest distance for ride point Sequence:"+ridePoint.getSequence());
-						}
-						logger.trace("Updating new Ride Drop Point");
-						//This will overwrite the previous values, so that at the end we will have smallest distance ride point
-						rideMatchInfoMap.get(rideRequestId).setRideDropPoint(ridePoint);
-						rideMatchInfoMap.get(rideRequestId).setDropPointDistance(dropDistance);
-					} else {
-						logger.trace("Drop Distance is bigger that previous smallest distance");
-					}					
-				} else {
-					logger.trace("Drop Distance out of range");
-				}					
-			} // End of loop of ride requests
-			count++;
-		} // End of loop for ride points
-
-		//Use iterator instead of using for loop with entrySet as you can't remove an entry while iterating on the same Map
-		Iterator<Map.Entry<Integer, RideMatchInfo>> iterator = rideMatchInfoMap.entrySet().iterator();
-
-		//This will get all valid ride requests based on ride pickup and drop point availability as well as sequence of ride pickup and drop point 
-		while(iterator.hasNext()){
-			Entry<Integer, RideMatchInfo> entry = iterator.next();
-			RideMatchInfo rideMatchInfo = entry.getValue();
-			//Validate if Ride pickup and Ride drop both exist
-			//If there is any valid Ride pickup or Ride drop point then value would not be null
-			//i.e. both point exist
-			if (rideMatchInfo.getRidePickupPoint()!=null && rideMatchInfo.getRideDropPoint()!=null){
-				//Validate if Ride pickup is before Ride drop
-				//Ride pickup sequence number should be smaller than drop sequence number, then we can say pickup point is before drop point
-				if (rideMatchInfo.getRidePickupPoint().getSequence() < rideMatchInfo.getRideDropPoint().getSequence()){
-					logger.debug("Phase 1 - Valid Ride Request Id:"+entry.getKey());
-					logger.debug("Ride Pickup and Drop Sequence number:"+rideMatchInfo.getRidePickupPoint().getSequence()+","
-							+rideMatchInfo.getRideDropPoint().getSequence());
-				} else {
-					//Remove the invalid ride request ids entry from the map
-					logger.debug("Phase 1 - InValid Ride Request Id as its going in opp direction:"+entry.getKey());
-					logger.debug("Ride Pickup and Drop Sequence number:"+rideMatchInfo.getRidePickupPoint().getSequence()+","
-							+rideMatchInfo.getRideDropPoint().getSequence());
-					iterator.remove();
+					//This will increment by standard value e.g. 10% from previous value
+					distance = minDistance + counter * incrementalDistance;	
+					logger.debug("Normal Increment:"+counter);
 				}
+				if (distance >= maxDistance){
+					//This will ensure we don't search for larger distance than required
+					distance = maxDistance;
+					rideRequestSearchCompleted = true;
+				}
+				logger.debug("Ride Id and Distance:" + rideId+","+distance);
+				MultiPolygon polygonAroundRoute = getPolygonAroundRouteUsingRouteBoxer(ridePoints, distance);
+				rideRequestsMap = rideRequestPointDAO.getAllMatchingRideRequestWithinMultiPolygonOfRide(ride,polygonAroundRoute);
+				rideRequestResultCountByDistance = rideRequestsMap.size();
+				logger.debug("Ride Request Result Count Based on Distance:"+rideRequestResultCountByDistance);
+				//This will set the search status completed so that outer loop would exit, 
+				//else it would go in infinite loop in case you never get expected count e.g. final valid count = 2 < would always be less than 10
+				counter++;
 			}
-			else {
-				//Remove the invalid ride request ids entry from the map
-				logger.debug("Phase 1 - InValid Ride Request Id as there is no matching ride pickup and drop point :"+entry.getKey());
-				iterator.remove();
+			//Process the data only when there is any ride request which is inside multi polygon
+			if (rideRequestResultCountByDistance > 0){
+				
+				//This is important - It will remove all the old ride requests so that only new ones get processed again
+				rideRequestsMap.keySet().removeAll(rideRequestsIdsFromPreviousResult);
+				logger.debug("Ride Request Ids based on Distance for Processing:"+rideRequestsMap.keySet());
+				//This will store the previous result ride request Ids, which would be used to get only new results so that we process only new ride requests
+				//Don't just copy map keyset to this set here, as that would be copy by reference and removing from any set would effect both of them
+				//So, below method would ensure that we get seperate copy of data
+				for (Integer rideRequestId: rideRequestsMap.keySet()){
+					rideRequestsIdsFromPreviousResult.add(rideRequestId);
+				}
+				logger.debug("Ride Request Ids from Previous Result based on Distance:"+rideRequestsIdsFromPreviousResult);
+
+				//Its important to have this as map else you can't get ridematch info for each ride request ids
+				Map<Integer, RideMatchInfo> rideMatchInfoMap = new HashMap<>();
+				int count=0;
+				//This will get ridepoint which is having shortest distance from pickup and drop point of each ride requests
+				//Final result would be stored into RideMatchInfo Map
+				for (RidePoint ridePoint : ridePoints) {
+					LatLng from = new LatLng(ridePoint.getPoint().getLatitude(), ridePoint.getPoint().getLongitude());
+
+					for (Map.Entry<Integer, List<RideRequestPoint>> entry: rideRequestsMap.entrySet()) {
+						//Pickup and drop point would always be in the same order which is taken care by rideRequestPointDAO
+						RideRequestPoint pickupPoint = entry.getValue().get(0);
+						RideRequestPoint dropPoint = entry.getValue().get(1);
+						Integer rideRequestId = entry.getKey();
+						LatLng pickupPointCordinates = new LatLng(pickupPoint.getPoint().getLatitude(), pickupPoint.getPoint().getLongitude());
+						double pickupDistance = SphericalUtil.computeDistanceBetween(from, pickupPointCordinates);
+						LatLng dropPointCordinates = new LatLng(dropPoint.getPoint().getLatitude(), dropPoint.getPoint().getLongitude());
+						double dropDistance = SphericalUtil.computeDistanceBetween(from, dropPointCordinates);
+
+						//Don't use ridePoints.getIndex(0).equals(ridepoint) or ridePoints.lastIndexOf(ridePoint)==0
+						//as ride points equal method has been overridden to compare only by ride Id
+						//So in that case, all ride points would match 
+						if (count==0){
+							//This will add an entry to the map while going through first ride point only
+							RideMatchInfo rideMatchInfo = new RideMatchInfo();	
+							//Ensure all the fields of RideMatch Info is filled up properly, so that it can be utilized later
+							//We are not updating travel distance as for that we need to make db call, so this will be updated for only valid ride request Ids
+							rideMatchInfo.setRideRequestId(rideRequestId);
+							rideMatchInfo.setRideId(rideId);
+							rideMatchInfoMap.put(rideRequestId, rideMatchInfo);
+						} 				
+						logger.trace("[Ride RequestId]:"+rideRequestId);
+						logger.trace("[Pickup Distance, Variation]:"+pickupDistance+","+pickupPoint.getDistanceVariation());
+						//This will validate if pickupDistance is within the pickup variation range
+						if (pickupDistance <= pickupPoint.getDistanceVariation()){
+							logger.trace("Pickup Distance is within range");
+							logger.trace("[Previous Distance, Current Distance]:"+pickupDistance+","+rideMatchInfoMap.get(rideRequestId).getPickupPointDistance());
+							//This will validate if pickupDistance from current ridePoint is smallest as of this iteration
+							if (pickupDistance < rideMatchInfoMap.get(rideRequestId).getPickupPointDistance() || rideMatchInfoMap.get(rideRequestId).getPickupPointDistance() == 0){
+
+								if (rideMatchInfoMap.get(rideRequestId).getPickupPointDistance() == 0){
+									logger.trace("First Matched Pickup Point for ride point Sequence:"+ridePoint.getSequence());
+								}else {
+									logger.trace("Pickup Distance is smaller that previous smallest distance for ride point Sequence:"+ridePoint.getSequence());
+								}
+								logger.trace("Updating new Ride Pickup Point");
+								//This will overwrite the previous values, so that at the end we will have smallest distance ride point
+								rideMatchInfoMap.get(rideRequestId).setRidePickupPoint(ridePoint);
+								rideMatchInfoMap.get(rideRequestId).setPickupPointDistance(pickupDistance);
+							} else {
+								logger.trace("Pickup Distance is bigger that previous smallest distance");
+							}					
+						} else {
+							logger.trace("Pickup Distance out of range");
+						}			
+						logger.trace("[Drop Distance, Variation]:"+dropDistance+","+dropPoint.getDistanceVariation());
+						//This will validate if dropDistance is within the drop variation range
+						if (dropDistance <= dropPoint.getDistanceVariation()){
+							logger.trace("Drop Distance is within range");
+							logger.trace("[Previous Distance, Current Distance]:"+dropDistance+","+rideMatchInfoMap.get(rideRequestId).getDropPointDistance());
+							//This will validate if dropDistance from current ridePoint is smallest as of this iteration
+							if (dropDistance < rideMatchInfoMap.get(rideRequestId).getDropPointDistance() || rideMatchInfoMap.get(rideRequestId).getDropPointDistance() == 0){
+
+								if (rideMatchInfoMap.get(rideRequestId).getDropPointDistance() == 0){
+									logger.trace("First Matched Drop Point for ride point Sequence:"+ridePoint.getSequence());
+								}else {
+									logger.trace("Drop Distance is smaller that previous smallest distance for ride point Sequence:"+ridePoint.getSequence());
+								}
+								logger.trace("Updating new Ride Drop Point");
+								//This will overwrite the previous values, so that at the end we will have smallest distance ride point
+								rideMatchInfoMap.get(rideRequestId).setRideDropPoint(ridePoint);
+								rideMatchInfoMap.get(rideRequestId).setDropPointDistance(dropDistance);
+							} else {
+								logger.trace("Drop Distance is bigger that previous smallest distance");
+							}					
+						} else {
+							logger.trace("Drop Distance out of range");
+						}					
+					} // End of loop of ride requests
+					count++;
+				} // End of loop for ride points
+
+				//Use iterator instead of using for loop with entrySet as you can't remove an entry while iterating on the same Map
+				Iterator<Map.Entry<Integer, RideMatchInfo>> iterator = rideMatchInfoMap.entrySet().iterator();
+
+				//This will get all valid ride requests based on ride pickup and drop point availability as well as sequence of ride pickup and drop point 
+				while(iterator.hasNext()){
+					Entry<Integer, RideMatchInfo> entry = iterator.next();
+					RideMatchInfo rideMatchInfo = entry.getValue();
+					//Validate if Ride pickup and Ride drop both exist
+					//If there is any valid Ride pickup or Ride drop point then value would not be null
+					//i.e. both point exist
+					if (rideMatchInfo.getRidePickupPoint()!=null && rideMatchInfo.getRideDropPoint()!=null){
+						//Validate if Ride pickup is before Ride drop
+						//Ride pickup sequence number should be smaller than drop sequence number, then we can say pickup point is before drop point
+						if (rideMatchInfo.getRidePickupPoint().getSequence() < rideMatchInfo.getRideDropPoint().getSequence()){
+							logger.debug("Phase 1 - Valid Ride Request Id:"+entry.getKey());
+							logger.debug("Ride Pickup and Drop Sequence number:"+rideMatchInfo.getRidePickupPoint().getSequence()+","
+									+rideMatchInfo.getRideDropPoint().getSequence());
+						} else {
+							//Remove the invalid ride request ids entry from the map
+							logger.debug("Phase 1 - InValid Ride Request Id as its going in opp direction:"+entry.getKey());
+							logger.debug("Ride Pickup and Drop Sequence number:"+rideMatchInfo.getRidePickupPoint().getSequence()+","
+									+rideMatchInfo.getRideDropPoint().getSequence());
+							iterator.remove();
+						}
+					}
+					else {
+						//Remove the invalid ride request ids entry from the map
+						logger.debug("Phase 1 - InValid Ride Request Id as there is no matching ride pickup and drop point :"+entry.getKey());
+						iterator.remove();
+					}
+				}
+				logger.debug("Phase 1 - Valid Ride Request Ids of Ride Id["+ride.getId()+"]:"+rideMatchInfoMap.keySet());
+
+				if (!rideMatchInfoMap.keySet().isEmpty()){
+					//Getting valid ride request Ids based on all business criteria
+					Set<Integer> validRideRequestIds = getValidRideRequests(rideMatchInfoMap.keySet());
+					logger.debug("Valid Request Ids based on all business criteria:"+validRideRequestIds);
+					//Removing all the invalid ride request Ids
+					rideMatchInfoMap.keySet().retainAll(validRideRequestIds);
+					logger.debug("Phase 2 - Valid Ride Request Ids of Ride Id["+ride.getId()+"]:"+rideMatchInfoMap.keySet());
+				}
+				rideMatchInfoFinalResultSet.addAll(rideMatchInfoMap.values());
+				logger.debug("Final Ride Request Result Ids:");
+				for (RideMatchInfo rideMatchInfo : rideMatchInfoFinalResultSet) {
+					logger.debug("[Id]:"+rideMatchInfo.getRideRequestId());	
+				}
+				rideRequestResultValidCount = rideMatchInfoFinalResultSet.size();
+				logger.trace("Ride Request Result Valid Count:"+rideRequestResultValidCount);
 			}
-		}
-		logger.debug("Phase 1 - Valid Ride Request Ids of Ride Id["+ride.getId()+"]:"+rideMatchInfoMap.keySet());
-		
-		//Getting valid ride request Ids based on all business criteria
-		Set<Integer> validRideRequestIds = getValidRideRequests(rideMatchInfoMap.keySet());
-		logger.debug("Valid Request Ids based on all business criteria:"+validRideRequestIds);
-		//Removing all the invalid ride request Ids
-		rideMatchInfoMap.keySet().retainAll(validRideRequestIds);
-		logger.debug("Phase 2 - Valid Ride Request Ids of Ride Id["+ride.getId()+"]:"+rideMatchInfoMap.keySet());
-		
+		}//End of loop for (rideRequestResultValidCount < expectedResultCount)
 	}
-	
-	
+
+
 	/*
 	 * Purpose: Get all valid ride request Ids based on multiple business criteria
 	 * e.g. user rating, preference, trust category etc.
