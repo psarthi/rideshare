@@ -247,10 +247,37 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	}
 
 	/*
-	 * Purpose - 
+	 * Purpose - Get all Matching ride requests for specific ride
 	 * 
+	 * High Level Logic -
 	 * 
-	 * 
+	 * - Get min and max distance variation for that ride as it varies from ride to ride and based on total travel distance of ride
+	 * 	 Note - All matching ride request would fall within that max distance
+	 * - Get the slice count and expected result count, which would be used to compare the result count with final valid ride requests 
+	 *   as well as incrementing the distance for search in case result is less than expected
+	 * - Get the multi polygon for minimum distance from the ride [Multi polygon is created around route using routeboxer, 
+	 * 	 so that minimum distance is covered and in general its around 3x the required distance
+	 * - Pass the multi polygon to mongoDB and get all the valid ride requests within the polygon
+	 * - Check if the result set is less than required result count
+	 * - If its less, then check if its below 50% of the required count and if the answer is yes, then increment the distance at higher proportion
+	 * 	 Else, increment at normal rate e.g. 10% [Proportional rate is 10%, 30%, 50%, 70%, 90%, 100%] and [Normal is 10, 20, 30 ... 100]
+	 * - Increase the polygon size based on incremental distance and get the ride requests for the same
+	 * - Repeat this, till you get the result set greater than equal to expected count or you have searched at max distance
+	 * - Once you get the result set more than expected count, then process all the ride requests
+	 *   Note - For incremental processing, ensure only new ride requests are getting processed
+	 * - First remove the old ones which has already been processed, so that we process only new ones
+	 * - For each ride points, calculate the ride pickup and drop distance
+	 * - Compare those distance with earlier distances and ensure you store the shortest distance for pickup and drop point and its associated ride points
+	 * - Once all ride request points are processed against each ride points, you will have shortest ride pickup and drop points against each ride request
+	 * - For each ride request, validate if ride pickup and drop point both exist and if it does then find out if the its going in the right direction
+	 *   by comparing the ride pickup sequence number with drop sequence number
+	 * - Remove all the invalid ride requests which doesn't fit the above criteria
+	 * - Check if you have any valid ride as of now, if yes, then validate the ride requests against business criteria such as profile rating, trust group etc.
+	 * - Now you will get all the valid ride request, add them into the final result set
+	 * - Compare the final result set count with expected result set 
+	 * - If its less, then check if search has been completed at max distance, if no, then fetch more data and do the processing of new ride requests
+	 * - Repeat this till you have expected result count or search is completed 
+	 * - Once all ride request is processed then save the valid ride request into final list
 	 * 
 	 * 
 	 * Key Strategy -
@@ -298,6 +325,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			//Resetting this value to 0 so that after last iteration at max distance, it should not try to process data 
 			rideRequestResultCountByDistance = 0;
 			//Run this loop till the time we have reached max distance or result set is more than expected result count
+			//***Getting Ride Requests based on Distance
 			while (rideRequestResultCountByDistance <= expectedResultCount && distance <= maxDistance){
 				if (rideRequestResultValidCount <= expectedResultCount / 2){
 					logger.debug("Multiple Increment:"+counter);
@@ -325,7 +353,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			//Process the data only when there is any ride request which is inside multi polygon
 			if (rideRequestResultCountByDistance > 0){
 				
-				//This is important - It will remove all the old ride requests so that only new ones get processed again
+				//*** This is important - It will remove all the old ride requests so that only new ones get processed again
 				rideRequestsMap.keySet().removeAll(rideRequestsIdsFromPreviousResult);
 				logger.debug("Ride Request Ids based on Distance for Processing:"+rideRequestsMap.keySet());
 				//This will store the previous result ride request Ids, which would be used to get only new results so that we process only new ride requests
@@ -341,6 +369,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 				int count=0;
 				//This will get ridepoint which is having shortest distance from pickup and drop point of each ride requests
 				//Final result would be stored into RideMatchInfo Map
+				//***Processing all ride request for each ride points
 				for (RidePoint ridePoint : ridePoints) {
 					LatLng from = new LatLng(ridePoint.getPoint().getLatitude(), ridePoint.getPoint().getLongitude());
 
@@ -369,6 +398,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 						logger.trace("[Ride RequestId]:"+rideRequestId);
 						logger.trace("[Pickup Distance, Variation]:"+pickupDistance+","+pickupPoint.getDistanceVariation());
 						//This will validate if pickupDistance is within the pickup variation range
+						//*** Processing pickup points
 						if (pickupDistance <= pickupPoint.getDistanceVariation()){
 							logger.trace("Pickup Distance is within range");
 							logger.trace("[Previous Distance, Current Distance]:"+pickupDistance+","+rideMatchInfoMap.get(rideRequestId).getPickupPointDistance());
@@ -392,6 +422,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 						}			
 						logger.trace("[Drop Distance, Variation]:"+dropDistance+","+dropPoint.getDistanceVariation());
 						//This will validate if dropDistance is within the drop variation range
+						//*** Processing drop points
 						if (dropDistance <= dropPoint.getDistanceVariation()){
 							logger.trace("Drop Distance is within range");
 							logger.trace("[Previous Distance, Current Distance]:"+dropDistance+","+rideMatchInfoMap.get(rideRequestId).getDropPointDistance());
@@ -420,7 +451,8 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 				//Use iterator instead of using for loop with entrySet as you can't remove an entry while iterating on the same Map
 				Iterator<Map.Entry<Integer, RideMatchInfo>> iterator = rideMatchInfoMap.entrySet().iterator();
 
-				//This will get all valid ride requests based on ride pickup and drop point availability as well as sequence of ride pickup and drop point 
+				//This will get all valid ride requests based on ride pickup and drop point availability as well as sequence of ride pickup and drop point
+				//*** Validating ride requests based on ride direction as well as pickup and drop point availability 
 				while(iterator.hasNext()){
 					Entry<Integer, RideMatchInfo> entry = iterator.next();
 					RideMatchInfo rideMatchInfo = entry.getValue();
@@ -450,6 +482,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 				}
 				logger.debug("Phase 1 - Valid Ride Request Ids of Ride Id["+ride.getId()+"]:"+rideMatchInfoMap.keySet());
 
+				//*** Validating ride requests based on business criteria
 				if (!rideMatchInfoMap.keySet().isEmpty()){
 					//Getting valid ride request Ids based on all business criteria
 					Set<Integer> validRideRequestIds = getValidRideRequests(rideMatchInfoMap.keySet());
@@ -458,6 +491,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 					rideMatchInfoMap.keySet().retainAll(validRideRequestIds);
 					logger.debug("Phase 2 - Valid Ride Request Ids of Ride Id["+ride.getId()+"]:"+rideMatchInfoMap.keySet());
 				}
+				//*** Adding valid points to the final result set
 				rideMatchInfoFinalResultSet.addAll(rideMatchInfoMap.values());
 				logger.debug("Final Ride Request Result Ids:");
 				for (RideMatchInfo rideMatchInfo : rideMatchInfoFinalResultSet) {
