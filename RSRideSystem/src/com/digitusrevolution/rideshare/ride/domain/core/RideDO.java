@@ -321,6 +321,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	 */
 	public List<RideMatchInfo> searchRides(int rideRequestId){		
 
+		logger.debug("[Searching Rides for Ride Request Id]:"+ rideRequestId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
 		//Get all rides around radius of pickup variation from pickup point
@@ -353,10 +354,10 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		Set<Integer> rideIds = pickupRidePoints.keySet();
 
 		if (!rideIds.isEmpty()){
-			Set<Integer> availableRideIds = getAvailableRides(rideIds);
-			logger.debug("[Available Rides]:"+availableRideIds);
-			//This will remove all unavailable rides from the list
-			pickupRidePoints.keySet().retainAll(availableRideIds);
+			Set<Integer> validRideIds = getValidRides(rideIds);
+			logger.debug("[Valid Rides]:"+validRideIds);
+			//This will remove all invalid rides from the list
+			pickupRidePoints.keySet().retainAll(validRideIds);
 		}
 
 		//Remove invalid ride points again based on sequence and availability
@@ -368,7 +369,10 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 
 		return rideMatchInfos;
 	}
-
+	
+	/*
+	 * Purpose - This function creates a DTO for passing the information back to the requester
+	 */
 	private RideMatchInfo getRideMatchInfo(RideRequest rideRequest, RidePointDTO pickupRidePointDTO, RidePointDTO dropRidePointDTO, int rideId) {
 		RideMatchInfo rideMatchInfo = new RideMatchInfo();
 		rideMatchInfo.setRideId(rideId);
@@ -381,15 +385,24 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return rideMatchInfo;
 	}	
 
-	private Set<Integer> getAvailableRides(Set<Integer> rideIds){
-		Set<RideEntity> availableRides = rideDAO.getAvailableRides(rideIds);
-		Set<Integer> availableRideIds = new HashSet<>();
-		for (RideEntity rideEntity : availableRides) {
-			availableRideIds.add(rideEntity.getId());
+	/*
+	 * Purpose - This will get all valid ride Ids based on business criteria
+	 * e.g. user rating, preference, trust category etc.
+	 * 
+	 */
+	private Set<Integer> getValidRides(Set<Integer> rideIds){
+		Set<RideEntity> validRideEntities = rideDAO.getValidRides(rideIds);
+		Set<Integer> validRideIds = new HashSet<>();
+		for (RideEntity rideEntity : validRideEntities) {
+			validRideIds.add(rideEntity.getId());
 		}
-		return availableRideIds;
+		return validRideIds;
 	}
 
+	/*
+	 * Purpose - This will get all ride points across the system, which is helpful to show the dashboard
+	 * 
+	 */
 	public FeatureCollection getAllRidePoints(){
 		FeatureCollection featureCollection = new FeatureCollection();
 		List<Ride> rides = getAll();
@@ -400,6 +413,9 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return featureCollection;
 	}
 
+	/*
+	 * Purpose - This will get all ride points for a particular ride Id
+	 */
 	private List<Feature> getRidePoints(Ride ride) {
 		List<Feature> features = new ArrayList<>();
 		List<RidePoint> ridePoints = ridePointDAO.getAllRidePointsOfRide(ride.getId());
@@ -430,12 +446,19 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return features;
 	}
 
+	/*
+	 * Purpose - This will get all ride points for a specific ride
+	 */
 	public FeatureCollection getRidePoints(int rideId){
 		FeatureCollection featureCollection = new FeatureCollection();
 		featureCollection.addAll(getRidePoints(get(rideId)));
 		return featureCollection;
 	}
 
+	/*
+	 * Purpose - This will get all the matching rides for specific ride request. 
+	 * This function internally calls search ride and convert the data into GeoJson format 
+	 */
 	public FeatureCollection getMatchingRides(int rideRequestId){
 		FeatureCollection featureCollection = new FeatureCollection();
 

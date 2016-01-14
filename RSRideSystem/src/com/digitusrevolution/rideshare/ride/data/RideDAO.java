@@ -21,10 +21,11 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 	}
 
 	/*
-	 * Purpose: Get all available rides where seats are not filled up as well as additional criteria if required
+	 * Purpose: Get all valid rides based on multiple business criteria
+	 * e.g. user rating, preference, trust category etc.
 	 * 
 	 */
-	public Set<RideEntity> getAvailableRides(Set<Integer> rideIds){
+	public Set<RideEntity> getValidRides(Set<Integer> rideIds){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);

@@ -4,10 +4,12 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.management.openmbean.InvalidKeyException;
@@ -253,6 +255,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * 
 	 */
 	public void searchRides(int rideId){
+		logger.debug("[Searching Rides Requests for Ride Id]:"+ rideId);
 		RideDO rideDO = new RideDO();
 		List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(rideId);
 		Ride ride = rideDO.get(rideId);
@@ -299,7 +302,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 					logger.trace("[Previous Distance, Current Distance]:"+pickupDistance+","+rideMatchInfoMap.get(rideRequestId).getPickupPointDistance());
 					//This will validate if pickupDistance from current ridePoint is smallest as of this iteration
 					if (pickupDistance < rideMatchInfoMap.get(rideRequestId).getPickupPointDistance() || rideMatchInfoMap.get(rideRequestId).getPickupPointDistance() == 0){
-						
+
 						if (rideMatchInfoMap.get(rideRequestId).getPickupPointDistance() == 0){
 							logger.trace("First Matched Pickup Point for ride point Sequence:"+ridePoint.getSequence());
 						}else {
@@ -338,17 +341,17 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 				} else {
 					logger.trace("Drop Distance out of range");
 				}					
-			}
+			} // End of loop of ride requests
 			count++;
-		}
+		} // End of loop for ride points
 
 		//Use iterator instead of using for loop with entrySet as you can't remove an entry while iterating on the same Map
 		Iterator<Map.Entry<Integer, RideMatchInfo>> iterator = rideMatchInfoMap.entrySet().iterator();
-		
+
 		//This will get all valid ride requests based on ride pickup and drop point availability as well as sequence of ride pickup and drop point 
 		while(iterator.hasNext()){
-			 Entry<Integer, RideMatchInfo> entry = iterator.next();
-			 RideMatchInfo rideMatchInfo = entry.getValue();
+			Entry<Integer, RideMatchInfo> entry = iterator.next();
+			RideMatchInfo rideMatchInfo = entry.getValue();
 			//Validate if Ride pickup and Ride drop both exist
 			//If there is any valid Ride pickup or Ride drop point then value would not be null
 			//i.e. both point exist
@@ -356,12 +359,12 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 				//Validate if Ride pickup is before Ride drop
 				//Ride pickup sequence number should be smaller than drop sequence number, then we can say pickup point is before drop point
 				if (rideMatchInfo.getRidePickupPoint().getSequence() < rideMatchInfo.getRideDropPoint().getSequence()){
-					logger.debug("Valid Ride Request Id:"+entry.getKey());
+					logger.debug("Phase 1 - Valid Ride Request Id:"+entry.getKey());
 					logger.debug("Ride Pickup and Drop Sequence number:"+rideMatchInfo.getRidePickupPoint().getSequence()+","
 							+rideMatchInfo.getRideDropPoint().getSequence());
 				} else {
 					//Remove the invalid ride request ids entry from the map
-					logger.debug("InValid Ride Request Id as its going in opp direction:"+entry.getKey());
+					logger.debug("Phase 1 - InValid Ride Request Id as its going in opp direction:"+entry.getKey());
 					logger.debug("Ride Pickup and Drop Sequence number:"+rideMatchInfo.getRidePickupPoint().getSequence()+","
 							+rideMatchInfo.getRideDropPoint().getSequence());
 					iterator.remove();
@@ -369,14 +372,36 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			}
 			else {
 				//Remove the invalid ride request ids entry from the map
-				logger.debug("InValid Ride Request Id as there is no matching ride pickup and drop point :"+entry.getKey());
+				logger.debug("Phase 1 - InValid Ride Request Id as there is no matching ride pickup and drop point :"+entry.getKey());
 				iterator.remove();
 			}
 		}
-
-		logger.debug("Valid Ride Request Ids of Ride Id["+ride.getId()+"]:"+rideMatchInfoMap.keySet());
-
+		logger.debug("Phase 1 - Valid Ride Request Ids of Ride Id["+ride.getId()+"]:"+rideMatchInfoMap.keySet());
+		
+		//Getting valid ride request Ids based on all business criteria
+		Set<Integer> validRideRequestIds = getValidRideRequests(rideMatchInfoMap.keySet());
+		logger.debug("Valid Request Ids based on all business criteria:"+validRideRequestIds);
+		//Removing all the invalid ride request Ids
+		rideMatchInfoMap.keySet().retainAll(validRideRequestIds);
+		logger.debug("Phase 2 - Valid Ride Request Ids of Ride Id["+ride.getId()+"]:"+rideMatchInfoMap.keySet());
+		
 	}
+	
+	
+	/*
+	 * Purpose: Get all valid ride request Ids based on multiple business criteria
+	 * e.g. user rating, preference, trust category etc.
+	 * 
+	 */
+	public Set<Integer> getValidRideRequests(Set<Integer> rideRequestIds){		
+		Set<RideRequestEntity> validRideRequestEntities = rideRequestDAO.getValidRideRequests(rideRequestIds);
+		Set<Integer> validRideRequestIds = new HashSet<>();
+		for (RideRequestEntity rideRequestEntity : validRideRequestEntities) {
+			validRideRequestIds.add(rideRequestEntity.getId());
+		}
+		return validRideRequestIds;
+	}
+
 
 
 	/*

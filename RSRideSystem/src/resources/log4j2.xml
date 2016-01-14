@@ -19,7 +19,7 @@
 			<AppenderRef ref="Console" />
 		</Logger>
 		<Logger
-			name="com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO"
+			name="com.digitusrevolution.rideshare.ride.data"
 			level="debug" additivity="false">
 			<AppenderRef ref="Console" />
 		</Logger>

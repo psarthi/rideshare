@@ -51,7 +51,7 @@ public class RideOfferManagementService {
 			trustNetwork.getTrustCategories().add(trustCategory);
 			ride.setTrustNetwork(trustNetwork);
 			
-			ride.setRecur(false);
+			ride.setRecur(true);
 			//End
 			
 			RideDO rideDO = new RideDO();
