@@ -2,6 +2,9 @@ package com.digitusrevolution.rideshare.common.util.external;
 
 class MathUtil {
 	
+	// earth's mean radius in Meters
+	static double EARTH_RADIUS = 6371009;
+	
 	/**
 	 * Extend the Number object to convert degrees to radians
 	 *
@@ -40,8 +43,7 @@ class MathUtil {
 	 * @return
 	 */
 	public static LatLng rhumbDestinationPoint(LatLng startPoint, double brng, double dist) {
-		double R = 6371;
-		double d = dist/R;  // d = angular distance covered on earth’s surface
+		double d = dist/EARTH_RADIUS;  // d = angular distance covered on earth’s surface
 		double lat1 = startPoint.latRad(), lon1 = startPoint.lngRad();
 		brng = MathUtil.toRad(brng);
 

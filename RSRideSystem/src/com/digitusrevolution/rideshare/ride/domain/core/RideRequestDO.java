@@ -255,11 +255,12 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		RideDO rideDO = new RideDO();
 		List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(rideId);
 		Ride ride = rideDO.get(rideId);
-		double distance = Double.parseDouble(PropertyReader.getInstance().getProperty("MAX_DISTANCE_VARIATION_FROM_RIDE_REQUEST_POINT"));
 		double minDistancePercent = Double.parseDouble(PropertyReader.getInstance().getProperty("RIDE_REQUEST_MIN_DISTANCE_VARIATION"));
 		double maxDistancePercent = Double.parseDouble(PropertyReader.getInstance().getProperty("RIDE_REQUEST_MAX_DISTANCE_VARIATION"));
-	
-		MultiPolygon polygonAroundRoute = getPolygonAroundRouteUsingRouteBoxer(ridePoints, distance);
+		double minDistance = ride.getTravelDistance() * minDistancePercent;
+		double maxDistance = ride.getTravelDistance() * maxDistancePercent;
+		
+		MultiPolygon polygonAroundRoute = getPolygonAroundRouteUsingRouteBoxer(ridePoints, minDistance);
 		
 		
 		
@@ -304,7 +305,8 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		LatLng to;
 		double currentLineHeading;
 		double previousLineHeading = 0;
-		double distance = Double.parseDouble(PropertyReader.getInstance().getProperty("MAX_DISTANCE_VARIATION_FROM_RIDE_REQUEST_POINT"));
+		//distance is in Km and 5 is the dummy value
+		double distance = 5;
 		from = GeoJSONUtil.getLatLng(centerPoints.get(0));
 
 		int i = 0;

@@ -106,7 +106,7 @@ public class RouteDO{
 		int seq = 1;
 		int skip = 0;
 		double minDistancePercentage = Double.parseDouble(PropertyReader.getInstance().getProperty("MIN_DISTANCE_BETWEEN_ROUTE_POINTS_PERCENT_OF_OVERALL_DISTANCE"));
-		double minDistance = totalDistance * minDistancePercentage / 100;
+		double minDistance = totalDistance * minDistancePercentage;
 		logger.debug("Ride Start Time:"+ridesBasicInfo.get(0).getDateTime());
 		for (Step step : steps) {	
 			double stepDistance = step.getDistance().getValue();

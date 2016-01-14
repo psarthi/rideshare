@@ -68,9 +68,9 @@ public class DomainLayerTest {
 	public void test(){
 
 		RideRequestDO rideRequestDO = new RideRequestDO();
-//		rideRequestDO.searchRides(160);
+		rideRequestDO.searchRides(160);
 		
-		RideDO rideDO = new RideDO();
+/*		RideDO rideDO = new RideDO();
 		List<Ride> rides = rideDO.getAll();
 		for (Ride ride : rides) {
 			LatLng from = new LatLng(ride.getStartPoint().getPoint().getLatitude(), ride.getStartPoint().getPoint().getLongitude());
@@ -79,6 +79,6 @@ public class DomainLayerTest {
 			ride.setTravelDistance(distance);
 			rideDO.update(ride);
 		}
-		
+*/		
 	}
 }

@@ -110,7 +110,8 @@ public class RideRequestPointDAO{
 	 */
 	private void getAllMatchingRideRequestPointNearGivenPoint(List<RidePoint> ridePoints){
 
-		double maxRideRequestDistanceVariation = Double.parseDouble(PropertyReader.getInstance().getProperty("MAX_DISTANCE_VARIATION_FROM_RIDE_REQUEST_POINT"));
+		//distance is in Km and 5 is the dummy value
+		double maxRideRequestDistanceVariation = 5;
 		double minDistance = Double.parseDouble(PropertyReader.getInstance().getProperty("RIDE_REQUEST_SEARCH_MIN_DISTANCE"));
 		logger.debug("Total RidePoints:"+ridePoints.size());
 

@@ -45,8 +45,8 @@ import org.apache.logging.log4j.Logger;
  */
 public class RouteBoxer {
 
-	// earth's mean radius in km
-	private double R; 
+	// earth's mean radius
+	private double EARTH_RADIUS; 
 	// Two dimensional array representing the cells in the grid overlaid on the path
 	private int[][] grid_;
 	// Array that holds the latitude coordinate of each vertical grid line
@@ -67,7 +67,7 @@ public class RouteBoxer {
 	 * @constructor
 	 */
 	public RouteBoxer() {
-		this.R = 6371; // earth's mean radius in km
+		this.EARTH_RADIUS = MathUtil.EARTH_RADIUS;
 	}
 
 	/**
@@ -375,7 +375,7 @@ public class RouteBoxer {
 	private LatLng getGridIntersect_(LatLng start, double brng, double gridLineLat) {
 		//**Its very important to check the brackets as (a-b)/c is not equal to (a -b/c)
 		//Below formula is d = R * (a-b)/c
-		double d = this.R * (((MathUtil.toRad(gridLineLat) - MathUtil.toRad(start.lat())) / Math.cos(MathUtil.toRad(brng))));
+		double d = this.EARTH_RADIUS * (((MathUtil.toRad(gridLineLat) - MathUtil.toRad(start.lat())) / Math.cos(MathUtil.toRad(brng))));
 		logger.trace("MathUtil.toRad(gridLineLat)"+MathUtil.toRad(gridLineLat));
 		logger.trace("MathUtil.toRad(start.lat()"+MathUtil.toRad(start.lat()));
 		logger.trace("Math.cos(MathUtil.toRad(brng))"+Math.cos(MathUtil.toRad(brng)));

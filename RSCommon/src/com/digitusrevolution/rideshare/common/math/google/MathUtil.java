@@ -26,6 +26,7 @@ class MathUtil {
      * The earth's radius, in meters.
      * Mean radius as defined by IUGG.
      */
+	// earth's mean radius in Meters
     static final double EARTH_RADIUS = 6371009;
 
     /**

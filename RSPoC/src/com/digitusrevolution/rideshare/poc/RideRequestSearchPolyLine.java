@@ -40,7 +40,8 @@ public class RideRequestSearchPolyLine {
 		LatLng to;
 		double currentLineHeading;
 		double previousLineHeading = 0;
-		double distance = Double.parseDouble(PropertyReader.getInstance().getProperty("MAX_DISTANCE_VARIATION_FROM_RIDE_REQUEST_POINT"));
+		//distance is in Km and 5 is the dummy value
+		double distance = 5;
 		from = GeoJSONUtil.getLatLng(centerPoints.get(0));
 
 		int i = 0;
