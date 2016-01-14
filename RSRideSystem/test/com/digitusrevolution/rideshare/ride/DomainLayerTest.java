@@ -16,11 +16,15 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.common.math.google.LatLng;
+import com.digitusrevolution.rideshare.common.math.google.PolyUtil;
+import com.digitusrevolution.rideshare.common.math.google.SphericalUtil;
 import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.external.RouteBoxer;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
@@ -64,6 +68,17 @@ public class DomainLayerTest {
 	public void test(){
 
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		rideRequestDO.searchRides(160);
+//		rideRequestDO.searchRides(160);
+		
+		RideDO rideDO = new RideDO();
+		List<Ride> rides = rideDO.getAll();
+		for (Ride ride : rides) {
+			LatLng from = new LatLng(ride.getStartPoint().getPoint().getLatitude(), ride.getStartPoint().getPoint().getLongitude());
+			LatLng to = new LatLng(ride.getEndPoint().getPoint().getLatitude(), ride.getEndPoint().getPoint().getLongitude());
+			int distance = (int) SphericalUtil.computeDistanceBetween(from, to);
+			ride.setTravelDistance(distance);
+			rideDO.update(ride);
+		}
+		
 	}
 }

@@ -256,7 +256,13 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(rideId);
 		Ride ride = rideDO.get(rideId);
 		double distance = Double.parseDouble(PropertyReader.getInstance().getProperty("MAX_DISTANCE_VARIATION_FROM_RIDE_REQUEST_POINT"));
+		double minDistancePercent = Double.parseDouble(PropertyReader.getInstance().getProperty("RIDE_REQUEST_MIN_DISTANCE_VARIATION"));
+		double maxDistancePercent = Double.parseDouble(PropertyReader.getInstance().getProperty("RIDE_REQUEST_MAX_DISTANCE_VARIATION"));
+	
 		MultiPolygon polygonAroundRoute = getPolygonAroundRouteUsingRouteBoxer(ridePoints, distance);
+		
+		
+		
 		rideRequestPointDAO.getAllMatchingRideRequestWithinMultiPolygonOfRide(ride,polygonAroundRoute);
 	}
 

@@ -61,6 +61,7 @@ public class RideEntity {
 	@ManyToMany
 	@JoinTable(name="ride_rideRequest",joinColumns=@JoinColumn(name="ride_id"))
 	private Collection<RideRequestEntity> rejectedRideRequests = new ArrayList<RideRequestEntity>();
+	private int travelDistance;
 	
 	public int getId() {
 		return id;
@@ -163,6 +164,12 @@ public class RideEntity {
 	}
 	public void setSexPreference(Sex sexPreference) {
 		this.sexPreference = sexPreference;
+	}
+	public int getTravelDistance() {
+		return travelDistance;
+	}
+	public void setTravelDistance(int travelDistance) {
+		this.travelDistance = travelDistance;
 	}
 
 }

@@ -34,6 +34,7 @@ public class Ride {
 	private Collection<Bill> bills = new ArrayList<Bill>();
 	private Collection<RideRequest> acceptedRideRequests = new ArrayList<RideRequest>();
 	private Collection<RideRequest> rejectedRideRequests = new ArrayList<RideRequest>();
+	private int travelDistance;
 	
 	public int getId() {
 		return id;
@@ -142,6 +143,12 @@ public class Ride {
 	}
 	public void setSexPreference(Sex sexPreference) {
 		this.sexPreference = sexPreference;
+	}
+	public int getTravelDistance() {
+		return travelDistance;
+	}
+	public void setTravelDistance(int travelDistance) {
+		this.travelDistance = travelDistance;
 	}
 	
 }

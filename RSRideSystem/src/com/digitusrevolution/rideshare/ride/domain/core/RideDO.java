@@ -201,10 +201,13 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		int recurringDays = 5;
 		List<Integer> rideIds = new ArrayList<>();
 		boolean driverStatus = false;
+		//This will get travel distance from the first route and first leg
+		int travelDistance = direction.getRoutes().get(0).getLegs().get(0).getDistance().getValue();
 		for (Role role : roles) {
 			if (role.getName().equals("Driver")){
 				driverStatus = true;
 				ride.setStatus("planned");
+				ride.setTravelDistance(travelDistance);
 				ZonedDateTime startTimeUTC = ride.getStartTime().withZoneSameInstant(ZoneOffset.UTC);
 				ride.setStartTime(startTimeUTC);				
 				//Check if ride is recurring, then create multiple rides as per the recurring details

@@ -38,6 +38,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		//We need to just map Point ID in Hibernate as we are storing Point in MongoDB
 		rideEntity.setStartPointId(ride.getStartPoint().get_id());
 		rideEntity.setEndPointId(ride.getEndPoint().get_id());
+		rideEntity.setTravelDistance(ride.getTravelDistance());
 		
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
 		TrustNetwork trustNetwork = ride.getTrustNetwork();
@@ -83,6 +84,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		ride.setRecur(rideEntity.getRecur());
 		ride.setStatus(rideEntity.getStatus());
 		ride.setSexPreference(rideEntity.getSexPreference());
+		ride.setTravelDistance(rideEntity.getTravelDistance());
 		
 		//We need to just map Point ID from Hibernate as we are storing Point in MongoDB
 		ride.getStartPoint().set_id(rideEntity.getStartPointId());
