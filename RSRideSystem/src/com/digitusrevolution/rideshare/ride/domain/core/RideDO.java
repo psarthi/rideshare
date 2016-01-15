@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +30,6 @@ import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
-import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
@@ -39,6 +37,7 @@ import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.ride.data.RideDAO;
 import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
+import com.digitusrevolution.rideshare.ride.domain.util.RideSystemUtil;
 import com.digitusrevolution.rideshare.ride.dto.RideMatchInfo;
 import com.digitusrevolution.rideshare.ride.dto.RidePointDTO;
 import com.digitusrevolution.rideshare.ride.dto.google.GoogleDirection;
@@ -462,72 +461,14 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	 */
 	public FeatureCollection getMatchingRides(int rideRequestId){
 		List<RideMatchInfo> rideMatchInfos = searchRides(rideRequestId);
-		FeatureCollection featureCollection = getRideMatchInfoGeoJSON(rideMatchInfos);		
-		List<Feature> rideRequestGeoJSONFeatures = getRideRequestGeoJSONFeature(rideRequestId);
+		FeatureCollection featureCollection = RideSystemUtil.getRideMatchInfoGeoJSON(rideMatchInfos);		
+		List<Feature> rideRequestGeoJSONFeatures = RideSystemUtil.getRideRequestGeoJSON(rideRequestId);
 		featureCollection.addAll(rideRequestGeoJSONFeatures);
 		return featureCollection;
 	}
-
-	/*
-	 * Purpose - This will get feature for ride request pickup and drop point
-	 */
-	List<Feature> getRideRequestGeoJSONFeature(int rideRequestId) {
-		//This will add ride request point to the feature collection
-		RideRequestDO rideRequestDO = new RideRequestDO();
-		List<RideRequestPoint> rideRequestPoints = rideRequestDO.getPointsOfRideRequest(rideRequestId);
-		List<Feature> features = new LinkedList<>();
-		for (RideRequestPoint rideRequestPoint : rideRequestPoints) {
-			Point point = rideRequestPoint.getPoint();
-			Map<String, Object> properties = new HashMap<>();
-			properties.put("type", "riderequestpoint");
-			properties.put("DistanceVariation", rideRequestPoint.getDistanceVariation());
-			org.geojson.Point geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(point);
-			Feature feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, properties);
-			features.add(feature);
-		}
-		return features;
-	}
 	
-	/*
-	 * Purpose - Get GeoJSON format for all matching rides or ride requests
-	 */
-	FeatureCollection getRideMatchInfoGeoJSON(List<RideMatchInfo> rideMatchInfos) {
-		FeatureCollection featureCollection = new FeatureCollection();
-		for (RideMatchInfo rideMatchInfo : rideMatchInfos) {
-			Point ridePickupPoint = rideMatchInfo.getRidePickupPoint().getPoint();
-			Map<String, Object> ridePickupPointProperties = getRideProperties(rideMatchInfo,"ridepickuppoint");
-			org.geojson.Point geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(ridePickupPoint);
-			Feature feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, ridePickupPointProperties);
-			featureCollection.add(feature);
-
-			Point rideDropPoint = rideMatchInfo.getRideDropPoint().getPoint();
-			Map<String, Object> rideDropPointProperties = getRideProperties(rideMatchInfo,"ridedroppoint");
-			geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(rideDropPoint);
-			feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, rideDropPointProperties);
-			featureCollection.add(feature);
-		}
-		return featureCollection;
-	}
-
-	private Map<String, Object> getRideProperties(RideMatchInfo rideMatchInfo, String pointType) {
-		Map<String, Object> ridePickupPointProperties = new HashMap<>();
-		ridePickupPointProperties.put("type", pointType);
-		ridePickupPointProperties.put("RideId", rideMatchInfo.getRideId());
-		ridePickupPointProperties.put("RideRequestId", rideMatchInfo.getRideRequestId());
-		if (pointType.equals("ridepickuppoint")){
-			ridePickupPointProperties.put("Distance", rideMatchInfo.getPickupPointDistance());
-			ridePickupPointProperties.put("Sequence", rideMatchInfo.getRidePickupPoint().getSequence());
-			ridePickupPointProperties.put("DateTimeUTC", rideMatchInfo.getRidePickupPoint().getRidesBasicInfo().get(0).getDateTime());
-		} else {
-			ridePickupPointProperties.put("Distance", rideMatchInfo.getDropPointDistance());
-			ridePickupPointProperties.put("Sequence", rideMatchInfo.getRideDropPoint().getSequence());
-			ridePickupPointProperties.put("DateTimeUTC", rideMatchInfo.getRideDropPoint().getRidesBasicInfo().get(0).getDateTime());
-		}
-		ridePickupPointProperties.put("RideRequestTravelDistance", rideMatchInfo.getRideRequestTravelDistance());
-		return ridePickupPointProperties;
-	}
-
 	public List<RidePoint> getAllRidePointsOfRide(int rideId) {
 		return ridePointDAO.getAllRidePointsOfRide(rideId);
 	}
+
 }
