@@ -103,70 +103,55 @@ public class RideRequestPointDAO{
 	}
 
 	/*
-	 * Status - Not for production use, its only for experiment
-	 * Purpose - Get all ride request point by going through each ride points and find the ride request point around it
-	 * Note - This function should not be used as it makes multiple calls to database which is time consuming, 
-	 * instead use getAllMatchingRideRequestWithinMultiPolygonOfRide which will make only one DB call 
+	 * Purpose - Get all valid ride request point around any ride point
+	 * 
 	 */
-	private void getAllMatchingRideRequestPointNearGivenPoint(List<RidePoint> ridePoints){
-
-		//distance is in Km and 5 is the dummy value
-		double maxRideRequestDistanceVariation = 5;
-		double minDistance = Double.parseDouble(PropertyReader.getInstance().getProperty("RIDE_REQUEST_SEARCH_MIN_DISTANCE"));
-		logger.debug("Total RidePoints:"+ridePoints.size());
-
+	public void getAllMatchingRideRequestPointNearGivenPoint(RidePoint ridePoint, double minDistance, double maxDistance){
+		
 		Set<RideRequestSearchPoint> rideRequestSearchPointsSet = new HashSet<>();
 		Set<Integer> rideRequestIdsSet = new HashSet<>();
+		logger.debug("Start - Searching for Ride Point:"+ridePoint.getPoint().toString());	
+		Point point = ridePoint.getPoint();
+		JSONUtil<Point> jsonUtilPoint = new JSONUtil<>(Point.class);
+		String pointJson = jsonUtilPoint.getJson(point);
+		logger.trace(pointJson);
 
-		logger.debug("Start - Searching Ride Request Points");
-		for (RidePoint ridePoint : ridePoints) {
-			logger.debug("Ride Point:"+ridePoint.getPoint().toString());	
-			Point point = ridePoint.getPoint();
-			JSONUtil<Point> jsonUtilPoint = new JSONUtil<>(Point.class);
-			String pointJson = jsonUtilPoint.getJson(point);
-			logger.trace(pointJson);
+		Document geoNear = new Document("$geoNear",new Document("spherical",true)
+				.append("limit", PropertyReader.getInstance().getProperty("RIDE_REQUEST_SEARCH_RESULT_LIMIT"))
+				.append("maxDistance", maxDistance)
+				.append("minDistance", minDistance)
+				.append("near", new Document(Document.parse(pointJson)))
+				.append("distanceField", "distance"));
 
-			Document geoNear = new Document("$geoNear",new Document("spherical",true)
-					.append("limit", PropertyReader.getInstance().getProperty("RIDE_REQUEST_SEARCH_RESULT_LIMIT"))
-					.append("maxDistance", maxRideRequestDistanceVariation)
-					.append("minDistance", minDistance)
-					.append("near", new Document(Document.parse(pointJson)))
-					.append("distanceField", "distance"));
+		logger.trace(geoNear.toJson());
+		
+		List<Document> pipeline = new ArrayList<>();
+		pipeline.add(geoNear);
 
+		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
 
-			logger.trace(geoNear.toJson());
-
-			List<Document> pipeline = new ArrayList<>();
-			pipeline.add(geoNear);
-
-			MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
-
-			JSONUtil<RideRequestSearchPoint> jsonUtilRideRequestSearchPoint = new JSONUtil<>(RideRequestSearchPoint.class);
-			int count =0;
-			try {
-				while (cursor.hasNext()){
-					Document document = cursor.next();
-					logger.trace("document:"+document.toJson());
-					RideRequestSearchPoint rideRequestSearchPoint = jsonUtilRideRequestSearchPoint.getModel(document.toJson());
-					long timeVariation = DateTimeUtil.getSeconds(rideRequestSearchPoint.getTimeVariation());
-					long rideDateTime = ridePoint.getRidesBasicInfo().get(0).getDateTime().toEpochSecond();
-					boolean dateTimeCondition = (rideDateTime >= rideRequestSearchPoint.getDateTime().minusSeconds(timeVariation).toEpochSecond() && 
-							rideDateTime <= rideRequestSearchPoint.getDateTime().plusSeconds(timeVariation).toEpochSecond());
-					boolean distanceCondition = (rideRequestSearchPoint.getDistance() <= rideRequestSearchPoint.getDistanceVariation());
-					logger.trace("RideRequest Search Point:"+jsonUtilRideRequestSearchPoint.getJson(rideRequestSearchPoint));
-					if (distanceCondition && dateTimeCondition){
-						logger.trace("Datetime or Distance condition passsed, so adding rideRequest Id:" + rideRequestSearchPoint.getRideRequestId());
-						rideRequestSearchPointsSet.add(rideRequestSearchPoint);
-						rideRequestIdsSet.add(rideRequestSearchPoint.getRideRequestId());
-					} else {
-						logger.trace("Datetime or Distance condition failed, so invalid rideRequest Id:" + rideRequestSearchPoint.getRideRequestId());
-					}
-					count++;
+		JSONUtil<RideRequestSearchPoint> jsonUtilRideRequestSearchPoint = new JSONUtil<>(RideRequestSearchPoint.class);
+		try {
+			while (cursor.hasNext()){
+				Document document = cursor.next();
+				logger.trace("document:"+document.toJson());
+				RideRequestSearchPoint rideRequestSearchPoint = jsonUtilRideRequestSearchPoint.getModel(document.toJson());
+				long timeVariation = DateTimeUtil.getSeconds(rideRequestSearchPoint.getTimeVariation());
+				long rideDateTime = ridePoint.getRidesBasicInfo().get(0).getDateTime().toEpochSecond();
+				boolean dateTimeCondition = (rideDateTime >= rideRequestSearchPoint.getDateTime().minusSeconds(timeVariation).toEpochSecond() && 
+						rideDateTime <= rideRequestSearchPoint.getDateTime().plusSeconds(timeVariation).toEpochSecond());
+				boolean distanceCondition = (rideRequestSearchPoint.getDistance() <= rideRequestSearchPoint.getDistanceVariation());
+				logger.trace("RideRequest Search Point:"+jsonUtilRideRequestSearchPoint.getJson(rideRequestSearchPoint));
+				if (distanceCondition && dateTimeCondition){
+					logger.trace("Datetime or Distance condition passsed, so adding rideRequest Id:" + rideRequestSearchPoint.getRideRequestId());
+					rideRequestSearchPointsSet.add(rideRequestSearchPoint);
+					rideRequestIdsSet.add(rideRequestSearchPoint.getRideRequestId());
+				} else {
+					logger.trace("Datetime or Distance condition failed, so invalid rideRequest Id:" + rideRequestSearchPoint.getRideRequestId());
 				}
-			} finally{
-				cursor.close();
 			}
-			logger.trace("Total Count" + count);	
+		} finally{
+			cursor.close();
 		}
 		logger.debug("End - Searching Ride Request Points");
 		logger.debug("Matching Unique Ride Request Points Ids:" + rideRequestIdsSet);
@@ -203,14 +188,14 @@ public class RideRequestPointDAO{
 		//valid ride request points would be >=6 AM and <=11:30AM, so if someone has requested for pickup at 5:30 AM, so max pickup time would be 7:30AM
 		//Based on that, 8AM ride would not be valid
 		Document dateTimeFilter = new Document("dateTime", new Document("$gte", ride.getStartTime().minusSeconds(maxTimeVariation).toEpochSecond())
-											  .append("$lte", endTime.plusSeconds(maxTimeVariation).plusSeconds(dropTimeBuffer).toEpochSecond()));
+				.append("$lte", endTime.plusSeconds(maxTimeVariation).plusSeconds(dropTimeBuffer).toEpochSecond()));
 
 		Document matchGeoWithin = new Document("$match",geoWithinQuery);
 		Document matchDateTimeFilter = new Document("$match",dateTimeFilter);
-		
+
 		//This will group ride request points by its id
 		Document groupByRideRequestId = new Document("$group", new Document("_id","$rideRequestId")
-									 .append("rideRequestSearchPoint", new Document("$push", "$$CURRENT")));
+				.append("rideRequestSearchPoint", new Document("$push", "$$CURRENT")));
 
 		//This will filter those ride requests which doesn't have pickup and drop both available
 		Document rideRequestPointCountFilter = new Document("rideRequestSearchPoint", new Document("$size", 2));
@@ -220,15 +205,15 @@ public class RideRequestPointDAO{
 		//This will add additional count field which shows the number of ride request points available for a particular ride request Id
 		Document projectRideRequestPointCount = new Document("$project", new Document("rideRequestSearchPoint", 1)
 															  .append("count", new Document("$size", "$rideRequestSearchPoint")));
-	
+
 		//This will filter those ride requests which doesn't have pickup and drop both available
 		Document rideRequestPointCountFilter = new Document("count", new Document("$eq", 2));
 		Document matchrideRequestPointCountFilter = new Document("$match",rideRequestPointCountFilter);
-		*/
-		
+		 */
+
 		Document projectResult = new Document("$project", new Document("rideRequestSearchPoint", 1));
 
-		
+
 		logger.trace(matchGeoWithin.toJson());
 		logger.trace(matchDateTimeFilter.toJson());
 		logger.trace(groupByRideRequestId.toJson());
@@ -244,9 +229,9 @@ public class RideRequestPointDAO{
 
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
 		Map<Integer, List<RideRequestPoint>> rideRequestMap = new HashMap<>();
-		
+
 		logger.trace("Ride Id:"+ride.getId());
-		
+
 		try {
 			while (cursor.hasNext()){
 				Document document = cursor.next();
@@ -280,9 +265,9 @@ public class RideRequestPointDAO{
 		} finally{
 			cursor.close();
 		}
-		
+
 		logger.debug("Ride Request Ids inside multi polygon of Ride Id["+ride.getId()+"]:"+rideRequestMap.keySet());
-		
+
 		return rideRequestMap;
 	}
 }
