@@ -245,6 +245,10 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * 	 Note - All matching ride request would fall within that max distance
 	 * - Get the slice count and expected result count, which would be used to compare the result count with final valid ride requests 
 	 *   as well as incrementing the distance for search in case result is less than expected
+	 * - To support pagination, we need to ensure we capture last search distance as well as last result index
+	 * - So min distance for starting search would be changed to last search distance in case its a additional result set request
+	 *   In that case, last search distance would not be ZERO. Same thing applies to last result index, if its no ZERO then start index would 
+	 *   be last result index + 1, which would then be used as start index for getting sub list from the final valid ride requests
 	 * - Get the multi polygon for minimum distance from the ride [Multi polygon is created around route using routeboxer, 
 	 * 	 so that minimum distance is covered and in general its around 3x the required distance]
 	 * - Pass the multi polygon to mongoDB and get all the valid ride requests within the polygon
@@ -269,7 +273,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * - Compare the final result set count with expected result set 
 	 * - If its less, then check if search has been completed at max distance, if no, then fetch more data and do the processing of new ride requests
 	 * - Repeat this till you have expected result count or search is completed 
-	 * - Once all ride request is processed then save the valid ride request into final list
+	 * - Once all ride request is processed then save the valid ride request into final list based on start index and result set limit
 	 * 
 	 * 
 	 * Key Strategy -
@@ -300,7 +304,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			//This is the search request for additional result set, so it will start from last searched distance instead of starting from scratch again
 			minDistance = lastSearchDistance;
 		}
-		int resultSetLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("RIDE_REQUEST_RESULT_COUNT"));
+		int resultSetLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("RIDE_REQUEST_RESULT_LIMIT"));
 		//This will set the expected result set count to initial limit e.g. 10
 		int expectedResultCount = resultSetLimit;
 		//This is the start index of the result set
@@ -368,16 +372,16 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			//Process the data only when there is any ride request which is inside multi polygon
 			if (rideRequestResultCountByDistance > 0){
 				
+				logger.debug("Ride Request Ids from Previous Result based on Distance:"+rideRequestsIdsFromPreviousResult);
 				//*** This is important - It will remove all the old ride requests so that only new ones get processed again
 				rideRequestsMap.keySet().removeAll(rideRequestsIdsFromPreviousResult);
-				logger.debug("Ride Request Ids based on Distance for Processing:"+rideRequestsMap.keySet());
+				logger.debug("New Ride Request Ids based on Distance for Processing:"+rideRequestsMap.keySet());
 				//This will store the previous result ride request Ids, which would be used to get only new results so that we process only new ride requests
 				//Don't just copy map keyset to this set here, as that would be copy by reference and removing from any set would effect both of them
 				//So, below method would ensure that we get seperate copy of data
 				for (Integer rideRequestId: rideRequestsMap.keySet()){
 					rideRequestsIdsFromPreviousResult.add(rideRequestId);
 				}
-				logger.debug("Ride Request Ids from Previous Result based on Distance:"+rideRequestsIdsFromPreviousResult);
 
 				//Its important to have this as map else you can't get ridematch info for each ride request ids
 				Map<Integer, RideMatchInfo> rideMatchInfoMap = new HashMap<>();
@@ -533,6 +537,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		if (rideRequestResultValidCount < resultEndIndex){
 			resultEndIndex = rideRequestResultValidCount;
 		}
+		logger.debug("[Search Completed Rides Requests for Ride Id]:"+ rideId);
 		logger.debug("StartIndex,EndIndex:"+resultStartIndex+","+resultEndIndex);
 		logger.debug("Result count:"+(resultEndIndex - resultStartIndex));
 		rideRequestSearchResult.setRideMatchInfos(rideMatchInfoFinalResultSet.subList(resultStartIndex, resultEndIndex));
@@ -560,7 +565,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		featureMultiPolygon.setGeometry(rideRequestSearchResult.getMultiPolygon());
 		featureCollection.add(featureMultiPolygon);
 		JSONUtil<FeatureCollection> jsonUtilFeatureCollection = new JSONUtil<>(FeatureCollection.class);
-		logger.debug("Ride Request Search Result:"+jsonUtilFeatureCollection.getJson(featureCollection));
+		logger.debug("Ride Request Search Result GeoJSON:"+jsonUtilFeatureCollection.getJson(featureCollection));
 		return featureCollection;
 	}
 
@@ -639,7 +644,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 
 		JSONUtil<MultiPolygon> jsonUtilMultiPolygon = new JSONUtil<>(MultiPolygon.class);
 		logger.debug("Rectangle Box Count:" + latLngBounds.size());
-		logger.debug("MultiPolygon:"+jsonUtilMultiPolygon.getJson(multiPolygon));
+		logger.trace("MultiPolygon:"+jsonUtilMultiPolygon.getJson(multiPolygon));
 
 		LineString routeLineString = GeoJSONUtil.getLineStringFromPoints(routePoints);
 		JSONUtil<LineString> jsonUtilLineString = new JSONUtil<>(LineString.class);
@@ -649,7 +654,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		geometryCollection.add(routeLineString);
 		geometryCollection.add(multiPolygon);
 		JSONUtil<GeometryCollection> jsonUtilGeometryCollection = new JSONUtil<>(GeometryCollection.class);
-		logger.debug("Geomtry:"+jsonUtilGeometryCollection.getJson(geometryCollection));
+		logger.trace("Geomtry:"+jsonUtilGeometryCollection.getJson(geometryCollection));
 		return multiPolygon;
 	}	
 }

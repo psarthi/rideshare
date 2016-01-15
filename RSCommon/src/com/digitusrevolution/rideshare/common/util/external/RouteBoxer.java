@@ -60,6 +60,8 @@ public class RouteBoxer {
 	//  the route intersects first vertically, and then horizontally
 	private List<LatLngBounds> boxesY_;
 	private static final Logger logger = LogManager.getLogger(RouteBoxer.class.getName());
+	//This is just for performance testing purpose
+	private long counter=0;
 
 	/**
 	 * Creates a new RouteBoxer
@@ -83,6 +85,8 @@ public class RouteBoxer {
 	 *           path.
 	 */
 	public List<LatLngBounds> box(List<LatLng> path, double range) {
+		logger.entry();
+		logger.debug("Total Ride Points:"+path.size());
 		// Two dimensional array representing the cells in the grid overlaid on the path
 		this.grid_ = null;
 
@@ -116,6 +120,10 @@ public class RouteBoxer {
 		logger.trace("mergeIntersectingCells_");
 		this.mergeIntersectingCells_();
 
+		//Reason behind duplicate entry as i want this data to be viewed on debug and exit is only for trace
+		logger.debug("Iteration Counter"+counter);
+
+		logger.exit("Iteration Counter"+counter);
 		// Return the set of merged bounds that has the fewest elements
 		return (this.boxesX_.size() <= this.boxesY_.size() ?
 				this.boxesX_ :
@@ -132,6 +140,7 @@ public class RouteBoxer {
 	 * @param {Number} range The spacing of the grid cells.
 	 */
 	private void buildGrid_(List<LatLng> vertices, double range) {
+		logger.entry();
 
 		// Create a LatLngBounds object that contains the whole path
 		LatLngBounds routeBounds = new LatLngBounds();
@@ -176,6 +185,7 @@ public class RouteBoxer {
 		this.grid_ = new int[this.lngGrid_.size()][this.latGrid_.size()];
 
 		logger.trace("lngGrid_.size,latGrid_.size,grid.length[x-LngSize][y-LatSize]:"+lngGrid_.size()+","+latGrid_.size()+"["+grid_.length + ","+grid_[0].length+"]");
+		logger.exit(counter);
 	}
 
 	/**
@@ -184,6 +194,7 @@ public class RouteBoxer {
 	 * @param {LatLng[]} vertices The vertices of the path
 	 */
 	private void findIntersectingCells_(List<LatLng> vertices) {
+		logger.entry();
 		// Find the cell where the path begins
 		int[] hintXY = this.getCellCoords_(vertices.get(0));
 		logger.trace("Vertex- Cell Cordinate[0]:"+vertices.get(0).toString()+":"+hintXY[0]+","+hintXY[1]);
@@ -222,6 +233,7 @@ public class RouteBoxer {
 			// Use this cell to find and compare with the next one
 			hintXY = gridXY;
 		}
+		logger.exit(counter);
 	}
 
 	/**
@@ -231,10 +243,12 @@ public class RouteBoxer {
 	 * @return {Number[]} The cell coordinates of this vertex in the grid containing x and y
 	 */ 
 	private int[] getCellCoords_ (LatLng latlng) {
+		logger.entry();
 		int x,y;
 		for (x = 0; this.lngGrid_.get(x) < latlng.lng(); x++) {}
 		for (y = 0; this.latGrid_.get(y) < latlng.lat(); y++) {}
 		int[] cellCoordinate = {(x - 1), (y - 1)};
+		logger.exit();
 		return cellCoordinate;
 	}
 
@@ -249,34 +263,44 @@ public class RouteBoxer {
 	 * @return {Number[]} The cell coordinates of the vertex to locate in the grid
 	 */ 
 	private int[] getGridCoordsFromHint_(LatLng latlng, LatLng hintlatlng, int[] hint) {
+		logger.entry();
 		logger.trace("latlng,hintlatlng,hint[x][y]:"+latlng.toString()+","+hintlatlng.toString()+":"+hint[0]+","+hint[1]);
 		int x = 0;
 		int y=0;
 		if (latlng.lng() > hintlatlng.lng()) {
+			counter++;
 			logger.trace("Pass - latlng.lng() > hintlatlng.lng()");
 			for (x = hint[0]; this.lngGrid_.get(x + 1) < latlng.lng() ; x++) {
+				counter++;
 				logger.trace("x:"+x);
 			}
 		} else {
+			counter++;
 			logger.trace("Fail - latlng.lng() > hintlatlng.lng()");
 			for (x = hint[0]; this.lngGrid_.get(x)  > latlng.lng(); x--) {
+				counter++;
 				logger.trace("x:"+x);
 			}
 		}
 
 		if (latlng.lat() > hintlatlng.lat()) {
+			counter++;
 			logger.trace("Pass - latlng.lat() > hintlatlng.lat()");
 			for (y = hint[1]; this.latGrid_.get(y + 1) < latlng.lat() ; y++) {
+				counter++;
 				logger.trace("y:"+y);
 			}
 		} else {        
+			counter++;
 			logger.trace("Fail - latlng.lat() > hintlatlng.lat()");
 			for (y = hint[1]; this.latGrid_.get(y) > latlng.lat() ; y--) {
+				counter++;
 				logger.trace("y:"+y);
 			}
 		}
 		int[] gridCoordinate = {x,y};
 		logger.trace("Grid Cordinates [x,y]:"+x+","+y);
+		logger.exit(counter);
 		return gridCoordinate;
 	}
 
@@ -300,6 +324,7 @@ public class RouteBoxer {
 	 * @param {Number[]} endXY The cell containing the vend vertex
 	 */ 
 	private void getGridIntersects_(LatLng start,LatLng end, int[] startXY, int[] endXY) {
+		logger.entry();
 		LatLng edgePoint;
 		int[] edgeXY;
 		int i;
@@ -360,6 +385,7 @@ public class RouteBoxer {
 			this.fillInGridSquares_(hintXY[0], endXY[0], i);
 
 		}
+		logger.exit(counter);
 	}
 
 	/**
@@ -373,6 +399,7 @@ public class RouteBoxer {
 	 *                    the grid line
 	 */ 
 	private LatLng getGridIntersect_(LatLng start, double brng, double gridLineLat) {
+		logger.entry();
 		//**Its very important to check the brackets as (a-b)/c is not equal to (a -b/c)
 		//Below formula is d = R * (a-b)/c
 		double d = this.EARTH_RADIUS * (((MathUtil.toRad(gridLineLat) - MathUtil.toRad(start.lat())) / Math.cos(MathUtil.toRad(brng))));
@@ -380,6 +407,7 @@ public class RouteBoxer {
 		logger.trace("MathUtil.toRad(start.lat()"+MathUtil.toRad(start.lat()));
 		logger.trace("Math.cos(MathUtil.toRad(brng))"+Math.cos(MathUtil.toRad(brng)));
 		logger.trace("d:"+d);
+		logger.exit();
 		return MathUtil.rhumbDestinationPoint(start,brng, d);
 	}
 
@@ -392,6 +420,7 @@ public class RouteBoxer {
 	 * @param {Number} y The row of the cells to include
 	 */ 
 	private void fillInGridSquares_ (int startx, int endx, int y) {
+		logger.entry();
 		int x;
 		if (startx < endx) {
 			for (x = startx; x <= endx; x++) {
@@ -405,7 +434,8 @@ public class RouteBoxer {
 				logger.trace("x,y:"+x+","+y);
 				this.markCell_(cell);
 			}            
-		}      
+		}    
+		logger.exit();
 	}
 
 	/**
@@ -414,6 +444,7 @@ public class RouteBoxer {
 	 * @param {Number[]} square The cell to mark
 	 */ 
 	private void markCell_(int[] cell) {
+		logger.entry();
 		int x = cell[0];
 		int y = cell[1];
 		this.grid_[x - 1][y - 1] = 1;
@@ -425,6 +456,7 @@ public class RouteBoxer {
 		this.grid_[x - 1][y + 1] = 1;
 		this.grid_[x][y + 1] = 1;
 		this.grid_[x + 1][y + 1] = 1;
+		logger.exit();
 	}
 
 	/**
@@ -441,6 +473,7 @@ public class RouteBoxer {
 	 *     
 	 */ 
 	private void mergeIntersectingCells_() {
+		logger.entry();
 		int x, y;
 		LatLngBounds box;
 
@@ -516,6 +549,7 @@ public class RouteBoxer {
 			this.mergeBoxesX_(currentBox);
 			currentBox = null;
 		}
+		logger.exit();
 	}
 
 	/**
@@ -526,6 +560,7 @@ public class RouteBoxer {
 	 * @param {LatLngBounds}  The box to merge
 	 */ 
 	private void mergeBoxesX_(LatLngBounds box) {
+		logger.entry();
 		if (box != null) {
 			for (int i = 0; i < this.boxesX_.size(); i++) {
 				if (this.boxesX_.get(i).getNorthEast().lng() == box.getSouthWest().lng() &&
@@ -537,6 +572,7 @@ public class RouteBoxer {
 			}
 			this.boxesX_.add(box);
 		}
+		logger.exit();
 	}
 
 	/**
@@ -547,6 +583,7 @@ public class RouteBoxer {
 	 * @param {LatLngBounds}  The box to merge
 	 */ 
 	private void mergeBoxesY_(LatLngBounds box) {
+		logger.entry();
 		if (box != null) {
 			for (int i = 0; i < this.boxesY_.size(); i++) {
 				if (this.boxesY_.get(i).getNorthEast().lat() == box.getSouthWest().lat() &&
@@ -558,6 +595,7 @@ public class RouteBoxer {
 			}
 			this.boxesY_.add(box);
 		}
+		logger.exit();
 	}
 
 	/**
