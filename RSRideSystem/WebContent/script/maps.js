@@ -402,8 +402,8 @@ function loadRideSearchGeoJsonString(geoString) {
 			console.log("ridedropppoint");
 			markerIcon = rideDropIcon;
 		}
-		if (type=="riderequestpoint"){
-			console.log("riderequestpoint");
+		if (type=="pickuppoint" || type=="droppoint"){
+			console.log(type);
 			//This will get cordinates of the point
 			var center = geometry.get();
 			var radius = feature.getProperty('DistanceVariation');
