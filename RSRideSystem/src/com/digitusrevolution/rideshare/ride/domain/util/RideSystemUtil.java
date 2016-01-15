@@ -28,7 +28,7 @@ public class RideSystemUtil {
 		Map<String, Object> dropPointProperties;
 		RideRequestPoint rideRequestPickupPoint;
 		RideRequestPoint rideRequestDropPoint;
-		if (rideRequestPoint1.getDateTime().compareTo(rideRequestPoint2.getDateTime()) > 0){
+		if (rideRequestPoint1.getDateTime().compareTo(rideRequestPoint2.getDateTime()) < 0){
 			rideRequestPickupPoint = rideRequestPoint1;
 			rideRequestDropPoint = rideRequestPoint2;
 		} else {

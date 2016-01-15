@@ -283,6 +283,7 @@ function deleteMarkers() {
 	end="";
 }
 
+//This will load all ride points of a ride
 function loadRideGeoJsonString(geoString) {
 	var geojson = JSON.parse(geoString);
 	var type;
@@ -290,7 +291,7 @@ function loadRideGeoJsonString(geoString) {
 	var markerIcon;
 	rideData.addGeoJson(geojson);
 	//This is very important, as this only draws on specific map
-	rideData.setMap(map)
+	rideData.setMap(map);
 
 	// Add some style.
 	rideData.setStyle(function(feature) {
@@ -325,6 +326,7 @@ function loadRideGeoJsonString(geoString) {
 
 }
 
+//This will load ride request points
 function loadRideRequestGeoJsonString(geoString) {
 	var geojson = JSON.parse(geoString);
 	var type;
@@ -332,7 +334,7 @@ function loadRideRequestGeoJsonString(geoString) {
 	var rideRequestData = new google.maps.Data();
 	rideRequestData.addGeoJson(geojson);
 	//This is very important, as this only draws on specific map
-	rideRequestData.setMap(map)
+	rideRequestData.setMap(map);
 
 	// Add some style.
 	rideRequestData.setStyle(function(feature) {
@@ -347,12 +349,16 @@ function loadRideRequestGeoJsonString(geoString) {
 		if (type=="pickuppoint"){
 			console.log("pickuppoint");
 			markerIcon = pickupIcon;
+		} else {
+			if (type=="droppoint"){
+				console.log("dropppoint");
+				markerIcon = dropIcon;
+			} else {
+				//This will remove any other points which may be part of collection, as this function is also called from ride request search
+				//Where we pass all the feature collection and it includes other points as well
+				rideRequestData.remove(feature);				
+			}			
 		}
-		if (type=="droppoint"){
-			console.log("dropppoint");
-			markerIcon = dropIcon;
-		}
-		//createCircle(center, radius);
 		return /** @type {google.maps.Data.StyleOptions} */({
 			strokeColor: getRandomColor(),
 			strokeWeight: 3,
@@ -376,6 +382,7 @@ function loadRideRequestGeoJsonString(geoString) {
 	//zoom(map, rideRequestData);
 }
 
+//This will load ride pickup and drop point as well as create circle around the ride request pickup and drop point
 function loadRideSearchGeoJsonString(geoString) {
 	var geojson = JSON.parse(geoString);
 	var type;
@@ -385,7 +392,7 @@ function loadRideSearchGeoJsonString(geoString) {
 
 	ridePointData.addGeoJson(geojson);
 	//This is very important, as this only draws on specific map
-	ridePointData.setMap(map)
+	ridePointData.setMap(map);
 
 	// Add some style.
 	ridePointData.setStyle(function(feature) {
@@ -395,22 +402,67 @@ function loadRideSearchGeoJsonString(geoString) {
 
 		console.log(type);
 		if (type=="ridepickuppoint"){
-			console.log("ridepickuppoint");
+			console.log(type);
 			markerIcon = ridePickupIcon;
 		}
 		if (type=="ridedroppoint"){
-			console.log("ridedropppoint");
+			console.log(type);
 			markerIcon = rideDropIcon;
 		}
-		if (type=="pickuppoint" || type=="droppoint"){
+		if (type=="pickuppoint"){
 			console.log(type);
 			//This will get cordinates of the point
 			var center = geometry.get();
 			var radius = feature.getProperty('DistanceVariation');
-			createCircle(center, radius);
+			//createCircle(center, radius);
+			markerIcon = pickupIcon;
 			//This will remove the riderequest points, which is required only for creating circle
-			ridePointData.remove(feature);
+			//ridePointData.remove(feature);
 		}
+		if (type=="droppoint"){
+			console.log(type);
+			//This will get cordinates of the point
+			var center = geometry.get();
+			var radius = feature.getProperty('DistanceVariation');
+			//createCircle(center, radius);
+			markerIcon = dropIcon;
+			//This will remove the riderequest points, which is required only for creating circle
+			//ridePointData.remove(feature);
+		}
+	
+		if (type=="ridepickuppoint" || type=="ridedroppoint"){
+			console.log("Inside Event Listener Case for type"+type);
+			// When the user clicks, open an infowindow
+			ridePointData.addListener('click', function(event) {
+				var RideId = event.feature.getProperty("RideId");
+				var RideRequestId = event.feature.getProperty("RideRequestId");
+				var Distance = event.feature.getProperty("Distance").toPrecision(5);
+				var DateTimeUTC = event.feature.getProperty("DateTimeUTC");
+				var RideRequestTravelDistance = event.feature.getProperty("RideRequestTravelDistance");
+				var Sequence = event.feature.getProperty("Sequence");
+				infowindow.setContent("<div style='width:500px; height:50px; text-align: center;'>"
+						+"[RideId,RideRequestId,DateTimeUTC,Distance,RideRequestTravelDistance,Sequence]:<br>"+"<b>"+RideId+","
+						+RideRequestId+"</b>"+","+DateTimeUTC+","+Distance+","+RideRequestTravelDistance+","+Sequence+"</div>");
+				infowindow.setPosition(event.feature.getGeometry().get());
+				infowindow.setOptions({pixelOffset: new google.maps.Size(0,-30)});
+				infowindow.open(map);
+			});  
+		}
+		
+		if (type=="pickuppoint" || type=="droppoint"){
+			console.log("Inside Event Listener Case for type"+type);
+			ridePointData.addListener('click', function(event) {
+				var RideRequestId = event.feature.getProperty("RideRequestId");
+				var DateTimeUTC = event.feature.getProperty("DateTimeUTC");
+				var DistanceVariation = event.feature.getProperty("DistanceVariation");
+				infowindow.setContent("<div style='width:300px; height:50px; text-align: center;'>"
+						+"[RideRequestId,DateTimeUTC,DistanceVariation]:<br>"+"<b>"+RideRequestId+"</b>"+","+DateTimeUTC+","+DistanceVariation+"</div>");
+				infowindow.setPosition(event.feature.getGeometry().get());
+				infowindow.setOptions({pixelOffset: new google.maps.Size(0,-30)});
+				infowindow.open(map);
+			});  
+		}
+
 		return /** @type {google.maps.Data.StyleOptions} */({
 			strokeColor: getRandomColor(),
 			strokeWeight: 3,
@@ -418,28 +470,8 @@ function loadRideSearchGeoJsonString(geoString) {
 		});
 	});
 
-
-
-	// When the user clicks, open an infowindow
-	ridePointData.addListener('click', function(event) {
-		var RideId = event.feature.getProperty("RideId");
-		var RideRequestId = event.feature.getProperty("RideRequestId");
-		var Distance = event.feature.getProperty("Distance").toPrecision(5);
-		var DateTimeUTC = event.feature.getProperty("DateTimeUTC");
-		var RideRequestTravelDistance = event.feature.getProperty("RideRequestTravelDistance");
-		var Sequence = event.feature.getProperty("Sequence");
-		infowindow.setContent("<div style='width:500px; height:50px; text-align: center;'>"
-				+"[RideId,RideRequestId,DateTimeUTC,Distance,RideRequestTravelDistance,Sequence]:<br>"+"<b>"+RideId+","
-				+RideRequestId+"</b>"+","+DateTimeUTC+","+Distance+","+RideRequestTravelDistance+","+Sequence+"</div>");
-		infowindow.setPosition(event.feature.getGeometry().get());
-		infowindow.setOptions({pixelOffset: new google.maps.Size(0,-30)});
-		infowindow.open(map);
-	});  
-
 	zoom(map, ridePointData);
 }
-
-
 
 /**
  * Update a map's viewport to fit each geometry in a dataset

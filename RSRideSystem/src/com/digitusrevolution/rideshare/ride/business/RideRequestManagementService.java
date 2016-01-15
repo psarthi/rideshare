@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.geojson.FeatureCollection;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -95,4 +96,35 @@ public class RideRequestManagementService {
 	public void notifyPassenger(int passengerId){
 		
 	}
+	
+	public FeatureCollection getMatchingRideRequests(int rideId,double lastSearchDistance, int lastResultIndex){
+		
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transation = null;	
+		FeatureCollection featureCollection = null;
+		try {
+			transation = session.beginTransaction();
+			
+			RideRequestDO rideRequestDO = new RideRequestDO();
+			featureCollection = rideRequestDO.getMatchingRideRequests(rideId, lastSearchDistance, lastResultIndex);
+
+			transation.commit();
+		} catch (RuntimeException e) {
+			if (transation!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transation.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		
+		return featureCollection;
+		
+	}
+	
 }

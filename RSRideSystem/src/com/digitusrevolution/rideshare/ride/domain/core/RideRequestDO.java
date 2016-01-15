@@ -543,7 +543,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		rideRequestSearchResult.setRideMatchInfos(rideMatchInfoFinalResultSet.subList(resultStartIndex, resultEndIndex));
 		rideRequestSearchResult.setSearchDistance(distance);
 		rideRequestSearchResult.setResultLastIndex(resultEndIndex);
-		rideRequestSearchResult.setMultiPolygon(polygonAroundRoute);
+		//rideRequestSearchResult.setMultiPolygon(polygonAroundRoute);
 		return rideRequestSearchResult;
 	}
 	
@@ -575,7 +575,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * e.g. user rating, preference, trust category etc.
 	 * 
 	 */
-	public Set<Integer> getValidRideRequests(Set<Integer> rideRequestIds){		
+	private Set<Integer> getValidRideRequests(Set<Integer> rideRequestIds){		
 		Set<RideRequestEntity> validRideRequestEntities = rideRequestDAO.getValidRideRequests(rideRequestIds);
 		Set<Integer> validRideRequestIds = new HashSet<>();
 		for (RideRequestEntity rideRequestEntity : validRideRequestEntities) {
@@ -597,7 +597,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * as rectangles can be any order, so the only option is to create individual polygon from each rectangle latlngs.
 	 * 
 	 */
-	public MultiPolygon getPolygonAroundRouteUsingRouteBoxer(List<RidePoint> ridePoints, double distance){
+	private MultiPolygon getPolygonAroundRouteUsingRouteBoxer(List<RidePoint> ridePoints, double distance){
 
 		RouteBoxer routeBoxer = new RouteBoxer();
 		List<Point> routePoints = new LinkedList<>();

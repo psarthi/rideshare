@@ -1,11 +1,15 @@
 package com.digitusrevolution.rideshare.ride.business.resource;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.geojson.FeatureCollection;
 
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.ride.business.RideRequestManagementService;
@@ -22,6 +26,17 @@ public class RideRequestManagementResource {
 		int id = rideRequestManagementService.requestRide(rideRequest);
 		return Response.ok().entity(Integer.toString(id)).build();
 		
+	}
+	
+	@GET
+	@Path("/search/{rideId}/{lastSearchDistance}/{lastResultIndex}")
+	public Response getMatchingRideRequests(@PathParam("rideId") int rideId, @PathParam("lastSearchDistance")  double lastSearchDistance, 
+											@PathParam("lastResultIndex") int lastResultIndex){
+	
+		RideRequestManagementService rideRequestManagementService = new RideRequestManagementService();
+		FeatureCollection featureCollection = rideRequestManagementService.getMatchingRideRequests(rideId, lastSearchDistance, lastResultIndex);
+		return Response.ok().entity(featureCollection).build();
+
 	}
 
 }
