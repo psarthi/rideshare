@@ -226,6 +226,15 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	public List<RideRequestPoint> getPointsOfRideRequest(int rideRequestId) {
 		return rideRequestPointDAO.getPointsOfRideRequest(rideRequestId);
 	}
+	
+	//This will return geoJSON of ride request points
+	public FeatureCollection getRideRequestPoints(int rideRequestId) {
+		FeatureCollection featureCollection = new FeatureCollection();
+		List<Feature> features = RideSystemUtil.getRideRequestGeoJSON(rideRequestId);
+		featureCollection.addAll(features);
+		return featureCollection;
+	}
+
 
 	/*
 	 * Purpose - Get all Matching ride requests for specific ride

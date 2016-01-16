@@ -10,6 +10,8 @@ var getAllRidesURL = "http://localhost:8080/RSRideSystem/api/ridesystem/rides/al
 var getAllRideRequestURL = "http://localhost:8080/RSRideSystem/api/ridesystem/riderequests/allpoints";
 var searchRidesURL = "http://localhost:8080/RSRideSystem/api/ridesystem/rides/search/{rideRequestId}";
 var searchRideRequestsURL = "http://localhost:8080/RSRideSystem/api/riderequests/search/{rideId}/0/0";
+var getRideURL = "http://localhost:8080/RSRideSystem/api/ridesystem/ride/route/{rideId}";
+var getRideRequestURL = "http://localhost:8080/RSRideSystem/api/ridesystem/riderequests/{rideRequestId}";
 
 /*
  * This function is for reference purpose
@@ -109,11 +111,8 @@ $("#rideOffer").click(function(){
 		})
 
 		.done(function( response ) {
-			$("#alert-success").html("Request Successfull:<br/>Ride has been successfully created with id:"+JSON.stringify(response)).show();
-//			calculateAndDisplayRoute(directionsService, routeMarkers,
-//					stepDisplay, map, document.getElementById('start').value, document.getElementById('end').value);
-			addPermanentMarker(start, startIcon);
-			addPermanentMarker(end, endIcon);
+			$("#alert-success").html("Request Successfull").show();
+			loadGeoJSON(JSON.stringify(response));
 			deleteMarkers();
 		})
 
@@ -175,9 +174,8 @@ $("#rideRequest").click(function(){
 		})
 
 		.done(function( response ) {
-			$("#alert-success").html("Request Successfull:<br/>Ride Request has been successfully created with id:"+JSON.stringify(response)).show();
-			addPermanentMarker(start, pickupIcon);
-			addPermanentMarker(end, dropIcon);
+			$("#alert-success").html("Request Successfull").show();
+			loadGeoJSON(JSON.stringify(response));
 			deleteMarkers();
 		})
 

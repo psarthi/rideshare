@@ -48,7 +48,15 @@ public class RideSystemResource {
 		FeatureCollection featureCollection = rideSystemService.getAllRideRequestPoints();
 		return Response.ok(featureCollection).build();
 	}
-
+	
+	@GET
+	@Path("/riderequests/{rideRequestId}")
+	public Response getRideRequestPoints(@PathParam("rideRequestId") int rideRequestId) {
+		RideSystemService rideSystemService = new RideSystemService();
+		FeatureCollection featureCollection = rideSystemService.getRideRequestPoints(rideRequestId);
+		return Response.ok(featureCollection).build();
+	}
+	
 
 
 }

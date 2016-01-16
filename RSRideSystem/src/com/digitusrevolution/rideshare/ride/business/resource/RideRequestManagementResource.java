@@ -13,6 +13,7 @@ import org.geojson.FeatureCollection;
 
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.ride.business.RideRequestManagementService;
+import com.digitusrevolution.rideshare.ride.business.RideSystemService;
 
 @Path("/riderequests")
 @Produces(MediaType.APPLICATION_JSON)
@@ -24,7 +25,9 @@ public class RideRequestManagementResource {
 		
 		RideRequestManagementService rideRequestManagementService = new RideRequestManagementService();
 		int id = rideRequestManagementService.requestRide(rideRequest);
-		return Response.ok().entity(Integer.toString(id)).build();
+		RideSystemService rideSystemService = new RideSystemService();
+		FeatureCollection featureCollection = rideSystemService.getRideRequestPoints(id);
+		return Response.ok().entity(featureCollection).build();
 		
 	}
 	

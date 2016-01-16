@@ -123,5 +123,31 @@ public class RideSystemService {
 
 	}
 
+	public FeatureCollection getRideRequestPoints(int rideRequestId) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transation = null;	
+		FeatureCollection featureCollection = new FeatureCollection();
+		try {
+			transation = session.beginTransaction();
+
+			RideRequestDO rideRequestDO = new RideRequestDO();
+			featureCollection = rideRequestDO.getRideRequestPoints(rideRequestId);			
+
+			transation.commit();
+		} catch (RuntimeException e) {
+			if (transation!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transation.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return featureCollection;	
+	}
 
 }
