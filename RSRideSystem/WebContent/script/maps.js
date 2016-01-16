@@ -298,7 +298,6 @@ function loadGeoJSON(geoString) {
 	// Add some style.
 	data.setStyle(function(feature) {
 		var geometry = feature.getGeometry();
-		var geometryType = geometry.getType();
 		var type = feature.getProperty('type');
 
 
@@ -427,10 +426,12 @@ function processPoints(geometry, callback, thisArg) {
 		callback.call(thisArg, geometry);
 	} else if (geometry instanceof google.maps.Data.Point) {
 		callback.call(thisArg, geometry.get());
-	} else {
-		geometry.getArray().forEach(function(g) {
-			processPoints(g, callback, thisArg);
-		});
 	}
+	//Not sure why its not working, so commented out as it was causing rest of the flow to stop working 
+//	else {
+//		geometry.getArray().forEach(function(g) {
+//			processPoints(g, callback, thisArg);
+//		});
+//	}
 }
 

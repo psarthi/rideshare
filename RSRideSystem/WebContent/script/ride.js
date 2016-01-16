@@ -10,8 +10,6 @@ var getAllRidesURL = "http://localhost:8080/RSRideSystem/api/ridesystem/rides/al
 var getAllRideRequestURL = "http://localhost:8080/RSRideSystem/api/ridesystem/riderequests/allpoints";
 var searchRidesURL = "http://localhost:8080/RSRideSystem/api/ridesystem/rides/search/{rideRequestId}";
 var searchRideRequestsURL = "http://localhost:8080/RSRideSystem/api/riderequests/search/{rideId}/0/0";
-var getRideURL = "http://localhost:8080/RSRideSystem/api/ridesystem/ride/route/{rideId}";
-var getRideRequestURL = "http://localhost:8080/RSRideSystem/api/ridesystem/riderequests/{rideRequestId}";
 
 /*
  * This function is for reference purpose
@@ -207,7 +205,6 @@ function searchRideRequest(){
 	url = url.replace("{lastSearchDistance}",lastSearchDistance);
 	url = url.replace("{lastResultIndex}",lastResultIndex);
 	getGeoJson(url);
-	getRide(rideId);
 }
 
 function getGeoJson(url){
