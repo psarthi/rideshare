@@ -1,5 +1,7 @@
 package com.digitusrevolution.rideshare.ride.domain.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -7,10 +9,13 @@ import java.util.Map;
 
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
+import org.geojson.LineString;
 
 import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
+import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
 import com.digitusrevolution.rideshare.ride.dto.RideMatchInfo;
 
@@ -46,9 +51,12 @@ public class RideSystemUtil {
 		features.add(feature2);
 		return features;
 	}
-	
+
 	/*
-	 * Purpose - Get GeoJSON format for all matching rides or ride requests
+	 * Purpose - Get GeoJSON for ride pickup and drop points
+	 * Note - Purposefully ride and ride request geoJson has not been included here 
+	 * as it may become duplicates for searchRides and SearchRideRequest, so its the caller 
+	 * responsibility to add geoJson for rides and ride requests
 	 */
 	public static FeatureCollection getRideMatchInfoGeoJSON(List<RideMatchInfo> rideMatchInfos) {
 		FeatureCollection featureCollection = new FeatureCollection();
@@ -89,7 +97,7 @@ public class RideSystemUtil {
 		ridePickupPointProperties.put("RideRequestTravelDistance", rideMatchInfo.getRideRequestTravelDistance());
 		return ridePickupPointProperties;
 	}
-	
+
 	/*
 	 * Purpose - This will get properties for Ride Request points
 	 */
@@ -101,4 +109,38 @@ public class RideSystemUtil {
 		properties.put("DistanceVariation", rideRequestPoint.getDistanceVariation());
 		return properties;
 	}
+
+	public static List<Feature> getRideGeoJson(Ride ride) {
+		List<Point> points = new ArrayList<>();
+		Collection<RidePoint> ridePoints = ride.getRoute().getRidePoints();
+		for (RidePoint ridePoint : ridePoints) {
+			points.add(ridePoint.getPoint());
+		}
+		LineString lineString = GeoJSONUtil.getLineStringFromPoints(points);
+		Map<String, Object> properties = new HashMap<>();
+		properties.put("type", "route");
+		properties.put("RideId", ride.getId());
+		properties.put("StartDateTimeUTC", ride.getStartTime());
+		Feature feature = GeoJSONUtil.getFeatureFromGeometry(lineString, properties);
+		List<Feature> features = new LinkedList<>();
+		features.add(feature);
+		feature = getRidePointGeoJson(ride.getStartPoint(), "startpoint");
+		features.add(feature);
+		feature = getRidePointGeoJson(ride.getEndPoint(), "endpoint");
+		features.add(feature);
+		return features;
+	}
+
+	private static Feature getRidePointGeoJson(RidePoint ridePoint, String pointType) {
+		Feature feature;
+		org.geojson.Point geoJsonPoint;
+		Map<String, Object> properties = new HashMap<>();
+		properties.put("type", pointType);
+		properties.put("RideId", ridePoint.getRidesBasicInfo().get(0).getId());
+		properties.put("DateTimeUTC", ridePoint.getRidesBasicInfo().get(0).getDateTime());
+		geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(ridePoint.getPoint());
+		feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, properties);
+		return feature;
+	}
+
 }

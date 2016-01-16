@@ -85,7 +85,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		List<RideRequestEntity> rideRequestEntities = rideRequestDAO.getAll();
 		for (RideRequestEntity rideRequestEntity : rideRequestEntities) {
 			setRideRequestEntity(rideRequestEntity);
-			getRideRequestPoint();
+			setRideRequestPoint(rideRequest);
 			rideRequests.add(rideRequest);
 		}
 		return rideRequests;
@@ -143,18 +143,18 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			throw new NotFoundException("No Data found with id: "+id);
 		}
 		setRideRequestEntity(rideRequestEntity);
-		getRideRequestPoint();
+		setRideRequestPoint(rideRequest);
 		return rideRequest;
 	}
 
 	/*
 	 * This method doesn't return but set ride request points in the ride request object itself 
 	 */
-	private void getRideRequestPoint() {
+	private void setRideRequestPoint(RideRequest rideRequest) {
 		RideRequestPoint pickupPoint = rideRequestPointDAO.get(rideRequest.getPickupPoint().get_id());
 		RideRequestPoint dropPoint = rideRequestPointDAO.get(rideRequest.getDropPoint().get_id());
 		rideRequest.setPickupPoint(pickupPoint);
-		rideRequest.setDropPoint(dropPoint);;
+		rideRequest.setDropPoint(dropPoint);
 	}
 
 	@Override
@@ -184,7 +184,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		rideRequest.setId(id);
 
 		//No need to get update Ride request as return type as in java its pass by reference, so data would be updated in the original ride request
-		setRideRequestPoint(rideRequest);
+		setRideRequestPointProperties(rideRequest);
 
 		String pickupPointId = rideRequestPointDAO.create(rideRequest.getPickupPoint());
 		String dropPointId = rideRequestPointDAO.create(rideRequest.getDropPoint());
@@ -196,7 +196,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		return id;
 	}
 
-	private void setRideRequestPoint(RideRequest rideRequest) {
+	private void setRideRequestPointProperties(RideRequest rideRequest) {
 		rideRequest.getPickupPoint().setDateTime(rideRequest.getPickupTime());		
 		rideRequest.getDropPoint().setDateTime(rideRequest.getPickupTime().plusSeconds(rideRequest.getTravelTime()));
 		rideRequest.getPickupPoint().setRideRequestId(rideRequest.getId());
@@ -555,6 +555,10 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		RideRequestSearchResult rideRequestSearchResult = searchRideRequests(rideId, lastSearchDistance, lastResultIndex);
 		//This will get ride pickup and drop points 
 		FeatureCollection featureCollection = RideSystemUtil.getRideMatchInfoGeoJSON(rideRequestSearchResult.getRideMatchInfos());
+		RideDO rideDO = new RideDO();
+		//This will get route along with start and end point which is common to all matching ride requests
+		List<Feature> rideGeoJsonFeatures = RideSystemUtil.getRideGeoJson(rideDO.getChild(rideId));
+		featureCollection.addAll(rideGeoJsonFeatures);
 		for (RideMatchInfo rideMatchInfo : rideRequestSearchResult.getRideMatchInfos()) {
 			//This will get ride request pickup and drop points 
 			List<Feature> rideRequestGeoJSONFeatures = RideSystemUtil.getRideRequestGeoJSON(rideMatchInfo.getRideRequestId());

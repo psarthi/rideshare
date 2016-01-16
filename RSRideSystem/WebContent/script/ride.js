@@ -9,7 +9,6 @@ var postData = { City: 'Bangalore', Age: 25 };
 var getAllRidesURL = "http://localhost:8080/RSRideSystem/api/ridesystem/rides/allpoints";
 var getAllRideRequestURL = "http://localhost:8080/RSRideSystem/api/ridesystem/riderequests/allpoints";
 var searchRidesURL = "http://localhost:8080/RSRideSystem/api/ridesystem/rides/search/{rideRequestId}";
-var getRideRouteURL = "http://localhost:8080/RSRideSystem/api/ridesystem/ride/route/{rideId}";
 var searchRideRequestsURL = "http://localhost:8080/RSRideSystem/api/riderequests/search/{rideId}/0/0";
 
 /*
@@ -110,17 +109,12 @@ $("#rideOffer").click(function(){
 		})
 
 		.done(function( response ) {
-			//This will set the value of ride-request-id which is used by getRide for Requesting ride points for that ride id
-			$("#ride-request-id").val(response[0]);
-			getRide(getRideRouteURL);
 			$("#alert-success").html("Request Successfull:<br/>Ride has been successfully created with id:"+JSON.stringify(response)).show();
 //			calculateAndDisplayRoute(directionsService, routeMarkers,
 //					stepDisplay, map, document.getElementById('start').value, document.getElementById('end').value);
 			addPermanentMarker(start, startIcon);
 			addPermanentMarker(end, endIcon);
 			deleteMarkers();
-			//Resetting the value to blank, so that its clean on front end
-			$("#ride-request-id").val("");
 		})
 
 		.fail(function( jqXHR, textStatus ) {
@@ -200,67 +194,25 @@ $("#rideRequest").click(function(){
 
 });
 
-function getAllRide(url){
-	$.ajax({
-		url: url,
-		type: 'GET',
-		dataType: 'json'
-	})
-
-	.done(function( response ) {
-		$("#alert-success").html("Request Successfull").show();
-		loadRideGeoJsonString(JSON.stringify(response));
-	})
-
-	.fail(function( jqXHR, textStatus ) {
-		$("#alert-danger").html("Request Failed:"+textStatus).show();
-	});
-}
-
-function getAllRideRequest(url){
-	$.ajax({
-		url: url,
-		type: 'GET',
-		dataType: 'json'
-	})
-
-	.done(function( response ) {
-		$("#alert-success").html("Request Successfull").show();
-		loadRideRequestGeoJsonString(JSON.stringify(response));
-	})
-
-	.fail(function( jqXHR, textStatus ) {
-		$("#alert-danger").html("Request Failed:"+textStatus).show();
-	});
-}
-
-function searchRide(url){
+function searchRide(){
 	var rideRequestId = $("#ride-request-id").val();
-	var url = url.replace("{rideRequestId}",rideRequestId);
-	$.ajax({
-		url: url,
-		type: 'GET',
-		dataType: 'json'
-	})
-
-	.done(function( response ) {
-		$("#alert-success").html("Request Successfull").show();
-		loadRideSearchGeoJsonString(JSON.stringify(response));
-	})
-
-	.fail(function( jqXHR, textStatus ) {
-		$("#alert-danger").html("Request Failed:"+textStatus).show();
-	});
+	var url = searchRidesURL.replace("{rideRequestId}",rideRequestId);
+	getGeoJson(url);
 }
 
-function searchRideRequest(url){
-	var rideRequestId = $("#ride-request-id").val();
+function searchRideRequest(){
+	var rideId = $("#ride-request-id").val();
 	var lastSearchDistance = 0;
 	var lastResultIndex = 0;
 	//Ideally lastSearchDistance and lastResultIndex should be replaced by actual value, for the time being its marked as 0 i.e. its first search
-	var url = url.replace("{rideId}",rideRequestId);
+	var url = searchRideRequestsURL.replace("{rideId}",rideId);
 	url = url.replace("{lastSearchDistance}",lastSearchDistance);
 	url = url.replace("{lastResultIndex}",lastResultIndex);
+	getGeoJson(url);
+	getRide(rideId);
+}
+
+function getGeoJson(url){
 	$.ajax({
 		url: url,
 		type: 'GET',
@@ -269,35 +221,7 @@ function searchRideRequest(url){
 
 	.done(function( response ) {
 		$("#alert-success").html("Request Successfull").show();
-		
-		//This will create all ride request points
-		loadRideRequestGeoJsonString(JSON.stringify(response));
-
-		//This will create all ride pickup/drop point & create circle around pickup/drop point
-		loadRideSearchGeoJsonString(JSON.stringify(response));
-		
-		getRide(getRideRouteURL);
-
-	})
-
-	.fail(function( jqXHR, textStatus ) {
-		$("#alert-danger").html("Request Failed:"+textStatus).show();
-	});
-}
-
-function getRide(url){
-	var rideId = $("#ride-request-id").val();
-	var url = url.replace("{rideId}",rideId);
-	$.ajax({
-		url: url,
-		type: 'GET',
-		dataType: 'json'
-	})
-
-	.done(function( response ) {
-		//Uncommented this line as its overwriting the ride id as its called from other function (ride offer)
-//		$("#alert-success").html("Request Successfull").show();
-		loadRideGeoJsonString(JSON.stringify(response));
+		loadGeoJSON(JSON.stringify(response));
 	})
 
 	.fail(function( jqXHR, textStatus ) {

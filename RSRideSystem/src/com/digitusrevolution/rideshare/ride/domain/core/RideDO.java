@@ -4,7 +4,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -20,14 +19,11 @@ import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
-import org.geojson.LineString;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
-import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
-import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
@@ -72,6 +68,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	@Override
 	public void fetchChild() {
 		ride = rideMapper.getDomainModelChild(ride, rideEntity);
+		setRoute(ride);
 	}
 
 	@Override
@@ -81,12 +78,20 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		for (RideEntity rideEntity : rideEntities) {
 			setRideEntity(rideEntity);
 			//Purposefully not getting routes as it would be too much data
-			getRidePickupAndDropPoints();
+			setRidePickupAndDropPoints(ride);
 			rides.add(ride);
 		}
 		return rides;
-
 	}
+	
+	public List<Ride> getAllWithRoute() {
+		List<Ride> rides = getAll();
+		for (Ride ride : rides) {
+			setRoute(ride);
+		}
+		return rides;
+	}
+
 
 	/*
 	 * This method should be only used internally by this class only. 
@@ -140,14 +145,14 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		}
 		setRideEntity(rideEntity);
 		//Purposefully not getting routes as it would be too much data
-		getRidePickupAndDropPoints();
+		setRidePickupAndDropPoints(ride);
 		return ride;
 	}
 
 	/*
 	 * This method doesn't return anything, but actually set the ride points in the ride object itself
 	 */
-	private void getRidePickupAndDropPoints(){
+	private void setRidePickupAndDropPoints(Ride ride){
 		RidePoint startPoint = ridePointDAO.getRidePointOfRide(ride.getStartPoint().get_id(),ride.getId());
 		RidePoint endPoint = ridePointDAO.getRidePointOfRide(ride.getEndPoint().get_id(), ride.getId());		
 		ride.setStartPoint(startPoint);
@@ -158,14 +163,13 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	public Ride getChild(int id) {
 		get(id);
 		fetchChild();
-		getRoute();
 		return ride;
 	}
 
 	/*
 	 * This method doesn't return anything, but actually set route in the ride object itself
 	 */
-	private void getRoute() {
+	private void setRoute(Ride ride) {
 		List<RidePoint> ridePoints = ridePointDAO.getAllRidePointsOfRide(ride.getId());
 		Route route = new Route();
 		route.setRidePoints(ridePoints);
@@ -405,7 +409,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	 */
 	public FeatureCollection getAllRidePoints(){
 		FeatureCollection featureCollection = new FeatureCollection();
-		List<Ride> rides = getAll();
+		List<Ride> rides = getAllWithRoute();
 		for (Ride ride : rides) {
 			List<Feature> features = getRidePoints(ride);
 			featureCollection.addAll(features);
@@ -414,35 +418,10 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	}
 
 	/*
-	 * Purpose - This will get all ride points for a particular ride Id
+	 * Purpose - This will get all ride points for a particular ride Id along with start and end point 
 	 */
 	private List<Feature> getRidePoints(Ride ride) {
-		List<Feature> features = new ArrayList<>();
-		List<RidePoint> ridePoints = ridePointDAO.getAllRidePointsOfRide(ride.getId());
-		List<Point> points = new ArrayList<>();
-		for (RidePoint ridePoint : ridePoints) {
-			points.add(ridePoint.getPoint());
-		}
-		LineString lineString = GeoJSONUtil.getLineStringFromPoints(points);
-		Map<String, Object> properties = new HashMap<>();
-		properties.put("type", "ride");
-		properties.put("RideId", ride.getId());
-		properties.put("StartDateTimeUTC", ride.getStartTime());
-		Feature feature = GeoJSONUtil.getFeatureFromGeometry(lineString, properties);
-		features.add(feature);
-		int size = ridePoints.size();
-		Point startPoint = ridePoints.iterator().next().getPoint();
-		Map<String, Object> startPointProperties = new HashMap<>();
-		startPointProperties.put("type", "startpoint");
-		org.geojson.Point geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(startPoint);
-		feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, startPointProperties);
-		features.add(feature);
-		Point endPoint = ridePoints.get(size-1).getPoint();
-		Map<String, Object> endPointProperties = new HashMap<>();
-		endPointProperties.put("type", "endpoint");
-		geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(endPoint);
-		feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, endPointProperties);
-		features.add(feature);
+		List<Feature> features = RideSystemUtil.getRideGeoJson(ride);
 		return features;
 	}
 
@@ -451,7 +430,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	 */
 	public FeatureCollection getRidePoints(int rideId){
 		FeatureCollection featureCollection = new FeatureCollection();
-		featureCollection.addAll(getRidePoints(get(rideId)));
+		featureCollection.addAll(getRidePoints(getChild(rideId)));
 		return featureCollection;
 	}
 
@@ -461,9 +440,17 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	 */
 	public FeatureCollection getMatchingRides(int rideRequestId){
 		List<RideMatchInfo> rideMatchInfos = searchRides(rideRequestId);
-		FeatureCollection featureCollection = RideSystemUtil.getRideMatchInfoGeoJSON(rideMatchInfos);		
+		//This will get ride related geoJson for each matching rides
+		FeatureCollection featureCollection = RideSystemUtil.getRideMatchInfoGeoJSON(rideMatchInfos);
+		//This will get ride request related geoJson (Note - Its common for all matching rides) 
 		List<Feature> rideRequestGeoJSONFeatures = RideSystemUtil.getRideRequestGeoJSON(rideRequestId);
 		featureCollection.addAll(rideRequestGeoJSONFeatures);
+		//This will get all route along with start and end point for all matching rides
+		for (RideMatchInfo rideMatchInfo : rideMatchInfos) {
+			Ride ride = getChild(rideMatchInfo.getRideId());
+			List<Feature> rideGeoJsonFeatures = RideSystemUtil.getRideGeoJson(ride);
+			featureCollection.addAll(rideGeoJsonFeatures);
+		}
 		return featureCollection;
 	}
 	

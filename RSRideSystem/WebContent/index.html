@@ -98,10 +98,10 @@ body, html {
 							<li><a href="javascript:showMarkers()">Show Markers</a></li>
 							<li><a href="javascript:deleteMarkers()">Delete Markers</a></li>
 							<li role="separator" class="divider"></li>
-							<li><a href="javascript:getAllRide(getAllRidesURL)">Show
+							<li><a href="javascript:getGeoJson(getAllRidesURL)">Show
 									all Rides</a></li>
 							<li><a
-								href="javascript:getAllRideRequest(getAllRideRequestURL)">Show
+								href="javascript:getGeoJson(getAllRideRequestURL)">Show
 									all Ride Requests</a></li>
 						</ul></li>
 				</ul>
@@ -111,9 +111,9 @@ body, html {
 							placeholder="Ride Request/Ride Id" id="ride-request-id">
 					</div>
 					<button type="button" class="btn btn-default" id="search-1"
-						onclick="searchRide(searchRidesURL)">Search Rides</button>
+						onclick="searchRide()">Search Rides</button>
 					<button type="button" class="btn btn-default" id="search-2"
-						onclick="searchRideRequest(searchRideRequestsURL)">Search Ride Request</button>
+						onclick="searchRideRequest()">Search Ride Request</button>
 
 				</form>
 				<button class="btn btn-primary navbar-btn" type="button"
