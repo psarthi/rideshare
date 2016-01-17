@@ -33,7 +33,7 @@ import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.ride.data.RideDAO;
 import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
-import com.digitusrevolution.rideshare.ride.domain.util.RideSystemUtil;
+import com.digitusrevolution.rideshare.ride.domain.core.comp.RideGeoJSON;
 import com.digitusrevolution.rideshare.ride.dto.RideMatchInfo;
 import com.digitusrevolution.rideshare.ride.dto.RidePointDTO;
 import com.digitusrevolution.rideshare.ride.dto.google.GoogleDirection;
@@ -403,59 +403,33 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return validRideIds;
 	}
 
-	/*
-	 * Purpose - This will get all ride points across the system, which is helpful to show the dashboard
-	 * 
-	 */
-	public FeatureCollection getAllRidePoints(){
-		FeatureCollection featureCollection = new FeatureCollection();
-		List<Ride> rides = getAllWithRoute();
-		for (Ride ride : rides) {
-			List<Feature> features = getRidePoints(ride);
-			featureCollection.addAll(features);
-		}	
-		return featureCollection;
-	}
-
-	/*
-	 * Purpose - This will get all ride points for a particular ride Id along with start and end point 
-	 */
-	private List<Feature> getRidePoints(Ride ride) {
-		List<Feature> features = RideSystemUtil.getRideGeoJson(ride);
-		return features;
-	}
-
-	/*
-	 * Purpose - This will get all ride points for a specific ride
-	 */
-	public FeatureCollection getRidePoints(int rideId){
-		FeatureCollection featureCollection = new FeatureCollection();
-		featureCollection.addAll(getRidePoints(getChild(rideId)));
-		return featureCollection;
-	}
-
-	/*
-	 * Purpose - This will get all the matching rides for specific ride request. 
-	 * This function internally calls search ride and convert the data into GeoJson format 
-	 */
-	public FeatureCollection getMatchingRides(int rideRequestId){
-		List<RideMatchInfo> rideMatchInfos = searchRides(rideRequestId);
-		//This will get ride related geoJson for each matching rides
-		FeatureCollection featureCollection = RideSystemUtil.getRideMatchInfoGeoJSON(rideMatchInfos);
-		//This will get ride request related geoJson (Note - Its common for all matching rides) 
-		List<Feature> rideRequestGeoJSONFeatures = RideSystemUtil.getRideRequestGeoJSON(rideRequestId);
-		featureCollection.addAll(rideRequestGeoJSONFeatures);
-		//This will get all route along with start and end point for all matching rides
-		for (RideMatchInfo rideMatchInfo : rideMatchInfos) {
-			Ride ride = getChild(rideMatchInfo.getRideId());
-			List<Feature> rideGeoJsonFeatures = RideSystemUtil.getRideGeoJson(ride);
-			featureCollection.addAll(rideGeoJsonFeatures);
-		}
-		return featureCollection;
-	}
-	
 	public List<RidePoint> getAllRidePointsOfRide(int rideId) {
 		return ridePointDAO.getAllRidePointsOfRide(rideId);
 	}
+	
+	public FeatureCollection getAllRidePoints(){
+		RideGeoJSON rideGeoJSON = new RideGeoJSON(this);
+		return rideGeoJSON.getAllRidePoints();
+	}
+	
+	public FeatureCollection getMatchingRides(int rideRequestId){
+		RideGeoJSON rideGeoJSON = new RideGeoJSON(this);
+		return rideGeoJSON.getMatchingRides(rideRequestId);
+	}
 
+	public FeatureCollection getRidePoints(int rideId){
+		RideGeoJSON rideGeoJSON = new RideGeoJSON(this);
+		return rideGeoJSON.getRidePoints(rideId);
+	}
+	
+	public List<Feature> getRideGeoJson(Ride ride) {
+		RideGeoJSON rideGeoJSON = new RideGeoJSON(this);
+		return rideGeoJSON.getRideGeoJson(ride);
+	}
+	
+	public FeatureCollection getRideMatchInfoGeoJSON(List<RideMatchInfo> rideMatchInfos) {
+		RideGeoJSON rideGeoJSON = new RideGeoJSON(this);
+		return rideGeoJSON.getRideMatchInfoGeoJSON(rideMatchInfos);
+		
+	}
 }

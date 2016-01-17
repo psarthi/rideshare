@@ -41,7 +41,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.ride.data.RideRequestDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
-import com.digitusrevolution.rideshare.ride.domain.util.RideSystemUtil;
+import com.digitusrevolution.rideshare.ride.domain.core.comp.RideRequestGeoJSON;
 import com.digitusrevolution.rideshare.ride.dto.RideMatchInfo;
 import com.digitusrevolution.rideshare.ride.dto.RideRequestSearchResult;
 
@@ -208,33 +208,11 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		rideRequest.getDropPoint().setTimeVariation(rideRequest.getPickupTimeVariation().plusSeconds(dropTimeBuffer));
 	}
 
-	public FeatureCollection getAllRideRequestPoints(){
-		FeatureCollection featureCollection = new FeatureCollection();
-
-		List<RideRequest> rideRequests = getAll();
-		for (RideRequest rideRequest : rideRequests) {
-			List<RideRequestPoint> requestPoints = getPointsOfRideRequest(rideRequest.getId());			
-			for (RideRequestPoint rideRequestPoint : requestPoints) {
-				List<Feature> features = RideSystemUtil.getRideRequestGeoJSON(rideRequestPoint.getRideRequestId());
-				featureCollection.addAll(features);
-			}
-		}	
-
-		return featureCollection;
-	}
 
 	public List<RideRequestPoint> getPointsOfRideRequest(int rideRequestId) {
 		return rideRequestPointDAO.getPointsOfRideRequest(rideRequestId);
 	}
 	
-	//This will return geoJSON of ride request points
-	public FeatureCollection getRideRequestPoints(int rideRequestId) {
-		FeatureCollection featureCollection = new FeatureCollection();
-		List<Feature> features = RideSystemUtil.getRideRequestGeoJSON(rideRequestId);
-		featureCollection.addAll(features);
-		return featureCollection;
-	}
-
 
 	/*
 	 * Purpose - Get all Matching ride requests for specific ride
@@ -556,31 +534,6 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		return rideRequestSearchResult;
 	}
 	
-	/*
-	 * Purpose - Get feature collection of all ride pickup and drop points, ride request pickup and drop points, multi polygon around route
-	 * 
-	 */
-	public FeatureCollection getMatchingRideRequests(int rideId,double lastSearchDistance, int lastResultIndex){
-		RideRequestSearchResult rideRequestSearchResult = searchRideRequests(rideId, lastSearchDistance, lastResultIndex);
-		//This will get ride pickup and drop points 
-		FeatureCollection featureCollection = RideSystemUtil.getRideMatchInfoGeoJSON(rideRequestSearchResult.getRideMatchInfos());
-		RideDO rideDO = new RideDO();
-		//This will get route along with start and end point which is common to all matching ride requests
-		List<Feature> rideGeoJsonFeatures = RideSystemUtil.getRideGeoJson(rideDO.getChild(rideId));
-		featureCollection.addAll(rideGeoJsonFeatures);
-		for (RideMatchInfo rideMatchInfo : rideRequestSearchResult.getRideMatchInfos()) {
-			//This will get ride request pickup and drop points 
-			List<Feature> rideRequestGeoJSONFeatures = RideSystemUtil.getRideRequestGeoJSON(rideMatchInfo.getRideRequestId());
-			featureCollection.addAll(rideRequestGeoJSONFeatures);
-		}
-		//This will get polygon around route
-		Feature featureMultiPolygon = new Feature();
-		featureMultiPolygon.setGeometry(rideRequestSearchResult.getMultiPolygon());
-		featureCollection.add(featureMultiPolygon);
-		JSONUtil<FeatureCollection> jsonUtilFeatureCollection = new JSONUtil<>(FeatureCollection.class);
-		logger.debug("Ride Request Search Result GeoJSON:"+jsonUtilFeatureCollection.getJson(featureCollection));
-		return featureCollection;
-	}
 
 
 	/*
@@ -670,6 +623,26 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		logger.trace("Geomtry:"+jsonUtilGeometryCollection.getJson(geometryCollection));
 		return multiPolygon;
 	}	
+	
+	public FeatureCollection getAllRideRequestPoints(){
+		RideRequestGeoJSON rideRequestGeoJSON = new RideRequestGeoJSON(this);
+		return rideRequestGeoJSON.getAllRideRequestPoints();
+	}
+	
+	public FeatureCollection getMatchingRideRequests(int rideId,double lastSearchDistance, int lastResultIndex){
+		RideRequestGeoJSON rideRequestGeoJSON = new RideRequestGeoJSON(this);
+		return rideRequestGeoJSON.getMatchingRideRequests(rideId, lastSearchDistance, lastResultIndex);
+	}
+	
+	public FeatureCollection getRideRequestPoints(int rideRequestId) {
+		RideRequestGeoJSON rideRequestGeoJSON = new RideRequestGeoJSON(this);
+		return rideRequestGeoJSON.getRideRequestPoints(rideRequestId);
+	}
+	
+	public List<Feature> getRideRequestGeoJSON(int rideRequestId) {
+		RideRequestGeoJSON rideRequestGeoJSON = new RideRequestGeoJSON(this);
+		return rideRequestGeoJSON.getRideRequestGeoJSON(rideRequestId);
+	}
 }
 
 
