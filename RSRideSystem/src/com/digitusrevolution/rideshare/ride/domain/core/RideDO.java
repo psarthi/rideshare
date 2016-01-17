@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +23,8 @@ import org.geojson.FeatureCollection;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
+import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
@@ -29,7 +32,9 @@ import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.ride.data.RideDAO;
 import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
@@ -63,6 +68,8 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	private void setRideEntity(RideEntity rideEntity) {
 		this.rideEntity = rideEntity;
 		ride = rideMapper.getDomainModel(rideEntity);
+		//Purposefully not getting routes as it would be too much data
+		setRidePickupAndDropPoints(ride);
 	}
 
 	@Override
@@ -77,8 +84,6 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		List<RideEntity> rideEntities = rideDAO.getAll();
 		for (RideEntity rideEntity : rideEntities) {
 			setRideEntity(rideEntity);
-			//Purposefully not getting routes as it would be too much data
-			setRidePickupAndDropPoints(ride);
 			rides.add(ride);
 		}
 		return rides;
@@ -144,8 +149,6 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 			throw new NotFoundException("No Data found with id: "+id);
 		}
 		setRideEntity(rideEntity);
-		//Purposefully not getting routes as it would be too much data
-		setRidePickupAndDropPoints(ride);
 		return ride;
 	}
 
@@ -302,10 +305,24 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		}
 	}
 
-
-	public List<Ride> getUpcomingRides(int userId){
-
-		return null;
+	/*
+	 * Purpose - This will get upcoming rides from current time in UTC. 
+	 * Result set is limited as configured, so that we don't get all the upcoming rides of the user 
+	 * 
+	 * TBD - Do we need to support pagination.
+	 */
+	public List<Ride> getUpcomingRides(int driverId){		
+		int limit = Integer.parseInt(PropertyReader.getInstance().getProperty("UPCOMING_RIDE_RESULT_LIMIT"));
+		User user = RESTClientUtil.getUser(driverId);
+		UserMapper userMapper = new UserMapper();
+		UserEntity userEntity = userMapper.getEntity(user);
+		List<RideEntity> rideEntities = rideDAO.getUpcomingRides(userEntity, limit);
+		List<Ride> rides = new LinkedList<>();
+		for (RideEntity rideEntity : rideEntities) {
+			setRideEntity(rideEntity);
+			rides.add(ride);
+		}
+		return rides;
 	}
 
 	/*
@@ -432,4 +449,47 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return rideGeoJSON.getRideMatchInfoGeoJSON(rideMatchInfos);
 		
 	}
+	
+	public void acceptRideRequest(int RideRequestId){
+		
+	}
+
+	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

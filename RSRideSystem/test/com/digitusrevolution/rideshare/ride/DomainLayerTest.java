@@ -67,18 +67,9 @@ public class DomainLayerTest {
 
 	public void test(){
 
-		RideRequestDO rideRequestDO = new RideRequestDO();
-		rideRequestDO.getMatchingRideRequests(218,0,0);
+		RideDO rideDO = new RideDO();
+		List<Ride> upcomingRides = rideDO.getUpcomingRides(1);
+		System.out.println(upcomingRides);
 		
-/*		RideDO rideDO = new RideDO();
-		List<Ride> rides = rideDO.getAll();
-		for (Ride ride : rides) {
-			LatLng from = new LatLng(ride.getStartPoint().getPoint().getLatitude(), ride.getStartPoint().getPoint().getLongitude());
-			LatLng to = new LatLng(ride.getEndPoint().getPoint().getLatitude(), ride.getEndPoint().getPoint().getLongitude());
-			int distance = (int) SphericalUtil.computeDistanceBetween(from, to);
-			ride.setTravelDistance(distance);
-			rideDO.update(ride);
-		}
-*/		
 	}
 }

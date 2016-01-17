@@ -117,7 +117,7 @@ public class RideRequestPointDAO{
 		logger.trace(pointJson);
 
 		Document geoNear = new Document("$geoNear",new Document("spherical",true)
-				.append("limit", PropertyReader.getInstance().getProperty("RIDE_REQUEST_SEARCH_RESULT_LIMIT"))
+				.append("limit", PropertyReader.getInstance().getProperty("RIDE_REQUEST_POINT_SEARCH_RESULT_LIMIT"))
 				.append("maxDistance", maxDistance)
 				.append("minDistance", minDistance)
 				.append("near", new Document(Document.parse(pointJson)))

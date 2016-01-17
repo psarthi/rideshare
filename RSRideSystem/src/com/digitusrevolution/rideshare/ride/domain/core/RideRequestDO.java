@@ -71,6 +71,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	private void setRideRequestEntity(RideRequestEntity rideRequestEntity) {
 		this.rideRequestEntity = rideRequestEntity;
 		rideRequest = rideRequestMapper.getDomainModel(rideRequestEntity);
+		setRideRequestPoint(rideRequest);
 	}
 
 	@Override
@@ -85,7 +86,6 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		List<RideRequestEntity> rideRequestEntities = rideRequestDAO.getAll();
 		for (RideRequestEntity rideRequestEntity : rideRequestEntities) {
 			setRideRequestEntity(rideRequestEntity);
-			setRideRequestPoint(rideRequest);
 			rideRequests.add(rideRequest);
 		}
 		return rideRequests;
@@ -143,7 +143,6 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			throw new NotFoundException("No Data found with id: "+id);
 		}
 		setRideRequestEntity(rideRequestEntity);
-		setRideRequestPoint(rideRequest);
 		return rideRequest;
 	}
 

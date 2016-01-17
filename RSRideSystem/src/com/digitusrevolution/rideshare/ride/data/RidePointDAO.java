@@ -178,7 +178,7 @@ public class RidePointDAO{
 		//This will get all the ride points based on max distance from ride request point 
 		//i.e circle with center as ride request point and radius as max distance 
 		Document geoNear = new Document("$geoNear",new Document("spherical",true)
-				.append("limit", PropertyReader.getInstance().getProperty("RIDE_SEARCH_RESULT_LIMIT"))
+				.append("limit", PropertyReader.getInstance().getProperty("RIDE_POINT_SEARCH_RESULT_LIMIT"))
 				.append("maxDistance", rideRequestPoint.getDistanceVariation())
 				.append("minDistance", minDistance)
 				.append("query", query)
