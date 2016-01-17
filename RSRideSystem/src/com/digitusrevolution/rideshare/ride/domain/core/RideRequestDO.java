@@ -643,6 +643,13 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		RideRequestGeoJSON rideRequestGeoJSON = new RideRequestGeoJSON(this);
 		return rideRequestGeoJSON.getRideRequestGeoJSON(rideRequestId);
 	}
+	
+	/*
+	 * Purpose - Get ride request status
+	 */
+	public String getStatus(int rideRequestId){
+		return rideRequestDAO.getStatus(rideRequestId);
+	}
 }
 
 

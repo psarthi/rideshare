@@ -37,6 +37,7 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		rideRequestEntity = getEntityWithOnlyPK(rideRequest);
 		rideRequestEntity.setPickupTime(rideRequest.getPickupTime());
 		rideRequestEntity.setPickupTimeVariation(rideRequest.getPickupTimeVariation());
+		rideRequestEntity.setSexPreference(rideRequest.getSexPreference());
 		rideRequestEntity.setSeatRequired(rideRequest.getSeatRequired());
 		rideRequestEntity.setLuggageCapacityRequired(rideRequest.getLuggageCapacityRequired());
 		rideRequestEntity.setPickupPointVariation(rideRequest.getPickupPointVariation());
@@ -45,6 +46,7 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		rideRequestEntity.setRidePreference(rideRequest.getRidePreference());
 		rideRequestEntity.setTravelTime(rideRequest.getTravelTime());
 		rideRequestEntity.setTravelDistance(rideRequest.getTravelDistance());
+
 		
 
 		//We need to just map Point ID in Hibernate as we are storing Point in MongoDB
@@ -74,6 +76,13 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		if (ride!=null) rideRequestEntity.setAcceptedRide(rideMapper.getEntityWithOnlyPK(ride));
 		
 		rideRequestEntity = getEntityChild(rideRequest, rideRequestEntity);
+		
+		/*
+		 * Pending -
+		 * 
+		 * - preferredRides
+		 * 
+		 */
 
 		return rideRequestEntity;
 		
@@ -103,6 +112,7 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		rideRequest = getDomainModelWithOnlyPK(rideRequestEntity);
 		rideRequest.setPickupTime(rideRequestEntity.getPickupTime());
 		rideRequest.setPickupTimeVariation(rideRequestEntity.getPickupTimeVariation());
+		rideRequest.setSexPreference(rideRequestEntity.getSexPreference());
 		rideRequest.setSeatRequired(rideRequestEntity.getSeatRequired());
 		rideRequest.setLuggageCapacityRequired(rideRequestEntity.getLuggageCapacityRequired());
 		rideRequest.setPickupPointVariation(rideRequestEntity.getPickupPointVariation());

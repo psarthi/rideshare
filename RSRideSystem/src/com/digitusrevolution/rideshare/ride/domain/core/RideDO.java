@@ -14,6 +14,7 @@ import java.util.Set;
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,6 +22,7 @@ import org.bson.types.ObjectId;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 
+import com.digitusrevolution.rideshare.common.exception.RideRequestUnavailableException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
@@ -301,7 +303,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 			} 
 		}
 		if (!driverStatus) {
-			throw new NotAuthorizedException("Can't offer ride unless you are a Driver");
+			throw new WebApplicationException("Can't offer ride as user is not a driver. User Id:" + ride.getDriver().getId());
 		} else {
 			return rideIds;
 		}
@@ -458,13 +460,90 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	public String getStatus(int rideId){
 		return rideDAO.getStatus(rideId);
 	}
-	
-	public void acceptRideRequest(int rideId, int RideRequestId){
+	/*
+	 * Purpose - Accept ride request
+	 * 
+	 * High level logic -
+	 * 
+	 * - Check status of ride to see if seats are still available
+	 * - Check status of ride request to see if its still looking for ride i.e. its unfulfilled
+	 * - Check whether seats required is available in the ride as it may be the case that in between partial seats may have been occupied
+	 * - If all condition is true, then set the ride as accepted ride in ride request
+	 * 		Note - By adding the riderequest in the getAcceptedRideRequests collection, it will not update the ride id in the ride request table 
+	 * 			   as ride is acceptedRideRequests relationship is owned by ride request entity and not ride (@OneToMany(mappedBy="acceptedRide"))
+	 * - Then, add the passenger in the passenger list of ride
+	 * - Else, throw Ride request unavailable exception
+	 * - Update the status of ride request to fulfilled
+	 * - Check if total seats occupied including current ride request is equal to seats offered
+	 * - If its equal, change the status of ride to fulfilled
+	 * 
+	 */
+	public void acceptRideRequest(int rideId, int rideRequestId){
 		
-		String status = getStatus(rideId);
-				
+		String rideStatus = getStatus(rideId);
+		String rideIntialStatus = PropertyReader.getInstance().getProperty("RIDE_INITIAL_STATUS");
+		String rideRequestInitialStatus = PropertyReader.getInstance().getProperty("RIDE_REQUEST_INITIAL_STATUS");
+		String rideRequestAcceptStatus = PropertyReader.getInstance().getProperty("RIDE_REQUEST_ACCEPT_STATUS");
+		String rideFulfilledStatus = PropertyReader.getInstance().getProperty("RIDE_FULFILLED_STATUS");
+		Ride ride = get(rideId);
+		RideRequestDO rideRequestDO = new RideRequestDO();
+		String rideRequestStatus = rideRequestDO.getStatus(rideRequestId);
+		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
+		//This will check if ride seats are available and ride request is unfulfilled
+		//Apart from that seats required should be less than or equal to seats offered. 
+		//Its important to re-check seats criteria as in between it may happen that number of seats which was initially free at the time of search,  
+		//partial seats may have been occupied.
+		//Reason for re-checking status criteria as from the time of search to responding to it, 
+		//there may be someone else who may have accepted the ride request already and status may have changed
+		if (rideStatus.equals(rideIntialStatus) && rideRequestStatus.equals(rideRequestInitialStatus) 
+												&& rideRequest.getSeatRequired() <= ride.getSeatOffered()){
+			
+			//Set accepted ride in ride request
+			//Note - By adding the riderequest in the getAcceptedRideRequests collection, it will not update the ride id in the ride request table
+			//as ride is acceptedRideRequests relationship is owned by ride request entity and not ride (@OneToMany(mappedBy="acceptedRide"))
+			rideRequest.setAcceptedRide(ride);
+			//Change ride request status to accept status
+			rideRequest.setStatus(rideRequestAcceptStatus);
+			//Adding passenger
+			ride.getPassengers().add(rideRequest.getPassenger());
+			
+			int totalSeatsOccupied = rideRequest.getSeatRequired();
+			//Since each ride request may have different seat requirement, so we need to calculate total of all required seats of accepted ride
+			//Note - Seats requirement and seat offered criteria should be met while searching for ride or ride requests
+			for (RideRequest acceptedRideRequest : ride.getAcceptedRideRequests()) {
+				totalSeatsOccupied = totalSeatsOccupied + acceptedRideRequest.getSeatRequired();
+			}
+			
+			//This will check if seats offered is equal to the accepted ride request including this ride request
+			//This will change the status to fulfilled
+			if (totalSeatsOccupied == ride.getSeatOffered()){
+				ride.setStatus(rideFulfilledStatus);
+			}
+			
+			//Update all the changes in DB for ride and ride request
+			update(ride);
+			//This is required to update accepted ride as well as status update on ride request table
+			rideRequestDO.update(rideRequest);
+		}
+		else{
+			throw new RideRequestUnavailableException("Ride Request is not available anymore with id:"+rideRequestId);
+		}			
 	}
-
+	
+	/*
+	 * Purpose - Add ride request in the rejected list of ride
+	 * 
+	 */
+	public void rejectRideRequest(int rideId, int rideRequestId){
+		
+		RideRequestDO rideRequestDO = new RideRequestDO();
+		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
+		Ride ride = get(rideId);
+		ride.getRejectedRideRequests().add(rideRequest);
+		
+		//This will update the ride details in DB
+		update(ride);
+	}
 	
 }
 

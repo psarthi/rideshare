@@ -9,8 +9,10 @@ import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.VehicleMapper;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
+import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
@@ -30,14 +32,15 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		RideEntity rideEntity = new RideEntity();
 		rideEntity = getEntityWithOnlyPK(ride);
 		rideEntity.setStartTime(ride.getStartTime());
+		//We need to just map Point ID in Hibernate as we are storing Point in MongoDB
+		rideEntity.setStartPointId(ride.getStartPoint().get_id());
+		rideEntity.setEndPointId(ride.getEndPoint().get_id());
+
 		rideEntity.setSeatOffered(ride.getSeatOffered());
 		rideEntity.setLuggageCapacityOffered(ride.getLuggageCapacityOffered());
 		rideEntity.setRecur(ride.getRecur());
 		rideEntity.setStatus(ride.getStatus());
 		rideEntity.setSexPreference(ride.getSexPreference());
-		//We need to just map Point ID in Hibernate as we are storing Point in MongoDB
-		rideEntity.setStartPointId(ride.getStartPoint().get_id());
-		rideEntity.setEndPointId(ride.getEndPoint().get_id());
 		rideEntity.setTravelDistance(ride.getTravelDistance());
 		
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
@@ -52,6 +55,26 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		User user = ride.getDriver();
 		rideEntity.setDriver(userMapper.getEntityWithOnlyPK(user));
 		
+		Collection<User> users = ride.getPassengers();
+		rideEntity.setPassengers(userMapper.getEntitiesWithOnlyPK(users));
+		
+		Collection<RideRequest> acceptedRideRequests = ride.getAcceptedRideRequests();
+		RideRequestMapper rideRequestMapper = new RideRequestMapper();
+		Collection<RideRequestEntity> acceptedRideRequestEntities = rideRequestMapper.getEntities(acceptedRideRequests);
+		rideEntity.setAcceptedRideRequests(acceptedRideRequestEntities);
+		
+		Collection<RideRequest> rejectedRideRequests = ride.getRejectedRideRequests();
+		Collection<RideRequestEntity> rejectedRideRequestEntities = rideRequestMapper.getEntities(rejectedRideRequests);
+		rideEntity.setRejectedRideRequests(rejectedRideRequestEntities);
+		
+		/*
+		 * Pending -
+		 * 
+		 * - RecurringDetail
+		 * - bills
+		 * 
+		 */
+		
 		rideEntity = getEntityChild(ride, rideEntity);
 		
 		return rideEntity;
@@ -59,11 +82,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 
 	@Override
 	public RideEntity getEntityChild(Ride ride, RideEntity rideEntity) {
-		
-		UserMapper userMapper = new UserMapper();
-		Collection<User> users = ride.getPassengers();
-		rideEntity.setPassengers(userMapper.getEntitiesWithOnlyPK(users));
-		
+				
 		return rideEntity;
 	}
 
@@ -79,6 +98,10 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		Ride ride = new Ride();
 		ride = getDomainModelWithOnlyPK(rideEntity);
 		ride.setStartTime(rideEntity.getStartTime());
+		//We need to just map Point ID from Hibernate as we are storing Point in MongoDB
+		ride.getStartPoint().set_id(rideEntity.getStartPointId());
+		ride.getEndPoint().set_id(rideEntity.getEndPointId());
+
 		ride.setSeatOffered(rideEntity.getSeatOffered());
 		ride.setLuggageCapacityOffered(rideEntity.getLuggageCapacityOffered());
 		ride.setRecur(rideEntity.getRecur());
@@ -86,9 +109,6 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		ride.setSexPreference(rideEntity.getSexPreference());
 		ride.setTravelDistance(rideEntity.getTravelDistance());
 		
-		//We need to just map Point ID from Hibernate as we are storing Point in MongoDB
-		ride.getStartPoint().set_id(rideEntity.getStartPointId());
-		ride.getEndPoint().set_id(rideEntity.getEndPointId());
 		
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
 		TrustNetworkEntity trustNetworkEntity = rideEntity.getTrustNetwork();
@@ -104,17 +124,25 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		UserEntity userEntity = rideEntity.getDriver();
 		ride.setDriver(userMapper.getDomainModelWithOnlyPK(userEntity));
 		
+		Collection<UserEntity> userEntities = rideEntity.getPassengers();
+		ride.setPassengers(userMapper.getDomainModelsWithOnlyPK(userEntities));
+		
+		Collection<RideRequestEntity> acceptedRideRequestEntities = rideEntity.getAcceptedRideRequests();
+		RideRequestMapper rideRequestMapper = new RideRequestMapper();
+		Collection<RideRequest> acceptedRideRequests = rideRequestMapper.getDomainModels(acceptedRideRequestEntities);
+		ride.setAcceptedRideRequests(acceptedRideRequests);
+		
+		Collection<RideRequestEntity> rejectedRideRequestEntities = rideEntity.getRejectedRideRequests();
+		Collection<RideRequest> rejectedRideRequests = rideRequestMapper.getDomainModels(rejectedRideRequestEntities);
+		ride.setRejectedRideRequests(rejectedRideRequests);
+			
 		return ride;
 	}
 
 
 	@Override
 	public Ride getDomainModelChild(Ride ride, RideEntity rideEntity) {
-		
-		UserMapper userMapper = new UserMapper();
-		Collection<UserEntity> userEntities = rideEntity.getPassengers();
-		ride.setPassengers(userMapper.getDomainModelsWithOnlyPK(userEntities));
-		
+				
 		return ride;
 	}
 

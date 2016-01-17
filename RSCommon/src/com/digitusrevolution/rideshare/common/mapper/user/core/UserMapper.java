@@ -47,6 +47,18 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		
 		userEntity = getEntityChild(user, userEntity);
 		
+		/*
+		 * Pending -
+		 * 
+		 * - photo
+		 * - groups
+		 * - friends
+		 * - accounts
+		 * - profileRating
+		 * - bills
+		 *  
+		 */
+		
 		return userEntity;				
 	}
 	

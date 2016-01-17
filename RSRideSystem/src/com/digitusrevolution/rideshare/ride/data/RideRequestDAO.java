@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
@@ -38,6 +39,17 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 		return rideRequestEntitiesSet;		
 	}
 
+	/*
+	 * Purpose - Get the status of ride request, this is required many times, so instead of using get and then fetching the status
+	 * 			 this function would directly return the status
+	 */
+	public String getStatus(int rideRequestId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass);
+		String status = (String) criteria.add(Restrictions.eq("id",rideRequestId))
+				.setProjection(Projections.property("status")).uniqueResult();
+		return status;
+	}
 
 
 }

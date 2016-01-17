@@ -72,15 +72,20 @@ public class DomainLayerTest {
 	public void test(){
 		
 		RideDO rideDO = new RideDO();
-//		List<Ride> upcomingRides = rideDO.getUpcomingRides(1);
-//		System.out.println(upcomingRides);
-//		rideDO.acceptRideRequest(190, 12);
+		//rideDO.acceptRideRequest(163, 55);
+		rideDO.rejectRideRequest(163, 56);
 		
 //		List<Ride> rides = rideDO.getAll();
-//		String status = PropertyReader.getInstance().getProperty("RIDE_INITIAL_STATUS");
 //		for (Ride ride : rides) {
-//			ride.setStatus(status);
+//			ride.setSeatOffered(2);
 //			rideDO.update(ride);
+//		}
+//		
+//		RideRequestDO rideRequestDO = new RideRequestDO();
+//		List<RideRequest> rideRequests = rideRequestDO.getAll();
+//		for (RideRequest rideRequest : rideRequests) {
+//			rideRequest.setSeatRequired(1);
+//			rideRequestDO.update(rideRequest);
 //		}
 	}
 }
