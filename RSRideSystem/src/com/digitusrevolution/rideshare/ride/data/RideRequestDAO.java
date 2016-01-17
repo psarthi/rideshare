@@ -10,6 +10,7 @@ import org.hibernate.criterion.Restrictions;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 
 public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
@@ -29,9 +30,10 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
+		String initialStatus = PropertyReader.getInstance().getProperty("RIDE_REQUEST_INITIAL_STATUS");
 		@SuppressWarnings("unchecked")
 		List<RideRequestEntity> rideRequestEntities = criteria.add(Restrictions.in("id", rideRequestIds))
-				.add(Restrictions.eq("status", "unfulfilled")).list();
+				.add(Restrictions.eq("status", initialStatus)).list();
 		Set<RideRequestEntity> rideRequestEntitiesSet = new HashSet<>(rideRequestEntities);
 		return rideRequestEntitiesSet;		
 	}

@@ -21,12 +21,16 @@ import com.digitusrevolution.rideshare.common.math.google.PolyUtil;
 import com.digitusrevolution.rideshare.common.math.google.SphericalUtil;
 import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.external.RouteBoxer;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
+import com.digitusrevolution.rideshare.ride.domain.TrustCategoryDO;
+import com.digitusrevolution.rideshare.ride.domain.TrustNetworkDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
 import com.digitusrevolution.rideshare.ride.domain.resource.RideRequestDomainResource;
@@ -66,10 +70,50 @@ public class DomainLayerTest {
 	}
 
 	public void test(){
-
-		RideDO rideDO = new RideDO();
-		List<Ride> upcomingRides = rideDO.getUpcomingRides(1);
-		System.out.println(upcomingRides);
 		
+		RideDO rideDO = new RideDO();
+//		List<Ride> upcomingRides = rideDO.getUpcomingRides(1);
+//		System.out.println(upcomingRides);
+//		rideDO.acceptRideRequest(190, 12);
+		
+//		List<Ride> rides = rideDO.getAll();
+//		String status = PropertyReader.getInstance().getProperty("RIDE_INITIAL_STATUS");
+//		for (Ride ride : rides) {
+//			ride.setStatus(status);
+//			rideDO.update(ride);
+//		}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

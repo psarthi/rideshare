@@ -210,10 +210,12 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		boolean driverStatus = false;
 		//This will get travel distance from the first route and first leg
 		int travelDistance = direction.getRoutes().get(0).getLegs().get(0).getDistance().getValue();
+		String driverRole = PropertyReader.getInstance().getProperty("DRIVER_ROLE");
 		for (Role role : roles) {
-			if (role.getName().equals("Driver")){
+			if (role.getName().equals(driverRole)){
 				driverStatus = true;
-				ride.setStatus("planned");
+				String initialStatus = PropertyReader.getInstance().getProperty("RIDE_INITIAL_STATUS");
+				ride.setStatus(initialStatus);
 				ride.setTravelDistance(travelDistance);
 				ZonedDateTime startTimeUTC = ride.getStartTime().withZoneSameInstant(ZoneOffset.UTC);
 				ride.setStartTime(startTimeUTC);				
@@ -450,8 +452,17 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		
 	}
 	
-	public void acceptRideRequest(int RideRequestId){
+	/*
+	 * Purpose - Get the status of ride
+	 */
+	public String getStatus(int rideId){
+		return rideDAO.getStatus(rideId);
+	}
+	
+	public void acceptRideRequest(int rideId, int RideRequestId){
 		
+		String status = getStatus(rideId);
+				
 	}
 
 	

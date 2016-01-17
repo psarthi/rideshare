@@ -11,6 +11,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
@@ -139,9 +140,11 @@ public class UserDataLoader {
 		logger.entry();		
 		RoleDO roleDO = new RoleDO();
 		Role role = new Role();
-		role.setName("Passenger");
+		String driverRole = PropertyReader.getInstance().getProperty("DRIVER_ROLE");
+		String passengerRole = PropertyReader.getInstance().getProperty("PASSENGER_ROLE");
+		role.setName(passengerRole);
 		roleDO.create(role);
-		role.setName("Driver");
+		role.setName(driverRole);
 		roleDO.create(role);		
 	
 	}
@@ -154,7 +157,8 @@ public class UserDataLoader {
 		User user = new User();
 		City city = new City();
 		Role role = new Role();
-		role = roleDO.get("Passenger");
+		String passengerRole = PropertyReader.getInstance().getProperty("PASSENGER_ROLE");
+		role = roleDO.get(passengerRole);
 		user.getRoles().add(role);
 
 	
@@ -180,7 +184,8 @@ public class UserDataLoader {
 	public void loadVehicleCategory(){
 		logger.entry();
 		VehicleCategory vehicleCategory = new VehicleCategory();
-		vehicleCategory.setName("Car");
+		String carCategory = PropertyReader.getInstance().getProperty("CAR_CATEGORY");
+		vehicleCategory.setName(carCategory);
 		
 		VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();
 		vehicleCategoryDO.create(vehicleCategory);
@@ -189,7 +194,8 @@ public class UserDataLoader {
 	public void loadVehicleSubCategory(){
 		logger.entry();
 		VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
-		vehicleSubCategory.setName("Sedan");
+		String carSubCategorySedan = PropertyReader.getInstance().getProperty("CAR_SUB_CATEGORY_SEDAN");
+		vehicleSubCategory.setName(carSubCategorySedan);
 		vehicleSubCategory.setAirConditioner(true);
 		
 		VehicleSubCategoryDO vehicleSubCategoryDO = new VehicleSubCategoryDO();

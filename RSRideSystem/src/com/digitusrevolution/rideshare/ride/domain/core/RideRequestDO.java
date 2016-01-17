@@ -178,7 +178,8 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		ZonedDateTime pickupTimeUTC = rideRequest.getPickupTime().withZoneSameInstant(ZoneOffset.UTC);
 		//Storing dateTime in UTC
 		rideRequest.setPickupTime(pickupTimeUTC);
-		rideRequest.setStatus("unfulfilled");
+		String initialStatus = PropertyReader.getInstance().getProperty("RIDE_REQUEST_INITIAL_STATUS");
+		rideRequest.setStatus(initialStatus);
 		int id = create(rideRequest);
 		rideRequest.setId(id);
 
