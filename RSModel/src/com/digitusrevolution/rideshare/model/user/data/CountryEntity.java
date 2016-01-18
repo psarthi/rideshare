@@ -1,7 +1,7 @@
 package com.digitusrevolution.rideshare.model.user.data;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
@@ -21,11 +21,11 @@ public class CountryEntity {
 	private String name;
 	@OneToMany
 	@JoinTable(name="country_state",joinColumns=@JoinColumn(name="country_name"))
-	private Collection<StateEntity> states = new ArrayList<StateEntity>();
+	private Collection<StateEntity> states = new HashSet<StateEntity>();
 	@Embedded
 	@ElementCollection
 	@JoinTable(name="country_fuel",joinColumns=@JoinColumn(name="country_name"))
-	private Collection<FuelEntity> fuels = new ArrayList<FuelEntity>();
+	private Collection<FuelEntity> fuels = new HashSet<FuelEntity>();
 	@ManyToOne
 	private CurrencyEntity currency;
 	

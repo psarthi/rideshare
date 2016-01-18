@@ -1,7 +1,7 @@
 package com.digitusrevolution.rideshare.model.user.data;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,7 +22,7 @@ public class StateEntity {
 	private String name;
 	@OneToMany
 	@JoinTable(name="state_city",joinColumns=@JoinColumn(name="state_id"))
-	private Collection<CityEntity> cities = new ArrayList<CityEntity>();
+	private Collection<CityEntity> cities = new HashSet<CityEntity>();
 	
 	public int getId() {
 		return id;

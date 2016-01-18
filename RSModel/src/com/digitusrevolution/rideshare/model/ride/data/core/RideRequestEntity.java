@@ -2,8 +2,8 @@ package com.digitusrevolution.rideshare.model.ride.data.core;
 
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -54,7 +54,7 @@ public class RideRequestEntity {
 	private boolean ridePreference;
 	@ManyToMany
 	@JoinTable(name="rideRequest_preferred_ride",joinColumns=@JoinColumn(name="ride_request_id"))
-	private Collection<RideEntity> preferredRides = new ArrayList<RideEntity>();
+	private Collection<RideEntity> preferredRides = new HashSet<RideEntity>();
 	@ManyToOne
 	private RideEntity acceptedRide;
 	//We need to store just ridePointId in Hibernate as ridepoint is getting stored in MonogoDB

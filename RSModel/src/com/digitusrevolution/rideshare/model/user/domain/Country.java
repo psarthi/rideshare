@@ -1,13 +1,13 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 public class Country {
 
 	private String name;
-	private Collection<State> states = new ArrayList<State>();
-	private Collection<Fuel> fuels = new ArrayList<Fuel>();
+	private Collection<State> states = new HashSet<State>();
+	private Collection<Fuel> fuels = new HashSet<Fuel>();
 	private Currency currency;
 	
 	public String getName() {

@@ -1,7 +1,7 @@
 package com.digitusrevolution.rideshare.model.serviceprovider.data.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,7 +27,7 @@ public class CompanyEntity {
 	 */
 	@OneToMany
 	@JoinTable(name="company_account",joinColumns=@JoinColumn(name="company_id"))
-	private Collection<AccountEntity> accounts = new ArrayList<AccountEntity>();
+	private Collection<AccountEntity> accounts = new HashSet<AccountEntity>();
 	
 	public int getId() {
 		return id;

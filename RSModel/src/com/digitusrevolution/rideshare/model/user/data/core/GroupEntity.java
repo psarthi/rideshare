@@ -1,7 +1,7 @@
 package com.digitusrevolution.rideshare.model.user.data.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -25,7 +25,7 @@ public class GroupEntity {
 	private PhotoEntity photo;
 	@ManyToMany
 	@JoinTable(name="group_user")
-	private Collection<UserEntity> users = new ArrayList<UserEntity>();
+	private Collection<UserEntity> users = new HashSet<UserEntity>();
 
 	public int getId() {
 		return id;

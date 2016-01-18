@@ -1,7 +1,7 @@
 package com.digitusrevolution.rideshare.model.ride.domain;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
@@ -9,9 +9,9 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 public class TrustNetwork {
 	
 	private int id;
-	private Collection<TrustCategory> trustCategories = new ArrayList<TrustCategory>();
-	private Collection<User> friends = new ArrayList<User>();
-	private Collection<Group> groups = new ArrayList<Group>();
+	private Collection<TrustCategory> trustCategories = new HashSet<TrustCategory>();
+	private Collection<User> friends = new HashSet<User>();
+	private Collection<Group> groups = new HashSet<Group>();
 	
 	public int getId() {
 		return id;

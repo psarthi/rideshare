@@ -1,7 +1,7 @@
 package com.digitusrevolution.rideshare.model.ride.data;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,13 +22,13 @@ public class TrustNetworkEntity {
 	private int id;
 	@ManyToMany
 	@JoinTable(name="trust_network_category",joinColumns=@JoinColumn(name="trust_network_id"))
-	private Collection<TrustCategoryEntity> trustCategories = new ArrayList<TrustCategoryEntity>();
+	private Collection<TrustCategoryEntity> trustCategories = new HashSet<TrustCategoryEntity>();
 	@ManyToMany
 	@JoinTable(name="trust_network_friend",joinColumns=@JoinColumn(name="trust_network_id"))
-	private Collection<UserEntity> friends = new ArrayList<UserEntity>();
+	private Collection<UserEntity> friends = new HashSet<UserEntity>();
 	@ManyToMany
 	@JoinTable(name="trust_network_group",joinColumns=@JoinColumn(name="trust_network_id"))
-	private Collection<GroupEntity> groups = new ArrayList<GroupEntity>();
+	private Collection<GroupEntity> groups = new HashSet<GroupEntity>();
 	
 	public int getId() {
 		return id;

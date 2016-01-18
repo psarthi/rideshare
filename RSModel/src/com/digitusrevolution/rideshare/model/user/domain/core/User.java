@@ -1,7 +1,7 @@
 package com.digitusrevolution.rideshare.model.user.domain.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
@@ -22,18 +22,18 @@ public class User {
 	private String password;
 	private City city;
 	private Photo photo;
-	private Collection<Group> groups = new ArrayList<Group>();
-	private Collection<Vehicle> vehicles = new ArrayList<Vehicle>();
-	private Collection<User> friends = new ArrayList<User>();
-	private Collection<Role> roles = new ArrayList<Role>();
-	private Collection<Account> accounts = new ArrayList<Account>();
+	private Collection<Group> groups = new HashSet<Group>();
+	private Collection<Vehicle> vehicles = new HashSet<Vehicle>();
+	private Collection<User> friends = new HashSet<User>();
+	private Collection<Role> roles = new HashSet<Role>();
+	private Collection<Account> accounts = new HashSet<Account>();
 	private int profileRating;
 
-	private Collection<Ride> ridesOffered = new ArrayList<Ride>();
+	private Collection<Ride> ridesOffered = new HashSet<Ride>();
 	
-	private Collection<Ride> ridesTaken = new ArrayList<Ride>();
-	private Collection<RideRequest> rideRequests = new ArrayList<RideRequest>();
-	private Collection<Bill> bills = new ArrayList<Bill>();
+	private Collection<Ride> ridesTaken = new HashSet<Ride>();
+	private Collection<RideRequest> rideRequests = new HashSet<RideRequest>();
+	private Collection<Bill> bills = new HashSet<Bill>();
 	
 	public int getId() {
 		return id;

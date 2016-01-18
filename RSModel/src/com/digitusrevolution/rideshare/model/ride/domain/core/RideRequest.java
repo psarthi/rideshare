@@ -2,8 +2,8 @@ package com.digitusrevolution.rideshare.model.ride.domain.core;
 
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
@@ -31,7 +31,7 @@ public class RideRequest {
 	private String status;
 	private User passenger;
 	private boolean ridePreference;
-	private Collection<Ride> preferredRides = new ArrayList<Ride>();
+	private Collection<Ride> preferredRides = new HashSet<Ride>();
 	private Ride acceptedRide;
 	private RidePoint ridePickupPoint = new RidePoint();
 	private RidePoint rideDropPoint = new RidePoint();

@@ -94,7 +94,7 @@ public class UserDataLoader {
 //			dataLoader.loadVehicleSubCategory();
 			//End			
 			
-			dataLoader.loadUser();
+//			dataLoader.loadUser();
 			dataLoader.loadVehicle();			
 			
 			transation.commit();
@@ -222,7 +222,7 @@ public class UserDataLoader {
 		vehicle.setVehicleCategory(vehicleCategory);
 		vehicle.setVehicleSubCategory(vehicleSubCategory);
 		
-		for (int i=1;i<2;i++){
+		for (int i=2;i<3;i++){
 			UserDO userDO = new UserDO();
 			User user = userDO.getChild(i);
 			userDO.setUser(user);			

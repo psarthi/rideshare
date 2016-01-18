@@ -1,13 +1,13 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 public class VehicleCategory {
 
 	private int id;
 	private String name;
-	private Collection<VehicleSubCategory> subCategories = new ArrayList<VehicleSubCategory>();
+	private Collection<VehicleSubCategory> subCategories = new HashSet<VehicleSubCategory>();
 
 	public int getId() {
 		return id;

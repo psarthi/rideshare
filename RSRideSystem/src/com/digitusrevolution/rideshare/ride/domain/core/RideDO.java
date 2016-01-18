@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.management.openmbean.InvalidKeyException;
-import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 
@@ -507,6 +506,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 			//Adding passenger
 			ride.getPassengers().add(rideRequest.getPassenger());
 			
+			//This should include the current required seat as we need to calculate total seats including this ride request 
 			int totalSeatsOccupied = rideRequest.getSeatRequired();
 			//Since each ride request may have different seat requirement, so we need to calculate total of all required seats of accepted ride
 			//Note - Seats requirement and seat offered criteria should be met while searching for ride or ride requests

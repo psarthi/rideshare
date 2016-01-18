@@ -1,8 +1,8 @@
 package com.digitusrevolution.rideshare.model.ride.data.core;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -53,14 +53,14 @@ public class RideEntity {
 	private UserEntity driver;
 	@ManyToMany
 	@JoinTable(name="ride_passenger", joinColumns=@JoinColumn(name="ride_id"))
-	private Collection<UserEntity> passengers = new ArrayList<UserEntity>();
+	private Collection<UserEntity> passengers = new HashSet<UserEntity>();
 	@OneToMany(mappedBy="ride")
-	private Collection<BillEntity> bills = new ArrayList<BillEntity>();
+	private Collection<BillEntity> bills = new HashSet<BillEntity>();
 	@OneToMany(mappedBy="acceptedRide")
-	private Collection<RideRequestEntity> acceptedRideRequests = new ArrayList<RideRequestEntity>();
+	private Collection<RideRequestEntity> acceptedRideRequests = new HashSet<RideRequestEntity>();
 	@ManyToMany
 	@JoinTable(name="ride_rideRequest",joinColumns=@JoinColumn(name="ride_id"))
-	private Collection<RideRequestEntity> rejectedRideRequests = new ArrayList<RideRequestEntity>();
+	private Collection<RideRequestEntity> rejectedRideRequests = new HashSet<RideRequestEntity>();
 	private int travelDistance;
 	
 	public int getId() {

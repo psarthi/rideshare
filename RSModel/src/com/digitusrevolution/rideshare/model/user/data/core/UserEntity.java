@@ -1,7 +1,7 @@
 package com.digitusrevolution.rideshare.model.user.data.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -48,30 +48,30 @@ public class UserEntity {
 	@OneToOne(cascade=CascadeType.ALL)
 	private PhotoEntity photo;
 	@ManyToMany(mappedBy="users")
-	private Collection<GroupEntity> groups = new ArrayList<GroupEntity>();
+	private Collection<GroupEntity> groups = new HashSet<GroupEntity>();
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="user_id")
-	private Collection<VehicleEntity> vehicles = new ArrayList<VehicleEntity>();
+	private Collection<VehicleEntity> vehicles = new HashSet<VehicleEntity>();
 	@ManyToMany
 	@JoinTable(name="user_friend",joinColumns=@JoinColumn(name="user_id"))
-	private Collection<UserEntity> friends = new ArrayList<UserEntity>();
+	private Collection<UserEntity> friends = new HashSet<UserEntity>();
 	@ManyToMany
 	@JoinTable(name="user_role",joinColumns=@JoinColumn(name="user_id"))
-	private Collection<RoleEntity> roles = new ArrayList<RoleEntity>();
+	private Collection<RoleEntity> roles = new HashSet<RoleEntity>();
 	@OneToMany
 	@JoinTable(name="user_account",joinColumns=@JoinColumn(name="user_id"))
-	private Collection<AccountEntity> accounts = new ArrayList<AccountEntity>();
+	private Collection<AccountEntity> accounts = new HashSet<AccountEntity>();
 	private int profileRating;
 	
 	@OneToMany(mappedBy="driver")
-	private Collection<RideEntity> ridesOffered = new ArrayList<RideEntity>();
+	private Collection<RideEntity> ridesOffered = new HashSet<RideEntity>();
 	
 	@ManyToMany(mappedBy="passengers")
-	private Collection<RideEntity> ridesTaken = new ArrayList<RideEntity>();
+	private Collection<RideEntity> ridesTaken = new HashSet<RideEntity>();
 	@OneToMany(mappedBy="passenger")
-	private Collection<RideRequestEntity> rideRequests = new ArrayList<RideRequestEntity>();
+	private Collection<RideRequestEntity> rideRequests = new HashSet<RideRequestEntity>();
 	@OneToMany(mappedBy="passenger")
-	private Collection<BillEntity> bills = new ArrayList<BillEntity>();
+	private Collection<BillEntity> bills = new HashSet<BillEntity>();
 
 	public int getId() {
 		return id;

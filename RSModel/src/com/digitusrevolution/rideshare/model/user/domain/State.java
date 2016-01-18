@@ -1,13 +1,13 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 public class State {
 
 	private int id;
 	private String name;
-	private Collection<City> cities = new ArrayList<City>();
+	private Collection<City> cities = new HashSet<City>();
 	
 	public int getId() {
 		return id;

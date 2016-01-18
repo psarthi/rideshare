@@ -1,7 +1,7 @@
 package com.digitusrevolution.rideshare.model.user.domain.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
 
@@ -10,7 +10,7 @@ public class Group {
 	private int id;
 	private String name;
 	private Photo photo;
-	private Collection<User> users = new ArrayList<User>();
+	private Collection<User> users = new HashSet<User>();
 
 	public int getId() {
 		return id;

@@ -1,8 +1,8 @@
 package com.digitusrevolution.rideshare.model.ride.domain.core;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
@@ -30,10 +30,10 @@ public class Ride {
 	private String status;
 	private Vehicle vehicle;
 	private User driver;
-	private Collection<User> passengers = new ArrayList<User>();
-	private Collection<Bill> bills = new ArrayList<Bill>();
-	private Collection<RideRequest> acceptedRideRequests = new ArrayList<RideRequest>();
-	private Collection<RideRequest> rejectedRideRequests = new ArrayList<RideRequest>();
+	private Collection<User> passengers = new HashSet<User>();
+	private Collection<Bill> bills = new HashSet<Bill>();
+	private Collection<RideRequest> acceptedRideRequests = new HashSet<RideRequest>();
+	private Collection<RideRequest> rejectedRideRequests = new HashSet<RideRequest>();
 	private int travelDistance;
 	
 	public int getId() {

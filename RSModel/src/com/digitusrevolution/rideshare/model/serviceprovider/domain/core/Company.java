@@ -1,7 +1,7 @@
 package com.digitusrevolution.rideshare.model.serviceprovider.domain.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import com.digitusrevolution.rideshare.model.user.domain.core.Account;
 
@@ -9,7 +9,7 @@ public class Company {
 	
 	private int id;
 	private String name;
-	private Collection<Account> accounts = new ArrayList<Account>();
+	private Collection<Account> accounts = new HashSet<Account>();
 	
 	public int getId() {
 		return id;
