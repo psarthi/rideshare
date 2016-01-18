@@ -539,6 +539,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
 		Ride ride = get(rideId);
+		
 		ride.getRejectedRideRequests().add(rideRequest);
 		
 		//This will update the ride details in DB

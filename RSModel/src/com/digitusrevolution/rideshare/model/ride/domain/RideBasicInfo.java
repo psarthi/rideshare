@@ -23,18 +23,30 @@ public class RideBasicInfo {
 		return "[rideId,datetime]:"+id+","+dateTime;
 	}
 	
-	//In case id is changed to long, then use Long.hashcode()
 	@Override
 	public int hashCode() {
-		return id;
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
 	}
-	
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof RideBasicInfo){
-			RideBasicInfo rideBasicInfo = (RideBasicInfo) obj;
-			return (this.id == rideBasicInfo.id);			
+		if (this == obj) {
+			return true;
 		}
-		return false;
-	}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof RideBasicInfo)) {
+			return false;
+		}
+		RideBasicInfo other = (RideBasicInfo) obj;
+		if (id != other.id) {
+			return false;
+		}
+		return true;
+	}	
+	
+	
 }

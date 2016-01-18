@@ -21,25 +21,38 @@ public class RidePointDTO {
 		this.distance = distance;
 	}
 
-	//This is required for maps to compare with each other using entrySet. Its not required if we compare maps with keyset
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof RidePointDTO){
-			RidePointDTO ridePointDTO = (RidePointDTO) obj;
-			return this.ridePoint.equals(ridePointDTO.ridePoint);	
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return this.ridePoint.hashCode();	
-	}
-	
 	@Override
 	public String toString() {
 		JSONUtil<RidePointDTO> jsonUtil = new JSONUtil<>(RidePointDTO.class);
 		return jsonUtil.getJson(this);
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((ridePoint == null) ? 0 : ridePoint.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof RidePointDTO)) {
+			return false;
+		}
+		RidePointDTO other = (RidePointDTO) obj;
+		if (ridePoint == null) {
+			if (other.ridePoint != null) {
+				return false;
+			}
+		} else if (!ridePoint.equals(other.ridePoint)) {
+			return false;
+		}
+		return true;
 	}
 
 	

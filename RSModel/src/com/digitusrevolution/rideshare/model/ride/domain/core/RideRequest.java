@@ -171,4 +171,46 @@ public class RideRequest {
 		this.travelDistance = travelDistance;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		result = prime * result + ((passenger == null) ? 0 : passenger.hashCode());
+		result = prime * result + ((pickupTime == null) ? 0 : pickupTime.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof RideRequest)) {
+			return false;
+		}
+		RideRequest other = (RideRequest) obj;
+		if (id != other.id) {
+			return false;
+		}
+		if (passenger == null) {
+			if (other.passenger != null) {
+				return false;
+			}
+		} else if (!passenger.equals(other.passenger)) {
+			return false;
+		}
+		if (pickupTime == null) {
+			if (other.pickupTime != null) {
+				return false;
+			}
+		} else if (!pickupTime.equals(other.pickupTime)) {
+			return false;
+		}
+		return true;
+	}
+
 }

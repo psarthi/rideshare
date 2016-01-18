@@ -50,23 +50,32 @@ public class RidePoint{
 	}
 	
 	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof RidePoint){
-			RidePoint ridePoint = (RidePoint) obj;
-			return this.ridesBasicInfo.equals(ridePoint.ridesBasicInfo);	
-		}
-		return false;
-	}
-
-	/*
-	 * Reason of using long instead of int, is to avoid issue in case of sum of rides id goes out of range of int  
-	 */
-	@Override
 	public int hashCode() {
-		long sumOfRideHashCode = 0;
-		for (RideBasicInfo rideBasicInfo : ridesBasicInfo) {
-			sumOfRideHashCode += rideBasicInfo.hashCode();
-		}
-		return Long.hashCode(sumOfRideHashCode);
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((ridesBasicInfo == null) ? 0 : ridesBasicInfo.hashCode());
+		return result;
 	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof RidePoint)) {
+			return false;
+		}
+		RidePoint other = (RidePoint) obj;
+		if (ridesBasicInfo == null) {
+			if (other.ridesBasicInfo != null) {
+				return false;
+			}
+		} else if (!ridesBasicInfo.equals(other.ridesBasicInfo)) {
+			return false;
+		}
+		return true;
+	}
+	
 }
