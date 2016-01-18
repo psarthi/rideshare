@@ -72,9 +72,9 @@ public class DomainLayerTest {
 	public void test(){
 		
 		RideDO rideDO = new RideDO();
-		//rideDO.acceptRideRequest(163, 55);
-		rideDO.rejectRideRequest(163, 56);
-		
+		rideDO.acceptRideRequest(164, 56);
+		//rideDO.rejectRideRequest(163, 57);
+				
 //		List<Ride> rides = rideDO.getAll();
 //		for (Ride ride : rides) {
 //			ride.setSeatOffered(2);

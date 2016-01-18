@@ -66,10 +66,15 @@ public class UserEntity {
 	@OneToMany(mappedBy="driver")
 	private Collection<RideEntity> ridesOffered = new HashSet<RideEntity>();
 	
+	//Reason for Many to Many relationship, as one user can take many rides and 
+	//one ride can have many users as passenger
 	@ManyToMany(mappedBy="passengers")
 	private Collection<RideEntity> ridesTaken = new HashSet<RideEntity>();
+	//Reason for One to Many relationship, as one user can raise many ride request
+	//but one ride request can be raised by only one user acting as passenger
 	@OneToMany(mappedBy="passenger")
 	private Collection<RideRequestEntity> rideRequests = new HashSet<RideRequestEntity>();
+	//Reason for One to Many relationship, One user can have many bills
 	@OneToMany(mappedBy="passenger")
 	private Collection<BillEntity> bills = new HashSet<BillEntity>();
 

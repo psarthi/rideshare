@@ -22,6 +22,7 @@ import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 
 import com.digitusrevolution.rideshare.common.exception.RideRequestUnavailableException;
+import com.digitusrevolution.rideshare.common.exception.RideUnavailableException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
@@ -89,7 +90,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		}
 		return rides;
 	}
-	
+
 	public List<Ride> getAllWithRoute() {
 		List<Ride> rides = getAll();
 		for (Ride ride : rides) {
@@ -393,7 +394,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 
 		return rideMatchInfos;
 	}
-	
+
 	/*
 	 * Purpose - This function creates a DTO for passing the information back to the requester
 	 */
@@ -426,12 +427,12 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	public List<RidePoint> getAllRidePointsOfRide(int rideId) {
 		return ridePointDAO.getAllRidePointsOfRide(rideId);
 	}
-	
+
 	public FeatureCollection getAllRidePoints(){
 		RideGeoJSON rideGeoJSON = new RideGeoJSON(this);
 		return rideGeoJSON.getAllRidePoints();
 	}
-	
+
 	public FeatureCollection getMatchingRides(int rideRequestId){
 		RideGeoJSON rideGeoJSON = new RideGeoJSON(this);
 		return rideGeoJSON.getMatchingRides(rideRequestId);
@@ -441,18 +442,18 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		RideGeoJSON rideGeoJSON = new RideGeoJSON(this);
 		return rideGeoJSON.getRidePoints(rideId);
 	}
-	
+
 	public List<Feature> getRideGeoJson(Ride ride) {
 		RideGeoJSON rideGeoJSON = new RideGeoJSON(this);
 		return rideGeoJSON.getRideGeoJson(ride);
 	}
-	
+
 	public FeatureCollection getRideMatchInfoGeoJSON(List<RideMatchInfo> rideMatchInfos) {
 		RideGeoJSON rideGeoJSON = new RideGeoJSON(this);
 		return rideGeoJSON.getRideMatchInfoGeoJSON(rideMatchInfos);
-		
+
 	}
-	
+
 	/*
 	 * Purpose - Get the status of ride
 	 */
@@ -478,7 +479,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	 * 
 	 */
 	public void acceptRideRequest(int rideId, int rideRequestId){
-		
+
 		String rideStatus = getStatus(rideId);
 		String rideIntialStatus = PropertyReader.getInstance().getProperty("RIDE_INITIAL_STATUS");
 		String rideRequestInitialStatus = PropertyReader.getInstance().getProperty("RIDE_REQUEST_INITIAL_STATUS");
@@ -488,64 +489,77 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		String rideRequestStatus = rideRequestDO.getStatus(rideRequestId);
 		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
-		//This will check if ride seats are available and ride request is unfulfilled
-		//Apart from that seats required should be less than or equal to seats offered. 
-		//Its important to re-check seats criteria as in between it may happen that number of seats which was initially free at the time of search,  
-		//partial seats may have been occupied.
+
+		//Check if ride request is unfulfilled
 		//Reason for re-checking status criteria as from the time of search to responding to it, 
 		//there may be someone else who may have accepted the ride request already and status may have changed
-		if (rideStatus.equals(rideIntialStatus) && rideRequestStatus.equals(rideRequestInitialStatus) 
-												&& rideRequest.getSeatRequired() <= ride.getSeatOffered()){
-			
-			//Set accepted ride in ride request
-			//Note - By adding the riderequest in the getAcceptedRideRequests collection, it will not update the ride id in the ride request table
-			//as ride is acceptedRideRequests relationship is owned by ride request entity and not ride (@OneToMany(mappedBy="acceptedRide"))
-			rideRequest.setAcceptedRide(ride);
-			//Change ride request status to accept status
-			rideRequest.setStatus(rideRequestAcceptStatus);
-			//Adding passenger
-			ride.getPassengers().add(rideRequest.getPassenger());
-			
-			//This should include the current required seat as we need to calculate total seats including this ride request 
-			int totalSeatsOccupied = rideRequest.getSeatRequired();
-			//Since each ride request may have different seat requirement, so we need to calculate total of all required seats of accepted ride
-			//Note - Seats requirement and seat offered criteria should be met while searching for ride or ride requests
-			for (RideRequest acceptedRideRequest : ride.getAcceptedRideRequests()) {
-				totalSeatsOccupied = totalSeatsOccupied + acceptedRideRequest.getSeatRequired();
+		if (rideRequestStatus.equals(rideRequestInitialStatus)){
+			//This will check if ride seats are available by checking ride status as unfulfilled
+			//Reason for re-checking status criteria as ride may have accepted some other ride request and seats may have got full, when trying to accept
+			//another one ride may not be available
+			if (rideStatus.equals(rideIntialStatus)){
+				//Apart from that seats required should be less than or equal to seats offered.
+				//Its important to re-check seats criteria as in between it may happen that number of seats which was initially free at the time of search,  
+				//partial seats may have been occupied.
+				if (rideRequest.getSeatRequired() <= ride.getSeatOffered()){
+					//Set accepted ride in ride request
+					//Note - By adding the ride request in the getAcceptedRideRequests collection, it will not update the ride id in the ride request table
+					//as ride is acceptedRideRequests relationship is owned by ride request entity and not ride (@OneToMany(mappedBy="acceptedRide"))
+					rideRequest.setAcceptedRide(ride);
+					//Change ride request status to accept status
+					rideRequest.setStatus(rideRequestAcceptStatus);
+					//Adding passenger
+					ride.getPassengers().add(rideRequest.getPassenger());
+
+					//This should include the current required seat as we need to calculate total seats including this ride request 
+					int totalSeatsOccupied = rideRequest.getSeatRequired();
+					//Since each ride request may have different seat requirement, so we need to calculate total of all required seats of accepted ride
+					//Note - Seats requirement and seat offered criteria should be met while searching for ride or ride requests
+					for (RideRequest acceptedRideRequest : ride.getAcceptedRideRequests()) {
+						totalSeatsOccupied = totalSeatsOccupied + acceptedRideRequest.getSeatRequired();
+					}
+
+					//This will check if seats offered is equal to the accepted ride request including this ride request
+					//This will change the status to fulfilled
+					if (totalSeatsOccupied == ride.getSeatOffered()){
+						ride.setStatus(rideFulfilledStatus);
+					}
+
+					//Update all the changes in DB for ride and ride request
+					update(ride);
+					//This is required to update accepted ride as well as status update on ride request table
+					rideRequestDO.update(rideRequest);
+				}
+				else{
+					throw new RideUnavailableException("Ride doesn't have sufficient seats available with id:"+rideId);
+				}			
 			}
-			
-			//This will check if seats offered is equal to the accepted ride request including this ride request
-			//This will change the status to fulfilled
-			if (totalSeatsOccupied == ride.getSeatOffered()){
-				ride.setStatus(rideFulfilledStatus);
-			}
-			
-			//Update all the changes in DB for ride and ride request
-			update(ride);
-			//This is required to update accepted ride as well as status update on ride request table
-			rideRequestDO.update(rideRequest);
+			else{
+				throw new RideUnavailableException("Ride is not available anymore with id:"+rideId);
+			}			
 		}
 		else{
 			throw new RideRequestUnavailableException("Ride Request is not available anymore with id:"+rideRequestId);
 		}			
+
 	}
-	
+
 	/*
 	 * Purpose - Add ride request in the rejected list of ride
 	 * 
 	 */
 	public void rejectRideRequest(int rideId, int rideRequestId){
-		
+
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
 		Ride ride = get(rideId);
-		
-		ride.getRejectedRideRequests().add(rideRequest);
-		
+
+		ride.getRejectedRideRequests().add(rideRequest);	
+
 		//This will update the ride details in DB
 		update(ride);
 	}
-	
+
 }
 
 

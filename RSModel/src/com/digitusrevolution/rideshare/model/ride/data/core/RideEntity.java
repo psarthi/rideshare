@@ -47,17 +47,25 @@ public class RideEntity {
 	@OneToOne(cascade=CascadeType.ALL)
 	private RecurringDetailEntity recurringDetail;
 	private String status;
+	//Reason for Many to One relationship, one vehicle can offer many rides
 	@ManyToOne
 	private VehicleEntity vehicle;
+	//Reason for Many to one relationship, one user who is driver can offer any number of rides
 	@ManyToOne
 	private UserEntity driver;
+	//Reason for Many to many relationship, as one ride can have many users who is passenger 
+	//and one user can be part of many rides as different passenger
 	@ManyToMany
 	@JoinTable(name="ride_passenger", joinColumns=@JoinColumn(name="ride_id"))
 	private Collection<UserEntity> passengers = new HashSet<UserEntity>();
 	@OneToMany(mappedBy="ride")
 	private Collection<BillEntity> bills = new HashSet<BillEntity>();
+	//Reason for one to many relationship, as one ride can accept many ride requests 
+	//but one ride request can be accepted by only one ride
 	@OneToMany(mappedBy="acceptedRide")
 	private Collection<RideRequestEntity> acceptedRideRequests = new HashSet<RideRequestEntity>();
+	//Reason for many to many relationship, as one ride can reject multiple ride request and 
+	//one ride request can be rejected by multiple rides
 	@ManyToMany
 	@JoinTable(name="ride_rideRequest",joinColumns=@JoinColumn(name="ride_id"))
 	private Collection<RideRequestEntity> rejectedRideRequests = new HashSet<RideRequestEntity>();
