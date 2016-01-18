@@ -1,25 +1,16 @@
 package com.digitusrevolution.rideshare.common.mapper.user.core;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.CityMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.RoleMapper;
-import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
-import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
-import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
-import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
-import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
-import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.City;
-import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 
 public class UserMapper implements Mapper<User, UserEntity> {
 
@@ -66,23 +57,18 @@ public class UserMapper implements Mapper<User, UserEntity> {
 	public UserEntity getEntityChild(User user, UserEntity userEntity){
 		
 		VehicleMapper vehicleMapper = new VehicleMapper();
-		Collection<Vehicle> vehicles = user.getVehicles();
-		userEntity.setVehicles(vehicleMapper.getEntities(vehicles));
+		userEntity.setVehicles(vehicleMapper.getEntities(userEntity.getVehicles(), user.getVehicles()));
 		
 		RoleMapper roleMapper = new RoleMapper();
-		Collection<Role> roles = user.getRoles();
-		userEntity.setRoles(roleMapper.getEntities(roles));
+		userEntity.setRoles(roleMapper.getEntities(userEntity.getRoles(), user.getRoles()));
 		
 		RideMapper rideMapper = new RideMapper();
-		Collection<Ride> ridesOffered = user.getRidesOffered();
-		userEntity.setRidesOffered(rideMapper.getEntitiesWithOnlyPK(ridesOffered));
+		userEntity.setRidesOffered(rideMapper.getEntitiesWithOnlyPK(userEntity.getRidesOffered(), user.getRidesOffered()));
 		
-		Collection<Ride> ridesTaken = user.getRidesTaken();
-		userEntity.setRidesTaken(rideMapper.getEntitiesWithOnlyPK(ridesTaken));
+		userEntity.setRidesTaken(rideMapper.getEntitiesWithOnlyPK(userEntity.getRidesTaken(), user.getRidesTaken()));
 		
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
-		Collection<RideRequest> rideRequests = user.getRideRequests();
-		userEntity.setRideRequests(rideRequestMapper.getEntitiesWithOnlyPK(rideRequests));
+		userEntity.setRideRequests(rideRequestMapper.getEntitiesWithOnlyPK(userEntity.getRideRequests(), user.getRideRequests()));
 		
 		return userEntity;
 		
@@ -117,32 +103,26 @@ public class UserMapper implements Mapper<User, UserEntity> {
 	public User getDomainModelChild(User user, UserEntity userEntity){
 		
 		VehicleMapper vehicleMapper = new VehicleMapper();
-		Collection<VehicleEntity> vehicleEntities = userEntity.getVehicles();
-		user.setVehicles(vehicleMapper.getDomainModels(vehicleEntities));
+		user.setVehicles(vehicleMapper.getDomainModels(user.getVehicles(), userEntity.getVehicles()));
 
 		RoleMapper roleMapper = new RoleMapper();
-		Collection<RoleEntity> roleEntities = userEntity.getRoles();
-		user.setRoles(roleMapper.getDomainModels(roleEntities));
+		user.setRoles(roleMapper.getDomainModels(user.getRoles(), userEntity.getRoles()));
 		
 		RideMapper rideMapper = new RideMapper();
-		Collection<RideEntity> ridesOfferedEntities = userEntity.getRidesOffered();
-		user.setRidesOffered(rideMapper.getDomainModelsWithOnlyPK(ridesOfferedEntities));
+		user.setRidesOffered(rideMapper.getDomainModelsWithOnlyPK(user.getRidesOffered(), userEntity.getRidesOffered()));
 		
-		Collection<RideEntity> ridesTakenEntities = userEntity.getRidesTaken();
-		user.setRidesTaken(rideMapper.getDomainModelsWithOnlyPK(ridesTakenEntities));
+		user.setRidesTaken(rideMapper.getDomainModelsWithOnlyPK(user.getRidesTaken(), userEntity.getRidesTaken()));
 		
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
-		Collection<RideRequestEntity> rideRequestEntities = userEntity.getRideRequests();
-		user.setRideRequests(rideRequestMapper.getDomainModelsWithOnlyPK(rideRequestEntities));
+		user.setRideRequests(rideRequestMapper.getDomainModelsWithOnlyPK(user.getRideRequests(), userEntity.getRideRequests()));
 		
 		return user;
 	}
 	
 	@Override
-	public Collection<User> getDomainModelsWithOnlyPK(Collection<UserEntity> userEntities){
-		Collection<User> users = new LinkedList<>();
-		User user = new User();
+	public Collection<User> getDomainModelsWithOnlyPK(Collection<User> users, Collection<UserEntity> userEntities){
 		for (UserEntity userEntity : userEntities) {
+			User user = new User();
 			user = getDomainModelWithOnlyPK(userEntity);
 			users.add(user);
 		}
@@ -150,10 +130,9 @@ public class UserMapper implements Mapper<User, UserEntity> {
 	}
 	
 	@Override
-	public Collection<User> getDomainModels(Collection<UserEntity> userEntities){
-		Collection<User> users = new LinkedList<>();
-		User user = new User();
+	public Collection<User> getDomainModels(Collection<User> users, Collection<UserEntity> userEntities){
 		for (UserEntity userEntity : userEntities) {
+			User user = new User();
 			user = getDomainModel(userEntity);
 			user = getDomainModelChild(user, userEntity);
 			users.add(user);
@@ -162,8 +141,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 	}
 	
 	@Override
-	public Collection<UserEntity> getEntitiesWithOnlyPK(Collection<User> users){
-		Collection<UserEntity> userEntities = new LinkedList<>();
+	public Collection<UserEntity> getEntitiesWithOnlyPK(Collection<UserEntity> userEntities, Collection<User> users){
 		for (User user : users) {
 			userEntities.add(getEntityWithOnlyPK(user));
 		}
@@ -172,8 +150,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 	}
 	
 	@Override
-	public Collection<UserEntity> getEntities(Collection<User> users){
-		Collection<UserEntity> userEntities = new LinkedList<>();
+	public Collection<UserEntity> getEntities(Collection<UserEntity> userEntities, Collection<User> users){
 		for (User user : users) {
 			userEntities.add(getEntity(user));
 		}

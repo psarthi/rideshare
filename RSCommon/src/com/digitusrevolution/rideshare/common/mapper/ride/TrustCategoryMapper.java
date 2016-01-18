@@ -1,6 +1,5 @@
 package com.digitusrevolution.rideshare.common.mapper.ride;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
@@ -38,8 +37,8 @@ public class TrustCategoryMapper implements Mapper<TrustCategory, TrustCategoryE
 	}
 
 	@Override
-	public Collection<TrustCategoryEntity> getEntities(Collection<TrustCategory> trustCategories){
-		Collection<TrustCategoryEntity> trustCategoryEntities = new ArrayList<>();
+	public Collection<TrustCategoryEntity> getEntities(Collection<TrustCategoryEntity> trustCategoryEntities, 
+			Collection<TrustCategory> trustCategories){
 		for (TrustCategory trustCategory : trustCategories) {
 			trustCategoryEntities.add(getEntity(trustCategory));
 		}
@@ -47,8 +46,8 @@ public class TrustCategoryMapper implements Mapper<TrustCategory, TrustCategoryE
 	}
 
 	@Override
-	public Collection<TrustCategoryEntity> getEntitiesWithOnlyPK(Collection<TrustCategory> trustCategories) {
-		Collection<TrustCategoryEntity> trustCategoryEntities = new ArrayList<>();
+	public Collection<TrustCategoryEntity> getEntitiesWithOnlyPK(Collection<TrustCategoryEntity> trustCategoryEntities,
+			Collection<TrustCategory> trustCategories) {
 		for (TrustCategory trustCategory : trustCategories) {
 			trustCategoryEntities.add(getEntityWithOnlyPK(trustCategory));
 		}
@@ -56,21 +55,21 @@ public class TrustCategoryMapper implements Mapper<TrustCategory, TrustCategoryE
 	}
 
 	@Override
-	public Collection<TrustCategory> getDomainModels(Collection<TrustCategoryEntity> trustCategoryEntities){
-		Collection<TrustCategory> trustCategories = new ArrayList<>();
-		TrustCategory trustCategory = new TrustCategory();
+	public Collection<TrustCategory> getDomainModels(
+			Collection<TrustCategory> trustCategories, Collection<TrustCategoryEntity> trustCategoryEntities){
 		for (TrustCategoryEntity trustCategoryEntity : trustCategoryEntities) {
+			TrustCategory trustCategory = new TrustCategory();
 			trustCategory = getDomainModel(trustCategoryEntity);
 			trustCategories.add(trustCategory);
 		}		
 		return trustCategories;
 	}
-	
+
 	@Override
-	public Collection<TrustCategory> getDomainModelsWithOnlyPK(Collection<TrustCategoryEntity> trustCategoryEntities) {
-		Collection<TrustCategory> trustCategories = new ArrayList<>();
-		TrustCategory trustCategory = new TrustCategory();
+	public Collection<TrustCategory> getDomainModelsWithOnlyPK(Collection<TrustCategory> trustCategories, 
+			Collection<TrustCategoryEntity> trustCategoryEntities) {
 		for (TrustCategoryEntity trustCategoryEntity : trustCategoryEntities) {
+			TrustCategory trustCategory = new TrustCategory();
 			trustCategory = getDomainModelWithOnlyPK(trustCategoryEntity);
 			trustCategories.add(trustCategory);
 		}		

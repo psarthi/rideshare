@@ -50,25 +50,25 @@ public class CityMapper implements Mapper<City, CityEntity>{
 	}
 
 	@Override
-	public Collection<City> getDomainModels(Collection<CityEntity> entities) {
+	public Collection<City> getDomainModelsWithOnlyPK(Collection<City> models, Collection<CityEntity> entities) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<CityEntity> getEntities(Collection<City> model) {
+	public Collection<City> getDomainModels(Collection<City> models, Collection<CityEntity> entities) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<City> getDomainModelsWithOnlyPK(Collection<CityEntity> entities) {
+	public Collection<CityEntity> getEntitiesWithOnlyPK(Collection<CityEntity> entities, Collection<City> model) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<CityEntity> getEntitiesWithOnlyPK(Collection<City> model) {
+	public Collection<CityEntity> getEntities(Collection<CityEntity> entities, Collection<City> model) {
 		// TODO Auto-generated method stub
 		return null;
 	}

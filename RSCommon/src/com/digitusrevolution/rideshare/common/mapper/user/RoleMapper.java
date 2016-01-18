@@ -1,6 +1,5 @@
 package com.digitusrevolution.rideshare.common.mapper.user;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
@@ -38,8 +37,7 @@ public class RoleMapper implements Mapper<Role, RoleEntity>{
 	}
 	
 	@Override
-	public Collection<RoleEntity> getEntities(Collection<Role> roles){
-		Collection<RoleEntity> roleEntities = new ArrayList<>();
+	public Collection<RoleEntity> getEntities(Collection<RoleEntity> roleEntities, Collection<Role> roles){
 		for (Role role : roles) {
 			roleEntities.add(getEntity(role));
 		}
@@ -47,18 +45,17 @@ public class RoleMapper implements Mapper<Role, RoleEntity>{
 	}
 
 	@Override
-	public Collection<RoleEntity> getEntitiesWithOnlyPK(Collection<Role> roles) {
-		Collection<RoleEntity> roleEntities = new ArrayList<>();
+	public Collection<RoleEntity> getEntitiesWithOnlyPK(Collection<RoleEntity> roleEntities, Collection<Role> roles) {
 		for (Role role : roles) {
 			roleEntities.add(getEntityWithOnlyPK(role));
 		}
 		return roleEntities;
 	}
 
-	public Collection<Role> getDomainModels(Collection<RoleEntity> roleEntities){
-		Collection<Role> roles = new ArrayList<>();
-		Role role = new Role();
+	@Override
+	public Collection<Role> getDomainModels(Collection<Role> roles, Collection<RoleEntity> roleEntities){
 		for (RoleEntity roleEntity : roleEntities) {
+			Role role = new Role();
 			role = getDomainModel(roleEntity);
 			roles.add(role);
 		}
@@ -66,10 +63,9 @@ public class RoleMapper implements Mapper<Role, RoleEntity>{
 	}
 
 	@Override
-	public Collection<Role> getDomainModelsWithOnlyPK(Collection<RoleEntity> roleEntities) {
-		Collection<Role> roles = new ArrayList<>();
-		Role role = new Role();
+	public Collection<Role> getDomainModelsWithOnlyPK(Collection<Role> roles, Collection<RoleEntity> roleEntities) {
 		for (RoleEntity roleEntity : roleEntities) {
+			Role role = new Role();
 			role = getDomainModelWithOnlyPK(roleEntity);
 			roles.add(role);
 		}

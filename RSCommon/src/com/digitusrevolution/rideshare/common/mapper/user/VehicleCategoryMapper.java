@@ -4,9 +4,7 @@ import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
 import com.digitusrevolution.rideshare.model.user.data.VehicleCategoryEntity;
-import com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
-import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 
 public class VehicleCategoryMapper implements Mapper<VehicleCategory, VehicleCategoryEntity>{
 
@@ -22,18 +20,18 @@ public class VehicleCategoryMapper implements Mapper<VehicleCategory, VehicleCat
 		VehicleCategoryEntity vehicleCategoryEntity = new VehicleCategoryEntity();
 		vehicleCategoryEntity = getEntityWithOnlyPK(vehicleCategory);
 		vehicleCategoryEntity.setName(vehicleCategory.getName());
-		
+
 		vehicleCategoryEntity = getEntityChild(vehicleCategory, vehicleCategoryEntity);
-		
+
 		return vehicleCategoryEntity;
 	}
-	
+
 	@Override
 	public VehicleCategoryEntity getEntityChild(VehicleCategory vehicleCategory, VehicleCategoryEntity vehicleCategoryEntity){		
 		VehicleSubCategoryMapper vehicleSubCategoryMapper = new VehicleSubCategoryMapper();
-		Collection<VehicleSubCategory> vehicleSubCategories = vehicleCategory.getSubCategories();
-		vehicleCategoryEntity.setSubCategories(vehicleSubCategoryMapper.getEntities(vehicleSubCategories));		
-		
+		vehicleCategoryEntity.setSubCategories(vehicleSubCategoryMapper.getEntities(vehicleCategoryEntity.getSubCategories(), 
+				vehicleCategory.getSubCategories()));		
+
 		return vehicleCategoryEntity;
 	}
 
@@ -49,40 +47,44 @@ public class VehicleCategoryMapper implements Mapper<VehicleCategory, VehicleCat
 		VehicleCategory vehicleCategory = new VehicleCategory();
 		vehicleCategory = getDomainModelWithOnlyPK(vehicleCategoryEntity);
 		vehicleCategory.setName(vehicleCategoryEntity.getName());
-		
+
 		return vehicleCategory;
 	}
-	
+
 	@Override
 	public VehicleCategory getDomainModelChild(VehicleCategory vehicleCategory, VehicleCategoryEntity vehicleCategoryEntity){
-		
+
 		VehicleSubCategoryMapper vehicleSubCategoryMapper = new VehicleSubCategoryMapper();
-		Collection<VehicleSubCategoryEntity> vehicleSubCategoryEntities = vehicleCategoryEntity.getSubCategories();
-		vehicleCategory.setSubCategories(vehicleSubCategoryMapper.getDomainModels(vehicleSubCategoryEntities));		
-		
+		vehicleCategory.setSubCategories(vehicleSubCategoryMapper.getDomainModels(vehicleCategory.getSubCategories(), 
+				vehicleCategoryEntity.getSubCategories()));		
+
 		return vehicleCategory;
 	}
 
 	@Override
-	public Collection<VehicleCategory> getDomainModels(Collection<VehicleCategoryEntity> entities) {
+	public Collection<VehicleCategory> getDomainModelsWithOnlyPK(Collection<VehicleCategory> models,
+			Collection<VehicleCategoryEntity> entities) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<VehicleCategoryEntity> getEntities(Collection<VehicleCategory> model) {
+	public Collection<VehicleCategory> getDomainModels(Collection<VehicleCategory> models,
+			Collection<VehicleCategoryEntity> entities) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<VehicleCategory> getDomainModelsWithOnlyPK(Collection<VehicleCategoryEntity> entities) {
+	public Collection<VehicleCategoryEntity> getEntitiesWithOnlyPK(Collection<VehicleCategoryEntity> entities,
+			Collection<VehicleCategory> model) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<VehicleCategoryEntity> getEntitiesWithOnlyPK(Collection<VehicleCategory> model) {
+	public Collection<VehicleCategoryEntity> getEntities(Collection<VehicleCategoryEntity> entities,
+			Collection<VehicleCategory> model) {
 		// TODO Auto-generated method stub
 		return null;
 	}

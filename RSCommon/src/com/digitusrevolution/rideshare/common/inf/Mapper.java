@@ -95,10 +95,8 @@ public interface Mapper<M,E> {
      * 
      *<P> Sample code -
      * 
-     * 
-     *<P>  Collection<User> users = new LinkedList<>();
-	 *<P>	User user = new User();
 	 *<P>	for (UserEntity userEntity : userEntities) {
+	 *<P>		User user = new User();
 	 *<P>		user = getDomainModelWithOnlyPK(userEntity);
 	 *<P>		users.add(user);
 	 *<P>	}
@@ -107,7 +105,7 @@ public interface Mapper<M,E> {
 	 *
      * 
      */
-	Collection<M> getDomainModelsWithOnlyPK(Collection<E> entities);
+	Collection<M> getDomainModelsWithOnlyPK(Collection<M> models, Collection<E> entities);
 
 	/**
      * Set all domain models and invoke getDomainChild to set domain model child elements
@@ -115,9 +113,8 @@ public interface Mapper<M,E> {
      *<P> Sample code -
      * 
      * 
-     *<P>  Collection<User> users = new LinkedList<>();
-	 *<P>	User user = new User();
 	 *<P>	for (UserEntity userEntity : userEntities) {
+	 *<P>		User user = new User();
 	 *<P>		user = getDomainModel(userEntity);
 	 *<P>		user = getDomainModelChild(user, userEntity);
 	 *<P>		users.add(user);
@@ -127,14 +124,13 @@ public interface Mapper<M,E> {
 	 *
      * 
      */
-	Collection<M> getDomainModels(Collection<E> entities);
+	Collection<M> getDomainModels(Collection<M> models, Collection<E> entities);
 	
 	/**
      * Set all entities PK only
      * 
      *<P> Sample code -
      * 
-     *<P> 	Collection<UserEntity> userEntities = new LinkedList<>();
 	 *<P>	for (User user : users) {
 	 *<P>		userEntities.add(getEntityWithOnlyPK(user));
 	 *<P>	}
@@ -143,7 +139,7 @@ public interface Mapper<M,E> {
 	 *
 	 *	
      */
-	Collection<E> getEntitiesWithOnlyPK(Collection<M> model);
+	Collection<E> getEntitiesWithOnlyPK(Collection<E> entities, Collection<M> model);
 
 
 	/**
@@ -151,7 +147,6 @@ public interface Mapper<M,E> {
      * 
      *<P> Sample code -
      * 
-     *<P> 	Collection<UserEntity> userEntities = new LinkedList<>();
 	 *<P>	for (User user : users) {
 	 *<P>		userEntities.add(getEntity(user));
 	 *<P>	}
@@ -160,6 +155,6 @@ public interface Mapper<M,E> {
 	 *
 	 *	
      */
-	Collection<E> getEntities(Collection<M> model);
+	Collection<E> getEntities(Collection<E> entities, Collection<M> model);
 
 }

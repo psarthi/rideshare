@@ -1,7 +1,6 @@
 package com.digitusrevolution.rideshare.common.mapper.user;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
 import com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity;
@@ -52,10 +51,10 @@ public class VehicleSubCategoryMapper implements Mapper<VehicleSubCategory, Vehi
 	}
 
 	@Override
-	public Collection<VehicleSubCategory> getDomainModels(Collection<VehicleSubCategoryEntity> vehicleSubCategoryEntities){
-		Collection<VehicleSubCategory> vehicleSubCategories = new LinkedList<>();
-		VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
+	public Collection<VehicleSubCategory> getDomainModels(Collection<VehicleSubCategory> vehicleSubCategories, 
+			Collection<VehicleSubCategoryEntity> vehicleSubCategoryEntities){
 		for (VehicleSubCategoryEntity vehicleSubCategoryEntity : vehicleSubCategoryEntities) {
+			VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
 			vehicleSubCategory = getDomainModel(vehicleSubCategoryEntity);
 			vehicleSubCategories.add(vehicleSubCategory);
 		}
@@ -63,10 +62,10 @@ public class VehicleSubCategoryMapper implements Mapper<VehicleSubCategory, Vehi
 	}
 
 	@Override
-	public Collection<VehicleSubCategory> getDomainModelsWithOnlyPK(Collection<VehicleSubCategoryEntity> vehicleSubCategoryEntities) {
-		Collection<VehicleSubCategory> vehicleSubCategories = new LinkedList<>();
-		VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
+	public Collection<VehicleSubCategory> getDomainModelsWithOnlyPK(Collection<VehicleSubCategory> vehicleSubCategories, 
+			Collection<VehicleSubCategoryEntity> vehicleSubCategoryEntities) {
 		for (VehicleSubCategoryEntity vehicleSubCategoryEntity : vehicleSubCategoryEntities) {
+			VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
 			vehicleSubCategory = getDomainModelWithOnlyPK(vehicleSubCategoryEntity);
 			vehicleSubCategories.add(vehicleSubCategory);
 		}
@@ -74,8 +73,8 @@ public class VehicleSubCategoryMapper implements Mapper<VehicleSubCategory, Vehi
 	}
 
 	@Override
-	public Collection<VehicleSubCategoryEntity> getEntities(Collection<VehicleSubCategory> vehicleSubCategories){
-		Collection<VehicleSubCategoryEntity> vehicleSubCategoryEntities = new LinkedList<>();
+	public Collection<VehicleSubCategoryEntity> getEntities(Collection<VehicleSubCategoryEntity> vehicleSubCategoryEntities, 
+			Collection<VehicleSubCategory> vehicleSubCategories){
 		for (VehicleSubCategory vehicleSubCategory : vehicleSubCategories) {
 			vehicleSubCategoryEntities.add(getEntity(vehicleSubCategory));
 		}
@@ -83,8 +82,8 @@ public class VehicleSubCategoryMapper implements Mapper<VehicleSubCategory, Vehi
 	}
 
 	@Override
-	public Collection<VehicleSubCategoryEntity> getEntitiesWithOnlyPK(Collection<VehicleSubCategory> vehicleSubCategories) {
-		Collection<VehicleSubCategoryEntity> vehicleSubCategoryEntities = new LinkedList<>();
+	public Collection<VehicleSubCategoryEntity> getEntitiesWithOnlyPK(Collection<VehicleSubCategoryEntity> vehicleSubCategoryEntities, 
+			Collection<VehicleSubCategory> vehicleSubCategories) {
 		for (VehicleSubCategory vehicleSubCategory : vehicleSubCategories) {
 			vehicleSubCategoryEntities.add(getEntityWithOnlyPK(vehicleSubCategory));
 		}

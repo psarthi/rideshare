@@ -1,7 +1,6 @@
 package com.digitusrevolution.rideshare.common.mapper.ride.core;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.TrustNetworkMapper;
@@ -26,7 +25,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		rideEntity.setId(ride.getId());
 		return rideEntity;
 	}
-	
+
 	@Override
 	public RideEntity getEntity(Ride ride) {
 		RideEntity rideEntity = new RideEntity();
@@ -42,7 +41,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		rideEntity.setStatus(ride.getStatus());
 		rideEntity.setSexPreference(ride.getSexPreference());
 		rideEntity.setTravelDistance(ride.getTravelDistance());
-		
+
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
 		TrustNetwork trustNetwork = ride.getTrustNetwork();
 		rideEntity.setTrustNetwork(trustNetworkMapper.getEntity(trustNetwork));
@@ -50,23 +49,22 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		VehicleMapper vehicleMapper = new VehicleMapper();
 		Vehicle vehicle = ride.getVehicle();
 		rideEntity.setVehicle(vehicleMapper.getEntityWithOnlyPK(vehicle));
-		
+
 		UserMapper userMapper = new UserMapper();
 		User user = ride.getDriver();
 		rideEntity.setDriver(userMapper.getEntityWithOnlyPK(user));
-		
-		Collection<User> users = ride.getPassengers();
-		rideEntity.setPassengers(userMapper.getEntitiesWithOnlyPK(users));
-		
-		Collection<RideRequest> acceptedRideRequests = ride.getAcceptedRideRequests();
+
+		rideEntity.setPassengers(userMapper.getEntitiesWithOnlyPK(rideEntity.getPassengers(), ride.getPassengers()));
+
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
-		Collection<RideRequestEntity> acceptedRideRequestEntities = rideRequestMapper.getEntities(acceptedRideRequests);
+		Collection<RideRequestEntity> acceptedRideRequestEntities = rideRequestMapper.getEntities(rideEntity.getAcceptedRideRequests(),
+				ride.getAcceptedRideRequests());
 		rideEntity.setAcceptedRideRequests(acceptedRideRequestEntities);
-		
-		Collection<RideRequest> rejectedRideRequests = ride.getRejectedRideRequests();
-		Collection<RideRequestEntity> rejectedRideRequestEntities = rideRequestMapper.getEntities(rejectedRideRequests);
+
+		Collection<RideRequestEntity> rejectedRideRequestEntities = rideRequestMapper.getEntities(rideEntity.getRejectedRideRequests(), 
+				ride.getRejectedRideRequests());
 		rideEntity.setRejectedRideRequests(rejectedRideRequestEntities);
-		
+
 		/*
 		 * Pending -
 		 * 
@@ -74,15 +72,15 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		 * - bills
 		 * 
 		 */
-		
+
 		rideEntity = getEntityChild(ride, rideEntity);
-		
+
 		return rideEntity;
 	}
 
 	@Override
 	public RideEntity getEntityChild(Ride ride, RideEntity rideEntity) {
-				
+
 		return rideEntity;
 	}
 
@@ -92,7 +90,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		ride.setId(rideEntity.getId());	
 		return ride;
 	}
-	
+
 	@Override
 	public Ride getDomainModel(RideEntity rideEntity) {
 		Ride ride = new Ride();
@@ -108,8 +106,8 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		ride.setStatus(rideEntity.getStatus());
 		ride.setSexPreference(rideEntity.getSexPreference());
 		ride.setTravelDistance(rideEntity.getTravelDistance());
-		
-		
+
+
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
 		TrustNetworkEntity trustNetworkEntity = rideEntity.getTrustNetwork();
 		TrustNetwork trustNetwork = trustNetworkMapper.getDomainModel(trustNetworkEntity);
@@ -119,50 +117,47 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		VehicleMapper vehicleMapper = new VehicleMapper();
 		VehicleEntity vehicleEntity = rideEntity.getVehicle();
 		ride.setVehicle(vehicleMapper.getDomainModelWithOnlyPK(vehicleEntity));
-		
+
 		UserMapper userMapper = new UserMapper();
 		UserEntity userEntity = rideEntity.getDriver();
 		ride.setDriver(userMapper.getDomainModelWithOnlyPK(userEntity));
-		
-		Collection<UserEntity> userEntities = rideEntity.getPassengers();
-		ride.setPassengers(userMapper.getDomainModelsWithOnlyPK(userEntities));
-		
-		Collection<RideRequestEntity> acceptedRideRequestEntities = rideEntity.getAcceptedRideRequests();
+
+		ride.setPassengers(userMapper.getDomainModelsWithOnlyPK(ride.getPassengers(), rideEntity.getPassengers()));
+
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
-		Collection<RideRequest> acceptedRideRequests = rideRequestMapper.getDomainModels(acceptedRideRequestEntities);
+		Collection<RideRequest> acceptedRideRequests = rideRequestMapper.getDomainModels(ride.getAcceptedRideRequests(), 
+				rideEntity.getAcceptedRideRequests());
 		ride.setAcceptedRideRequests(acceptedRideRequests);
-		
-		Collection<RideRequestEntity> rejectedRideRequestEntities = rideEntity.getRejectedRideRequests();
-		Collection<RideRequest> rejectedRideRequests = rideRequestMapper.getDomainModels(rejectedRideRequestEntities);
+
+		Collection<RideRequest> rejectedRideRequests = rideRequestMapper.getDomainModels(ride.getRejectedRideRequests(), 
+				rideEntity.getRejectedRideRequests());
 		ride.setRejectedRideRequests(rejectedRideRequests);
-			
+
 		return ride;
 	}
 
 
 	@Override
 	public Ride getDomainModelChild(Ride ride, RideEntity rideEntity) {
-				
+
 		return ride;
 	}
 
 	@Override
-	public Collection<Ride> getDomainModelsWithOnlyPK(Collection<RideEntity> rideEntities) {
-		Collection<Ride> rides = new LinkedList<>();
-		Ride ride = new Ride();
+	public Collection<Ride> getDomainModelsWithOnlyPK(Collection<Ride> rides, Collection<RideEntity> rideEntities) {
 		for (RideEntity rideEntity : rideEntities) {
+			Ride ride = new Ride();
 			ride = getDomainModelWithOnlyPK(rideEntity);
 			rides.add(ride);
 		}
 		return rides;		
 
 	}
-	
+
 	@Override
-	public Collection<Ride> getDomainModels(Collection<RideEntity> rideEntities) {
-		Collection<Ride> rides = new LinkedList<>();
-		Ride ride = new Ride();
+	public Collection<Ride> getDomainModels(Collection<Ride> rides, Collection<RideEntity> rideEntities) {
 		for (RideEntity rideEntity : rideEntities) {
+			Ride ride = new Ride();
 			ride = getDomainModel(rideEntity);
 			ride = getDomainModelChild(ride, rideEntity);
 			rides.add(ride);
@@ -171,17 +166,15 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 	}
 
 	@Override
-	public Collection<RideEntity> getEntitiesWithOnlyPK(Collection<Ride> rides) {
-		Collection<RideEntity> rideEntities = new LinkedList<>();
+	public Collection<RideEntity> getEntitiesWithOnlyPK(Collection<RideEntity> rideEntities, Collection<Ride> rides) {
 		for (Ride ride : rides) {
 			rideEntities.add(getEntityWithOnlyPK(ride));
 		}
 		return rideEntities;		
 	}
-	
+
 	@Override
-	public Collection<RideEntity> getEntities(Collection<Ride> rides) {
-		Collection<RideEntity> rideEntities = new LinkedList<>();
+	public Collection<RideEntity> getEntities(Collection<RideEntity> rideEntities, Collection<Ride> rides) {
 		for (Ride ride : rides) {
 			rideEntities.add(getEntity(ride));
 		}

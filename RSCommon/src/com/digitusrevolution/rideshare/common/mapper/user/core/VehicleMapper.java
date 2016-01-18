@@ -1,7 +1,6 @@
 package com.digitusrevolution.rideshare.common.mapper.user.core;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
 import com.digitusrevolution.rideshare.common.mapper.user.VehicleCategoryMapper;
@@ -72,8 +71,7 @@ public class VehicleMapper implements Mapper<Vehicle, VehicleEntity>{
 	}
 	
 	@Override
-	public Collection<VehicleEntity> getEntities(Collection<Vehicle> vehicles){		
-		Collection<VehicleEntity> vehicleEntities = new LinkedList<>();
+	public Collection<VehicleEntity> getEntities(Collection<VehicleEntity> vehicleEntities, Collection<Vehicle> vehicles){		
 		for (Vehicle vehicle : vehicles) {
 			vehicleEntities.add(getEntity(vehicle));
 		}
@@ -81,8 +79,7 @@ public class VehicleMapper implements Mapper<Vehicle, VehicleEntity>{
 	}
 
 	@Override
-	public Collection<VehicleEntity> getEntitiesWithOnlyPK(Collection<Vehicle> vehicles) {
-		Collection<VehicleEntity> vehicleEntities = new LinkedList<>();
+	public Collection<VehicleEntity> getEntitiesWithOnlyPK(Collection<VehicleEntity> vehicleEntities, Collection<Vehicle> vehicles) {
 		for (Vehicle vehicle : vehicles) {
 			vehicleEntities.add(getEntityWithOnlyPK(vehicle));
 		}
@@ -90,10 +87,9 @@ public class VehicleMapper implements Mapper<Vehicle, VehicleEntity>{
 	}
 
 	@Override
-	public Collection<Vehicle> getDomainModels(Collection<VehicleEntity> vehicleEntities){
-		Collection<Vehicle> vehicles = new LinkedList<>();
-		Vehicle vehicle = new Vehicle();
+	public Collection<Vehicle> getDomainModels(Collection<Vehicle> vehicles, Collection<VehicleEntity> vehicleEntities){
 		for (VehicleEntity vehicleEntity : vehicleEntities) {
+			Vehicle vehicle = new Vehicle();
 			vehicle = getDomainModel(vehicleEntity);
 			vehicles.add(vehicle);	
 		}
@@ -101,10 +97,9 @@ public class VehicleMapper implements Mapper<Vehicle, VehicleEntity>{
 	}
 
 	@Override
-	public Collection<Vehicle> getDomainModelsWithOnlyPK(Collection<VehicleEntity> vehicleEntities) {
-		Collection<Vehicle> vehicles = new LinkedList<>();
-		Vehicle vehicle = new Vehicle();
+	public Collection<Vehicle> getDomainModelsWithOnlyPK(Collection<Vehicle> vehicles,Collection<VehicleEntity> vehicleEntities) {
 		for (VehicleEntity vehicleEntity : vehicleEntities) {
+			Vehicle vehicle = new Vehicle();
 			vehicle = getDomainModelWithOnlyPK(vehicleEntity);
 			vehicles.add(vehicle);	
 		}

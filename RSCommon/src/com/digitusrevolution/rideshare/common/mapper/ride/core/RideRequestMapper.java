@@ -1,7 +1,6 @@
 package com.digitusrevolution.rideshare.common.mapper.ride.core;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.TrustNetworkMapper;
@@ -32,7 +31,7 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 
 	@Override
 	public RideRequestEntity getEntity(RideRequest rideRequest) {
-		
+
 		RideRequestEntity rideRequestEntity = new RideRequestEntity();
 		rideRequestEntity = getEntityWithOnlyPK(rideRequest);
 		rideRequestEntity.setPickupTime(rideRequest.getPickupTime());
@@ -47,7 +46,7 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		rideRequestEntity.setTravelTime(rideRequest.getTravelTime());
 		rideRequestEntity.setTravelDistance(rideRequest.getTravelDistance());
 
-		
+
 
 		//We need to just map Point ID in Hibernate as we are storing Point in MongoDB
 		rideRequestEntity.setPickupPointId(rideRequest.getPickupPoint().get_id());
@@ -58,7 +57,7 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		VehicleCategoryMapper vehicleCategoryMapper = new VehicleCategoryMapper();
 		VehicleCategory vehicleCategory = rideRequest.getVehicleCategory();
 		rideRequestEntity.setVehicleCategory(vehicleCategoryMapper.getEntityWithOnlyPK(vehicleCategory));
-		
+
 		VehicleSubCategoryMapper vehicleSubCategoryMapper = new VehicleSubCategoryMapper();
 		VehicleSubCategory vehicleSubCategory = rideRequest.getVehicleSubCategory();
 		if (vehicleSubCategory!=null) rideRequestEntity.setVehicleSubCategory(vehicleSubCategoryMapper.getEntityWithOnlyPK(vehicleSubCategory));
@@ -70,13 +69,13 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		UserMapper userMapper = new UserMapper();
 		User user = rideRequest.getPassenger();
 		rideRequestEntity.setPassenger(userMapper.getEntityWithOnlyPK(user));
-		
+
 		RideMapper rideMapper = new RideMapper();
 		Ride ride = rideRequest.getAcceptedRide();
 		if (ride!=null) rideRequestEntity.setAcceptedRide(rideMapper.getEntityWithOnlyPK(ride));
-		
+
 		rideRequestEntity = getEntityChild(rideRequest, rideRequestEntity);
-		
+
 		/*
 		 * Pending -
 		 * 
@@ -85,16 +84,16 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		 */
 
 		return rideRequestEntity;
-		
+
 	}
 
 	@Override
 	public RideRequestEntity getEntityChild(RideRequest rideRequest, RideRequestEntity rideRequestEntity) {
 
 		RideMapper rideMapper = new RideMapper();
-		Collection<Ride> rides = rideRequest.getPreferredRides();
-		rideRequestEntity.setPreferredRides(rideMapper.getEntitiesWithOnlyPK(rides));
-		
+		rideRequestEntity.setPreferredRides(rideMapper.getEntitiesWithOnlyPK(rideRequestEntity.getPreferredRides(), 
+				rideRequest.getPreferredRides()));
+
 		return rideRequestEntity;
 	}
 
@@ -104,10 +103,10 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		rideRequest.setId(rideRequestEntity.getId());
 		return rideRequest;
 	}
-	
+
 	@Override
 	public RideRequest getDomainModel(RideRequestEntity rideRequestEntity) {
-		
+
 		RideRequest rideRequest = new RideRequest();
 		rideRequest = getDomainModelWithOnlyPK(rideRequestEntity);
 		rideRequest.setPickupTime(rideRequestEntity.getPickupTime());
@@ -121,17 +120,17 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		rideRequest.setRidePreference(rideRequestEntity.getRidePreference());
 		rideRequest.setTravelTime(rideRequestEntity.getTravelTime());
 		rideRequest.setTravelDistance(rideRequestEntity.getTravelDistance());
-		
+
 		//We need to just map Point ID from Hibernate as we are storing Point in MongoDB
 		rideRequest.getPickupPoint().set_id(rideRequestEntity.getPickupPointId());
 		rideRequest.getDropPoint().set_id(rideRequestEntity.getDropPointId());	
 		rideRequest.getRidePickupPoint().set_id(rideRequestEntity.getRidePickupPointId());
 		rideRequest.getRideDropPoint().set_id(rideRequestEntity.getRideDropPointId());	
-		
+
 		VehicleCategoryMapper vehicleCategoryMapper = new VehicleCategoryMapper();
 		VehicleCategoryEntity vehicleCategoryEntity = rideRequestEntity.getVehicleCategory();
 		rideRequest.setVehicleCategory(vehicleCategoryMapper.getDomainModelWithOnlyPK(vehicleCategoryEntity));
-		
+
 		VehicleSubCategoryMapper vehicleSubCategoryMapper = new VehicleSubCategoryMapper();
 		VehicleSubCategoryEntity vehicleSubCategoryEntity = rideRequestEntity.getVehicleSubCategory();
 		if (vehicleSubCategoryEntity!=null) rideRequest.setVehicleSubCategory(vehicleSubCategoryMapper.getDomainModelWithOnlyPK(vehicleSubCategoryEntity));
@@ -145,7 +144,7 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		UserMapper userMapper = new UserMapper();
 		UserEntity userEntity = rideRequestEntity.getPassenger();
 		rideRequest.setPassenger(userMapper.getDomainModelWithOnlyPK(userEntity));
-		
+
 		RideMapper rideMapper = new RideMapper();
 		RideEntity rideEntity = rideRequestEntity.getAcceptedRide();
 		if (rideEntity!=null) rideRequest.setAcceptedRide(rideMapper.getDomainModelWithOnlyPK(rideEntity));
@@ -156,17 +155,16 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 	@Override
 	public RideRequest getDomainModelChild(RideRequest rideRequest, RideRequestEntity rideRequestEntity) {
 		RideMapper rideMapper = new RideMapper();
-		Collection<RideEntity> rideEntities = rideRequestEntity.getPreferredRides();
-		rideRequest.setPreferredRides(rideMapper.getDomainModelsWithOnlyPK(rideEntities));
-		
+		rideRequest.setPreferredRides(rideMapper.getDomainModelsWithOnlyPK(rideRequest.getPreferredRides(), 
+				rideRequestEntity.getPreferredRides()));
+
 		return rideRequest;
 	}
 
 	@Override
-	public Collection<RideRequest> getDomainModels(Collection<RideRequestEntity> rideRequestEntities) {
-		Collection<RideRequest> rideRequests = new LinkedList<>();
-		RideRequest rideRequest = new RideRequest();
+	public Collection<RideRequest> getDomainModels(Collection<RideRequest> rideRequests, Collection<RideRequestEntity> rideRequestEntities) {
 		for (RideRequestEntity rideRequestEntity : rideRequestEntities) {
+			RideRequest rideRequest = new RideRequest();
 			rideRequest = getDomainModel(rideRequestEntity);
 			rideRequest = getDomainModelChild(rideRequest, rideRequestEntity);
 			rideRequests.add(rideRequest);
@@ -175,10 +173,9 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 	}
 
 	@Override
-	public Collection<RideRequest> getDomainModelsWithOnlyPK(Collection<RideRequestEntity> rideRequestEntities) {
-		Collection<RideRequest> rideRequests = new LinkedList<>();
-		RideRequest rideRequest = new RideRequest();
+	public Collection<RideRequest> getDomainModelsWithOnlyPK(Collection<RideRequest> rideRequests, Collection<RideRequestEntity> rideRequestEntities) {
 		for (RideRequestEntity rideRequestEntity : rideRequestEntities) {
+			RideRequest rideRequest = new RideRequest();
 			rideRequest = getDomainModelWithOnlyPK(rideRequestEntity);
 			rideRequests.add(rideRequest);
 		}
@@ -187,8 +184,7 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 
 
 	@Override
-	public Collection<RideRequestEntity> getEntities(Collection<RideRequest> rideRequests) {
-		Collection<RideRequestEntity> rideRequestEntities = new LinkedList<>();
+	public Collection<RideRequestEntity> getEntities(Collection<RideRequestEntity> rideRequestEntities, Collection<RideRequest> rideRequests) {
 		for (RideRequest rideRequest : rideRequests) {
 			rideRequestEntities.add(getEntity(rideRequest));
 		}
@@ -196,8 +192,7 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 	}
 
 	@Override
-	public Collection<RideRequestEntity> getEntitiesWithOnlyPK(Collection<RideRequest> rideRequests) {
-		Collection<RideRequestEntity> rideRequestEntities = new LinkedList<>();
+	public Collection<RideRequestEntity> getEntitiesWithOnlyPK(Collection<RideRequestEntity> rideRequestEntities, Collection<RideRequest> rideRequests) {
 		for (RideRequest rideRequest : rideRequests) {
 			rideRequestEntities.add(getEntityWithOnlyPK(rideRequest));
 		}

@@ -4,12 +4,8 @@ import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
-import com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
-import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
-import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
-import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 public class TrustNetworkMapper implements Mapper<TrustNetwork, TrustNetworkEntity>{
 
@@ -24,9 +20,9 @@ public class TrustNetworkMapper implements Mapper<TrustNetwork, TrustNetworkEnti
 	public TrustNetworkEntity getEntity(TrustNetwork trustNetwork) {
 		TrustNetworkEntity trustNetworkEntity = new TrustNetworkEntity();
 		trustNetworkEntity = getEntityWithOnlyPK(trustNetwork);
-		
+
 		trustNetworkEntity = getEntityChild(trustNetwork, trustNetworkEntity);
-		
+
 		return trustNetworkEntity;
 	}
 
@@ -47,51 +43,56 @@ public class TrustNetworkMapper implements Mapper<TrustNetwork, TrustNetworkEnti
 	@Override
 	public TrustNetworkEntity getEntityChild(TrustNetwork trustNetwork, TrustNetworkEntity trustNetworkEntity) {
 		TrustCategoryMapper trustCategoryMapper = new TrustCategoryMapper();
-		Collection<TrustCategory> trustCategories = trustNetwork.getTrustCategories();
-		trustNetworkEntity.setTrustCategories(trustCategoryMapper.getEntities(trustCategories));
-		
+		trustNetworkEntity.setTrustCategories(trustCategoryMapper.getEntities(trustNetworkEntity.getTrustCategories(), 
+				trustNetwork.getTrustCategories()));
+
 		UserMapper userMapper = new UserMapper();
-		Collection<User> users = trustNetwork.getFriends();
-		trustNetworkEntity.setFriends(userMapper.getEntities(users));
-		
+		trustNetworkEntity.setFriends(userMapper.getEntities(trustNetworkEntity.getFriends(), trustNetwork.getFriends()));
+
 		return trustNetworkEntity;
 	}
 
 	@Override
 	public TrustNetwork getDomainModelChild(TrustNetwork trustNetwork, TrustNetworkEntity trustNetworkEntity) {
-		
+
 		TrustCategoryMapper trustCategoryMapper = new TrustCategoryMapper();
-		Collection<TrustCategoryEntity> trustCategoryEntities = trustNetworkEntity.getTrustCategories();
-		trustNetwork.setTrustCategories(trustCategoryMapper.getDomainModels(trustCategoryEntities));
-		
+		trustNetwork.setTrustCategories(trustCategoryMapper.getDomainModels(trustNetwork.getTrustCategories(), 
+				trustNetworkEntity.getTrustCategories()));
+
 		UserMapper userMapper = new UserMapper();
-		Collection<UserEntity> userEntities = trustNetworkEntity.getFriends();
-		trustNetwork.setFriends(userMapper.getDomainModels(userEntities));
-	
+		trustNetwork.setFriends(userMapper.getDomainModels(trustNetwork.getFriends(), 
+				trustNetworkEntity.getFriends()));
+
 		return trustNetwork;
 	}
 
 	@Override
-	public Collection<TrustNetwork> getDomainModels(Collection<TrustNetworkEntity> entities) {
+	public Collection<TrustNetwork> getDomainModelsWithOnlyPK(Collection<TrustNetwork> models,
+			Collection<TrustNetworkEntity> entities) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<TrustNetwork> getDomainModelsWithOnlyPK(Collection<TrustNetworkEntity> entities) {
+	public Collection<TrustNetwork> getDomainModels(Collection<TrustNetwork> models,
+			Collection<TrustNetworkEntity> entities) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<TrustNetworkEntity> getEntities(Collection<TrustNetwork> model) {
+	public Collection<TrustNetworkEntity> getEntitiesWithOnlyPK(Collection<TrustNetworkEntity> entities,
+			Collection<TrustNetwork> model) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<TrustNetworkEntity> getEntitiesWithOnlyPK(Collection<TrustNetwork> model) {
+	public Collection<TrustNetworkEntity> getEntities(Collection<TrustNetworkEntity> entities,
+			Collection<TrustNetwork> model) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
 }
