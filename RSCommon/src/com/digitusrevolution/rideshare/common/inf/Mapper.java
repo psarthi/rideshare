@@ -2,33 +2,40 @@ package com.digitusrevolution.rideshare.common.inf;
 
 import java.util.Collection;
 
-
 public interface Mapper<M,E> {
 	
     /**
-     * Set entity by first invoking getEntityWithOnlyPK() and then setting rest of the properties at root level,   
-     * and then invoke getEntityChild() to set entity child
+     * Set entity by setting all of the basic properties at root level, which doesn't have any recursive dependencies
+     * Note - Recursive dependency is key here otherwise it will get into recursive loop
+     * 
+     * Set Child properties depending on the caller, if fetchChild is true, then set child else no
      * 
      *<P>Sample code -
      * 
      *<P>UserEntity userEntity = new UserEntity();
-     *<P>userEntity = getEntityWithOnlyPK(user);
+     *<p>userEntity.setId(user.getId());
 	 *<P>userEntity.setFirstName(user.getFirstName());
-	 *		
-	 *<P>userEntity = getEntityChild(user, userEntity);	
+	 *
+	 *<P>if (fetchChild){
+	 *<P>	userEntity = getEntityChild(user, userEntity);
+	 *<P>}
+	 *	
 	 *<P>return userEntity;				
      * 
      */
 	E getEntity(M model, boolean fetchChild);
 
     /**
-     * Set entity child 
+     * Set entity child including those which has recursive dependencies. Note - Don't set fetchChild as true for recursive dependencies
      * 
      *<P>Sample code -
      * 
-     *<P>	VehicleMapper vehicleMapper = new VehicleMapper();
-	 *<P>	Collection<Vehicle> vehicles = user.getVehicles();
-	 *<P>	userEntity.setVehicles(vehicleMapper.getEntities(vehicles));
+ 	 *<P>   VehicleMapper vehicleMapper = new VehicleMapper();
+	 *<P>	userEntity.setVehicles(vehicleMapper.getEntities(userEntity.getVehicles(), user.getVehicles(), true));
+	 *
+	 *<P>	RideMapper rideMapper = new RideMapper();
+	 *<P>	//Don't get childs of rides as it will get into recursive loop as ride has driver and driver has rides
+	 *<P>	userEntity.setRidesOffered(rideMapper.getEntities(userEntity.getRidesOffered(), user.getRidesOffered(), false));
 	 *
      *<P> 	return userEntity;
      * 
@@ -36,7 +43,10 @@ public interface Mapper<M,E> {
 	E getEntityChild(M model, E entity);
 	
     /**
-     * Set domain model by first invoking getEntityWithOnlyPK() and then setting rest of the properties at root level.
+     * Set domain model by setting all of the basic properties at root level, which doesn't have any recursive dependencies
+     * Note - Recursive dependency is key here otherwise it will get into recursive loop
+     * 
+     * Set Child properties depending on the caller, if fetchChild is true, then set child else no
      * 
      *<P> Sample code -
      * 
@@ -44,37 +54,44 @@ public interface Mapper<M,E> {
 	 *<P>	user.setId(userEntity.getId());
 	 *<P>	user.setFirstName(userEntity.getFirstName());
 	 *
+	 *<P> 	if (fetchChild){
+	 *<p>		user = getDomainModelChild(user, userEntity);
+	 *<p> 	}
      *<P> 	return user;
      *  
      */
 	M getDomainModel(E entity, boolean fetchChild);
 	
-	/**
-     * Set domain model child and this method needs to be invoked from DO.fetchChild() method
-     * or parent mapper getDomainModels() method
+    /**
+     * Set domain model child including those which has recursive dependencies. Note - Don't set fetchChild as true for recursive dependencies
+     * Note - This method needs to be called by fetchChild of DO's instead of calling getDomainModel with fetchChild false. 
+     *        as it would unnecessarily set the domain root level property once again 
      * 
-     *<P> Sample code -
+     *<P>Sample code -
      * 
-     *<P> 	VehicleMapper vehicleMapper = new VehicleMapper();
-	 *<P>	Collection<VehicleEntity> vehicleEntities = userEntity.getVehicles();
-	 *<P>	user.setVehicles(vehicleMapper.getDomainModels(vehicleEntities));
+ 	 *<P>   VehicleMapper vehicleMapper = new VehicleMapper();
+	 *<P>	user.setVehicles(vehicleMapper.getDomainModels(user.getVehicles(), userEntity.getVehicles(), true));
 	 *
-	 *<P> 	return user;
+	 *<P>	RideMapper rideMapper = new RideMapper();
+	 *<P>	//Don't get childs of rides as it will get into recursive loop as ride has driver and driver has rides
+	 *<P>	user.setRidesOffered(rideMapper.getDomainModels(user.getRidesOffered(), userEntity.getRidesOffered(), false));
+	 *
+     *<P> 	return user;
      * 
      */
 	M getDomainModelChild(M model, E entity);
 	
 
 	/**
-     * Set all domain models and invoke getDomainChild to set domain model child elements
+     * Set all domain models and its child depending on the caller fetchChild value
+     * i.e if fetchChild is true, child would be set else no
      * 
      *<P> Sample code -
      * 
      * 
 	 *<P>	for (UserEntity userEntity : userEntities) {
 	 *<P>		User user = new User();
-	 *<P>		user = getDomainModel(userEntity);
-	 *<P>		user = getDomainModelChild(user, userEntity);
+	 *<P>		user = getDomainModel(userEntity, fetchChild);
 	 *<P>		users.add(user);
 	 *<P>	}
 	 *
@@ -86,12 +103,13 @@ public interface Mapper<M,E> {
 
 
 	/**
-     * Set all entities
+     * Set all entities and its child depending on the caller fetchChild value
+     * i.e if fetchChild is true, child would be set else no
      * 
      *<P> Sample code -
      * 
 	 *<P>	for (User user : users) {
-	 *<P>		userEntities.add(getEntity(user));
+	 *<P>		userEntities.add(getEntity(user), fetchChild);
 	 *<P>	}
 	 *
 	 *<P>	return userEntities;		
