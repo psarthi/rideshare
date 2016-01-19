@@ -9,68 +9,34 @@ import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 public class TrustCategoryMapper implements Mapper<TrustCategory, TrustCategoryEntity>{
 
 	@Override
-	public TrustCategory getDomainModelWithOnlyPK(TrustCategoryEntity trustCategoryEntity) {
+	public TrustCategory getDomainModel(TrustCategoryEntity trustCategoryEntity, boolean fetchChild){
 		TrustCategory trustCategory = new TrustCategory();
 		trustCategory.setName(trustCategoryEntity.getName());
-		return trustCategory;
-	}
-
-	@Override
-	public TrustCategory getDomainModel(TrustCategoryEntity trustCategoryEntity){
-		TrustCategory trustCategory = new TrustCategory();
-		trustCategory = getDomainModelWithOnlyPK(trustCategoryEntity);
 		return trustCategory;		
 	}
 
 	@Override
-	public TrustCategoryEntity getEntityWithOnlyPK(TrustCategory trustCategory) {
+	public TrustCategoryEntity getEntity(TrustCategory trustCategory, boolean fetchChild){
 		TrustCategoryEntity trustCategoryEntity = new TrustCategoryEntity();
 		trustCategoryEntity.setName(trustCategory.getName());
 		return trustCategoryEntity;
 	}
 
 	@Override
-	public TrustCategoryEntity getEntity(TrustCategory trustCategory){
-		TrustCategoryEntity trustCategoryEntity = new TrustCategoryEntity();
-		trustCategoryEntity = getEntityWithOnlyPK(trustCategory);
-		return trustCategoryEntity;
-	}
-
-	@Override
 	public Collection<TrustCategoryEntity> getEntities(Collection<TrustCategoryEntity> trustCategoryEntities, 
-			Collection<TrustCategory> trustCategories){
+			Collection<TrustCategory> trustCategories, boolean fetchChild){
 		for (TrustCategory trustCategory : trustCategories) {
-			trustCategoryEntities.add(getEntity(trustCategory));
-		}
-		return trustCategoryEntities;
-	}
-
-	@Override
-	public Collection<TrustCategoryEntity> getEntitiesWithOnlyPK(Collection<TrustCategoryEntity> trustCategoryEntities,
-			Collection<TrustCategory> trustCategories) {
-		for (TrustCategory trustCategory : trustCategories) {
-			trustCategoryEntities.add(getEntityWithOnlyPK(trustCategory));
+			trustCategoryEntities.add(getEntity(trustCategory, fetchChild));
 		}
 		return trustCategoryEntities;
 	}
 
 	@Override
 	public Collection<TrustCategory> getDomainModels(
-			Collection<TrustCategory> trustCategories, Collection<TrustCategoryEntity> trustCategoryEntities){
+			Collection<TrustCategory> trustCategories, Collection<TrustCategoryEntity> trustCategoryEntities, boolean fetchChild){
 		for (TrustCategoryEntity trustCategoryEntity : trustCategoryEntities) {
 			TrustCategory trustCategory = new TrustCategory();
-			trustCategory = getDomainModel(trustCategoryEntity);
-			trustCategories.add(trustCategory);
-		}		
-		return trustCategories;
-	}
-
-	@Override
-	public Collection<TrustCategory> getDomainModelsWithOnlyPK(Collection<TrustCategory> trustCategories, 
-			Collection<TrustCategoryEntity> trustCategoryEntities) {
-		for (TrustCategoryEntity trustCategoryEntity : trustCategoryEntities) {
-			TrustCategory trustCategory = new TrustCategory();
-			trustCategory = getDomainModelWithOnlyPK(trustCategoryEntity);
+			trustCategory = getDomainModel(trustCategoryEntity, fetchChild);
 			trustCategories.add(trustCategory);
 		}		
 		return trustCategories;

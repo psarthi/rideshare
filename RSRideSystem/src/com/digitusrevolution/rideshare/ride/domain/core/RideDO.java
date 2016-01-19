@@ -64,12 +64,12 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 
 	public void setRide(Ride ride) {
 		this.ride = ride;
-		rideEntity = rideMapper.getEntity(ride);
+		rideEntity = rideMapper.getEntity(ride, true);
 	}
 
 	private void setRideEntity(RideEntity rideEntity) {
 		this.rideEntity = rideEntity;
-		ride = rideMapper.getDomainModel(rideEntity);
+		ride = rideMapper.getDomainModel(rideEntity, false);
 		//Purposefully not getting routes as it would be too much data
 		setRidePickupAndDropPoints(ride);
 	}
@@ -319,7 +319,8 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		int limit = Integer.parseInt(PropertyReader.getInstance().getProperty("UPCOMING_RIDE_RESULT_LIMIT"));
 		User user = RESTClientUtil.getUser(driverId);
 		UserMapper userMapper = new UserMapper();
-		UserEntity userEntity = userMapper.getEntity(user);
+		//We don't need child object of User entity, just the basic user entity is fine as it primarily needs only PK
+		UserEntity userEntity = userMapper.getEntity(user, false);
 		List<RideEntity> rideEntities = rideDAO.getUpcomingRides(userEntity, limit);
 		List<Ride> rides = new LinkedList<>();
 		for (RideEntity rideEntity : rideEntities) {

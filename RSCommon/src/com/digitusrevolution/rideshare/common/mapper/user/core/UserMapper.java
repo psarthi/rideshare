@@ -15,16 +15,9 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 public class UserMapper implements Mapper<User, UserEntity> {
 
 	@Override
-	public UserEntity getEntityWithOnlyPK(User user){
+	public UserEntity getEntity(User user, boolean fetchChild){
 		UserEntity userEntity = new UserEntity();
 		userEntity.setId(user.getId());
-		return userEntity;
-	}
-	
-	@Override
-	public UserEntity getEntity(User user){
-		UserEntity userEntity = new UserEntity();
-		userEntity = getEntityWithOnlyPK(user);
 		userEntity.setFirstName(user.getFirstName());
 		userEntity.setLastName(user.getLastName());
 		userEntity.setSex(user.getSex());
@@ -34,9 +27,12 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		
 		CityMapper cityMapper = new CityMapper();
 		City city = user.getCity();
-		userEntity.setCity(cityMapper.getEntity(city));
+		userEntity.setCity(cityMapper.getEntity(city,fetchChild));
 		
-		userEntity = getEntityChild(user, userEntity);
+		if (fetchChild){
+			userEntity = getEntityChild(user, userEntity);			
+		} 
+
 		
 		/*
 		 * Pending -
@@ -57,34 +53,30 @@ public class UserMapper implements Mapper<User, UserEntity> {
 	public UserEntity getEntityChild(User user, UserEntity userEntity){
 		
 		VehicleMapper vehicleMapper = new VehicleMapper();
-		userEntity.setVehicles(vehicleMapper.getEntities(userEntity.getVehicles(), user.getVehicles()));
+		userEntity.setVehicles(vehicleMapper.getEntities(userEntity.getVehicles(), user.getVehicles(), true));
 		
 		RoleMapper roleMapper = new RoleMapper();
-		userEntity.setRoles(roleMapper.getEntities(userEntity.getRoles(), user.getRoles()));
+		userEntity.setRoles(roleMapper.getEntities(userEntity.getRoles(), user.getRoles(), true));
 		
 		RideMapper rideMapper = new RideMapper();
-		userEntity.setRidesOffered(rideMapper.getEntitiesWithOnlyPK(userEntity.getRidesOffered(), user.getRidesOffered()));
+		//Don't get childs of rides as it will get into recursive loop as ride has driver and driver has rides
+		userEntity.setRidesOffered(rideMapper.getEntities(userEntity.getRidesOffered(), user.getRidesOffered(), false));
 		
-		userEntity.setRidesTaken(rideMapper.getEntitiesWithOnlyPK(userEntity.getRidesTaken(), user.getRidesTaken()));
+		//Don't get childs of rides as it will get into recursive loop as ride has driver and driver has rides
+		userEntity.setRidesTaken(rideMapper.getEntities(userEntity.getRidesTaken(), user.getRidesTaken(), false));
 		
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
-		userEntity.setRideRequests(rideRequestMapper.getEntitiesWithOnlyPK(userEntity.getRideRequests(), user.getRideRequests()));
+		//Don't get childs of ride request as it will get into recursive loop as ride request has passenger and passenger has rides
+		userEntity.setRideRequests(rideRequestMapper.getEntities(userEntity.getRideRequests(), user.getRideRequests(), false));
 		
 		return userEntity;
 		
 	}
 	
 	@Override
-	public User getDomainModelWithOnlyPK(UserEntity userEntity){
+	public User getDomainModel(UserEntity userEntity, boolean fetchChild){
 		User user = new User();
 		user.setId(userEntity.getId());
-		return user;
-	}
-	
-	@Override
-	public User getDomainModel(UserEntity userEntity){
-		User user = new User();
-		user = getDomainModelWithOnlyPK(userEntity);
 		user.setFirstName(userEntity.getFirstName());
 		user.setLastName(userEntity.getLastName());
 		user.setSex(userEntity.getSex());
@@ -94,67 +86,53 @@ public class UserMapper implements Mapper<User, UserEntity> {
 
 		CityMapper cityMapper = new CityMapper();
 		CityEntity cityEntity = userEntity.getCity();
-		user.setCity(cityMapper.getDomainModel(cityEntity));
+		user.setCity(cityMapper.getDomainModel(cityEntity, fetchChild));
+		
+		if (fetchChild){
+			user = getDomainModelChild(user, userEntity);
+		}
 		
 		return user;
 	}
-	
+			
 	@Override
 	public User getDomainModelChild(User user, UserEntity userEntity){
 		
 		VehicleMapper vehicleMapper = new VehicleMapper();
-		user.setVehicles(vehicleMapper.getDomainModels(user.getVehicles(), userEntity.getVehicles()));
+		user.setVehicles(vehicleMapper.getDomainModels(user.getVehicles(), userEntity.getVehicles(), true));
 
 		RoleMapper roleMapper = new RoleMapper();
-		user.setRoles(roleMapper.getDomainModels(user.getRoles(), userEntity.getRoles()));
+		user.setRoles(roleMapper.getDomainModels(user.getRoles(), userEntity.getRoles(), true));
 		
 		RideMapper rideMapper = new RideMapper();
-		user.setRidesOffered(rideMapper.getDomainModelsWithOnlyPK(user.getRidesOffered(), userEntity.getRidesOffered()));
+		//Don't get childs of rides as it will get into recursive loop as ride has driver and driver has rides
+		user.setRidesOffered(rideMapper.getDomainModels(user.getRidesOffered(), userEntity.getRidesOffered(), false));
 		
-		user.setRidesTaken(rideMapper.getDomainModelsWithOnlyPK(user.getRidesTaken(), userEntity.getRidesTaken()));
+		//Don't get childs of rides as it will get into recursive loop as ride has driver and driver has rides
+		user.setRidesTaken(rideMapper.getDomainModels(user.getRidesTaken(), userEntity.getRidesTaken(), false));
 		
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
-		user.setRideRequests(rideRequestMapper.getDomainModelsWithOnlyPK(user.getRideRequests(), userEntity.getRideRequests()));
+		//Don't get childs of ride request as it will get into recursive loop as ride request has passenger and passenger has rides
+		user.setRideRequests(rideRequestMapper.getDomainModels(user.getRideRequests(), userEntity.getRideRequests(), false));
 		
 		return user;
 	}
 	
 	@Override
-	public Collection<User> getDomainModelsWithOnlyPK(Collection<User> users, Collection<UserEntity> userEntities){
+	public Collection<User> getDomainModels(Collection<User> users, Collection<UserEntity> userEntities, boolean fetchChild){
 		for (UserEntity userEntity : userEntities) {
 			User user = new User();
-			user = getDomainModelWithOnlyPK(userEntity);
+			user = getDomainModel(userEntity, fetchChild);
 			users.add(user);
 		}
 		return users;		
 	}
 	
 	@Override
-	public Collection<User> getDomainModels(Collection<User> users, Collection<UserEntity> userEntities){
-		for (UserEntity userEntity : userEntities) {
-			User user = new User();
-			user = getDomainModel(userEntity);
-			user = getDomainModelChild(user, userEntity);
-			users.add(user);
-		}
-		return users;		
-	}
-	
-	@Override
-	public Collection<UserEntity> getEntitiesWithOnlyPK(Collection<UserEntity> userEntities, Collection<User> users){
+	public Collection<UserEntity> getEntities(Collection<UserEntity> userEntities, Collection<User> users, boolean fetchChild){
 		for (User user : users) {
-			userEntities.add(getEntityWithOnlyPK(user));
+			userEntities.add(getEntity(user, fetchChild));
 		}
 		return userEntities;		
-
-	}
-	
-	@Override
-	public Collection<UserEntity> getEntities(Collection<UserEntity> userEntities, Collection<User> users){
-		for (User user : users) {
-			userEntities.add(getEntity(user));
-		}
-		return userEntities;		
-	}
-		
+	}		
 }

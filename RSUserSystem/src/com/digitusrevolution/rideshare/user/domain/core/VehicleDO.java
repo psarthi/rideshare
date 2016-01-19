@@ -32,12 +32,12 @@ public class VehicleDO implements DomainObjectPKInteger<Vehicle>{
 
 	public void setVehicle(Vehicle vehicle) {
 		this.vehicle = vehicle;
-		vehicleEntity = vehicleMapper.getEntity(vehicle);
+		vehicleEntity = vehicleMapper.getEntity(vehicle, true);
 	}
 
 	private void setVehicleEntity(VehicleEntity vehicleEntity) {
 		this.vehicleEntity = vehicleEntity;
-		vehicle = vehicleMapper.getDomainModel(vehicleEntity);
+		vehicle = vehicleMapper.getDomainModel(vehicleEntity,false);
 	}
 
 	@Override

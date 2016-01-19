@@ -29,12 +29,12 @@ public class VehicleCategoryDO implements DomainObjectPKInteger<VehicleCategory>
 	
 	public void setVehicleCategory(VehicleCategory vehicleCategory) {
 		this.vehicleCategory = vehicleCategory;
-		vehicleCategoryEntity = vehicleCategoryMapper.getEntity(vehicleCategory);
+		vehicleCategoryEntity = vehicleCategoryMapper.getEntity(vehicleCategory, true);
 	}
 
 	private void setVehicleCategoryEntity(VehicleCategoryEntity vehicleCategoryEntity) {
 		this.vehicleCategoryEntity = vehicleCategoryEntity;
-		vehicleCategory = vehicleCategoryMapper.getDomainModel(vehicleCategoryEntity);
+		vehicleCategory = vehicleCategoryMapper.getDomainModel(vehicleCategoryEntity, false);
 	}
 
 	@Override

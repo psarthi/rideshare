@@ -6,19 +6,6 @@ import java.util.Collection;
 public interface Mapper<M,E> {
 	
     /**
-     * Set entity PK only
-     * 
-     *<P>Sample code -
-     * 
-     *<P>UserEntity userEntity = new UserEntity();
-     *<P>userEntity.setId(user.getId());
-	 *	
-	 *<P>return userEntity;				
-     * 
-     */
-	E getEntityWithOnlyPK(M model);
-
-    /**
      * Set entity by first invoking getEntityWithOnlyPK() and then setting rest of the properties at root level,   
      * and then invoke getEntityChild() to set entity child
      * 
@@ -32,7 +19,7 @@ public interface Mapper<M,E> {
 	 *<P>return userEntity;				
      * 
      */
-	E getEntity(M model);
+	E getEntity(M model, boolean fetchChild);
 
     /**
      * Set entity child 
@@ -47,19 +34,6 @@ public interface Mapper<M,E> {
      * 
      */
 	E getEntityChild(M model, E entity);
-
-	/**
-     * Set domain model PK only
-     * 
-     *<P> Sample code -
-     * 
-     *<P> 	User user = new User();
-	 *<P>	user.setId(userEntity.getId());
-	 *
-     *<P> 	return user;
-     * 
-     */
-	M getDomainModelWithOnlyPK(E entity);
 	
     /**
      * Set domain model by first invoking getEntityWithOnlyPK() and then setting rest of the properties at root level.
@@ -73,7 +47,7 @@ public interface Mapper<M,E> {
      *<P> 	return user;
      *  
      */
-	M getDomainModel(E entity);
+	M getDomainModel(E entity, boolean fetchChild);
 	
 	/**
      * Set domain model child and this method needs to be invoked from DO.fetchChild() method
@@ -90,22 +64,6 @@ public interface Mapper<M,E> {
      */
 	M getDomainModelChild(M model, E entity);
 	
-	/**
-     * Set all domain models PK only
-     * 
-     *<P> Sample code -
-     * 
-	 *<P>	for (UserEntity userEntity : userEntities) {
-	 *<P>		User user = new User();
-	 *<P>		user = getDomainModelWithOnlyPK(userEntity);
-	 *<P>		users.add(user);
-	 *<P>	}
-	 *
-	 *<P>	return users;		
-	 *
-     * 
-     */
-	Collection<M> getDomainModelsWithOnlyPK(Collection<M> models, Collection<E> entities);
 
 	/**
      * Set all domain models and invoke getDomainChild to set domain model child elements
@@ -124,22 +82,7 @@ public interface Mapper<M,E> {
 	 *
      * 
      */
-	Collection<M> getDomainModels(Collection<M> models, Collection<E> entities);
-	
-	/**
-     * Set all entities PK only
-     * 
-     *<P> Sample code -
-     * 
-	 *<P>	for (User user : users) {
-	 *<P>		userEntities.add(getEntityWithOnlyPK(user));
-	 *<P>	}
-	 *
-	 *<P>	return userEntities;		
-	 *
-	 *	
-     */
-	Collection<E> getEntitiesWithOnlyPK(Collection<E> entities, Collection<M> model);
+	Collection<M> getDomainModels(Collection<M> models, Collection<E> entities, boolean fetchChild);
 
 
 	/**
@@ -155,6 +98,6 @@ public interface Mapper<M,E> {
 	 *
 	 *	
      */
-	Collection<E> getEntities(Collection<E> entities, Collection<M> model);
+	Collection<E> getEntities(Collection<E> entities, Collection<M> model, boolean fetchChild);
 
 }

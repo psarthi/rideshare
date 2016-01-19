@@ -15,95 +15,62 @@ import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 public class VehicleMapper implements Mapper<Vehicle, VehicleEntity>{
 	
 	@Override
-	public VehicleEntity getEntityWithOnlyPK(Vehicle vehicle) {
+	public VehicleEntity getEntity(Vehicle vehicle, boolean fetchChild){
 		VehicleEntity vehicleEntity = new VehicleEntity();
 		vehicleEntity.setId(vehicle.getId());
-		return vehicleEntity;
-	}
-
-	@Override
-	public VehicleEntity getEntity(Vehicle vehicle){
-		VehicleEntity vehicleEntity = new VehicleEntity();
-		vehicleEntity = getEntityWithOnlyPK(vehicle);
 		
 		VehicleCategoryMapper vehicleCategoryMapper = new VehicleCategoryMapper();
 		VehicleCategory vehicleCategory = vehicle.getVehicleCategory();
-		vehicleEntity.setVehicleCategory(vehicleCategoryMapper.getEntity(vehicleCategory));
+		vehicleEntity.setVehicleCategory(vehicleCategoryMapper.getEntity(vehicleCategory, fetchChild));
 		
 		VehicleSubCategoryMapper vehicleSubCategoryMapper = new VehicleSubCategoryMapper();
 		VehicleSubCategory vehicleSubCategory = vehicle.getVehicleSubCategory();
-		vehicleEntity.setVehicleSubCategory(vehicleSubCategoryMapper.getEntity(vehicleSubCategory));
-		
+		vehicleEntity.setVehicleSubCategory(vehicleSubCategoryMapper.getEntity(vehicleSubCategory, fetchChild));
+
 		return vehicleEntity;
 	}
 	
 	@Override
 	public VehicleEntity getEntityChild(Vehicle vehicle, VehicleEntity vehicleEntity){
-		return null;
+		return vehicleEntity;
 	}
 	
 	@Override
-	public Vehicle getDomainModelWithOnlyPK(VehicleEntity vehicleEntity) {
+	public Vehicle getDomainModel(VehicleEntity vehicleEntity, boolean fetchChild){
 		Vehicle vehicle = new Vehicle();
 		vehicle.setId(vehicleEntity.getId());
-		return vehicle;
-	}
-
-	@Override
-	public Vehicle getDomainModel(VehicleEntity vehicleEntity){
-		Vehicle vehicle = new Vehicle();
-		vehicle = getDomainModelWithOnlyPK(vehicleEntity);
 		
 		VehicleCategoryMapper vehicleCategoryMapper = new VehicleCategoryMapper();
 		VehicleCategoryEntity vehicleCategoryEntity = vehicleEntity.getVehicleCategory();
-		vehicle.setVehicleCategory(vehicleCategoryMapper.getDomainModel(vehicleCategoryEntity));
+		vehicle.setVehicleCategory(vehicleCategoryMapper.getDomainModel(vehicleCategoryEntity, fetchChild));
 		
 		VehicleSubCategoryMapper vehicleSubCategoryMapper = new VehicleSubCategoryMapper();
 		VehicleSubCategoryEntity vehicleSubCategoryEntity = vehicleEntity.getVehicleSubCategory();
-		vehicle.setVehicleSubCategory(vehicleSubCategoryMapper.getDomainModel(vehicleSubCategoryEntity));
+		vehicle.setVehicleSubCategory(vehicleSubCategoryMapper.getDomainModel(vehicleSubCategoryEntity, fetchChild));
 		
 		return vehicle;
 	}
 	
 	@Override
 	public Vehicle getDomainModelChild(Vehicle vehicle, VehicleEntity vehicleEntity){		
-		return null;		
+		return vehicle;		
 	}
 	
 	@Override
-	public Collection<VehicleEntity> getEntities(Collection<VehicleEntity> vehicleEntities, Collection<Vehicle> vehicles){		
+	public Collection<VehicleEntity> getEntities(Collection<VehicleEntity> vehicleEntities, Collection<Vehicle> vehicles, boolean fetchChild){		
 		for (Vehicle vehicle : vehicles) {
-			vehicleEntities.add(getEntity(vehicle));
+			vehicleEntities.add(getEntity(vehicle,fetchChild));
 		}
 		return vehicleEntities;
 	}
 
 	@Override
-	public Collection<VehicleEntity> getEntitiesWithOnlyPK(Collection<VehicleEntity> vehicleEntities, Collection<Vehicle> vehicles) {
-		for (Vehicle vehicle : vehicles) {
-			vehicleEntities.add(getEntityWithOnlyPK(vehicle));
-		}
-		return vehicleEntities;
-	}
-
-	@Override
-	public Collection<Vehicle> getDomainModels(Collection<Vehicle> vehicles, Collection<VehicleEntity> vehicleEntities){
+	public Collection<Vehicle> getDomainModels(Collection<Vehicle> vehicles, Collection<VehicleEntity> vehicleEntities, boolean fetchChild){
 		for (VehicleEntity vehicleEntity : vehicleEntities) {
 			Vehicle vehicle = new Vehicle();
-			vehicle = getDomainModel(vehicleEntity);
+			vehicle = getDomainModel(vehicleEntity,fetchChild);
 			vehicles.add(vehicle);	
 		}
 		return vehicles;
 	}
-
-	@Override
-	public Collection<Vehicle> getDomainModelsWithOnlyPK(Collection<Vehicle> vehicles,Collection<VehicleEntity> vehicleEntities) {
-		for (VehicleEntity vehicleEntity : vehicleEntities) {
-			Vehicle vehicle = new Vehicle();
-			vehicle = getDomainModelWithOnlyPK(vehicleEntity);
-			vehicles.add(vehicle);	
-		}
-		return vehicles;
-	}
-
 }

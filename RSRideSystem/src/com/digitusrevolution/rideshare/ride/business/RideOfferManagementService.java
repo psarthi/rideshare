@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.geojson.FeatureCollection;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
@@ -26,6 +27,18 @@ public class RideOfferManagementService {
 	
 	private static final Logger logger = LogManager.getLogger(RideOfferManagementService.class.getName());
 	
+	/*
+	 * Purpose - Create a ride in the system
+	 * 
+	 * @param Ride - Ride details
+	 * @param GoogleDirection - Containing the exact route information which user would take for the ride 
+	 * 
+	 * Note -
+	 * 
+	 * Providing route options is responsibility of front end and while calling the service, it should not send the exact route and not multiple routes
+	 * 
+	 * 
+	 */
 	public List<Integer> offerRide(Ride ride){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -76,5 +89,138 @@ public class RideOfferManagementService {
 		
 		return rideIds;
 	}
+	
+	public List<Ride> getUpcomingRides(int driverId){
+		
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transation = null;	
+		List<Ride> upcomingRides = null;
+		try {
+			transation = session.beginTransaction();
+		
+			RideDO rideDO = new RideDO();
+			upcomingRides = rideDO.getUpcomingRides(driverId);
 
+			transation.commit();
+		} catch (RuntimeException e) {
+			if (transation!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transation.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		
+		return upcomingRides;
+	}
+	
+	public FeatureCollection getMatchingRides(int rideRequestId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transation = null;	
+		FeatureCollection featureCollection = new FeatureCollection();
+		try {
+			transation = session.beginTransaction();
+
+			RideDO rideDO = new RideDO();
+			featureCollection = rideDO.getMatchingRides(rideRequestId);			
+
+			transation.commit();
+		} catch (RuntimeException e) {
+			if (transation!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transation.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return featureCollection;	
+	}
+	
+	public void acceptRideRequest(int rideId, int rideRequestId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transation = null;	
+		try {
+			transation = session.beginTransaction();
+
+			RideDO rideDO = new RideDO();
+			rideDO.acceptRideRequest(rideId, rideRequestId);;			
+
+			transation.commit();
+		} catch (RuntimeException e) {
+			if (transation!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transation.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}	
+	}
+	
+	public void rejectRideRequest(int rideId, int rideRequestId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transation = null;	
+		try {
+			transation = session.beginTransaction();
+
+			RideDO rideDO = new RideDO();
+			rideDO.rejectRideRequest(rideId, rideRequestId);			
+
+			transation.commit();
+		} catch (RuntimeException e) {
+			if (transation!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transation.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}	
+	}
 }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

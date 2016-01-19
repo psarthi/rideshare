@@ -65,12 +65,12 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 
 	public void setRideRequest(RideRequest rideRequest) {
 		this.rideRequest = rideRequest;
-		rideRequestEntity = rideRequestMapper.getEntity(rideRequest);
+		rideRequestEntity = rideRequestMapper.getEntity(rideRequest, true);
 	}
 
 	private void setRideRequestEntity(RideRequestEntity rideRequestEntity) {
 		this.rideRequestEntity = rideRequestEntity;
-		rideRequest = rideRequestMapper.getDomainModel(rideRequestEntity);
+		rideRequest = rideRequestMapper.getDomainModel(rideRequestEntity, false);
 		setRideRequestPoint(rideRequest);
 	}
 

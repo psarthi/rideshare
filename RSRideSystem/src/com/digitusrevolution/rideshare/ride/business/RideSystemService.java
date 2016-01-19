@@ -41,33 +41,6 @@ public class RideSystemService {
 		return featureCollection;	
 	}
 
-	public FeatureCollection getMatchingRides(int rideRequestId){
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
-		FeatureCollection featureCollection = new FeatureCollection();
-		try {
-			transation = session.beginTransaction();
-
-			RideDO rideDO = new RideDO();
-			featureCollection = rideDO.getMatchingRides(rideRequestId);			
-
-			transation.commit();
-		} catch (RuntimeException e) {
-			if (transation!=null){
-				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
-				throw e;
-			}
-		}
-		finally {
-			if (session.isOpen()){
-				logger.info("Closing Session");
-				session.close();				
-			}
-		}
-		return featureCollection;	
-	}
-
 	public FeatureCollection getRidePoints(int rideId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
@@ -148,6 +121,11 @@ public class RideSystemService {
 			}
 		}
 		return featureCollection;	
+	}
+
+	//TBD - It will be based on front end and notification mechanism
+	public void notifyDrivers(){		
+		
 	}
 
 }

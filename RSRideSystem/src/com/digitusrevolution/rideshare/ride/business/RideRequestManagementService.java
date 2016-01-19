@@ -3,7 +3,6 @@ package com.digitusrevolution.rideshare.ride.business;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -87,15 +86,13 @@ public class RideRequestManagementService {
 		return id;
 	}
 	
-	public void respondToRideRequest(RideRequest rideRequest){
+	
+	public void respondToRideRequest(){
 		
 	}
-
-	public void notifyDrivers(RideRequest rideRequest, List<User> drivers){
-		
-	}
-
-	public void notifyPassenger(int passengerId){
+	
+	//TBD - It will be based on front end and notification mechanism
+	public void notifyPassenger(){
 		
 	}
 	

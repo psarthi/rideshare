@@ -26,14 +26,6 @@ public class RideSystemResource {
 	}
 
 	@GET
-	@Path("/rides/search/{rideRequestId}")
-	public Response getMatchingRides(@PathParam("rideRequestId") int rideRequestId){
-		RideSystemService rideSystemService = new RideSystemService();
-		FeatureCollection featureCollection = rideSystemService.getMatchingRides(rideRequestId);
-		return Response.ok(featureCollection).build();		
-	}
-
-	@GET
 	@Path("/ride/route/{rideId}")
 	public Response getRidePoints(@PathParam("rideId") int rideId){
 		RideSystemService rideSystemService = new RideSystemService();

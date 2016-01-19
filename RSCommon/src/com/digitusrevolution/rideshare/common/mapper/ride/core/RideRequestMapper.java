@@ -23,17 +23,10 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>{
 
 	@Override
-	public RideRequestEntity getEntityWithOnlyPK(RideRequest rideRequest) {
+	public RideRequestEntity getEntity(RideRequest rideRequest, boolean fetchChild) {
+
 		RideRequestEntity rideRequestEntity = new RideRequestEntity();
 		rideRequestEntity.setId(rideRequest.getId());
-		return rideRequestEntity;
-	}
-
-	@Override
-	public RideRequestEntity getEntity(RideRequest rideRequest) {
-
-		RideRequestEntity rideRequestEntity = new RideRequestEntity();
-		rideRequestEntity = getEntityWithOnlyPK(rideRequest);
 		rideRequestEntity.setPickupTime(rideRequest.getPickupTime());
 		rideRequestEntity.setPickupTimeVariation(rideRequest.getPickupTimeVariation());
 		rideRequestEntity.setSexPreference(rideRequest.getSexPreference());
@@ -56,25 +49,26 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 
 		VehicleCategoryMapper vehicleCategoryMapper = new VehicleCategoryMapper();
 		VehicleCategory vehicleCategory = rideRequest.getVehicleCategory();
-		rideRequestEntity.setVehicleCategory(vehicleCategoryMapper.getEntityWithOnlyPK(vehicleCategory));
+		//We can get child as it doesn't have any ride request and will not get into recursive loop
+		rideRequestEntity.setVehicleCategory(vehicleCategoryMapper.getEntity(vehicleCategory, fetchChild));
 
 		VehicleSubCategoryMapper vehicleSubCategoryMapper = new VehicleSubCategoryMapper();
 		VehicleSubCategory vehicleSubCategory = rideRequest.getVehicleSubCategory();
-		if (vehicleSubCategory!=null) rideRequestEntity.setVehicleSubCategory(vehicleSubCategoryMapper.getEntityWithOnlyPK(vehicleSubCategory));
+		//We can get child as it doesn't have any ride request and will not get into recursive loop
+		if (vehicleSubCategory!=null) rideRequestEntity.setVehicleSubCategory(vehicleSubCategoryMapper.getEntity(vehicleSubCategory, fetchChild));
 
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
 		TrustNetwork trustNetwork = rideRequest.getTrustNetwork();
-		rideRequestEntity.setTrustNetwork(trustNetworkMapper.getEntity(trustNetwork));
+		rideRequestEntity.setTrustNetwork(trustNetworkMapper.getEntity(trustNetwork, fetchChild));
 
 		UserMapper userMapper = new UserMapper();
 		User user = rideRequest.getPassenger();
-		rideRequestEntity.setPassenger(userMapper.getEntityWithOnlyPK(user));
+		//Don't get child of user as user has ride request and ride request has user, so it will get into recursive loop
+		rideRequestEntity.setPassenger(userMapper.getEntity(user, false));
 
-		RideMapper rideMapper = new RideMapper();
-		Ride ride = rideRequest.getAcceptedRide();
-		if (ride!=null) rideRequestEntity.setAcceptedRide(rideMapper.getEntityWithOnlyPK(ride));
-
-		rideRequestEntity = getEntityChild(rideRequest, rideRequestEntity);
+		if (fetchChild){
+			rideRequestEntity = getEntityChild(rideRequest, rideRequestEntity);			
+		}
 
 		/*
 		 * Pending -
@@ -91,24 +85,23 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 	public RideRequestEntity getEntityChild(RideRequest rideRequest, RideRequestEntity rideRequestEntity) {
 
 		RideMapper rideMapper = new RideMapper();
-		rideRequestEntity.setPreferredRides(rideMapper.getEntitiesWithOnlyPK(rideRequestEntity.getPreferredRides(), 
-				rideRequest.getPreferredRides()));
+		rideRequestEntity.setPreferredRides(rideMapper.getEntities(rideRequestEntity.getPreferredRides(), 
+				rideRequest.getPreferredRides(), true));
+		
+		Ride ride = rideRequest.getAcceptedRide();
+		//Don't get child of ride has ride request and ride request has ride, so it will get into recursive loop
+		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
+		//is called irrespective of fetchChild status
+		if (ride!=null) rideRequestEntity.setAcceptedRide(rideMapper.getEntity(ride, false));
 
 		return rideRequestEntity;
 	}
 
 	@Override
-	public RideRequest getDomainModelWithOnlyPK(RideRequestEntity rideRequestEntity) {
+	public RideRequest getDomainModel(RideRequestEntity rideRequestEntity, boolean fetchChild) {
+
 		RideRequest rideRequest = new RideRequest();
 		rideRequest.setId(rideRequestEntity.getId());
-		return rideRequest;
-	}
-
-	@Override
-	public RideRequest getDomainModel(RideRequestEntity rideRequestEntity) {
-
-		RideRequest rideRequest = new RideRequest();
-		rideRequest = getDomainModelWithOnlyPK(rideRequestEntity);
 		rideRequest.setPickupTime(rideRequestEntity.getPickupTime());
 		rideRequest.setPickupTimeVariation(rideRequestEntity.getPickupTimeVariation());
 		rideRequest.setSexPreference(rideRequestEntity.getSexPreference());
@@ -129,25 +122,27 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 
 		VehicleCategoryMapper vehicleCategoryMapper = new VehicleCategoryMapper();
 		VehicleCategoryEntity vehicleCategoryEntity = rideRequestEntity.getVehicleCategory();
-		rideRequest.setVehicleCategory(vehicleCategoryMapper.getDomainModelWithOnlyPK(vehicleCategoryEntity));
+		//We can get child as it doesn't have any ride request and will not get into recursive loop
+		rideRequest.setVehicleCategory(vehicleCategoryMapper.getDomainModel(vehicleCategoryEntity, fetchChild));
 
 		VehicleSubCategoryMapper vehicleSubCategoryMapper = new VehicleSubCategoryMapper();
 		VehicleSubCategoryEntity vehicleSubCategoryEntity = rideRequestEntity.getVehicleSubCategory();
-		if (vehicleSubCategoryEntity!=null) rideRequest.setVehicleSubCategory(vehicleSubCategoryMapper.getDomainModelWithOnlyPK(vehicleSubCategoryEntity));
+		//We can get child as it doesn't have any ride request and will not get into recursive loop
+		if (vehicleSubCategoryEntity!=null) rideRequest.setVehicleSubCategory(vehicleSubCategoryMapper.getDomainModel(vehicleSubCategoryEntity, fetchChild));
 
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
 		TrustNetworkEntity trustNetworkEntity = rideRequestEntity.getTrustNetwork();
-		TrustNetwork trustNetwork = trustNetworkMapper.getDomainModel(trustNetworkEntity);
-		trustNetwork = trustNetworkMapper.getDomainModelChild(trustNetwork, trustNetworkEntity);
+		TrustNetwork trustNetwork = trustNetworkMapper.getDomainModel(trustNetworkEntity, fetchChild);
 		rideRequest.setTrustNetwork(trustNetwork);
 
 		UserMapper userMapper = new UserMapper();
 		UserEntity userEntity = rideRequestEntity.getPassenger();
-		rideRequest.setPassenger(userMapper.getDomainModelWithOnlyPK(userEntity));
-
-		RideMapper rideMapper = new RideMapper();
-		RideEntity rideEntity = rideRequestEntity.getAcceptedRide();
-		if (rideEntity!=null) rideRequest.setAcceptedRide(rideMapper.getDomainModelWithOnlyPK(rideEntity));
+		//Don't get child of user as user has ride request and ride request has user, so it will get into recursive loop
+		rideRequest.setPassenger(userMapper.getDomainModel(userEntity, false));
+		
+		if (fetchChild){
+			rideRequest = getDomainModelChild(rideRequest, rideRequestEntity);			
+		}
 		return rideRequest;
 
 	}
@@ -155,28 +150,23 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 	@Override
 	public RideRequest getDomainModelChild(RideRequest rideRequest, RideRequestEntity rideRequestEntity) {
 		RideMapper rideMapper = new RideMapper();
-		rideRequest.setPreferredRides(rideMapper.getDomainModelsWithOnlyPK(rideRequest.getPreferredRides(), 
-				rideRequestEntity.getPreferredRides()));
+		rideRequest.setPreferredRides(rideMapper.getDomainModels(rideRequest.getPreferredRides(), 
+				rideRequestEntity.getPreferredRides(), true));
+	
+		RideEntity rideEntity = rideRequestEntity.getAcceptedRide();
+		//Don't get child of ride has ride request and ride request has ride, so it will get into recursive loop
+		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
+		//is called irrespective of fetchChild status. Ride request is calling ride domain function and ride is calling ride request domain function
+		if (rideEntity!=null) rideRequest.setAcceptedRide(rideMapper.getDomainModel(rideEntity, false));
 
 		return rideRequest;
 	}
 
 	@Override
-	public Collection<RideRequest> getDomainModels(Collection<RideRequest> rideRequests, Collection<RideRequestEntity> rideRequestEntities) {
+	public Collection<RideRequest> getDomainModels(Collection<RideRequest> rideRequests, Collection<RideRequestEntity> rideRequestEntities, boolean fetchChild) {
 		for (RideRequestEntity rideRequestEntity : rideRequestEntities) {
 			RideRequest rideRequest = new RideRequest();
-			rideRequest = getDomainModel(rideRequestEntity);
-			rideRequest = getDomainModelChild(rideRequest, rideRequestEntity);
-			rideRequests.add(rideRequest);
-		}
-		return rideRequests;		
-	}
-
-	@Override
-	public Collection<RideRequest> getDomainModelsWithOnlyPK(Collection<RideRequest> rideRequests, Collection<RideRequestEntity> rideRequestEntities) {
-		for (RideRequestEntity rideRequestEntity : rideRequestEntities) {
-			RideRequest rideRequest = new RideRequest();
-			rideRequest = getDomainModelWithOnlyPK(rideRequestEntity);
+			rideRequest = getDomainModel(rideRequestEntity, fetchChild);
 			rideRequests.add(rideRequest);
 		}
 		return rideRequests;		
@@ -184,17 +174,9 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 
 
 	@Override
-	public Collection<RideRequestEntity> getEntities(Collection<RideRequestEntity> rideRequestEntities, Collection<RideRequest> rideRequests) {
+	public Collection<RideRequestEntity> getEntities(Collection<RideRequestEntity> rideRequestEntities, Collection<RideRequest> rideRequests, boolean fetchChild) {
 		for (RideRequest rideRequest : rideRequests) {
-			rideRequestEntities.add(getEntity(rideRequest));
-		}
-		return rideRequestEntities;		
-	}
-
-	@Override
-	public Collection<RideRequestEntity> getEntitiesWithOnlyPK(Collection<RideRequestEntity> rideRequestEntities, Collection<RideRequest> rideRequests) {
-		for (RideRequest rideRequest : rideRequests) {
-			rideRequestEntities.add(getEntityWithOnlyPK(rideRequest));
+			rideRequestEntities.add(getEntity(rideRequest, fetchChild));
 		}
 		return rideRequestEntities;		
 	}

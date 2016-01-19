@@ -10,33 +10,26 @@ import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 public class TrustNetworkMapper implements Mapper<TrustNetwork, TrustNetworkEntity>{
 
 	@Override
-	public TrustNetworkEntity getEntityWithOnlyPK(TrustNetwork trustNetwork) {
+	public TrustNetworkEntity getEntity(TrustNetwork trustNetwork, boolean fetchChild) {
 		TrustNetworkEntity trustNetworkEntity = new TrustNetworkEntity();
 		trustNetworkEntity.setId(trustNetwork.getId());
-		return trustNetworkEntity;
-	}
 
-	@Override
-	public TrustNetworkEntity getEntity(TrustNetwork trustNetwork) {
-		TrustNetworkEntity trustNetworkEntity = new TrustNetworkEntity();
-		trustNetworkEntity = getEntityWithOnlyPK(trustNetwork);
-
-		trustNetworkEntity = getEntityChild(trustNetwork, trustNetworkEntity);
+		if (fetchChild){
+			trustNetworkEntity = getEntityChild(trustNetwork, trustNetworkEntity);
+		}
 
 		return trustNetworkEntity;
 	}
 
 	@Override
-	public TrustNetwork getDomainModelWithOnlyPK(TrustNetworkEntity trustNetworkEntity) {
+	public TrustNetwork getDomainModel(TrustNetworkEntity trustNetworkEntity, boolean fetchChild) {
 		TrustNetwork trustNetwork = new TrustNetwork();
 		trustNetwork.setId(trustNetworkEntity.getId());
-		return trustNetwork;
-	}
-
-	@Override
-	public TrustNetwork getDomainModel(TrustNetworkEntity trustNetworkEntity) {
-		TrustNetwork trustNetwork = new TrustNetwork();
-		trustNetwork = getDomainModelWithOnlyPK(trustNetworkEntity);
+		
+		if (fetchChild){
+			trustNetwork = getDomainModelChild(trustNetwork, trustNetworkEntity);		
+		}
+		
 		return trustNetwork;
 	}
 
@@ -44,10 +37,10 @@ public class TrustNetworkMapper implements Mapper<TrustNetwork, TrustNetworkEnti
 	public TrustNetworkEntity getEntityChild(TrustNetwork trustNetwork, TrustNetworkEntity trustNetworkEntity) {
 		TrustCategoryMapper trustCategoryMapper = new TrustCategoryMapper();
 		trustNetworkEntity.setTrustCategories(trustCategoryMapper.getEntities(trustNetworkEntity.getTrustCategories(), 
-				trustNetwork.getTrustCategories()));
+				trustNetwork.getTrustCategories(), true));
 
 		UserMapper userMapper = new UserMapper();
-		trustNetworkEntity.setFriends(userMapper.getEntities(trustNetworkEntity.getFriends(), trustNetwork.getFriends()));
+		trustNetworkEntity.setFriends(userMapper.getEntities(trustNetworkEntity.getFriends(), trustNetwork.getFriends(), true));
 
 		return trustNetworkEntity;
 	}
@@ -57,39 +50,25 @@ public class TrustNetworkMapper implements Mapper<TrustNetwork, TrustNetworkEnti
 
 		TrustCategoryMapper trustCategoryMapper = new TrustCategoryMapper();
 		trustNetwork.setTrustCategories(trustCategoryMapper.getDomainModels(trustNetwork.getTrustCategories(), 
-				trustNetworkEntity.getTrustCategories()));
+				trustNetworkEntity.getTrustCategories(), true));
 
 		UserMapper userMapper = new UserMapper();
 		trustNetwork.setFriends(userMapper.getDomainModels(trustNetwork.getFriends(), 
-				trustNetworkEntity.getFriends()));
+				trustNetworkEntity.getFriends(), true));
 
 		return trustNetwork;
 	}
 
 	@Override
-	public Collection<TrustNetwork> getDomainModelsWithOnlyPK(Collection<TrustNetwork> models,
-			Collection<TrustNetworkEntity> entities) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Collection<TrustNetwork> getDomainModels(Collection<TrustNetwork> models,
-			Collection<TrustNetworkEntity> entities) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Collection<TrustNetworkEntity> getEntitiesWithOnlyPK(Collection<TrustNetworkEntity> entities,
-			Collection<TrustNetwork> model) {
+			Collection<TrustNetworkEntity> entities, boolean fetchChild) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Collection<TrustNetworkEntity> getEntities(Collection<TrustNetworkEntity> entities,
-			Collection<TrustNetwork> model) {
+			Collection<TrustNetwork> model, boolean fetchChild) {
 		// TODO Auto-generated method stub
 		return null;
 	}

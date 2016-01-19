@@ -20,16 +20,9 @@ import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 public class RideMapper implements Mapper<Ride, RideEntity>{
 
 	@Override
-	public RideEntity getEntityWithOnlyPK(Ride ride){
+	public RideEntity getEntity(Ride ride, boolean fetchChild) {
 		RideEntity rideEntity = new RideEntity();
 		rideEntity.setId(ride.getId());
-		return rideEntity;
-	}
-
-	@Override
-	public RideEntity getEntity(Ride ride) {
-		RideEntity rideEntity = new RideEntity();
-		rideEntity = getEntityWithOnlyPK(ride);
 		rideEntity.setStartTime(ride.getStartTime());
 		//We need to just map Point ID in Hibernate as we are storing Point in MongoDB
 		rideEntity.setStartPointId(ride.getStartPoint().get_id());
@@ -44,26 +37,24 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
 		TrustNetwork trustNetwork = ride.getTrustNetwork();
-		rideEntity.setTrustNetwork(trustNetworkMapper.getEntity(trustNetwork));
+		rideEntity.setTrustNetwork(trustNetworkMapper.getEntity(trustNetwork, fetchChild));
 
 		VehicleMapper vehicleMapper = new VehicleMapper();
 		Vehicle vehicle = ride.getVehicle();
-		rideEntity.setVehicle(vehicleMapper.getEntityWithOnlyPK(vehicle));
+		//You can fetchChild of vehicle as it will not get into recursive loop
+		rideEntity.setVehicle(vehicleMapper.getEntity(vehicle, fetchChild));
 
 		UserMapper userMapper = new UserMapper();
 		User user = ride.getDriver();
-		rideEntity.setDriver(userMapper.getEntityWithOnlyPK(user));
+		//Don't fetch child of user as it will get into recursive loop as driver has ride and ride has driver
+		rideEntity.setDriver(userMapper.getEntity(user, false));
 
-		rideEntity.setPassengers(userMapper.getEntitiesWithOnlyPK(rideEntity.getPassengers(), ride.getPassengers()));
+		//Don't fetch child of user as it will get into recursive loop as passenger has ride and ride has passenger
+		rideEntity.setPassengers(userMapper.getEntities(rideEntity.getPassengers(), ride.getPassengers(), false));
 
-		RideRequestMapper rideRequestMapper = new RideRequestMapper();
-		Collection<RideRequestEntity> acceptedRideRequestEntities = rideRequestMapper.getEntities(rideEntity.getAcceptedRideRequests(),
-				ride.getAcceptedRideRequests());
-		rideEntity.setAcceptedRideRequests(acceptedRideRequestEntities);
-
-		Collection<RideRequestEntity> rejectedRideRequestEntities = rideRequestMapper.getEntities(rideEntity.getRejectedRideRequests(), 
-				ride.getRejectedRideRequests());
-		rideEntity.setRejectedRideRequests(rejectedRideRequestEntities);
+		if (fetchChild){
+			rideEntity = getEntityChild(ride, rideEntity);
+		}
 
 		/*
 		 * Pending -
@@ -80,21 +71,29 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 
 	@Override
 	public RideEntity getEntityChild(Ride ride, RideEntity rideEntity) {
+		
+		RideRequestMapper rideRequestMapper = new RideRequestMapper();
+		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop
+		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
+		//is called irrespective of fetchChild status
+		Collection<RideRequestEntity> acceptedRideRequestEntities = rideRequestMapper.getEntities(rideEntity.getAcceptedRideRequests(),
+				ride.getAcceptedRideRequests(), false);
+		rideEntity.setAcceptedRideRequests(acceptedRideRequestEntities);
+
+		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop
+		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
+		//is called irrespective of fetchChild status
+		Collection<RideRequestEntity> rejectedRideRequestEntities = rideRequestMapper.getEntities(rideEntity.getRejectedRideRequests(), 
+				ride.getRejectedRideRequests(), false);
+		rideEntity.setRejectedRideRequests(rejectedRideRequestEntities);
 
 		return rideEntity;
 	}
 
 	@Override
-	public Ride getDomainModelWithOnlyPK(RideEntity rideEntity) {
+	public Ride getDomainModel(RideEntity rideEntity, boolean fetchChild) {
 		Ride ride = new Ride();
-		ride.setId(rideEntity.getId());	
-		return ride;
-	}
-
-	@Override
-	public Ride getDomainModel(RideEntity rideEntity) {
-		Ride ride = new Ride();
-		ride = getDomainModelWithOnlyPK(rideEntity);
+		ride.setId(rideEntity.getId());
 		ride.setStartTime(rideEntity.getStartTime());
 		//We need to just map Point ID from Hibernate as we are storing Point in MongoDB
 		ride.getStartPoint().set_id(rideEntity.getStartPointId());
@@ -110,28 +109,25 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
 		TrustNetworkEntity trustNetworkEntity = rideEntity.getTrustNetwork();
-		TrustNetwork trustNetwork = trustNetworkMapper.getDomainModel(trustNetworkEntity);
-		trustNetwork = trustNetworkMapper.getDomainModelChild(trustNetwork, trustNetworkEntity);
+		TrustNetwork trustNetwork = trustNetworkMapper.getDomainModel(trustNetworkEntity, fetchChild);
 		ride.setTrustNetwork(trustNetwork);
 
 		VehicleMapper vehicleMapper = new VehicleMapper();
 		VehicleEntity vehicleEntity = rideEntity.getVehicle();
-		ride.setVehicle(vehicleMapper.getDomainModelWithOnlyPK(vehicleEntity));
+		//You can fetchChild of vehicle as vehcile doesn't have ride and it will not get into recursive loop
+		ride.setVehicle(vehicleMapper.getDomainModel(vehicleEntity, fetchChild));
 
 		UserMapper userMapper = new UserMapper();
 		UserEntity userEntity = rideEntity.getDriver();
-		ride.setDriver(userMapper.getDomainModelWithOnlyPK(userEntity));
+		//Don't fetch child of user as it will get into recursive loop as driver has ride and ride has driver
+		ride.setDriver(userMapper.getDomainModel(userEntity, false));
 
-		ride.setPassengers(userMapper.getDomainModelsWithOnlyPK(ride.getPassengers(), rideEntity.getPassengers()));
-
-		RideRequestMapper rideRequestMapper = new RideRequestMapper();
-		Collection<RideRequest> acceptedRideRequests = rideRequestMapper.getDomainModels(ride.getAcceptedRideRequests(), 
-				rideEntity.getAcceptedRideRequests());
-		ride.setAcceptedRideRequests(acceptedRideRequests);
-
-		Collection<RideRequest> rejectedRideRequests = rideRequestMapper.getDomainModels(ride.getRejectedRideRequests(), 
-				rideEntity.getRejectedRideRequests());
-		ride.setRejectedRideRequests(rejectedRideRequests);
+		//Don't fetch child of user as it will get into recursive loop as passenger has ride and ride has passenger
+		ride.setPassengers(userMapper.getDomainModels(ride.getPassengers(), rideEntity.getPassengers(), false));
+		
+		if (fetchChild){
+			ride = getDomainModelChild(ride, rideEntity);
+		}
 
 		return ride;
 	}
@@ -139,44 +135,39 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 
 	@Override
 	public Ride getDomainModelChild(Ride ride, RideEntity rideEntity) {
+		
+		RideRequestMapper rideRequestMapper = new RideRequestMapper();
+		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop
+		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
+		//is called irrespective of fetchChild status. Ride is calling ride request domain function and ride request is calling ride domain function
+		Collection<RideRequest> acceptedRideRequests = rideRequestMapper.getDomainModels(ride.getAcceptedRideRequests(), 
+				rideEntity.getAcceptedRideRequests(), false);
+		ride.setAcceptedRideRequests(acceptedRideRequests);
+
+		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop
+		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
+		//is called irrespective of fetchChild status. Ride is calling ride request domain function and ride request is calling ride domain function
+		Collection<RideRequest> rejectedRideRequests = rideRequestMapper.getDomainModels(ride.getRejectedRideRequests(), 
+				rideEntity.getRejectedRideRequests(), false);
+		ride.setRejectedRideRequests(rejectedRideRequests);
 
 		return ride;
 	}
 
 	@Override
-	public Collection<Ride> getDomainModelsWithOnlyPK(Collection<Ride> rides, Collection<RideEntity> rideEntities) {
+	public Collection<Ride> getDomainModels(Collection<Ride> rides, Collection<RideEntity> rideEntities, boolean fetchChild) {
 		for (RideEntity rideEntity : rideEntities) {
 			Ride ride = new Ride();
-			ride = getDomainModelWithOnlyPK(rideEntity);
-			rides.add(ride);
-		}
-		return rides;		
-
-	}
-
-	@Override
-	public Collection<Ride> getDomainModels(Collection<Ride> rides, Collection<RideEntity> rideEntities) {
-		for (RideEntity rideEntity : rideEntities) {
-			Ride ride = new Ride();
-			ride = getDomainModel(rideEntity);
-			ride = getDomainModelChild(ride, rideEntity);
+			ride = getDomainModel(rideEntity, fetchChild);
 			rides.add(ride);
 		}
 		return rides;		
 	}
 
 	@Override
-	public Collection<RideEntity> getEntitiesWithOnlyPK(Collection<RideEntity> rideEntities, Collection<Ride> rides) {
+	public Collection<RideEntity> getEntities(Collection<RideEntity> rideEntities, Collection<Ride> rides, boolean fetchChild) {
 		for (Ride ride : rides) {
-			rideEntities.add(getEntityWithOnlyPK(ride));
-		}
-		return rideEntities;		
-	}
-
-	@Override
-	public Collection<RideEntity> getEntities(Collection<RideEntity> rideEntities, Collection<Ride> rides) {
-		for (Ride ride : rides) {
-			rideEntities.add(getEntity(ride));
+			rideEntities.add(getEntity(ride, fetchChild));
 		}
 		return rideEntities;		
 	}

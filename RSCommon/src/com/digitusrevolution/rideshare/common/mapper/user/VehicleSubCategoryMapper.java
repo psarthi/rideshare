@@ -8,17 +8,11 @@ import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 
 public class VehicleSubCategoryMapper implements Mapper<VehicleSubCategory, VehicleSubCategoryEntity>{
 
-	@Override
-	public VehicleSubCategoryEntity getEntityWithOnlyPK(VehicleSubCategory vehicleSubCategory) {
-		VehicleSubCategoryEntity vehicleSubCategoryEntity = new VehicleSubCategoryEntity();
-		vehicleSubCategoryEntity.setId(vehicleSubCategory.getId());
-		return vehicleSubCategoryEntity;
-	}
 
 	@Override
-	public VehicleSubCategoryEntity getEntity(VehicleSubCategory vehicleSubCategory){
+	public VehicleSubCategoryEntity getEntity(VehicleSubCategory vehicleSubCategory, boolean fetchChild){
 		VehicleSubCategoryEntity vehicleSubCategoryEntity = new VehicleSubCategoryEntity();
-		vehicleSubCategoryEntity = getEntityWithOnlyPK(vehicleSubCategory);
+		vehicleSubCategoryEntity.setId(vehicleSubCategory.getId());
 		vehicleSubCategoryEntity.setAirConditioner(vehicleSubCategory.getAirConditioner());
 		vehicleSubCategoryEntity.setName(vehicleSubCategory.getName());
 		return vehicleSubCategoryEntity;
@@ -30,16 +24,9 @@ public class VehicleSubCategoryMapper implements Mapper<VehicleSubCategory, Vehi
 	}
 
 	@Override
-	public VehicleSubCategory getDomainModelWithOnlyPK(VehicleSubCategoryEntity vehicleSubCategoryEntity) {
+	public VehicleSubCategory getDomainModel(VehicleSubCategoryEntity vehicleSubCategoryEntity, boolean fetchChild){
 		VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
 		vehicleSubCategory.setId(vehicleSubCategoryEntity.getId());
-		return vehicleSubCategory;
-	}
-
-	@Override
-	public VehicleSubCategory getDomainModel(VehicleSubCategoryEntity vehicleSubCategoryEntity){
-		VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
-		vehicleSubCategory = getDomainModelWithOnlyPK(vehicleSubCategoryEntity);
 		vehicleSubCategory.setAirConditioner(vehicleSubCategoryEntity.getAirConditioner());
 		vehicleSubCategory.setName(vehicleSubCategoryEntity.getName());
 		return vehicleSubCategory;
@@ -52,21 +39,10 @@ public class VehicleSubCategoryMapper implements Mapper<VehicleSubCategory, Vehi
 
 	@Override
 	public Collection<VehicleSubCategory> getDomainModels(Collection<VehicleSubCategory> vehicleSubCategories, 
-			Collection<VehicleSubCategoryEntity> vehicleSubCategoryEntities){
+			Collection<VehicleSubCategoryEntity> vehicleSubCategoryEntities, boolean fetchChild){
 		for (VehicleSubCategoryEntity vehicleSubCategoryEntity : vehicleSubCategoryEntities) {
 			VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
-			vehicleSubCategory = getDomainModel(vehicleSubCategoryEntity);
-			vehicleSubCategories.add(vehicleSubCategory);
-		}
-		return vehicleSubCategories;
-	}
-
-	@Override
-	public Collection<VehicleSubCategory> getDomainModelsWithOnlyPK(Collection<VehicleSubCategory> vehicleSubCategories, 
-			Collection<VehicleSubCategoryEntity> vehicleSubCategoryEntities) {
-		for (VehicleSubCategoryEntity vehicleSubCategoryEntity : vehicleSubCategoryEntities) {
-			VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
-			vehicleSubCategory = getDomainModelWithOnlyPK(vehicleSubCategoryEntity);
+			vehicleSubCategory = getDomainModel(vehicleSubCategoryEntity, fetchChild);
 			vehicleSubCategories.add(vehicleSubCategory);
 		}
 		return vehicleSubCategories;
@@ -74,18 +50,9 @@ public class VehicleSubCategoryMapper implements Mapper<VehicleSubCategory, Vehi
 
 	@Override
 	public Collection<VehicleSubCategoryEntity> getEntities(Collection<VehicleSubCategoryEntity> vehicleSubCategoryEntities, 
-			Collection<VehicleSubCategory> vehicleSubCategories){
+			Collection<VehicleSubCategory> vehicleSubCategories, boolean fetchChild){
 		for (VehicleSubCategory vehicleSubCategory : vehicleSubCategories) {
-			vehicleSubCategoryEntities.add(getEntity(vehicleSubCategory));
-		}
-		return vehicleSubCategoryEntities;
-	}
-
-	@Override
-	public Collection<VehicleSubCategoryEntity> getEntitiesWithOnlyPK(Collection<VehicleSubCategoryEntity> vehicleSubCategoryEntities, 
-			Collection<VehicleSubCategory> vehicleSubCategories) {
-		for (VehicleSubCategory vehicleSubCategory : vehicleSubCategories) {
-			vehicleSubCategoryEntities.add(getEntityWithOnlyPK(vehicleSubCategory));
+			vehicleSubCategoryEntities.add(getEntity(vehicleSubCategory,fetchChild));
 		}
 		return vehicleSubCategoryEntities;
 	}

@@ -8,7 +8,7 @@ var postRideRequestURL = "http://localhost:8080/RSRideSystem/api/riderequests";
 var postData = { City: 'Bangalore', Age: 25 };
 var getAllRidesURL = "http://localhost:8080/RSRideSystem/api/ridesystem/rides/allpoints";
 var getAllRideRequestURL = "http://localhost:8080/RSRideSystem/api/ridesystem/riderequests/allpoints";
-var searchRidesURL = "http://localhost:8080/RSRideSystem/api/ridesystem/rides/search/{rideRequestId}";
+var searchRidesURL = "http://localhost:8080/RSRideSystem/api/rides/search/{rideRequestId}";
 var searchRideRequestsURL = "http://localhost:8080/RSRideSystem/api/riderequests/search/{rideId}/0/0";
 
 /*

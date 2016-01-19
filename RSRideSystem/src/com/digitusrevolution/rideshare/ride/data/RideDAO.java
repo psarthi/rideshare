@@ -37,7 +37,7 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 		String initialStatus = PropertyReader.getInstance().getProperty("RIDE_INITIAL_STATUS");
 		@SuppressWarnings("unchecked")
 		List<RideEntity> rideEntities = criteria.add(Restrictions.in("id", rideIds))
-												.add(Restrictions.eq("status", initialStatus)).list();
+		.add(Restrictions.eq("status", initialStatus)).list();
 
 		Set<RideEntity> rideEntitiesSet = new HashSet<>(rideEntities);
 		return rideEntitiesSet;		
@@ -56,14 +56,14 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 		String fulfilledStatus = PropertyReader.getInstance().getProperty("RIDE_FULFILLED_STATUS");
 		@SuppressWarnings("unchecked")
 		List<RideEntity> rideEntities = criteria.add(Restrictions.eq("driver", driver))
-												.add(Restrictions.ge("startTime", currentTime))
-												.add(Restrictions.or(Restrictions.eq("status", initialStatus),
-																	 Restrictions.eq("status", fulfilledStatus)))
-												.setMaxResults(limit).list();		
-		
+		.add(Restrictions.ge("startTime", currentTime))
+		.add(Restrictions.or(Restrictions.eq("status", initialStatus),
+				Restrictions.eq("status", fulfilledStatus)))
+		.setMaxResults(limit).list();		
+
 		return rideEntities;	
 	}
-	
+
 	/*
 	 * Purpose - Get the status of ride, this is required many times, so instead of using get and then fetching the status
 	 * 			 this function would directly return the status

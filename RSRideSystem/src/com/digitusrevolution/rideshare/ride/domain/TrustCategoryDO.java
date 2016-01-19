@@ -34,12 +34,12 @@ public class TrustCategoryDO implements DomainObjectPKString<TrustCategory>{
 	
 	public void setTrustCategory(TrustCategory trustCategory) {
 		this.trustCategory = trustCategory;
-		trustCategoryEntity = trustCategoryMapper.getEntity(trustCategory);
+		trustCategoryEntity = trustCategoryMapper.getEntity(trustCategory, true);
 	}
 
 	private void setTrustCategoryEntity(TrustCategoryEntity trustCategoryEntity) {
 		this.trustCategoryEntity = trustCategoryEntity;
-		trustCategory = trustCategoryMapper.getDomainModel(trustCategoryEntity);
+		trustCategory = trustCategoryMapper.getDomainModel(trustCategoryEntity, false);
 	}
 
 	@Override
