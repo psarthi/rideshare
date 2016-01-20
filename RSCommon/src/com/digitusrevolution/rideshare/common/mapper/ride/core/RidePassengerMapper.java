@@ -30,7 +30,7 @@ public class RidePassengerMapper{
 		RidePassenger ridePassenger = new RidePassenger();
 		UserMapper userMapper = new UserMapper();
 		ridePassenger.setPassenger(userMapper.getDomainModel(ridePassengerEntity.getPassenger(), fetchChild));
-		ridePassenger.setStatus(ridePassenger.getStatus());		
+		ridePassenger.setStatus(ridePassengerEntity.getStatus());		
 		return ridePassenger;
 	}
 
