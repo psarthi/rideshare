@@ -33,6 +33,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
@@ -486,7 +487,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		String rideRequestInitialStatus = PropertyReader.getInstance().getProperty("RIDE_REQUEST_INITIAL_STATUS");
 		String rideRequestAcceptStatus = PropertyReader.getInstance().getProperty("RIDE_REQUEST_ACCEPT_STATUS");
 		String rideFulfilledStatus = PropertyReader.getInstance().getProperty("RIDE_FULFILLED_STATUS");
-		Ride ride = get(rideId);
+		Ride ride = getChild(rideId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		String rideRequestStatus = rideRequestDO.getStatus(rideRequestId);
 		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
@@ -510,7 +511,11 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 					//Change ride request status to accept status
 					rideRequest.setStatus(rideRequestAcceptStatus);
 					//Adding passenger
-					ride.getPassengers().add(rideRequest.getPassenger());
+					RidePassenger ridePassenger = new RidePassenger();
+					String passengerInitialStatus = PropertyReader.getInstance().getProperty("PASSENGER_INITIAL_STATUS");
+					ridePassenger.setPassenger(rideRequest.getPassenger());
+					ridePassenger.setStatus(passengerInitialStatus);
+					ride.getPassengers().add(ridePassenger);
 
 					//This should include the current required seat as we need to calculate total seats including this ride request 
 					int totalSeatsOccupied = rideRequest.getSeatRequired();
@@ -559,6 +564,33 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 
 		//This will update the ride details in DB
 		update(ride);
+	}
+	
+	/*
+	 * Purpose - Change the ride status to started status
+	 * 
+	 * High Level Logic -
+	 * 
+	 * - Check the status and see if its in valid state which is either initial status or fulfilled status 
+	 * - If its in valid state, then change the status to started
+	 * 
+	 */
+	public void startRide(int rideId){ 
+		Ride ride = get(rideId);
+		String status = ride.getStatus();
+		String rideStartStatus = PropertyReader.getInstance().getProperty("RIDE_STARTED_STATUS");
+		String rideIntialStatus = PropertyReader.getInstance().getProperty("RIDE_INITIAL_STATUS");
+		String rideFulfilledStatus = PropertyReader.getInstance().getProperty("RIDE_FULFILLED_STATUS");
+		if (status.equals(rideIntialStatus) || status.equals(rideFulfilledStatus)){
+			ride.setStatus(rideStartStatus);
+			update(ride);			
+		} else {
+			throw new WebApplicationException("Ride can't be started as its not in valid state. Ride current status:"+status);
+		}
+	}
+	
+	public void pickupPassenger(int rideRequestId){
+		
 	}
 
 }

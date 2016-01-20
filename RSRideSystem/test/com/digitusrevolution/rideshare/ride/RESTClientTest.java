@@ -6,7 +6,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 public class RESTClientTest {
 	
 	public static void main(String[] args) {
-		User user = RESTClientUtil.getUser(1);
+		User user = RESTClientUtil.getUser(2);
 		System.out.println(user.getFirstName());
 		
 	}

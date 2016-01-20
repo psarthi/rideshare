@@ -50,10 +50,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		User user = ride.getDriver();
 		//Don't fetch child of user as it will get into recursive loop as driver has ride and ride has driver
 		rideEntity.setDriver(userMapper.getEntity(user, false));
-
-		//Don't fetch child of user as it will get into recursive loop as passenger has ride and ride has passenger
-		rideEntity.setPassengers(userMapper.getEntities(rideEntity.getPassengers(), ride.getPassengers(), false));
-
+		
 		if (fetchChild){
 			rideEntity = getEntityChild(ride, rideEntity);
 		}
@@ -66,14 +63,19 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		 * 
 		 */
 
-		rideEntity = getEntityChild(ride, rideEntity);
-
 		return rideEntity;
 	}
 
 	@Override
 	public RideEntity getEntityChild(Ride ride, RideEntity rideEntity) {
 		
+		//This is a custom mapper class which doesn't implement standard Mapper interface, that's why method signature is different below
+		//And we are passing rideEntity as well which is not there in RidePassenger but required in RidePassengerEntity
+		//Reason for not fetching child, as ride passenger has user and user has ride which in turn has ride passenger, 
+		//so this will get into recursive loop
+		RidePassengerMapper ridePassengerMapper = new RidePassengerMapper();
+		rideEntity.setPassengers(ridePassengerMapper.getEntities(rideEntity.getPassengers(), ride.getPassengers(), ride, false));
+				
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
 		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop
 		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
@@ -125,10 +127,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		UserEntity userEntity = rideEntity.getDriver();
 		//Don't fetch child of user as it will get into recursive loop as driver has ride and ride has driver
 		ride.setDriver(userMapper.getDomainModel(userEntity, false));
-
-		//Don't fetch child of user as it will get into recursive loop as passenger has ride and ride has passenger
-		ride.setPassengers(userMapper.getDomainModels(ride.getPassengers(), rideEntity.getPassengers(), false));
-		
+				
 		if (fetchChild){
 			ride = getDomainModelChild(ride, rideEntity);
 		}
@@ -140,6 +139,13 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 	@Override
 	public Ride getDomainModelChild(Ride ride, RideEntity rideEntity) {
 		
+		//This is a custom mapper class which doesn't implement standard Mapper interface, that's why method signature is different below
+		//And we are passing rideEntity as well which is not there in RidePassenger but required in RidePassengerEntity
+		//Reason for not fetching child, as ride passenger has user and user has ride which in turn has ride passenger, 
+		//so this will get into recursive loop
+		RidePassengerMapper ridePassengerMapper = new RidePassengerMapper();
+		ride.setPassengers(ridePassengerMapper.getDomainModels(ride.getPassengers(), rideEntity.getPassengers(), false));
+				
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
 		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop
 		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 

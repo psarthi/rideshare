@@ -1,12 +1,15 @@
 package com.digitusrevolution.rideshare.common.mapper.user.core;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.CityMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.RoleMapper;
+import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
+import com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.City;
@@ -61,13 +64,13 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		RideMapper rideMapper = new RideMapper();
 		//Don't get childs of rides as it will get into recursive loop as ride has driver and driver has rides
 		userEntity.setRidesOffered(rideMapper.getEntities(userEntity.getRidesOffered(), user.getRidesOffered(), false));
-		
-		//Don't get childs of rides as it will get into recursive loop as ride has driver and driver has rides
-		userEntity.setRidesTaken(rideMapper.getEntities(userEntity.getRidesTaken(), user.getRidesTaken(), false));
-		
+				
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
 		//Don't get childs of ride request as it will get into recursive loop as ride request has passenger and passenger has rides
 		userEntity.setRideRequests(rideRequestMapper.getEntities(userEntity.getRideRequests(), user.getRideRequests(), false));
+		
+		//Note - We are not setting ridesTaken as that require ride entity which is not available in User and we don't have any requirement 
+		//of setting the ride through user entity
 		
 		return userEntity;
 		
@@ -108,8 +111,16 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		//Don't get childs of rides as it will get into recursive loop as ride has driver and driver has rides
 		user.setRidesOffered(rideMapper.getDomainModels(user.getRidesOffered(), userEntity.getRidesOffered(), false));
 		
-		//Don't get childs of rides as it will get into recursive loop as ride has driver and driver has rides
-		user.setRidesTaken(rideMapper.getDomainModels(user.getRidesTaken(), userEntity.getRidesTaken(), false));
+		//We are setting the ride entity here itself instead of calling Mapper class, 
+		//as RidePassenger and RidePassengerEntity is not standard classes, Entity is having all fields required for hibernate and DB mapping
+		//But domain model class (RidePassenger) is as per requirement of model only and we can't use RidePassenger mapper here
+		//as user is holding Rides instead of RidePassenger
+		Collection<RidePassengerEntity> ridePassengerEntities = userEntity.getRidesTaken();
+		Collection<RideEntity> rideEntities = new HashSet<>();
+		for (RidePassengerEntity ridePassengerEntity : ridePassengerEntities) {
+			rideEntities.add(ridePassengerEntity.getRide());
+		}		
+		user.setRidesTaken(rideMapper.getDomainModels(user.getRidesTaken(), rideEntities, false));
 		
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
 		//Don't get childs of ride request as it will get into recursive loop as ride request has passenger and passenger has rides

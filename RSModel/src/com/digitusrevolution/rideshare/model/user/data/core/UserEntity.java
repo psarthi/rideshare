@@ -21,6 +21,7 @@ import javax.persistence.Table;
 
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
+import com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
@@ -68,8 +69,8 @@ public class UserEntity {
 	
 	//Reason for Many to Many relationship, as one user can take many rides and 
 	//one ride can have many users as passenger
-	@ManyToMany(mappedBy="passengers")
-	private Collection<RideEntity> ridesTaken = new HashSet<RideEntity>();
+	@OneToMany(mappedBy="primaryKey.passenger",cascade=CascadeType.ALL)
+	private Collection<RidePassengerEntity> ridesTaken = new HashSet<RidePassengerEntity>();
 	//Reason for One to Many relationship, as one user can raise many ride request
 	//but one ride request can be raised by only one user acting as passenger
 	@OneToMany(mappedBy="passenger")
@@ -210,11 +211,11 @@ public class UserEntity {
 		this.ridesOffered = ridesOffered;
 	}
 
-	public Collection<RideEntity> getRidesTaken() {
+	public Collection<RidePassengerEntity> getRidesTaken() {
 		return ridesTaken;
 	}
 
-	public void setRidesTaken(Collection<RideEntity> ridesTaken) {
+	public void setRidesTaken(Collection<RidePassengerEntity> ridesTaken) {
 		this.ridesTaken = ridesTaken;
 	}
 

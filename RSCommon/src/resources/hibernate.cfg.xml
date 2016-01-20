@@ -52,6 +52,7 @@
 
 		<!-- Ride System -->		
 		<mapping class="com.digitusrevolution.rideshare.model.ride.data.core.RideEntity" />
+		<mapping class="com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity" />
 	
 		<mapping class="com.digitusrevolution.rideshare.model.ride.data.RecurringDetailEntity" />

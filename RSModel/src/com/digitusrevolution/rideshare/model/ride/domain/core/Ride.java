@@ -29,8 +29,8 @@ public class Ride {
 	private RecurringDetail recurringDetail;
 	private String status;
 	private Vehicle vehicle;
-	private User driver;
-	private Collection<User> passengers = new HashSet<User>();
+	private User driver; 
+	private Collection<RidePassenger> passengers = new HashSet<RidePassenger>();
 	private Collection<Bill> bills = new HashSet<Bill>();
 	private Collection<RideRequest> acceptedRideRequests = new HashSet<RideRequest>();
 	private Collection<RideRequest> rejectedRideRequests = new HashSet<RideRequest>();
@@ -132,10 +132,10 @@ public class Ride {
 	public void setDriver(User driver) {
 		this.driver = driver;
 	}
-	public Collection<User> getPassengers() {
+	public Collection<RidePassenger> getPassengers() {
 		return passengers;
 	}
-	public void setPassengers(Collection<User> passengers) {
+	public void setPassengers(Collection<RidePassenger> passengers) {
 		this.passengers = passengers;
 	}
 	public Sex getSexPreference() {
