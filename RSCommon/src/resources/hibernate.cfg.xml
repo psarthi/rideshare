@@ -60,6 +60,11 @@
 
 		<!-- Billing System -->		
 		<mapping class="com.digitusrevolution.rideshare.model.billing.data.core.BillEntity" />
+		
+		<!-- Testing Purpose 		
+		<mapping class="com.digitusrevolution.rideshare.poc.A" />
+		<mapping class="com.digitusrevolution.rideshare.poc.B" />-->
+		
 	
 	</session-factory>
 </hibernate-configuration>

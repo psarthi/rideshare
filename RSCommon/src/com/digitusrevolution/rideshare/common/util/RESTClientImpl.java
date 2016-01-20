@@ -24,8 +24,14 @@ public class RESTClientImpl<T> implements RESTClient<T>{
 	 * else it would throw MessageBodyWriter/Reader not found exception
 	 * 
 	 * https://jersey.java.net/documentation/latest/message-body-workers.html#mbw.ex.client.mbr.reg
+	 * 
+	 * ****Registering of ObjectMapperContextResolver is important as we have registered JSR310 module there and without registering this, 
+	 * Jersey client is not aware of JSR310 module, so it will not be able to de-serialize ZonedDateTime
+	 *
+	 * 
 	 */
-	private final Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class)).register(JacksonJsonProvider.class);
+	private final Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class)).register(JacksonJsonProvider.class)
+			.register(ObjectMapperContextResolver.class);
 	
 	@Override
 	public Response get(URI uri) {

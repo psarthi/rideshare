@@ -41,8 +41,10 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 
 		VehicleMapper vehicleMapper = new VehicleMapper();
 		Vehicle vehicle = ride.getVehicle();
-		//You can fetchChild of vehicle as it will not get into recursive loop
-		rideEntity.setVehicle(vehicleMapper.getEntity(vehicle, fetchChild));
+		//You can fetchChild of vehicle as it will not get into recursive loop but we would have fetchChild as false
+		//Reason for making this false, as we want category and sub-category only
+		//We don't want sub-categories of category which would come if fetchChild is true
+		rideEntity.setVehicle(vehicleMapper.getEntity(vehicle, false));
 
 		UserMapper userMapper = new UserMapper();
 		User user = ride.getDriver();
@@ -114,8 +116,10 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 
 		VehicleMapper vehicleMapper = new VehicleMapper();
 		VehicleEntity vehicleEntity = rideEntity.getVehicle();
-		//You can fetchChild of vehicle as vehcile doesn't have ride and it will not get into recursive loop
-		ride.setVehicle(vehicleMapper.getDomainModel(vehicleEntity, fetchChild));
+		//You can fetchChild of vehicle as it will not get into recursive loop but we would have fetchChild as false
+		//Reason for making this false, as we want category and sub-category only
+		//We don't want sub-categories of category which would come if fetchChild is true
+		ride.setVehicle(vehicleMapper.getDomainModel(vehicleEntity, false));
 
 		UserMapper userMapper = new UserMapper();
 		UserEntity userEntity = rideEntity.getDriver();
