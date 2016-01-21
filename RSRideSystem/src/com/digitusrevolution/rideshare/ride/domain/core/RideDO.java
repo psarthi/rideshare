@@ -21,8 +21,6 @@ import org.bson.types.ObjectId;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 
-import com.digitusrevolution.rideshare.common.exception.RideRequestUnavailableException;
-import com.digitusrevolution.rideshare.common.exception.RideUnavailableException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
@@ -33,7 +31,6 @@ import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
-import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
@@ -41,6 +38,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.ride.data.RideDAO;
 import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
+import com.digitusrevolution.rideshare.ride.domain.core.comp.RideAction;
 import com.digitusrevolution.rideshare.ride.domain.core.comp.RideGeoJSON;
 import com.digitusrevolution.rideshare.ride.dto.RideMatchInfo;
 import com.digitusrevolution.rideshare.ride.dto.RidePointDTO;
@@ -455,145 +453,41 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return rideGeoJSON.getRideMatchInfoGeoJSON(rideMatchInfos);
 
 	}
-
+	
 	/*
 	 * Purpose - Get the status of ride
 	 */
 	public String getStatus(int rideId){
 		return rideDAO.getStatus(rideId);
 	}
-	/*
-	 * Purpose - Accept ride request
-	 * 
-	 * High level logic -
-	 * 
-	 * - Check status of ride to see if seats are still available
-	 * - Check status of ride request to see if its still looking for ride i.e. its unfulfilled
-	 * - Check whether seats required is available in the ride as it may be the case that in between partial seats may have been occupied
-	 * - If all condition is true, then set the ride as accepted ride in ride request
-	 * 		Note - By adding the riderequest in the getAcceptedRideRequests collection, it will not update the ride id in the ride request table 
-	 * 			   as ride is acceptedRideRequests relationship is owned by ride request entity and not ride (@OneToMany(mappedBy="acceptedRide"))
-	 * - Then, add the passenger in the passenger list of ride
-	 * - Else, throw Ride request unavailable exception
-	 * - Update the status of ride request to fulfilled
-	 * - Check if total seats occupied including current ride request is equal to seats offered
-	 * - If its equal, change the status of ride to fulfilled
-	 * 
-	 */
+
 	public void acceptRideRequest(int rideId, int rideRequestId){
-
-		String rideStatus = getStatus(rideId);
-		String rideIntialStatus = PropertyReader.getInstance().getProperty("RIDE_INITIAL_STATUS");
-		String rideRequestInitialStatus = PropertyReader.getInstance().getProperty("RIDE_REQUEST_INITIAL_STATUS");
-		String rideRequestAcceptStatus = PropertyReader.getInstance().getProperty("RIDE_REQUEST_ACCEPT_STATUS");
-		String rideFulfilledStatus = PropertyReader.getInstance().getProperty("RIDE_FULFILLED_STATUS");
-		Ride ride = getChild(rideId);
-		RideRequestDO rideRequestDO = new RideRequestDO();
-		String rideRequestStatus = rideRequestDO.getStatus(rideRequestId);
-		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
-
-		//Check if ride request is unfulfilled
-		//Reason for re-checking status criteria as from the time of search to responding to it, 
-		//there may be someone else who may have accepted the ride request already and status may have changed
-		if (rideRequestStatus.equals(rideRequestInitialStatus)){
-			//This will check if ride seats are available by checking ride status as unfulfilled
-			//Reason for re-checking status criteria as ride may have accepted some other ride request and seats may have got full, when trying to accept
-			//another one ride may not be available
-			if (rideStatus.equals(rideIntialStatus)){
-				//Apart from that seats required should be less than or equal to seats offered.
-				//Its important to re-check seats criteria as in between it may happen that number of seats which was initially free at the time of search,  
-				//partial seats may have been occupied.
-				if (rideRequest.getSeatRequired() <= ride.getSeatOffered()){
-					//Set accepted ride in ride request
-					//Note - By adding the ride request in the getAcceptedRideRequests collection, it will not update the ride id in the ride request table
-					//as ride is acceptedRideRequests relationship is owned by ride request entity and not ride (@OneToMany(mappedBy="acceptedRide"))
-					rideRequest.setAcceptedRide(ride);
-					//Change ride request status to accept status
-					rideRequest.setStatus(rideRequestAcceptStatus);
-					//Adding passenger
-					RidePassenger ridePassenger = new RidePassenger();
-					String passengerInitialStatus = PropertyReader.getInstance().getProperty("PASSENGER_INITIAL_STATUS");
-					ridePassenger.setPassenger(rideRequest.getPassenger());
-					ridePassenger.setStatus(passengerInitialStatus);
-					ride.getPassengers().add(ridePassenger);
-
-					//This should include the current required seat as we need to calculate total seats including this ride request 
-					int totalSeatsOccupied = rideRequest.getSeatRequired();
-					//Since each ride request may have different seat requirement, so we need to calculate total of all required seats of accepted ride
-					//Note - Seats requirement and seat offered criteria should be met while searching for ride or ride requests
-					for (RideRequest acceptedRideRequest : ride.getAcceptedRideRequests()) {
-						totalSeatsOccupied = totalSeatsOccupied + acceptedRideRequest.getSeatRequired();
-					}
-
-					//This will check if seats offered is equal to the accepted ride request including this ride request
-					//This will change the status to fulfilled
-					if (totalSeatsOccupied == ride.getSeatOffered()){
-						ride.setStatus(rideFulfilledStatus);
-					}
-
-					//Update all the changes in DB for ride and ride request
-					update(ride);
-					//This is required to update accepted ride as well as status update on ride request table
-					rideRequestDO.update(rideRequest);
-				}
-				else{
-					throw new RideUnavailableException("Ride doesn't have sufficient seats available with id:"+rideId);
-				}			
-			}
-			else{
-				throw new RideUnavailableException("Ride is not available anymore with id:"+rideId);
-			}			
-		}
-		else{
-			throw new RideRequestUnavailableException("Ride Request is not available anymore with id:"+rideRequestId);
-		}			
-
+		RideAction rideAction = new RideAction(this);
+		rideAction.acceptRideRequest(rideId, rideRequestId);
 	}
-
-	/*
-	 * Purpose - Add ride request in the rejected list of ride
-	 * 
-	 */
+	
 	public void rejectRideRequest(int rideId, int rideRequestId){
-
-		RideRequestDO rideRequestDO = new RideRequestDO();
-		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
-		Ride ride = get(rideId);
-
-		ride.getRejectedRideRequests().add(rideRequest);	
-
-		//This will update the ride details in DB
-		update(ride);
+		RideAction rideAction = new RideAction(this);
+		rideAction.rejectRideRequest(rideId, rideRequestId);
 	}
 	
-	/*
-	 * Purpose - Change the ride status to started status
-	 * 
-	 * High Level Logic -
-	 * 
-	 * - Check the status and see if its in valid state which is either initial status or fulfilled status 
-	 * - If its in valid state, then change the status to started
-	 * 
-	 */
-	public void startRide(int rideId){ 
-		Ride ride = get(rideId);
-		String status = ride.getStatus();
-		String rideStartStatus = PropertyReader.getInstance().getProperty("RIDE_STARTED_STATUS");
-		String rideIntialStatus = PropertyReader.getInstance().getProperty("RIDE_INITIAL_STATUS");
-		String rideFulfilledStatus = PropertyReader.getInstance().getProperty("RIDE_FULFILLED_STATUS");
-		if (status.equals(rideIntialStatus) || status.equals(rideFulfilledStatus)){
-			ride.setStatus(rideStartStatus);
-			update(ride);			
-		} else {
-			throw new WebApplicationException("Ride can't be started as its not in valid state. Ride current status:"+status);
-		}
+	public void startRide(int rideId){
+		RideAction rideAction = new RideAction(this);
+		rideAction.startRide(rideId);
 	}
 	
-	public void pickupPassenger(int rideRequestId){
-		
+	public void pickupPassenger(int rideId, int passengerId){
+		RideAction rideAction = new RideAction(this);
+		rideAction.pickupPassenger(rideId, passengerId);
+	}
+	
+	public void dropPassenger(int rideId, int passengerId){
+		RideAction rideAction = new RideAction(this);
+		rideAction.dropPassenger(rideId, passengerId);
 	}
 
 }
+
 
 
 
