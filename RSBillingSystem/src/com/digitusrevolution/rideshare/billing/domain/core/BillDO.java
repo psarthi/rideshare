@@ -95,5 +95,68 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 		setBill(bill);
 		billDAO.delete(billEntity);
 	}
-
+	
+	/*
+	 * Purpose - Generate bill for specific ride request
+	 * 
+	 * High level logic -
+	 * 
+	 * - Get ride and ride request
+	 * - Calculate bill based of fair/car etc.
+	 * - Generate bill with all details
+	 * 
+	 */
+	public void generateBill(int rideId, int rideRequestId){
+		
+	}
+	
+	public void payBill(){
+		
+	}
+	
+	private int calculateFare(){
+		return 0;
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

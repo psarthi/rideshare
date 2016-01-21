@@ -7,6 +7,9 @@ public class Country {
 
 	private String name;
 	private Collection<State> states = new HashSet<State>();
+	//Reason for having fuel at country level and not at state level
+	//Prices vary on regular basis and number of states are high, so managing around the globe would be difficult
+	//Apart from that, variation of fuel prices are not that high, so avg price would do and maintenance would be less
 	private Collection<Fuel> fuels = new HashSet<Fuel>();
 	private Currency currency;
 	
@@ -34,5 +37,49 @@ public class Country {
 	public void setFuels(Collection<Fuel> fuels) {
 		this.fuels = fuels;
 	}
-	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((currency == null) ? 0 : currency.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((states == null) ? 0 : states.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Country)) {
+			return false;
+		}
+		Country other = (Country) obj;
+		if (currency == null) {
+			if (other.currency != null) {
+				return false;
+			}
+		} else if (!currency.equals(other.currency)) {
+			return false;
+		}
+		if (name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!name.equals(other.name)) {
+			return false;
+		}
+		if (states == null) {
+			if (other.states != null) {
+				return false;
+			}
+		} else if (!states.equals(other.states)) {
+			return false;
+		}
+		return true;
+	}
+
 }

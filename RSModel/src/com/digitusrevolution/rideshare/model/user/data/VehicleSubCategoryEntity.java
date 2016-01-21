@@ -1,10 +1,15 @@
 package com.digitusrevolution.rideshare.model.user.data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.digitusrevolution.rideshare.model.user.domain.FuelType;
 
 @Entity
 @Table(name="vehicle_sub_category")
@@ -15,7 +20,11 @@ public class VehicleSubCategoryEntity {
 	private int id;
 	private String name;
 	private Boolean airConditioner;
-	
+	private int averageMileage;
+	@Column
+	@Enumerated(EnumType.STRING)
+	private FuelType fuelType;
+
 	public int getId() {
 		return id;
 	}
@@ -65,6 +74,18 @@ public class VehicleSubCategoryEntity {
 			return false;
 		}
 		return true;
+	}
+	public int getAverageMileage() {
+		return averageMileage;
+	}
+	public void setAverageMileage(int averageMileage) {
+		this.averageMileage = averageMileage;
+	}
+	public FuelType getFuelType() {
+		return fuelType;
+	}
+	public void setFuelType(FuelType fuelType) {
+		this.fuelType = fuelType;
 	}
 
 	

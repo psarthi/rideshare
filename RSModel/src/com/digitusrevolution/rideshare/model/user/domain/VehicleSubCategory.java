@@ -5,6 +5,8 @@ public class VehicleSubCategory {
 	private int id;
 	private String name;
 	private Boolean airConditioner;
+	private int averageMileage;
+	private FuelType fuelType;
 	
 	public int getId() {
 		return id;
@@ -55,6 +57,18 @@ public class VehicleSubCategory {
 			return false;
 		}
 		return true;
+	}
+	public int getAverageMileage() {
+		return averageMileage;
+	}
+	public void setAverageMileage(int averageMileage) {
+		this.averageMileage = averageMileage;
+	}
+	public FuelType getFuelType() {
+		return fuelType;
+	}
+	public void setFuelType(FuelType fuelType) {
+		this.fuelType = fuelType;
 	}
 
 	

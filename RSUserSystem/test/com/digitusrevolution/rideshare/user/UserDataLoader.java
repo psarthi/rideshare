@@ -1,6 +1,8 @@
 package com.digitusrevolution.rideshare.user;
 
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -24,6 +26,7 @@ import com.digitusrevolution.rideshare.user.domain.RoleDO;
 import com.digitusrevolution.rideshare.user.domain.VehicleCategoryDO;
 import com.digitusrevolution.rideshare.user.domain.VehicleSubCategoryDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
+import com.digitusrevolution.rideshare.user.domain.core.VehicleDO;
 
 @Path("/domain/loadsample/user")
 public class UserDataLoader {
@@ -212,6 +215,7 @@ public class UserDataLoader {
 		
 	public void loadVehicle(){
 		logger.entry(); 		
+		
 		VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();
 		VehicleCategory vehicleCategory = vehicleCategoryDO.get(1);		
 		
