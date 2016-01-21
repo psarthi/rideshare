@@ -9,8 +9,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.digitusrevolution.rideshare.model.user.data.CurrencyEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.AccountEntity;
 
 @Entity
@@ -28,6 +30,8 @@ public class CompanyEntity {
 	@OneToMany
 	@JoinTable(name="company_account",joinColumns=@JoinColumn(name="company_id"))
 	private Collection<AccountEntity> accounts = new HashSet<AccountEntity>();
+	@OneToOne
+	private CurrencyEntity currency;
 	
 	public int getId() {
 		return id;
@@ -46,6 +50,12 @@ public class CompanyEntity {
 	}
 	public void setAccounts(Collection<AccountEntity> accounts) {
 		this.accounts = accounts;
+	}
+	public CurrencyEntity getCurrency() {
+		return currency;
+	}
+	public void setCurrency(CurrencyEntity currency) {
+		this.currency = currency;
 	}
 
 }

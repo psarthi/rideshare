@@ -41,9 +41,7 @@ public class Country {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((currency == null) ? 0 : currency.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((states == null) ? 0 : states.hashCode());
 		return result;
 	}
 	@Override
@@ -58,25 +56,11 @@ public class Country {
 			return false;
 		}
 		Country other = (Country) obj;
-		if (currency == null) {
-			if (other.currency != null) {
-				return false;
-			}
-		} else if (!currency.equals(other.currency)) {
-			return false;
-		}
 		if (name == null) {
 			if (other.name != null) {
 				return false;
 			}
 		} else if (!name.equals(other.name)) {
-			return false;
-		}
-		if (states == null) {
-			if (other.states != null) {
-				return false;
-			}
-		} else if (!states.equals(other.states)) {
 			return false;
 		}
 		return true;

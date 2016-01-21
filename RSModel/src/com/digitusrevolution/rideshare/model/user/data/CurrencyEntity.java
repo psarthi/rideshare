@@ -14,6 +14,7 @@ public class CurrencyEntity {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	private String name;
+	private float conversionRate;
 	
 	public int getId() {
 		return id;
@@ -58,6 +59,12 @@ public class CurrencyEntity {
 			return false;
 		}
 		return true;
+	}
+	public float getConversionRate() {
+		return conversionRate;
+	}
+	public void setConversionRate(float conversionRate) {
+		this.conversionRate = conversionRate;
 	}
 	
 }

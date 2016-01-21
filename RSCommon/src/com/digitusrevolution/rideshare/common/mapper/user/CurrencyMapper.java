@@ -13,6 +13,7 @@ public class CurrencyMapper implements Mapper<Currency, CurrencyEntity>{
 		CurrencyEntity currencyEntity = new CurrencyEntity();
 		currencyEntity.setId(currency.getId());
 		currencyEntity.setName(currency.getName());
+		currencyEntity.setConversionRate(currency.getConversionRate());
 		return currencyEntity;
 	}
 
@@ -27,6 +28,7 @@ public class CurrencyMapper implements Mapper<Currency, CurrencyEntity>{
 		Currency currency = new Currency();
 		currency.setId(currencyEntity.getId());
 		currency.setName(currencyEntity.getName());
+		currency.setConversionRate(currencyEntity.getConversionRate());
 		return currency;
 	}
 

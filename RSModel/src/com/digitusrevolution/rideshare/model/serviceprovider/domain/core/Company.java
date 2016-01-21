@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.model.serviceprovider.domain.core;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.model.user.domain.core.Account;
 
 public class Company {
@@ -10,6 +11,7 @@ public class Company {
 	private int id;
 	private String name;
 	private Collection<Account> accounts = new HashSet<Account>();
+	private Currency currency;
 	
 	public int getId() {
 		return id;
@@ -28,6 +30,12 @@ public class Company {
 	}
 	public void setAccounts(Collection<Account> accounts) {
 		this.accounts = accounts;
+	}
+	public Currency getCurrency() {
+		return currency;
+	}
+	public void setCurrency(Currency currency) {
+		this.currency = currency;
 	}
 
 }

@@ -15,6 +15,7 @@ import org.hibernate.Transaction;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.user.domain.City;
+import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
@@ -22,6 +23,7 @@ import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.domain.CityDO;
+import com.digitusrevolution.rideshare.user.domain.CurrencyDO;
 import com.digitusrevolution.rideshare.user.domain.RoleDO;
 import com.digitusrevolution.rideshare.user.domain.VehicleCategoryDO;
 import com.digitusrevolution.rideshare.user.domain.VehicleSubCategoryDO;
@@ -123,6 +125,12 @@ public class UserDataLoader {
 	}
 	
 	public void loadCity(){
+		CurrencyDO currencyDO = new CurrencyDO();
+		Currency currency = new Currency();
+		currency.setName("INR");
+		currency.setConversionRate(1);
+		
+		
 		logger.entry();
 		CityDO cityDO = new CityDO();
 		City city = new City();
@@ -135,8 +143,7 @@ public class UserDataLoader {
 		city.setName("New Delhi");
 		cityDO.create(city);
 		city.setName("Kolkata");
-		cityDO.create(city);
-		
+		cityDO.create(city);	
 	}
 
 	public void loadRole(){

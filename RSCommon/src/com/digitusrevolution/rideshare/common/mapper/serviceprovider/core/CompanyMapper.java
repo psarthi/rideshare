@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.common.mapper.serviceprovider.core;
 import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
+import com.digitusrevolution.rideshare.common.mapper.user.CurrencyMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.AccountMapper;
 import com.digitusrevolution.rideshare.model.serviceprovider.data.core.CompanyEntity;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
@@ -16,6 +17,8 @@ public class CompanyMapper implements Mapper<Company, CompanyEntity>{
 		companyEntity.setName(company.getName());
 		AccountMapper accountMapper = new AccountMapper();
 		companyEntity.setAccounts(accountMapper.getEntities(companyEntity.getAccounts(), company.getAccounts(), fetchChild));
+		CurrencyMapper currencyMapper = new CurrencyMapper();
+		companyEntity.setCurrency(currencyMapper.getEntity(company.getCurrency(), fetchChild));
 		return companyEntity;
 	}
 
@@ -32,6 +35,8 @@ public class CompanyMapper implements Mapper<Company, CompanyEntity>{
 		company.setName(companyEntity.getName());
 		AccountMapper accountMapper = new AccountMapper();
 		company.setAccounts(accountMapper.getDomainModels(company.getAccounts(), companyEntity.getAccounts(), fetchChild));
+		CurrencyMapper currencyMapper = new CurrencyMapper();
+		company.setCurrency(currencyMapper.getDomainModel(companyEntity.getCurrency(), fetchChild));
 		return company;
 	}
 
