@@ -19,7 +19,7 @@ import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
 public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 
-	private static final Class<RideEntity> entityClass = RideEntity.class;;
+	private static final Class<RideEntity> entityClass = RideEntity.class;
 
 	public RideDAO() {
 		super(entityClass);	
