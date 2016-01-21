@@ -3,7 +3,7 @@ package com.digitusrevolution.rideshare.model.user.domain;
 public class Fuel {
 	
 	private FuelType type;
-	private int price;
+	private float price;
 	
 	public FuelType getType() {
 		return type;
@@ -11,17 +11,17 @@ public class Fuel {
 	public void setType(FuelType type) {
 		this.type = type;
 	}
-	public int getPrice() {
+	public float getPrice() {
 		return price;
 	}
-	public void setPrice(int price) {
+	public void setPrice(float price) {
 		this.price = price;
 	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + price;
+		result = prime * result + Float.floatToIntBits(price);
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
@@ -37,7 +37,7 @@ public class Fuel {
 			return false;
 		}
 		Fuel other = (Fuel) obj;
-		if (price != other.price) {
+		if (Float.floatToIntBits(price) != Float.floatToIntBits(other.price)) {
 			return false;
 		}
 		if (type != other.type) {
@@ -45,5 +45,6 @@ public class Fuel {
 		}
 		return true;
 	}
+
 	
 }

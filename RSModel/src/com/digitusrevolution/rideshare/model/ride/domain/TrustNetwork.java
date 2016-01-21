@@ -37,5 +37,29 @@ public class TrustNetwork {
 	public void setGroups(Collection<Group> groups) {
 		this.groups = groups;
 	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof TrustNetwork)) {
+			return false;
+		}
+		TrustNetwork other = (TrustNetwork) obj;
+		if (id != other.id) {
+			return false;
+		}
+		return true;
+	}
 
 }

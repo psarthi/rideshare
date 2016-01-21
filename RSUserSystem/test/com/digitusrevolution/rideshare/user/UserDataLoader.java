@@ -15,16 +15,23 @@ import org.hibernate.Transaction;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.user.domain.City;
+import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
+import com.digitusrevolution.rideshare.model.user.domain.Fuel;
+import com.digitusrevolution.rideshare.model.user.domain.FuelType;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
+import com.digitusrevolution.rideshare.model.user.domain.RoleName;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
+import com.digitusrevolution.rideshare.model.user.domain.State;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.domain.CityDO;
+import com.digitusrevolution.rideshare.user.domain.CountryDO;
 import com.digitusrevolution.rideshare.user.domain.CurrencyDO;
 import com.digitusrevolution.rideshare.user.domain.RoleDO;
+import com.digitusrevolution.rideshare.user.domain.StateDO;
 import com.digitusrevolution.rideshare.user.domain.VehicleCategoryDO;
 import com.digitusrevolution.rideshare.user.domain.VehicleSubCategoryDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
@@ -54,7 +61,7 @@ public class UserDataLoader {
 			transation = session.beginTransaction();
 			
 			UserDataLoader dataLoader = new UserDataLoader();
-			dataLoader.loadCity();
+			dataLoader.loadCountry();
 			dataLoader.loadRole();
 			dataLoader.loadVehicleCategory();
 			dataLoader.loadVehicleSubCategory();
@@ -93,13 +100,13 @@ public class UserDataLoader {
 			
 			// This will take care of prerequisites
 			//Start
-//			dataLoader.loadCity();
-//			dataLoader.loadRole();
-//			dataLoader.loadVehicleCategory();
-//			dataLoader.loadVehicleSubCategory();
+			dataLoader.loadCountry();
+			dataLoader.loadRole();
+			dataLoader.loadVehicleCategory();
+			dataLoader.loadVehicleSubCategory();
 			//End			
 			
-//			dataLoader.loadUser();
+			dataLoader.loadUser();
 			dataLoader.loadVehicle();			
 			
 			transation.commit();
@@ -124,37 +131,43 @@ public class UserDataLoader {
 
 	}
 	
-	public void loadCity(){
-		CurrencyDO currencyDO = new CurrencyDO();
+	public void loadCountry(){
+
 		Currency currency = new Currency();
 		currency.setName("INR");
 		currency.setConversionRate(1);
 		
+		Country country = new Country();
+		country.setCurrency(currency);
+		country.setName("India");
 		
-		logger.entry();
-		CityDO cityDO = new CityDO();
+		Fuel fuel = new Fuel();
+		fuel.setType(FuelType.Petrol);
+		fuel.setPrice(60);
+
+		country.getFuels().add(fuel);
+		
+		State state = new State();
+		state.setName("Karnataka");
+		
 		City city = new City();
 		city.setName("Bangalore");
-		cityDO.create(city);
-		city.setName("Chennai");
-		cityDO.create(city);
-		city.setName("Mumbai");
-		cityDO.create(city);
-		city.setName("New Delhi");
-		cityDO.create(city);
-		city.setName("Kolkata");
-		cityDO.create(city);	
-	}
+		state.getCities().add(city);
 
+		country.getStates().add(state);
+		
+		CountryDO countryDO = new CountryDO();
+		countryDO.create(country);
+		
+	}
+	
 	public void loadRole(){
 		logger.entry();		
 		RoleDO roleDO = new RoleDO();
 		Role role = new Role();
-		String driverRole = PropertyReader.getInstance().getProperty("DRIVER_ROLE");
-		String passengerRole = PropertyReader.getInstance().getProperty("PASSENGER_ROLE");
-		role.setName(passengerRole);
+		role.setName(RoleName.Passenger);
 		roleDO.create(role);
-		role.setName(driverRole);
+		role.setName(RoleName.Driver);
 		roleDO.create(role);		
 	
 	}
@@ -167,8 +180,7 @@ public class UserDataLoader {
 		User user = new User();
 		City city = new City();
 		Role role = new Role();
-		String passengerRole = PropertyReader.getInstance().getProperty("PASSENGER_ROLE");
-		role = roleDO.get(passengerRole);
+		role = roleDO.get(RoleName.Passenger.toString());
 		user.getRoles().add(role);
 
 	
@@ -183,7 +195,7 @@ public class UserDataLoader {
 			}else {
 				user.setSex(Sex.Female);
 			}			
-			city = cityDO.get(i);
+			city = cityDO.get(1);
 			user.setCity(city);
 			userDO.create(user);
 
@@ -207,6 +219,8 @@ public class UserDataLoader {
 		String carSubCategorySedan = PropertyReader.getInstance().getProperty("CAR_SUB_CATEGORY_SEDAN");
 		vehicleSubCategory.setName(carSubCategorySedan);
 		vehicleSubCategory.setAirConditioner(true);
+		vehicleSubCategory.setFuelType(FuelType.Petrol);
+		vehicleSubCategory.setAverageMileage(12);
 		
 		VehicleSubCategoryDO vehicleSubCategoryDO = new VehicleSubCategoryDO();
 		vehicleSubCategoryDO.create(vehicleSubCategory);

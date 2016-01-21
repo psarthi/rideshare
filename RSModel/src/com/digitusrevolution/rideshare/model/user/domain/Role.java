@@ -2,14 +2,15 @@ package com.digitusrevolution.rideshare.model.user.domain;
 
 public class Role {
 	
-	private String name;
-	
-	public String getName() {
+	private RoleName name;
+
+	public RoleName getName() {
 		return name;
 	}
-	public void setName(String name) {
+
+	public void setName(RoleName name) {
 		this.name = name;
 	}
 	
-	
+
 }

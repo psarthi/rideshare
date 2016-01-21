@@ -182,6 +182,11 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		rideRequest.setStatus(initialStatus);
 		int id = create(rideRequest);
 		rideRequest.setId(id);
+		//***We have problem here, we need to get Trust Network ID or Set this to null, so that it doesn't create a new trust network
+		//Its important, reason is Trustnetwork get created while creating the ride request but we don't have its id and without id it will 
+		//recreate the trust network while updating the ride request at later part of the this function as trust network id is the primary key
+		//for trust network entity, so by resetting it to null value, we won't send the trust network for further creation
+		rideRequest.setTrustNetwork(null);
 
 		//No need to get update Ride request as return type as in java its pass by reference, so data would be updated in the original ride request
 		setRideRequestPointProperties(rideRequest);

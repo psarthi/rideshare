@@ -59,7 +59,8 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
 		TrustNetwork trustNetwork = rideRequest.getTrustNetwork();
-		rideRequestEntity.setTrustNetwork(trustNetworkMapper.getEntity(trustNetwork, fetchChild));
+		//Reason for checking this as during ride request creation, we set this value purposefully to null, so that it doesn't create twice
+		if (trustNetwork!=null) rideRequestEntity.setTrustNetwork(trustNetworkMapper.getEntity(trustNetwork, fetchChild));
 
 		UserMapper userMapper = new UserMapper();
 		User user = rideRequest.getPassenger();
@@ -131,9 +132,9 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		if (vehicleSubCategoryEntity!=null) rideRequest.setVehicleSubCategory(vehicleSubCategoryMapper.getDomainModel(vehicleSubCategoryEntity, fetchChild));
 
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
-		TrustNetworkEntity trustNetworkEntity = rideRequestEntity.getTrustNetwork();
-		TrustNetwork trustNetwork = trustNetworkMapper.getDomainModel(trustNetworkEntity, fetchChild);
-		rideRequest.setTrustNetwork(trustNetwork);
+		TrustNetworkEntity trustNetworkEntity = rideRequestEntity.getTrustNetwork(); 
+		//Reason for checking this as during ride request creation, we set this value purposefully to null, so that it doesn't create twice
+		if (trustNetworkEntity!=null)  rideRequest.setTrustNetwork(trustNetworkMapper.getDomainModel(trustNetworkEntity, fetchChild));
 
 		UserMapper userMapper = new UserMapper();
 		UserEntity userEntity = rideRequestEntity.getPassenger();

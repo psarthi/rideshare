@@ -11,9 +11,9 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
-import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustCategoryName;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
@@ -59,8 +59,7 @@ public class RideOfferManagementService {
 			ride.setVehicle(vehicle);
 
 			TrustCategoryDO trustCategoryDO = new TrustCategoryDO();
-			String anonymousCategory = PropertyReader.getInstance().getProperty("ANONYMOUS_CATEGORY");
-			TrustCategory trustCategory = trustCategoryDO.get(anonymousCategory);
+			TrustCategory trustCategory = trustCategoryDO.get(TrustCategoryName.Anonymous.toString());
 	 
 			TrustNetwork trustNetwork = new TrustNetwork();
 			trustNetwork.getTrustCategories().add(trustCategory);

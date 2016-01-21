@@ -12,13 +12,14 @@ import com.digitusrevolution.rideshare.common.inf.GenericDAO;
 import com.digitusrevolution.rideshare.common.mapper.user.RoleMapper;
 import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
+import com.digitusrevolution.rideshare.model.user.domain.RoleName;
 
 public class RoleDO implements DomainObjectPKString<Role>{
 
 	private Role role;
 	private RoleEntity roleEntity;
 	private RoleMapper roleMapper;
-	private final GenericDAO<RoleEntity, String> genericDAO;
+	private final GenericDAO<RoleEntity, RoleName> genericDAO;
 
 	public RoleDO() {
 		role = new Role();
@@ -40,19 +41,20 @@ public class RoleDO implements DomainObjectPKString<Role>{
 	@Override
 	public void fetchChild() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public String create(Role role) {
 		setRole(role);
-		String name = genericDAO.create(roleEntity);
+		//Converting RoleName Enum to String
+		String name = genericDAO.create(roleEntity).toString();
 		return name;
 	}
 
 	@Override
 	public Role get(String name) {
-		roleEntity = genericDAO.get(name);
+		//Converting name to RoleName enum
+		roleEntity = genericDAO.get(RoleName.valueOf(name));
 		if (roleEntity == null){
 			throw new NotFoundException("No Data found with id: "+name);
 		}
@@ -80,7 +82,7 @@ public class RoleDO implements DomainObjectPKString<Role>{
 
 	@Override
 	public void update(Role role) {
-		if (role.getName().isEmpty()){
+		if (role.getName().toString().isEmpty()){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+role.getName());
 		}
 		setRole(role);

@@ -116,6 +116,6 @@ public interface Mapper<M,E> {
 	 *
 	 *	
      */
-	Collection<E> getEntities(Collection<E> entities, Collection<M> model, boolean fetchChild);
+	Collection<E> getEntities(Collection<E> entities, Collection<M> models, boolean fetchChild);
 
 }

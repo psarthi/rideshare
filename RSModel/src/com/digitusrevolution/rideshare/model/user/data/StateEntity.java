@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.model.user.data;
 import java.util.Collection;
 import java.util.HashSet;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,7 +21,7 @@ public class StateEntity {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	private String name;
-	@OneToMany
+	@OneToMany (cascade=CascadeType.ALL)
 	@JoinTable(name="state_city",joinColumns=@JoinColumn(name="state_id"))
 	private Collection<CityEntity> cities = new HashSet<CityEntity>();
 	

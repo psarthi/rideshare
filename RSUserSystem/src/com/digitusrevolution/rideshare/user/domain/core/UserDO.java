@@ -13,9 +13,9 @@ import org.apache.logging.log4j.Logger;
 import com.digitusrevolution.rideshare.common.exception.EmailExistException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
-import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
+import com.digitusrevolution.rideshare.model.user.domain.RoleName;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.data.UserDAO;
@@ -120,8 +120,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	public void addVehicle(Vehicle vehicle){		
 		if (user.getVehicles().size()==0){
 			RoleDO roleDO = new RoleDO();
-			String driverRole = PropertyReader.getInstance().getProperty("DRIVER_ROLE");
-			Role role = roleDO.get(driverRole);
+			Role role = roleDO.get(RoleName.Driver.toString());
 			user.getRoles().add(role);
 		}
 		user.getVehicles().add(vehicle);

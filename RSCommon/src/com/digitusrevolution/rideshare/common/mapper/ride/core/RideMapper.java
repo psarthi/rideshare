@@ -37,7 +37,8 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
 		TrustNetwork trustNetwork = ride.getTrustNetwork();
-		rideEntity.setTrustNetwork(trustNetworkMapper.getEntity(trustNetwork, fetchChild));
+		//Reason for checking this as during ride offer, we set this value purposefully to null, so that it doesn't create twice
+		if (trustNetwork!=null) rideEntity.setTrustNetwork(trustNetworkMapper.getEntity(trustNetwork, fetchChild));
 
 		VehicleMapper vehicleMapper = new VehicleMapper();
 		Vehicle vehicle = ride.getVehicle();
@@ -112,9 +113,9 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 
 
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
-		TrustNetworkEntity trustNetworkEntity = rideEntity.getTrustNetwork();
-		TrustNetwork trustNetwork = trustNetworkMapper.getDomainModel(trustNetworkEntity, fetchChild);
-		ride.setTrustNetwork(trustNetwork);
+		TrustNetworkEntity trustNetworkEntity = rideEntity.getTrustNetwork(); 
+		//Reason for checking this as during ride offer, we set this value purposefully to null, so that it doesn't create twice
+		if (trustNetworkEntity!=null) ride.setTrustNetwork(trustNetworkMapper.getDomainModel(trustNetworkEntity, fetchChild));
 
 		VehicleMapper vehicleMapper = new VehicleMapper();
 		VehicleEntity vehicleEntity = rideEntity.getVehicle();

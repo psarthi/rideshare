@@ -36,15 +36,23 @@ public class CityMapper implements Mapper<City, CityEntity>{
 	}
 
 	@Override
-	public Collection<City> getDomainModels(Collection<City> models, Collection<CityEntity> entities, boolean fetchChild) {
-		// TODO Auto-generated method stub
-		return null;
+	public Collection<City> getDomainModels(Collection<City> cities, Collection<CityEntity> cityEntities, boolean fetchChild) {
+		for (CityEntity cityEntity : cityEntities) {
+			City city = new City();
+			city = getDomainModel(cityEntity, fetchChild);
+			cities.add(city);
+		}
+		return cities;
 	}
 
 	@Override
-	public Collection<CityEntity> getEntities(Collection<CityEntity> entities, Collection<City> model, boolean fetchChild) {
-		// TODO Auto-generated method stub
-		return null;
+	public Collection<CityEntity> getEntities(Collection<CityEntity> cityEntities, Collection<City> cities, boolean fetchChild) {
+		for (City city : cities) {
+			CityEntity cityEntity = new CityEntity();
+			cityEntity = getEntity(city, fetchChild);
+			cityEntities.add(cityEntity);
+		}
+		return cityEntities;
 	}
 
 }

@@ -15,13 +15,14 @@ import com.digitusrevolution.rideshare.common.inf.GenericDAO;
 import com.digitusrevolution.rideshare.common.mapper.ride.TrustCategoryMapper;
 import com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustCategoryName;
 
 public class TrustCategoryDO implements DomainObjectPKString<TrustCategory>{
 	
 	private TrustCategory trustCategory;
 	private TrustCategoryEntity trustCategoryEntity;
 	private TrustCategoryMapper trustCategoryMapper;
-	private final GenericDAO<TrustCategoryEntity, String> genericDAO;
+	private final GenericDAO<TrustCategoryEntity, TrustCategoryName> genericDAO;
 	private static final Logger logger = LogManager.getLogger(TrustCategoryDO.class.getName());
 
 	
@@ -55,7 +56,7 @@ public class TrustCategoryDO implements DomainObjectPKString<TrustCategory>{
 
 	@Override
 	public void update(TrustCategory trustCategory) {
-		if (trustCategory.getName().isEmpty()){
+		if (trustCategory.getName().toString().isEmpty()){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+trustCategory.getName());
 		}
 		setTrustCategory(trustCategory);
@@ -79,14 +80,14 @@ public class TrustCategoryDO implements DomainObjectPKString<TrustCategory>{
 	public String create(TrustCategory trustCategory) {
 		logger.entry();
 		setTrustCategory(trustCategory);
-		String name = genericDAO.create(trustCategoryEntity);
+		String name = genericDAO.create(trustCategoryEntity).toString();
 		logger.exit();
 		return name;
 	}
 
 	@Override
 	public TrustCategory get(String name) {
-		trustCategoryEntity = genericDAO.get(name);
+		trustCategoryEntity = genericDAO.get(TrustCategoryName.valueOf(name));
 		if (trustCategoryEntity == null){
 			throw new NotFoundException("No Data found with id: "+name);
 		}

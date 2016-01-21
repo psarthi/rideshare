@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.model.user.data;
 import java.util.Collection;
 import java.util.HashSet;
 
+import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -19,14 +20,14 @@ public class CountryEntity {
 
 	@Id
 	private String name;
-	@OneToMany
+	@OneToMany (cascade=CascadeType.ALL)
 	@JoinTable(name="country_state",joinColumns=@JoinColumn(name="country_name"))
 	private Collection<StateEntity> states = new HashSet<StateEntity>();
 	@Embedded
 	@ElementCollection
 	@JoinTable(name="country_fuel",joinColumns=@JoinColumn(name="country_name"))
 	private Collection<FuelEntity> fuels = new HashSet<FuelEntity>();
-	@ManyToOne
+	@ManyToOne (cascade=CascadeType.ALL)
 	private CurrencyEntity currency;
 	
 	public String getName() {

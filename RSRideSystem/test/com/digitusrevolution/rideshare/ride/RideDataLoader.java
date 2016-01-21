@@ -25,6 +25,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustCategoryName;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
@@ -96,11 +97,11 @@ public class RideDataLoader {
 			RideDataLoader dataLoader = new RideDataLoader();
 
 			//Trust Category needs to be loaded only once
-//			dataLoader.loadTrustCategory();
+			dataLoader.loadTrustCategory();
 			
 //			dataLoader.loadRide();
 //			dataLoader.loadRideRequest();
-			dataLoader.cleanup();
+//			dataLoader.cleanup();
 
 //			dataLoader.test();
 			
@@ -127,8 +128,7 @@ public class RideDataLoader {
 	
 		public void loadTrustCategory(){
 			TrustCategory trustCategory = new TrustCategory();
-			String anonymousCategory = PropertyReader.getInstance().getProperty("ANONYMOUS_CATEGORY");
-			trustCategory.setName(anonymousCategory);
+			trustCategory.setName(TrustCategoryName.Anonymous);
 
 			TrustCategoryDO trustCategoryDO = new TrustCategoryDO();
 			trustCategoryDO.create(trustCategory);			
@@ -146,8 +146,7 @@ public class RideDataLoader {
 			ride.setVehicle(vehicle);
 
 			TrustCategoryDO trustCategoryDO = new TrustCategoryDO();
-			String anonymousCategory = PropertyReader.getInstance().getProperty("ANONYMOUS_CATEGORY");
-			TrustCategory trustCategory = trustCategoryDO.get(anonymousCategory);
+			TrustCategory trustCategory = trustCategoryDO.get(TrustCategoryName.Anonymous.toString());
 	 
 			TrustNetwork trustNetwork = new TrustNetwork();
 			trustNetwork.getTrustCategories().add(trustCategory);
@@ -253,8 +252,7 @@ public class RideDataLoader {
 			rideRequest.setVehicleCategory(vehicleCategory);
 			
 			TrustCategoryDO trustCategoryDO = new TrustCategoryDO();
-			String anonymousCategory = PropertyReader.getInstance().getProperty("ANONYMOUS_CATEGORY");
-			TrustCategory trustCategory = trustCategoryDO.get(anonymousCategory);
+			TrustCategory trustCategory = trustCategoryDO.get(TrustCategoryName.Anonymous.toString());
 	 
 			TrustNetwork trustNetwork = new TrustNetwork();
 			trustNetwork.getTrustCategories().add(trustCategory);

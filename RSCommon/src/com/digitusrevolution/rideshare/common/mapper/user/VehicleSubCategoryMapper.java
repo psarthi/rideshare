@@ -15,6 +15,7 @@ public class VehicleSubCategoryMapper implements Mapper<VehicleSubCategory, Vehi
 		vehicleSubCategoryEntity.setId(vehicleSubCategory.getId());
 		vehicleSubCategoryEntity.setAirConditioner(vehicleSubCategory.getAirConditioner());
 		vehicleSubCategoryEntity.setName(vehicleSubCategory.getName());
+		vehicleSubCategoryEntity.setFuelType(vehicleSubCategory.getFuelType());
 		return vehicleSubCategoryEntity;
 	}
 
@@ -29,6 +30,7 @@ public class VehicleSubCategoryMapper implements Mapper<VehicleSubCategory, Vehi
 		vehicleSubCategory.setId(vehicleSubCategoryEntity.getId());
 		vehicleSubCategory.setAirConditioner(vehicleSubCategoryEntity.getAirConditioner());
 		vehicleSubCategory.setName(vehicleSubCategoryEntity.getName());
+		vehicleSubCategory.setFuelType(vehicleSubCategoryEntity.getFuelType());
 		return vehicleSubCategory;
 	}
 

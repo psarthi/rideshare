@@ -34,6 +34,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
+import com.digitusrevolution.rideshare.model.user.domain.RoleName;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.ride.data.RideDAO;
 import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
@@ -211,9 +212,8 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		boolean driverStatus = false;
 		//This will get travel distance from the first route and first leg
 		int travelDistance = direction.getRoutes().get(0).getLegs().get(0).getDistance().getValue();
-		String driverRole = PropertyReader.getInstance().getProperty("DRIVER_ROLE");
 		for (Role role : roles) {
-			if (role.getName().equals(driverRole)){
+			if (role.getName().equals(RoleName.Driver)){
 				driverStatus = true;
 				String initialStatus = PropertyReader.getInstance().getProperty("RIDE_INITIAL_STATUS");
 				ride.setStatus(initialStatus);
@@ -240,6 +240,11 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 					rideIds.add(id);
 					//Below is imp, else it won't be able to update the ride which has been just created
 					ride.setId(id);
+					//***We have problem here, we need to get Trust Network ID or Set this to null, so that it doesn't create a new trust network
+					//Its important, reason is Trustnetwork get created while creating the ride but we don't have its id and without id it will 
+					//recreate the trust network while updating the ride at later part of the this function as trust network id is the primary key
+					//for trust network entity, so by resetting it to null value, we won't send the trust network for further creation
+					ride.setTrustNetwork(null);
 					logger.debug("Ride has been created with id:" + id);
 				}
 
