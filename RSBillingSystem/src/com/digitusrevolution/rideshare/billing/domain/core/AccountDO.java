@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.user.domain.core;
+package com.digitusrevolution.rideshare.billing.domain.core;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +12,9 @@ import org.apache.logging.log4j.Logger;
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
-import com.digitusrevolution.rideshare.common.mapper.user.core.AccountMapper;
-import com.digitusrevolution.rideshare.model.user.data.core.AccountEntity;
-import com.digitusrevolution.rideshare.model.user.domain.core.Account;
+import com.digitusrevolution.rideshare.common.mapper.billing.core.AccountMapper;
+import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 
 public class AccountDO implements DomainObjectPKInteger<Account>{
 	

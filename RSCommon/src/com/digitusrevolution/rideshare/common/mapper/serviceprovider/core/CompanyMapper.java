@@ -3,8 +3,8 @@ package com.digitusrevolution.rideshare.common.mapper.serviceprovider.core;
 import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
+import com.digitusrevolution.rideshare.common.mapper.billing.core.AccountMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.CurrencyMapper;
-import com.digitusrevolution.rideshare.common.mapper.user.core.AccountMapper;
 import com.digitusrevolution.rideshare.model.serviceprovider.data.core.CompanyEntity;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 

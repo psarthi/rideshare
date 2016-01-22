@@ -12,8 +12,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
 import com.digitusrevolution.rideshare.model.user.data.CurrencyEntity;
-import com.digitusrevolution.rideshare.model.user.data.core.AccountEntity;
 
 @Entity
 @Table(name="company")

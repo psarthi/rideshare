@@ -98,14 +98,7 @@ public class UserDataLoader {
 			
 			UserDataLoader dataLoader = new UserDataLoader();
 			
-			// This will take care of prerequisites
-			//Start
-			dataLoader.loadCountry();
-			dataLoader.loadRole();
-			dataLoader.loadVehicleCategory();
-			dataLoader.loadVehicleSubCategory();
-			//End			
-			
+	//		dataLoader.prereq();
 			dataLoader.loadUser();
 			dataLoader.loadVehicle();			
 			
@@ -195,8 +188,15 @@ public class UserDataLoader {
 			}else {
 				user.setSex(Sex.Female);
 			}			
+			CountryDO countryDO = new CountryDO();
+			Country country = countryDO.get("India");
 			city = cityDO.get(1);
+			StateDO stateDO = new StateDO();
+			State state = stateDO.get(1);
 			user.setCity(city);
+			user.setState(state);
+			user.setCountry(country);
+			
 			userDO.create(user);
 
 		}

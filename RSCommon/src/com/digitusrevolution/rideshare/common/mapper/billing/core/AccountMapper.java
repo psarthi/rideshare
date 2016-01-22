@@ -1,10 +1,10 @@
-package com.digitusrevolution.rideshare.common.mapper.user.core;
+package com.digitusrevolution.rideshare.common.mapper.billing.core;
 
 import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
-import com.digitusrevolution.rideshare.model.user.data.core.AccountEntity;
-import com.digitusrevolution.rideshare.model.user.domain.core.Account;
+import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 
 public class AccountMapper implements Mapper<Account, AccountEntity>{
 

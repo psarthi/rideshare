@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.model.user.domain.core;
+package com.digitusrevolution.rideshare.model.billing.domain.core;
 
 public class Account {
 	

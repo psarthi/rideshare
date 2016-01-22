@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.model.user.data.core;
+package com.digitusrevolution.rideshare.model.billing.data.core;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

@@ -19,13 +19,16 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
+import com.digitusrevolution.rideshare.model.user.data.CountryEntity;
 import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
 import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
+import com.digitusrevolution.rideshare.model.user.data.StateEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 
 @Entity
@@ -46,6 +49,10 @@ public class UserEntity {
 	private String password;
 	@ManyToOne
 	private CityEntity city;
+	@ManyToOne
+	private StateEntity state;
+	@ManyToOne
+	private CountryEntity country;
 	@OneToOne(cascade=CascadeType.ALL)
 	private PhotoEntity photo;
 	@ManyToMany(mappedBy="users")
@@ -217,6 +224,22 @@ public class UserEntity {
 
 	public void setRidesTaken(Collection<RidePassengerEntity> ridesTaken) {
 		this.ridesTaken = ridesTaken;
+	}
+
+	public StateEntity getState() {
+		return state;
+	}
+
+	public void setState(StateEntity state) {
+		this.state = state;
+	}
+
+	public CountryEntity getCountry() {
+		return country;
+	}
+
+	public void setCountry(CountryEntity country) {
+		this.country = country;
 	}
 
 	@Override

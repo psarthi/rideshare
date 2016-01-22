@@ -3,8 +3,8 @@ package com.digitusrevolution.rideshare.model.serviceprovider.domain.core;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
-import com.digitusrevolution.rideshare.model.user.domain.core.Account;
 
 public class Company {
 	

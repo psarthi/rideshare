@@ -27,8 +27,8 @@ public class StateMapper implements Mapper<State, StateEntity>{
 	@Override
 	public State getDomainModel(StateEntity stateEntity, boolean fetchChild) {
 		State state = new State();
-		state.setId(state.getId());
-		state.setName(state.getName());
+		state.setId(stateEntity.getId());
+		state.setName(stateEntity.getName());
 		CityMapper cityMapper = new CityMapper();
 		state.setCities(cityMapper.getDomainModels(state.getCities(), stateEntity.getCities(), fetchChild));
 		return state;

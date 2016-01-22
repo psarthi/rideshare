@@ -3,13 +3,16 @@ package com.digitusrevolution.rideshare.model.user.domain.core;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.user.domain.City;
+import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
+import com.digitusrevolution.rideshare.model.user.domain.State;
 
 public class User {
 	
@@ -21,6 +24,8 @@ public class User {
 	private String email;
 	private String password;
 	private City city;
+	private State state;
+	private Country country;
 	private Photo photo;
 	private Collection<Group> groups = new HashSet<Group>();
 	private Collection<Vehicle> vehicles = new HashSet<Vehicle>();
@@ -168,6 +173,22 @@ public class User {
 
 	public void setRidesTaken(Collection<Ride> ridesTaken) {
 		this.ridesTaken = ridesTaken;
+	}
+
+	public State getState() {
+		return state;
+	}
+
+	public void setState(State state) {
+		this.state = state;
+	}
+
+	public Country getCountry() {
+		return country;
+	}
+
+	public void setCountry(Country country) {
+		this.country = country;
 	}
 
 	@Override

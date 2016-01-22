@@ -36,7 +36,6 @@
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.core.GroupEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.core.UserEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity" />
-		<mapping class="com.digitusrevolution.rideshare.model.user.data.core.AccountEntity" />
 	
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.CityEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.CountryEntity" />
@@ -61,6 +60,7 @@
 
 		<!-- Billing System -->		
 		<mapping class="com.digitusrevolution.rideshare.model.billing.data.core.BillEntity" />
+		<mapping class="com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity" />
 		
 		<!-- Testing Purpose 		
 		<mapping class="com.digitusrevolution.rideshare.poc.A" />
