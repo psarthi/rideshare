@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.common.mapper.ride.core;
 import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
+import com.digitusrevolution.rideshare.common.mapper.billing.core.BillMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.TrustNetworkMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.VehicleMapper;
@@ -60,7 +61,6 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		 * Pending -
 		 * 
 		 * - RecurringDetail
-		 * - bills
 		 * 
 		 */
 
@@ -91,6 +91,10 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		Collection<RideRequestEntity> rejectedRideRequestEntities = rideRequestMapper.getEntities(rideEntity.getRejectedRideRequests(), 
 				ride.getRejectedRideRequests(), false);
 		rideEntity.setRejectedRideRequests(rejectedRideRequestEntities);
+
+		BillMapper billMapper = new BillMapper();
+		//Don't fetch child of bill as bill has ride and ride has bill, it will get into recursive loop
+		rideEntity.setBills(billMapper.getEntities(rideEntity.getBills(), ride.getBills(), false));
 
 		return rideEntity;
 	}
@@ -161,6 +165,10 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		Collection<RideRequest> rejectedRideRequests = rideRequestMapper.getDomainModels(ride.getRejectedRideRequests(), 
 				rideEntity.getRejectedRideRequests(), false);
 		ride.setRejectedRideRequests(rejectedRideRequests);
+		
+		BillMapper billMapper = new BillMapper();
+		//Don't fetch child of bill as bill has ride and ride has bill, it will get into recursive loop
+		ride.setBills(billMapper.getDomainModels(ride.getBills(), rideEntity.getBills(), false));
 
 		return ride;
 	}

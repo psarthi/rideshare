@@ -41,6 +41,21 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		
 		AccountMapper accountMapper = new AccountMapper();
 		userEntity.setAccounts(accountMapper.getEntities(userEntity.getAccounts(), user.getAccounts(), fetchChild));
+
+		//Reason behind having this here and not in child function, as if just get(id) it will not get entityChild and 
+		//since Vehicle is having cascade property in User, 
+		//it will delete the vehicle if it doesn't found it while updating i.e. when you call update(user)
+		//Otherwise, if you put this into child function, then ensure before updating you call getChild and not get function, 
+		//so that all child entities are set as well
+		VehicleMapper vehicleMapper = new VehicleMapper();
+		userEntity.setVehicles(vehicleMapper.getEntities(userEntity.getVehicles(), user.getVehicles(), fetchChild));
+
+		//Reason behind having this here and not in child function, as when you get(id) it gets just the entity and not child, 
+		//But role is having Many to Many relationship, so when it doesn't get role and if you call update post get, then role would be deleted
+		//Otherwise, if you put this into child function, then ensure before updating you call getChild and not get function, 
+		//so that all child entities are set as well
+		RoleMapper roleMapper = new RoleMapper();
+		userEntity.setRoles(roleMapper.getEntities(userEntity.getRoles(), user.getRoles(), fetchChild));
 				
 		if (fetchChild){
 			userEntity = getEntityChild(user, userEntity);			
@@ -62,12 +77,6 @@ public class UserMapper implements Mapper<User, UserEntity> {
 	
 	@Override
 	public UserEntity getEntityChild(User user, UserEntity userEntity){
-		
-		VehicleMapper vehicleMapper = new VehicleMapper();
-		userEntity.setVehicles(vehicleMapper.getEntities(userEntity.getVehicles(), user.getVehicles(), true));
-		
-		RoleMapper roleMapper = new RoleMapper();
-		userEntity.setRoles(roleMapper.getEntities(userEntity.getRoles(), user.getRoles(), true));
 		
 		RideMapper rideMapper = new RideMapper();
 		//Don't get childs of rides as it will get into recursive loop as ride has driver and driver has rides
@@ -110,6 +119,21 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		
 		AccountMapper accountMapper = new AccountMapper();
 		user.setAccounts(accountMapper.getDomainModels(user.getAccounts(), userEntity.getAccounts(), fetchChild));
+		
+		//Reason behind having this here and not in child function, as if just get(id) it will not get entityChild and
+		//since Vehicle is having cascade property in User, 
+		//it will delete the vehicle if it doesn't found it while updating i.e. when you call update(user) 
+		//Otherwise, if you put this into child function, then ensure before updating you call getChild and not get function, 
+		//so that all child entities are set as well
+		VehicleMapper vehicleMapper = new VehicleMapper();
+		user.setVehicles(vehicleMapper.getDomainModels(user.getVehicles(), userEntity.getVehicles(), fetchChild));
+
+		//Reason behind having this here and not in child function, as when you get(id) it gets just the entity and not child, 
+		//But role is having Many to Many relationship, so when it doesn't get role and if you call update post get, then role would be deleted
+		//Otherwise, if you put this into child function, then ensure before updating you call getChild and not get function, 
+		//so that all child entities are set as well
+		RoleMapper roleMapper = new RoleMapper();
+		user.setRoles(roleMapper.getDomainModels(user.getRoles(), userEntity.getRoles(), fetchChild));
 
 		
 		if (fetchChild){
@@ -121,12 +145,6 @@ public class UserMapper implements Mapper<User, UserEntity> {
 			
 	@Override
 	public User getDomainModelChild(User user, UserEntity userEntity){
-		
-		VehicleMapper vehicleMapper = new VehicleMapper();
-		user.setVehicles(vehicleMapper.getDomainModels(user.getVehicles(), userEntity.getVehicles(), true));
-
-		RoleMapper roleMapper = new RoleMapper();
-		user.setRoles(roleMapper.getDomainModels(user.getRoles(), userEntity.getRoles(), true));
 		
 		RideMapper rideMapper = new RideMapper();
 		//Don't get childs of rides as it will get into recursive loop as ride has driver and driver has rides

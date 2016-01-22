@@ -49,6 +49,38 @@ public class Bill {
 	public void setAmount(int amount) {
 		this.amount = amount;
 	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + number;
+		result = prime * result + ((ride == null) ? 0 : ride.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Bill)) {
+			return false;
+		}
+		Bill other = (Bill) obj;
+		if (number != other.number) {
+			return false;
+		}
+		if (ride == null) {
+			if (other.ride != null) {
+				return false;
+			}
+		} else if (!ride.equals(other.ride)) {
+			return false;
+		}
+		return true;
+	}
 
 	
 }

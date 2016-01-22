@@ -6,7 +6,12 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
+import com.digitusrevolution.rideshare.model.user.domain.Currency;
+import com.digitusrevolution.rideshare.serviceprovider.domain.core.CompanyDO;
+import com.digitusrevolution.rideshare.serviceprovider.dto.CompanyAccount;
 
 public class CompanyDataLoader {
 	
@@ -18,7 +23,9 @@ public class CompanyDataLoader {
 		Transaction transation = null;	
 		try {
 			transation = session.beginTransaction();
-			
+			CompanyDataLoader dataLoader = new CompanyDataLoader();
+		//	dataLoader.loadCompany();
+			dataLoader.addAccount();
 			
 			transation.commit();
 
@@ -46,8 +53,18 @@ public class CompanyDataLoader {
 		
 		Company company = new Company();
 		company.setName("Digitus Revolution");
-		
+		Currency currency = RESTClientUtil.getCurrency(1);
+		company.setCurrency(currency);
+		CompanyDO companyDO = new CompanyDO();
+		companyDO.create(company);		
 	}
+	
+	public void addAccount(){
+		Account account = RESTClientUtil.getAccount(2);
+		CompanyDO companyDO = new CompanyDO();
+		companyDO.addAccount(1, account);
+	}
+
 }
 
 

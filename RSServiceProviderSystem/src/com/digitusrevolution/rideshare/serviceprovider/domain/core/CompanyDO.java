@@ -102,7 +102,8 @@ public class CompanyDO implements DomainObjectPKInteger<Company>{
 	 * Purpose - Add account to company
 	 */
 	public void addAccount(int companyId, Account account){
-		Company company = get(companyId);
+		//Reason for getting child instead of just basic entity, as if we miss any fields owned by this entity, then that would be deleted while updating
+		Company company = getChild(companyId);
 		company.getAccounts().add(account);
 		update(company);
 	}
