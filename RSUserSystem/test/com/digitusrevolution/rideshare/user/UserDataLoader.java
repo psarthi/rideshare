@@ -1,8 +1,5 @@
 package com.digitusrevolution.rideshare.user;
 
-
-import java.util.List;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -29,15 +26,13 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.domain.CityDO;
 import com.digitusrevolution.rideshare.user.domain.CountryDO;
-import com.digitusrevolution.rideshare.user.domain.CurrencyDO;
 import com.digitusrevolution.rideshare.user.domain.RoleDO;
 import com.digitusrevolution.rideshare.user.domain.StateDO;
 import com.digitusrevolution.rideshare.user.domain.VehicleCategoryDO;
 import com.digitusrevolution.rideshare.user.domain.VehicleSubCategoryDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
-import com.digitusrevolution.rideshare.user.domain.core.VehicleDO;
 
-@Path("/domain/loadsample/user")
+@Path("/domain/loaddata/user")
 public class UserDataLoader {
 	
 	
@@ -51,44 +46,6 @@ public class UserDataLoader {
 		return Response.ok().build();
 	}
 	
-	@GET
-	@Path("/prereq")
-	public Response prereq(){
-		
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
-		try {
-			transation = session.beginTransaction();
-			
-			UserDataLoader dataLoader = new UserDataLoader();
-			dataLoader.loadCountry();
-			dataLoader.loadRole();
-			dataLoader.loadVehicleCategory();
-			dataLoader.loadVehicleSubCategory();
-			
-			transation.commit();
-
-			/*
-			 * Reason for catching RuntimeException and not HibernateException as all exceptions thrown by Hibernate
-			 * is not of type HibernateException such as NotFoundException
-			 */
-		} catch (RuntimeException e) {
-			if (transation!=null){
-				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
-				throw e;
-			}
-		}
-		finally {
-			if (session.isOpen()){
-				logger.info("Closing Session");
-				session.close();				
-			}
-		}	
-		
-		return Response.ok().build();
-	}
-	
 	public static void main(String args[]){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -97,8 +54,12 @@ public class UserDataLoader {
 			transation = session.beginTransaction();
 			
 			UserDataLoader dataLoader = new UserDataLoader();
+	
+			dataLoader.loadCountry();
+			dataLoader.loadRole();
+			dataLoader.loadVehicleCategory();
+			dataLoader.loadVehicleSubCategory();
 			
-	//		dataLoader.prereq();
 			dataLoader.loadUser();
 			dataLoader.loadVehicle();			
 			

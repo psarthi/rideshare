@@ -43,15 +43,13 @@ public class TrustCategoryMapper implements Mapper<TrustCategory, TrustCategoryE
 	}
 
 	@Override
-	public TrustCategoryEntity getEntityChild(TrustCategory model, TrustCategoryEntity entity) {
-		// TODO Auto-generated method stub
-		return null;
+	public TrustCategoryEntity getEntityChild(TrustCategory trustCategory, TrustCategoryEntity trustCategoryEntity) {
+		return trustCategoryEntity;
 	}
 
 	@Override
-	public TrustCategory getDomainModelChild(TrustCategory model, TrustCategoryEntity entity) {
-		// TODO Auto-generated method stub
-		return null;
+	public TrustCategory getDomainModelChild(TrustCategory trustCategory, TrustCategoryEntity trustCategoryEntity) {
+		return trustCategory;
 	}
 
 }

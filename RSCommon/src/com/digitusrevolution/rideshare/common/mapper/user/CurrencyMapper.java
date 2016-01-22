@@ -18,9 +18,8 @@ public class CurrencyMapper implements Mapper<Currency, CurrencyEntity>{
 	}
 
 	@Override
-	public CurrencyEntity getEntityChild(Currency model, CurrencyEntity entity) {
-		// TODO Auto-generated method stub
-		return null;
+	public CurrencyEntity getEntityChild(Currency currency, CurrencyEntity currencyEntity) {
+		return currencyEntity;
 	}
 
 	@Override
@@ -33,9 +32,8 @@ public class CurrencyMapper implements Mapper<Currency, CurrencyEntity>{
 	}
 
 	@Override
-	public Currency getDomainModelChild(Currency model, CurrencyEntity entity) {
-		// TODO Auto-generated method stub
-		return null;
+	public Currency getDomainModelChild(Currency currency, CurrencyEntity currencyEntity) {
+		return currency;
 	}
 
 	@Override

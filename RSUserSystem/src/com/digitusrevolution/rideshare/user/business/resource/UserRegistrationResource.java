@@ -9,6 +9,7 @@ import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.user.business.UserRegistrationService;
+import com.digitusrevolution.rideshare.user.dto.UserAccount;
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -26,6 +27,15 @@ public class UserRegistrationResource {
 	@Path("/{id}/vehicles")
 	public VehicleRegistrationResource getVehicleRegistrationResource(){
 		return new VehicleRegistrationResource();
+	}
+	
+	@POST
+	@Path("/{id}/accounts")
+	public Response addAccount(UserAccount userAccount){
+
+		UserRegistrationService userRegistrationService = new UserRegistrationService();
+		userRegistrationService.addAccount(userAccount);
+		return Response.ok().build();
 	}
 
 }

@@ -23,8 +23,7 @@ public class CountryMapper implements Mapper<Country, CountryEntity>{
 
 	@Override
 	public CountryEntity getEntityChild(Country country, CountryEntity countryEntity) {
-		// TODO Auto-generated method stub
-		return null;
+		return countryEntity;
 	}
 
 	@Override
@@ -42,8 +41,7 @@ public class CountryMapper implements Mapper<Country, CountryEntity>{
 
 	@Override
 	public Country getDomainModelChild(Country country, CountryEntity countryEntity) {
-		// TODO Auto-generated method stub
-		return null;
+		return country;
 	}
 
 	@Override

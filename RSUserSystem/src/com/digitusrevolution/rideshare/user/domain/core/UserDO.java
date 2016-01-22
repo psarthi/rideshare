@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import com.digitusrevolution.rideshare.common.exception.EmailExistException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
@@ -138,4 +139,51 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		return id;
 	}
 	
+	/*
+	 * Purpose - Add account to the user
+	 * 
+	 */
+	public void addAccount(int userId, Account account){
+		User user = get(userId);
+		user.getAccounts().add(account);
+		update(user);		
+	}
+	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

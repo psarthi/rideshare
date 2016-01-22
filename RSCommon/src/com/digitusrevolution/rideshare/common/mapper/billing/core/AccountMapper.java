@@ -18,8 +18,7 @@ public class AccountMapper implements Mapper<Account, AccountEntity>{
 
 	@Override
 	public AccountEntity getEntityChild(Account account, AccountEntity accountEntity) {
-		// TODO Auto-generated method stub
-		return null;
+		return accountEntity;
 	}
 
 	@Override
@@ -32,8 +31,7 @@ public class AccountMapper implements Mapper<Account, AccountEntity>{
 
 	@Override
 	public Account getDomainModelChild(Account account, AccountEntity accountEntity) {
-		// TODO Auto-generated method stub
-		return null;
+		return account;
 	}
 
 	@Override

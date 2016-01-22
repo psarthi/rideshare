@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
+import com.digitusrevolution.rideshare.common.mapper.billing.core.AccountMapper;
+import com.digitusrevolution.rideshare.common.mapper.billing.core.BillMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.CityMapper;
@@ -35,8 +37,11 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		userEntity.setState(stateMapper.getEntity(user.getState(), fetchChild));
 		
 		CountryMapper countryMapper = new CountryMapper();
-		userEntity.setCountry(countryMapper.getEntity(user.getCountry(), fetchChild));		
+		userEntity.setCountry(countryMapper.getEntity(user.getCountry(), fetchChild));
 		
+		AccountMapper accountMapper = new AccountMapper();
+		userEntity.setAccounts(accountMapper.getEntities(userEntity.getAccounts(), user.getAccounts(), fetchChild));
+				
 		if (fetchChild){
 			userEntity = getEntityChild(user, userEntity);			
 		} 
@@ -48,9 +53,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		 * - photo
 		 * - groups
 		 * - friends
-		 * - accounts
 		 * - profileRating
-		 * - bills
 		 *  
 		 */
 		
@@ -77,6 +80,10 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		//Note - We are not setting ridesTaken as that require ride entity which is not available in User and we don't have any requirement 
 		//of setting the ride through user entity
 		
+		BillMapper billMapper = new BillMapper();
+		//Don't fetch child as bill has user and user has bill, so it will get into recursive loop
+		userEntity.setBills(billMapper.getEntities(userEntity.getBills(), user.getBills(), false));
+		
 		return userEntity;
 		
 	}
@@ -100,6 +107,10 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		
 		CountryMapper countryMapper = new CountryMapper();
 		user.setCountry(countryMapper.getDomainModel(userEntity.getCountry(), fetchChild));
+		
+		AccountMapper accountMapper = new AccountMapper();
+		user.setAccounts(accountMapper.getDomainModels(user.getAccounts(), userEntity.getAccounts(), fetchChild));
+
 		
 		if (fetchChild){
 			user = getDomainModelChild(user, userEntity);
@@ -135,6 +146,10 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
 		//Don't get childs of ride request as it will get into recursive loop as ride request has passenger and passenger has rides
 		user.setRideRequests(rideRequestMapper.getDomainModels(user.getRideRequests(), userEntity.getRideRequests(), false));
+		
+		BillMapper billMapper = new BillMapper();
+		//Don't fetch child as bill has user and user has bill, so it will get into recursive loop
+		user.setBills(billMapper.getDomainModels(user.getBills(), userEntity.getBills(), false));
 		
 		return user;
 	}

@@ -19,9 +19,8 @@ public class StateMapper implements Mapper<State, StateEntity>{
 	}
 
 	@Override
-	public StateEntity getEntityChild(State state, StateEntity entity) {
-		// TODO Auto-generated method stub
-		return null;
+	public StateEntity getEntityChild(State state, StateEntity stateEntity) {
+		return stateEntity;
 	}
 
 	@Override
@@ -36,8 +35,7 @@ public class StateMapper implements Mapper<State, StateEntity>{
 
 	@Override
 	public State getDomainModelChild(State state, StateEntity stateEntity) {
-		// TODO Auto-generated method stub
-		return null;
+		return state;
 	}
 
 	@Override

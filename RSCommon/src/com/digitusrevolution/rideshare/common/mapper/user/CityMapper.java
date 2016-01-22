@@ -26,13 +26,12 @@ public class CityMapper implements Mapper<City, CityEntity>{
 
 	@Override
 	public CityEntity getEntityChild(City city, CityEntity cityEntity) {
-		return null;
+		return cityEntity;
 	}
 
 	@Override
 	public City getDomainModelChild(City city, CityEntity cityEntity) {
-		// TODO Auto-generated method stub
-		return null;
+		return city;
 	}
 
 	@Override

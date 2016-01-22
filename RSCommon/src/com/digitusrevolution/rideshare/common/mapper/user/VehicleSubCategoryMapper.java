@@ -21,7 +21,7 @@ public class VehicleSubCategoryMapper implements Mapper<VehicleSubCategory, Vehi
 
 	@Override
 	public VehicleSubCategoryEntity getEntityChild(VehicleSubCategory vehicleSubCategory, VehicleSubCategoryEntity vehicleSubCategoryEntity){	
-		return null;
+		return vehicleSubCategoryEntity;
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class VehicleSubCategoryMapper implements Mapper<VehicleSubCategory, Vehi
 
 	@Override
 	public VehicleSubCategory getDomainModelChild(VehicleSubCategory vehicleSubCategory, VehicleSubCategoryEntity vehicleSubCategoryEntity){
-		return null;
+		return vehicleSubCategory;
 	}
 
 	@Override

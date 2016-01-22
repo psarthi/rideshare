@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.serviceprovider.core.CompanyMapper;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.serviceprovider.data.core.CompanyEntity;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.serviceprovider.data.CompanyDAO;
@@ -96,5 +97,39 @@ public class CompanyDO implements DomainObjectPKInteger<Company>{
 		setCompany(company);
 		companyDAO.delete(companyEntity);
 	}
+	
+	/*
+	 * Purpose - Add account to company
+	 */
+	public void addAccount(int companyId, Account account){
+		Company company = get(companyId);
+		company.getAccounts().add(account);
+		update(company);
+	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

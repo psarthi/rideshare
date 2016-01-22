@@ -23,9 +23,8 @@ public class CompanyMapper implements Mapper<Company, CompanyEntity>{
 	}
 
 	@Override
-	public CompanyEntity getEntityChild(Company company, CompanyEntity entity) {
-		// TODO Auto-generated method stub
-		return null;
+	public CompanyEntity getEntityChild(Company company, CompanyEntity companyEntity) {
+		return companyEntity;
 	}
 
 	@Override
@@ -42,8 +41,7 @@ public class CompanyMapper implements Mapper<Company, CompanyEntity>{
 
 	@Override
 	public Company getDomainModelChild(Company company, CompanyEntity companyEntity) {
-		// TODO Auto-generated method stub
-		return null;
+		return company;
 	}
 
 	@Override

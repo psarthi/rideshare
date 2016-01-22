@@ -8,7 +8,8 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-
+import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
@@ -103,7 +104,64 @@ public class RESTClientUtil {
 		VehicleCategory vehicleCategory = response.readEntity(VehicleCategory.class);
 		return vehicleCategory;
 	}
+	
+	public static Account getAccount(int id){
+
+		RESTClientImpl<Account> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_ACCOUNT_URL");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Integer.toString(id));
+		Response response = restClientUtil.get(uri);
+		Account account= response.readEntity(Account.class);
+		return account;
+	}
+
+	public static Currency getCurrency(int id){
+
+		RESTClientImpl<Currency> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_CURRENCY_URL");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Integer.toString(id));
+		Response response = restClientUtil.get(uri);
+		Currency currency= response.readEntity(Currency.class);
+		return currency;
+	}
 
 	
 	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -3,6 +3,8 @@
 	<name>RSRideSystem</name>
 	<comment></comment>
 	<projects>
+		<project>RSModel</project>
+		<project>RSCommon</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

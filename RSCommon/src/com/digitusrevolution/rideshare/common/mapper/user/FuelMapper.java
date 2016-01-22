@@ -17,9 +17,8 @@ public class FuelMapper implements Mapper<Fuel, FuelEntity>{
 	}
 
 	@Override
-	public FuelEntity getEntityChild(Fuel model, FuelEntity entity) {
-		// TODO Auto-generated method stub
-		return null;
+	public FuelEntity getEntityChild(Fuel fuel, FuelEntity fuelEntity) {
+		return fuelEntity;
 	}
 
 	@Override
@@ -31,9 +30,8 @@ public class FuelMapper implements Mapper<Fuel, FuelEntity>{
 	}
 
 	@Override
-	public Fuel getDomainModelChild(Fuel model, FuelEntity entity) {
-		// TODO Auto-generated method stub
-		return null;
+	public Fuel getDomainModelChild(Fuel fuel, FuelEntity fuelEntity) {
+		return fuel;
 	}
 
 	@Override

@@ -41,15 +41,13 @@ public class RoleMapper implements Mapper<Role, RoleEntity>{
 	}
 
 	@Override
-	public RoleEntity getEntityChild(Role model, RoleEntity entity) {
-		// TODO Auto-generated method stub
-		return null;
+	public RoleEntity getEntityChild(Role role, RoleEntity roleEntity) {
+		return roleEntity;
 	}
 
 	@Override
-	public Role getDomainModelChild(Role model, RoleEntity entity) {
-		// TODO Auto-generated method stub
-		return null;
+	public Role getDomainModelChild(Role role, RoleEntity roleEntity) {
+		return role;
 	}
 
 }

@@ -67,7 +67,7 @@ public class AccountDO implements DomainObjectPKInteger<Account>{
 	}
 
 	@Override
-	public int create(Account model) {
+	public int create(Account account) {
 		setAccount(account);
 		int id = genericDAO.create(accountEntity);
 		return id;
