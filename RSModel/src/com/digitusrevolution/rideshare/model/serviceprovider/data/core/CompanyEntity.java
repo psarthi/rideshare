@@ -1,14 +1,8 @@
 package com.digitusrevolution.rideshare.model.serviceprovider.data.core;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -27,9 +21,8 @@ public class CompanyEntity {
 	 * Use inversJoinColumns to change the column name of other entity primary key
 	 * @JoinTable(name="company_account",joinColumns=@JoinColumn(name="company_id"),inverseJoinColumns=@JoinColumn(name="account_number"))
 	 */
-	@OneToMany
-	@JoinTable(name="company_account",joinColumns=@JoinColumn(name="company_id"))
-	private Collection<AccountEntity> accounts = new HashSet<AccountEntity>();
+	@OneToOne
+	private AccountEntity account;
 	@OneToOne
 	private CurrencyEntity currency;
 	
@@ -45,11 +38,11 @@ public class CompanyEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Collection<AccountEntity> getAccounts() {
-		return accounts;
+	public AccountEntity getAccount() {
+		return account;
 	}
-	public void setAccounts(Collection<AccountEntity> accounts) {
-		this.accounts = accounts;
+	public void setAccount(AccountEntity account) {
+		this.account = account;
 	}
 	public CurrencyEntity getCurrency() {
 		return currency;

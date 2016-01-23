@@ -66,9 +66,8 @@ public class UserEntity {
 	@ManyToMany
 	@JoinTable(name="user_role",joinColumns=@JoinColumn(name="user_id"))
 	private Collection<RoleEntity> roles = new HashSet<RoleEntity>();
-	@OneToMany
-	@JoinTable(name="user_account",joinColumns=@JoinColumn(name="user_id"))
-	private Collection<AccountEntity> accounts = new HashSet<AccountEntity>();
+	@OneToOne
+	private AccountEntity account;
 	private int profileRating;
 	
 	@OneToMany(mappedBy="driver")
@@ -186,12 +185,12 @@ public class UserEntity {
 		this.roles = roles;
 	}
 
-	public Collection<AccountEntity> getAccounts() {
-		return accounts;
+	public AccountEntity getAccount() {
+		return account;
 	}
 
-	public void setAccounts(Collection<AccountEntity> accounts) {
-		this.accounts = accounts;
+	public void setAccount(AccountEntity account) {
+		this.account = account;
 	}
 
 	public Collection<RideRequestEntity> getRideRequests() {

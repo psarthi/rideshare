@@ -40,7 +40,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		userEntity.setCountry(countryMapper.getEntity(user.getCountry(), fetchChild));
 		
 		AccountMapper accountMapper = new AccountMapper();
-		userEntity.setAccounts(accountMapper.getEntities(userEntity.getAccounts(), user.getAccounts(), fetchChild));
+		if (user.getAccount() !=null) userEntity.setAccount(accountMapper.getEntity(user.getAccount(), fetchChild));
 
 		//Reason behind having this here and not in child function, as if just get(id) it will not get entityChild and 
 		//since Vehicle is having cascade property in User, 
@@ -118,7 +118,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		user.setCountry(countryMapper.getDomainModel(userEntity.getCountry(), fetchChild));
 		
 		AccountMapper accountMapper = new AccountMapper();
-		user.setAccounts(accountMapper.getDomainModels(user.getAccounts(), userEntity.getAccounts(), fetchChild));
+		if (userEntity.getAccount() !=null)  user.setAccount(accountMapper.getDomainModel(userEntity.getAccount(), fetchChild));
 		
 		//Reason behind having this here and not in child function, as if just get(id) it will not get entityChild and
 		//since Vehicle is having cascade property in User, 

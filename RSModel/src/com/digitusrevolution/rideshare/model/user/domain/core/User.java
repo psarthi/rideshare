@@ -31,7 +31,7 @@ public class User {
 	private Collection<Vehicle> vehicles = new HashSet<Vehicle>();
 	private Collection<User> friends = new HashSet<User>();
 	private Collection<Role> roles = new HashSet<Role>();
-	private Collection<Account> accounts = new HashSet<Account>();
+	private Account account;
 	private int profileRating;
 
 	private Collection<Ride> ridesOffered = new HashSet<Ride>();
@@ -135,12 +135,12 @@ public class User {
 		this.roles = roles;
 	}
 
-	public Collection<Account> getAccounts() {
-		return accounts;
+	public Account getAccount() {
+		return account;
 	}
 
-	public void setAccounts(Collection<Account> accounts) {
-		this.accounts = accounts;
+	public void setAccount(Account account) {
+		this.account = account;
 	}
 
 	public Collection<RideRequest> getRideRequests() {

@@ -21,13 +21,6 @@ public class RideDataLoader {
 	private static final Logger logger = LogManager.getLogger(RideDataLoader.class.getName());
 	
 	@GET
-	public Response load(){
-		logger.info("Inside Ride DataLoader");
-		String[] args ={};
-		RideDataLoader.main(args);
-		return Response.ok().build();
-	}
-	
 	public static void main(String args[]){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();

@@ -1,5 +1,8 @@
 package com.digitusrevolution.rideshare.serviceprovider;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
@@ -13,10 +16,12 @@ import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.CompanyDO;
 import com.digitusrevolution.rideshare.serviceprovider.dto.CompanyAccount;
 
+@Path("/domain/loaddata/serviceprovider")
 public class CompanyDataLoader {
 	
 	private static final Logger logger = LogManager.getLogger(CompanyDataLoader.class.getName());
 
+	@GET
 	public static void main(String args[]){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -24,7 +29,7 @@ public class CompanyDataLoader {
 		try {
 			transation = session.beginTransaction();
 			CompanyDataLoader dataLoader = new CompanyDataLoader();
-		//	dataLoader.loadCompany();
+			dataLoader.loadCompany();
 			dataLoader.addAccount();
 			
 			transation.commit();
@@ -60,7 +65,7 @@ public class CompanyDataLoader {
 	}
 	
 	public void addAccount(){
-		Account account = RESTClientUtil.getAccount(2);
+		Account account = RESTClientUtil.getAccount(6);
 		CompanyDO companyDO = new CompanyDO();
 		companyDO.addAccount(1, account);
 	}

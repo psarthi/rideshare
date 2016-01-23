@@ -2,7 +2,6 @@ package com.digitusrevolution.rideshare.user;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,6 +10,8 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
@@ -24,6 +25,7 @@ import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
+import com.digitusrevolution.rideshare.user.business.UserRegistrationService;
 import com.digitusrevolution.rideshare.user.domain.CityDO;
 import com.digitusrevolution.rideshare.user.domain.CountryDO;
 import com.digitusrevolution.rideshare.user.domain.RoleDO;
@@ -31,6 +33,7 @@ import com.digitusrevolution.rideshare.user.domain.StateDO;
 import com.digitusrevolution.rideshare.user.domain.VehicleCategoryDO;
 import com.digitusrevolution.rideshare.user.domain.VehicleSubCategoryDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
+import com.digitusrevolution.rideshare.user.dto.UserAccount;
 
 @Path("/domain/loaddata/user")
 public class UserDataLoader {
@@ -39,13 +42,6 @@ public class UserDataLoader {
 	private static final Logger logger = LogManager.getLogger(UserDataLoader.class.getName());
 	
 	@GET
-	public Response load(){
-		
-		String[] args ={};
-		UserDataLoader.main(args);
-		return Response.ok().build();
-	}
-	
 	public static void main(String args[]){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -61,7 +57,9 @@ public class UserDataLoader {
 			dataLoader.loadVehicleSubCategory();
 			
 			dataLoader.loadUser();
-			dataLoader.loadVehicle();			
+			dataLoader.loadVehicle();
+			dataLoader.addAccount();
+			
 			
 			transation.commit();
 
@@ -208,13 +206,21 @@ public class UserDataLoader {
 		vehicle.setVehicleCategory(vehicleCategory);
 		vehicle.setVehicleSubCategory(vehicleSubCategory);
 		
-		for (int i=2;i<3;i++){
+		for (int i=1;i<3;i++){
 			UserDO userDO = new UserDO();
 			User user = userDO.getChild(i);
 			userDO.setUser(user);			
 			userDO.addVehicle(vehicle);
+		}	
+	}
+	
+	public void addAccount(){
+		UserDO userDO = new UserDO();
+		for (int i=1; i<6; i++){
+			Account account = RESTClientUtil.getAccount(i);
+			userDO.addAccount(i, account);			
 		}
-		
+
 	}
 
 	
