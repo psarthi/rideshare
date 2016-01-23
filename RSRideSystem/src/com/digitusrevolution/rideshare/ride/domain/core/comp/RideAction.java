@@ -1,6 +1,8 @@
 package com.digitusrevolution.rideshare.ride.domain.core.comp;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
 
@@ -15,6 +17,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
 
@@ -47,12 +50,12 @@ public class RideAction {
 	 * 
 	 */
 	public void acceptRideRequest(int rideId, int rideRequestId){
-
-		RideStatus rideStatus = rideDO.getStatus(rideId);
 		Ride ride = rideDO.getChild(rideId);
+		RideStatus rideStatus = ride.getStatus();
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		RideRequestStatus rideRequestStatus = rideRequestDO.getStatus(rideRequestId);
 		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
+		RideRequestStatus rideRequestStatus = rideRequest.getStatus();
+
 
 		//Check if ride request is unfulfilled
 		//Reason for re-checking status criteria as from the time of search to responding to it, 
@@ -234,6 +237,56 @@ public class RideAction {
 		} else {
 			throw new WebApplicationException("Passenger can't be dropped as ride is not in valid state. Ride current statues:"+rideCurrentStatus);
 		}
+	}
+
+	/*
+	 * 
+	 * 
+	 */
+	public void endRide(int rideId){
+		Ride ride = rideDO.getChild(rideId);
+		RideStatus rideStatus = ride.getStatus();
+		//Check if the ride has been started
+		if (rideStatus.equals(RideStatus.Started)){
+			//Check if all passengers dropped
+			boolean allPassengerDropped = true;
+			boolean allPassengerPicked = true;
+			List<User> onBoardedPassengerList = new ArrayList<>();
+			List<User> notOnBoardedPassengerList = new ArrayList<>();
+			Collection<RidePassenger> ridePassengers = ride.getPassengers();
+			for (RidePassenger ridePassenger : ridePassengers) {
+				if (ridePassenger.getStatus().equals(PassengerStatus.Dropped)){
+					continue;
+				}
+				if (ridePassenger.getStatus().equals(PassengerStatus.Picked)){
+					allPassengerDropped = false;
+					onBoardedPassengerList.add(ridePassenger.getPassenger());
+					continue;
+				}
+				if (ridePassenger.getStatus().equals(PassengerStatus.Confirmed)){
+					allPassengerPicked = false;
+					notOnBoardedPassengerList.add(ridePassenger.getPassenger());
+				}
+			}
+
+			//If all passenger has been dropped, then you can end the ride
+			if (allPassengerDropped){
+
+			} else {
+				//This is the scenario when all has been picked but some/all not dropped
+				if (allPassengerPicked){
+					
+				}
+				//This is the scenario, when some/all passenger has not been picked
+				//Reject the ride request and allow user to rate the driver
+				else {
+					
+				}
+			}
+			
+			
+		}
+
 	}
 
 }
