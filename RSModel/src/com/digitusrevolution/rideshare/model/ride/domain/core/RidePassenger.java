@@ -5,7 +5,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 public class RidePassenger {
 	
 	private User passenger;
-	private String status;
+	private PassengerStatus status;
 	
 	public User getPassenger() {
 		return passenger;
@@ -13,10 +13,10 @@ public class RidePassenger {
 	public void setPassenger(User passenger) {
 		this.passenger = passenger;
 	}
-	public String getStatus() {
+	public PassengerStatus getStatus() {
 		return status;
 	}
-	public void setStatus(String status) {
+	public void setStatus(PassengerStatus status) {
 		this.status = status;
 	}
 	

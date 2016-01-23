@@ -32,6 +32,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
@@ -215,8 +216,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		for (Role role : roles) {
 			if (role.getName().equals(RoleName.Driver)){
 				driverStatus = true;
-				String initialStatus = PropertyReader.getInstance().getProperty("RIDE_INITIAL_STATUS");
-				ride.setStatus(initialStatus);
+				ride.setStatus(RideStatus.Unfulfilled);
 				ride.setTravelDistance(travelDistance);
 				ZonedDateTime startTimeUTC = ride.getStartTime().withZoneSameInstant(ZoneOffset.UTC);
 				ride.setStartTime(startTimeUTC);				
@@ -462,7 +462,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	/*
 	 * Purpose - Get the status of ride
 	 */
-	public String getStatus(int rideId){
+	public RideStatus getStatus(int rideId){
 		return rideDAO.getStatus(rideId);
 	}
 

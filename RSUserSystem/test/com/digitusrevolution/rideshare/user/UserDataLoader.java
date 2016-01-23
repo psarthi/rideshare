@@ -165,8 +165,7 @@ public class UserDataLoader {
 	public void loadVehicleCategory(){
 		logger.entry();
 		VehicleCategory vehicleCategory = new VehicleCategory();
-		String carCategory = PropertyReader.getInstance().getProperty("CAR_CATEGORY");
-		vehicleCategory.setName(carCategory);
+		vehicleCategory.setName("Car");
 		
 		VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();
 		vehicleCategoryDO.create(vehicleCategory);
@@ -175,8 +174,7 @@ public class UserDataLoader {
 	public void loadVehicleSubCategory(){
 		logger.entry();
 		VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
-		String carSubCategorySedan = PropertyReader.getInstance().getProperty("CAR_SUB_CATEGORY_SEDAN");
-		vehicleSubCategory.setName(carSubCategorySedan);
+		vehicleSubCategory.setName("Sedan");
 		vehicleSubCategory.setAirConditioner(true);
 		vehicleSubCategory.setFuelType(FuelType.Petrol);
 		vehicleSubCategory.setAverageMileage(12);

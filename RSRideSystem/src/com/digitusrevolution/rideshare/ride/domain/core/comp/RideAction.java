@@ -9,10 +9,12 @@ import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.exception.RideRequestUnavailableException;
 import com.digitusrevolution.rideshare.common.exception.RideUnavailableException;
-import com.digitusrevolution.rideshare.common.util.PropertyReader;
+import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
 
@@ -46,24 +48,20 @@ public class RideAction {
 	 */
 	public void acceptRideRequest(int rideId, int rideRequestId){
 
-		String rideStatus = rideDO.getStatus(rideId);
-		String rideIntialStatus = PropertyReader.getInstance().getProperty("RIDE_INITIAL_STATUS");
-		String rideRequestInitialStatus = PropertyReader.getInstance().getProperty("RIDE_REQUEST_INITIAL_STATUS");
-		String rideRequestAcceptStatus = PropertyReader.getInstance().getProperty("RIDE_REQUEST_ACCEPT_STATUS");
-		String rideFulfilledStatus = PropertyReader.getInstance().getProperty("RIDE_FULFILLED_STATUS");
+		RideStatus rideStatus = rideDO.getStatus(rideId);
 		Ride ride = rideDO.getChild(rideId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		String rideRequestStatus = rideRequestDO.getStatus(rideRequestId);
+		RideRequestStatus rideRequestStatus = rideRequestDO.getStatus(rideRequestId);
 		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
 
 		//Check if ride request is unfulfilled
 		//Reason for re-checking status criteria as from the time of search to responding to it, 
 		//there may be someone else who may have accepted the ride request already and status may have changed
-		if (rideRequestStatus.equals(rideRequestInitialStatus)){
+		if (rideRequestStatus.equals(RideRequestStatus.Unfulfilled)){
 			//This will check if ride seats are available by checking ride status as unfulfilled
 			//Reason for re-checking status criteria as ride may have accepted some other ride request and seats may have got full, when trying to accept
 			//another one ride may not be available
-			if (rideStatus.equals(rideIntialStatus)){
+			if (rideStatus.equals(RideStatus.Unfulfilled)){
 				//Apart from that seats required should be less than or equal to seats offered.
 				//Its important to re-check seats criteria as in between it may happen that number of seats which was initially free at the time of search,  
 				//partial seats may have been occupied.
@@ -73,12 +71,11 @@ public class RideAction {
 					//as ride is acceptedRideRequests relationship is owned by ride request entity and not ride (@OneToMany(mappedBy="acceptedRide"))
 					rideRequest.setAcceptedRide(ride);
 					//Change ride request status to accept status
-					rideRequest.setStatus(rideRequestAcceptStatus);
+					rideRequest.setStatus(RideRequestStatus.Fulfilled);
 					//Adding passenger
 					RidePassenger ridePassenger = new RidePassenger();
-					String passengerInitialStatus = PropertyReader.getInstance().getProperty("PASSENGER_INITIAL_STATUS");
 					ridePassenger.setPassenger(rideRequest.getPassenger());
-					ridePassenger.setStatus(passengerInitialStatus);
+					ridePassenger.setStatus(PassengerStatus.Confirmed);
 					ride.getPassengers().add(ridePassenger);
 
 					//This should include the current required seat as we need to calculate total seats including this ride request 
@@ -92,7 +89,7 @@ public class RideAction {
 					//This will check if seats offered is equal to the accepted ride request including this ride request
 					//This will change the status to fulfilled
 					if (totalSeatsOccupied == ride.getSeatOffered()){
-						ride.setStatus(rideFulfilledStatus);
+						ride.setStatus(RideStatus.Fulfilled);
 					}
 
 					//Update all the changes in DB for ride and ride request
@@ -141,12 +138,9 @@ public class RideAction {
 	 */
 	public void startRide(int rideId){ 
 		Ride ride = rideDO.get(rideId);
-		String rideCurrentStatus = ride.getStatus();
-		String rideStartedStatus = PropertyReader.getInstance().getProperty("RIDE_STARTED_STATUS");
-		String rideIntialStatus = PropertyReader.getInstance().getProperty("RIDE_INITIAL_STATUS");
-		String rideFulfilledStatus = PropertyReader.getInstance().getProperty("RIDE_FULFILLED_STATUS");
-		if (rideCurrentStatus.equals(rideIntialStatus) || rideCurrentStatus.equals(rideFulfilledStatus)){
-			ride.setStatus(rideStartedStatus);
+		RideStatus rideCurrentStatus = ride.getStatus();
+		if (rideCurrentStatus.equals(RideStatus.Unfulfilled) || rideCurrentStatus.equals(RideStatus.Fulfilled)){
+			ride.setStatus(RideStatus.Started);
 			rideDO.update(ride);			
 		} else {
 			throw new WebApplicationException("Ride can't be started as its not in valid state. Ride current status:"+rideCurrentStatus);
@@ -166,12 +160,9 @@ public class RideAction {
 	 */
 	public void pickupPassenger(int rideId, int passengerId){
 		Ride ride = rideDO.getChild(rideId);
-		String rideCurrentStatus = ride.getStatus();
-		String rideStartedStatus = PropertyReader.getInstance().getProperty("RIDE_STARTED_STATUS");
-		String passengerPickedStatus = PropertyReader.getInstance().getProperty("PASSENGER_PICKED_STATUS");
-		String passengerInitialStatus = PropertyReader.getInstance().getProperty("PASSENGER_INITIAL_STATUS");
+		RideStatus rideCurrentStatus = ride.getStatus();
 		//Check if ride is started
-		if (rideCurrentStatus.equals(rideStartedStatus)){
+		if (rideCurrentStatus.equals(RideStatus.Started)){
 			Collection<RidePassenger> passengers = ride.getPassengers();
 			boolean passengerNotFound = true;
 			//Get matching passenger from list of passengers
@@ -182,8 +173,8 @@ public class RideAction {
 				passengerNotFound = false;
 				//Check the passenger status if it has initial status else you can't change to pickup status
 				//e.g. if its dropped, then it can't be picked up again
-				if (passenger.getStatus().equals(passengerInitialStatus)){
-					passenger.setStatus(passengerPickedStatus);
+				if (passenger.getStatus().equals(PassengerStatus.Confirmed)){
+					passenger.setStatus(PassengerStatus.Picked);
 					//Update the status in the db
 					rideDO.update(ride);
 				}else {
@@ -219,12 +210,9 @@ public class RideAction {
 	 */
 	public void dropPassenger(int rideId, int passengerId){
 		Ride ride = rideDO.getChild(rideId);
-		String rideCurrentStatus = ride.getStatus();
-		String rideStartedStatus = PropertyReader.getInstance().getProperty("RIDE_STARTED_STATUS");
-		String passengerPickedStatus = PropertyReader.getInstance().getProperty("PASSENGER_PICKED_STATUS");
-		String passengerDroppedStatus = PropertyReader.getInstance().getProperty("PASSENGER_DROPPED_STATUS");
+		RideStatus rideCurrentStatus = ride.getStatus();
 		//Check if ride is started
-		if (rideCurrentStatus.equals(rideStartedStatus)){
+		if (rideCurrentStatus.equals(RideStatus.Started)){
 			Collection<RidePassenger> passengers = ride.getPassengers();
 			boolean passengerNotFound = true;
 			//Get matching passenger from list of passengers
@@ -233,8 +221,8 @@ public class RideAction {
 			if (passenger!=null){
 				passengerNotFound = false;
 				//Check if passenger states is picked up
-				if (passenger.getStatus().equals(passengerPickedStatus)){
-					passenger.setStatus(passengerDroppedStatus);
+				if (passenger.getStatus().equals(PassengerStatus.Picked)){
+					passenger.setStatus(PassengerStatus.Dropped);
 					//Update the status in the db
 					rideDO.update(ride);
 				}else {

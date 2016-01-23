@@ -15,6 +15,7 @@ public class CompanyMapper implements Mapper<Company, CompanyEntity>{
 		CompanyEntity companyEntity = new CompanyEntity();
 		companyEntity.setId(company.getId());
 		companyEntity.setName(company.getName());
+		companyEntity.setServiceChargePercentage(company.getServiceChargePercentage());
 		AccountMapper accountMapper = new AccountMapper();
 		if (company.getAccount()!=null) companyEntity.setAccount(accountMapper.getEntity(company.getAccount(), fetchChild));
 		CurrencyMapper currencyMapper = new CurrencyMapper();
@@ -32,6 +33,7 @@ public class CompanyMapper implements Mapper<Company, CompanyEntity>{
 		Company company = new Company();
 		company.setId(companyEntity.getId());
 		company.setName(companyEntity.getName());
+		company.setServiceChargePercentage(companyEntity.getServiceChargePercentage());
 		AccountMapper accountMapper = new AccountMapper();
 		if (companyEntity.getAccount()!=null)  company.setAccount(accountMapper.getDomainModel(companyEntity.getAccount(), fetchChild));
 		CurrencyMapper currencyMapper = new CurrencyMapper();

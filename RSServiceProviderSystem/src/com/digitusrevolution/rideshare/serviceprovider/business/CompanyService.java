@@ -6,6 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.CompanyDO;
 import com.digitusrevolution.rideshare.serviceprovider.dto.CompanyAccount;
 
@@ -37,5 +38,36 @@ public class CompanyService {
 				session.close();				
 			}
 		}	
+	}
+	
+	public Company get(int id, boolean fetchChild) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transation = null;	
+		Company company = null;
+		try {
+			transation = session.beginTransaction();
+
+			CompanyDO companyDO = new CompanyDO();
+			if (fetchChild){
+				company = companyDO.getChild(id);
+			} else {
+				company = companyDO.get(id);			
+			}
+
+			transation.commit();
+		} catch (RuntimeException e) {
+			if (transation!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transation.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return company;	
 	}
 }

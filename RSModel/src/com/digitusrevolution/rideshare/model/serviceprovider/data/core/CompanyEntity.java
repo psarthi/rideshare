@@ -25,6 +25,7 @@ public class CompanyEntity {
 	private AccountEntity account;
 	@OneToOne
 	private CurrencyEntity currency;
+	private float serviceChargePercentage;
 	
 	public int getId() {
 		return id;
@@ -49,6 +50,12 @@ public class CompanyEntity {
 	}
 	public void setCurrency(CurrencyEntity currency) {
 		this.currency = currency;
+	}
+	public float getServiceChargePercentage() {
+		return serviceChargePercentage;
+	}
+	public void setServiceChargePercentage(float serviceChargePercentage) {
+		this.serviceChargePercentage = serviceChargePercentage;
 	}
 
 }

@@ -15,6 +15,7 @@ import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
 public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
@@ -68,10 +69,10 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 	 * Purpose - Get the status of ride, this is required many times, so instead of using get and then fetching the status
 	 * 			 this function would directly return the status
 	 */
-	public String getStatus(int rideId){
+	public RideStatus getStatus(int rideId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
-		String status = (String) criteria.add(Restrictions.eq("id",rideId))
+		RideStatus status = (RideStatus) criteria.add(Restrictions.eq("id",rideId))
 				.setProjection(Projections.property("status")).uniqueResult();
 		return status;
 	}

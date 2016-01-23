@@ -27,7 +27,7 @@ public class Ride {
 	private Route route;
 	private boolean recur;
 	private RecurringDetail recurringDetail;
-	private String status;
+	private RideStatus status;
 	private Vehicle vehicle;
 	private User driver; 
 	private Collection<RidePassenger> passengers = new HashSet<RidePassenger>();
@@ -78,10 +78,10 @@ public class Ride {
 	public void setRecurringDetail(RecurringDetail recurringDetail) {
 		this.recurringDetail = recurringDetail;
 	}
-	public String getStatus() {
+	public RideStatus getStatus() {
 		return status;
 	}
-	public void setStatus(String status) {
+	public void setStatus(RideStatus status) {
 		this.status = status;
 	}
 	public TrustNetwork getTrustNetwork() {

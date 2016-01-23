@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -22,6 +23,7 @@ import javax.persistence.Table;
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
 import com.digitusrevolution.rideshare.model.ride.data.RecurringDetailEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
@@ -46,7 +48,9 @@ public class RideEntity {
 	private boolean recur;
 	@OneToOne(cascade=CascadeType.ALL)
 	private RecurringDetailEntity recurringDetail;
-	private String status;
+	@Column (name="status")
+	@Enumerated(EnumType.STRING)
+	private RideStatus status;
 	//Reason for Many to One relationship, one vehicle can offer many rides
 	@ManyToOne
 	private VehicleEntity vehicle;
@@ -100,10 +104,10 @@ public class RideEntity {
 	public void setRecur(boolean recur) {
 		this.recur = recur;
 	}
-	public String getStatus() {
+	public RideStatus getStatus() {
 		return status;
 	}
-	public void setStatus(String status) {
+	public void setStatus(RideStatus status) {
 		this.status = status;
 	}
 	public String getStartPointId() {

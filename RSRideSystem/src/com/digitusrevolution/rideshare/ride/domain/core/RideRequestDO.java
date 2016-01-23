@@ -39,6 +39,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.ride.data.RideRequestDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
 import com.digitusrevolution.rideshare.ride.domain.core.comp.RideRequestGeoJSON;
@@ -178,8 +179,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		ZonedDateTime pickupTimeUTC = rideRequest.getPickupTime().withZoneSameInstant(ZoneOffset.UTC);
 		//Storing dateTime in UTC
 		rideRequest.setPickupTime(pickupTimeUTC);
-		String initialStatus = PropertyReader.getInstance().getProperty("RIDE_REQUEST_INITIAL_STATUS");
-		rideRequest.setStatus(initialStatus);
+		rideRequest.setStatus(RideRequestStatus.Unfulfilled);
 		int id = create(rideRequest);
 		rideRequest.setId(id);
 		//***We have problem here, we need to get Trust Network ID or Set this to null, so that it doesn't create a new trust network
@@ -652,7 +652,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	/*
 	 * Purpose - Get ride request status
 	 */
-	public String getStatus(int rideRequestId){
+	public RideRequestStatus getStatus(int rideRequestId){
 		return rideRequestDAO.getStatus(rideRequestId);
 	}
 }

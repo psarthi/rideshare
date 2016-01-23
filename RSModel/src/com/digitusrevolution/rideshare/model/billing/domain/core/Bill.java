@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.model.billing.domain.core;
 
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
@@ -11,7 +12,10 @@ public class Bill {
 	private User driver;
 	private Company company;
 	private Ride ride;
-	private int amount;
+	private RideRequest rideRequest;
+	private float amount;
+	private float serviceChargePercentage;
+	private BillStatus billStatus;
 	
 	public int getNumber() {
 		return number;
@@ -43,10 +47,10 @@ public class Bill {
 	public void setRide(Ride ride) {
 		this.ride = ride;
 	}
-	public int getAmount() {
+	public float getAmount() {
 		return amount;
 	}
-	public void setAmount(int amount) {
+	public void setAmount(float amount) {
 		this.amount = amount;
 	}
 	@Override
@@ -80,6 +84,24 @@ public class Bill {
 			return false;
 		}
 		return true;
+	}
+	public float getServiceChargePercentage() {
+		return serviceChargePercentage;
+	}
+	public void setServiceChargePercentage(float serviceChargePercentage) {
+		this.serviceChargePercentage = serviceChargePercentage;
+	}
+	public RideRequest getRideRequest() {
+		return rideRequest;
+	}
+	public void setRideRequest(RideRequest rideRequest) {
+		this.rideRequest = rideRequest;
+	}
+	public BillStatus getBillStatus() {
+		return billStatus;
+	}
+	public void setBillStatus(BillStatus billStatus) {
+		this.billStatus = billStatus;
 	}
 
 	

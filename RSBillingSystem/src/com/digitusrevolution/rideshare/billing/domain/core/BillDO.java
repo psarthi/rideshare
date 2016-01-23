@@ -1,10 +1,12 @@
 package com.digitusrevolution.rideshare.billing.domain.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,8 +14,17 @@ import org.apache.logging.log4j.Logger;
 import com.digitusrevolution.rideshare.billing.data.BillDAO;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.BillMapper;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
+import com.digitusrevolution.rideshare.model.user.domain.Fuel;
+import com.digitusrevolution.rideshare.model.user.domain.FuelType;
+import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 
 public class BillDO implements DomainObjectPKInteger<Bill>{
 	
@@ -106,17 +117,50 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	 * - Generate bill with all details
 	 * 
 	 */
-	public void generateBill(int rideId, int rideRequestId){
+	public int generateBill(Ride ride, RideRequest rideRequest){
 		
+		User passenger = rideRequest.getPassenger();
+		User driver = ride.getDriver();
+		float price = getFare(ride.getVehicle().getVehicleSubCategory(), driver);
+		float distance = rideRequest.getTravelDistance();
+		float amount = price * distance;
+		Company company = RESTClientUtil.getCompany(1);
+		float serviceChargePercentage = company.getServiceChargePercentage();
+		//Set Bill properties
+		Bill bill = new Bill();
+		bill.setAmount(amount);
+		bill.setServiceChargePercentage(serviceChargePercentage);
+		bill.setCompany(company);
+		bill.setDriver(driver);
+		bill.setPassenger(passenger);
+		bill.setRide(ride);
+		bill.setRideRequest(rideRequest);
+		//Create Bill
+		int id = create(bill);
+		return id;
+	}
+	
+	/*
+	 * 
+	 */
+	private float getFare(VehicleSubCategory vehicleSubCategory, User driver){
+		FuelType fuelType = vehicleSubCategory.getFuelType();
+		int averageMileage = vehicleSubCategory.getAverageMileage();
+		Collection<Fuel> fuels = driver.getCountry().getFuels(); 
+		for (Fuel fuel : fuels) {
+			if (fuel.getType().name().equals(fuelType.name())){
+				//This will get fare per meter and not by Km
+				float fare = fuel.getPrice() / (averageMileage * 1000);
+				return fare;
+			}
+		}
+		throw new NotFoundException("Fuel type is not found. Fuel type is:"+fuelType);
 	}
 	
 	public void payBill(){
 		
 	}
-	
-	private int calculateFare(){
-		return 0;
-	}
+
 }
 
 

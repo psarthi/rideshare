@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
+import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
 import com.digitusrevolution.rideshare.common.mapper.serviceprovider.core.CompanyMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
@@ -14,8 +15,9 @@ public class BillMapper implements Mapper<Bill, BillEntity>{
 	@Override
 	public BillEntity getEntity(Bill bill, boolean fetchChild) {
 		BillEntity billEntity = new BillEntity();
-		billEntity.setNumber(bill.getAmount());
+		billEntity.setNumber(bill.getNumber());
 		billEntity.setAmount(bill.getAmount());
+		billEntity.setServiceChargePercentage(bill.getServiceChargePercentage());
 		
 		if (fetchChild){
 			billEntity = getEntityChild(bill, billEntity);
@@ -33,6 +35,8 @@ public class BillMapper implements Mapper<Bill, BillEntity>{
 		billEntity.setDriver(userMapper.getEntity(bill.getDriver(), false));
 		RideMapper rideMapper = new RideMapper();
 		billEntity.setRide(rideMapper.getEntity(bill.getRide(), false));
+		RideRequestMapper rideRequestMapper = new RideRequestMapper();
+		billEntity.setRideRequest(rideRequestMapper.getEntity(bill.getRideRequest(), false));
 
 		return billEntity;
 	}
@@ -40,8 +44,9 @@ public class BillMapper implements Mapper<Bill, BillEntity>{
 	@Override
 	public Bill getDomainModel(BillEntity billEntity, boolean fetchChild) {
 		Bill bill = new Bill();
-		bill.setNumber(billEntity.getAmount());
+		bill.setNumber(billEntity.getNumber());
 		bill.setAmount(billEntity.getAmount());
+		bill.setServiceChargePercentage(billEntity.getServiceChargePercentage());
 		if (fetchChild){
 			bill = getDomainModelChild(bill, billEntity);
 		}		
@@ -57,6 +62,8 @@ public class BillMapper implements Mapper<Bill, BillEntity>{
 		bill.setDriver(userMapper.getDomainModel(billEntity.getDriver(), false));
 		RideMapper rideMapper = new RideMapper();
 		bill.setRide(rideMapper.getDomainModel(billEntity.getRide(), false));
+		RideRequestMapper rideRequestMapper = new RideRequestMapper();
+		bill.setRideRequest(rideRequestMapper.getDomainModel(billEntity.getRideRequest(), false));
 		return bill;
 	}
 

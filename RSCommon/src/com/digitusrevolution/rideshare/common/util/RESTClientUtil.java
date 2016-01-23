@@ -9,6 +9,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
@@ -127,6 +128,16 @@ public class RESTClientUtil {
 		return currency;
 	}
 
+	public static Company getCompany(int id){
+
+		RESTClientImpl<Currency> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_COMPANY_URL");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Integer.toString(id));
+		Response response = restClientUtil.get(uri);
+		Company company= response.readEntity(Company.class);
+		return company;
+	}
 	
 	
 }

@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -20,6 +21,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.model.user.data.VehicleCategoryEntity;
 import com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
@@ -48,7 +50,9 @@ public class RideRequestEntity {
 	private int luggageCapacityRequired;
 	private int pickupPointVariation;
 	private int dropPointVariation;
-	private String status;
+	@Column (name="status")
+	@Enumerated(EnumType.STRING)
+	private RideRequestStatus status;
 	@ManyToOne
 	private UserEntity passenger;
 	private boolean ridePreference;
@@ -93,10 +97,10 @@ public class RideRequestEntity {
 	public void setLuggageCapacityRequired(int luggageCapacityRequired) {
 		this.luggageCapacityRequired = luggageCapacityRequired;
 	}
-	public String getStatus() {
+	public RideRequestStatus getStatus() {
 		return status;
 	}
-	public void setStatus(String status) {
+	public void setStatus(RideRequestStatus status) {
 		this.status = status;
 	}
 	public Sex getSexPreference() {

@@ -1,13 +1,19 @@
 package com.digitusrevolution.rideshare.model.billing.data.core;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.digitusrevolution.rideshare.model.billing.domain.core.BillStatus;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
+import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.serviceprovider.data.core.CompanyEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
@@ -25,7 +31,13 @@ public class BillEntity {
 	private CompanyEntity company;
 	@ManyToOne
 	private RideEntity ride;
-	private int amount;
+	@OneToOne
+	private RideRequestEntity rideRequest;
+	private float amount;
+	private float serviceChargePercentage;
+	@Column (name="status")
+	@Enumerated(EnumType.STRING)
+	private BillStatus billStatus;
 	
 	public int getNumber() {
 		return number;
@@ -33,10 +45,10 @@ public class BillEntity {
 	public void setNumber(int number) {
 		this.number = number;
 	}
-	public int getAmount() {
+	public float getAmount() {
 		return amount;
 	}
-	public void setAmount(int amount) {
+	public void setAmount(float amount) {
 		this.amount = amount;
 	}
 	public CompanyEntity getCompany() {
@@ -94,6 +106,24 @@ public class BillEntity {
 			return false;
 		}
 		return true;
+	}
+	public float getServiceChargePercentage() {
+		return serviceChargePercentage;
+	}
+	public void setServiceChargePercentage(float serviceChargePercentage) {
+		this.serviceChargePercentage = serviceChargePercentage;
+	}
+	public RideRequestEntity getRideRequest() {
+		return rideRequest;
+	}
+	public void setRideRequest(RideRequestEntity rideRequest) {
+		this.rideRequest = rideRequest;
+	}
+	public BillStatus getBillStatus() {
+		return billStatus;
+	}
+	public void setBillStatus(BillStatus billStatus) {
+		this.billStatus = billStatus;
 	}
 	
 

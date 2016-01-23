@@ -9,6 +9,7 @@ public class Company {
 	private String name;
 	private Account account;
 	private Currency currency;
+	private float serviceChargePercentage; 
 	
 	public int getId() {
 		return id;
@@ -33,6 +34,12 @@ public class Company {
 	}
 	public void setCurrency(Currency currency) {
 		this.currency = currency;
+	}
+	public float getServiceChargePercentage() {
+		return serviceChargePercentage;
+	}
+	public void setServiceChargePercentage(float serviceChargePercentage) {
+		this.serviceChargePercentage = serviceChargePercentage;
 	}
 
 }

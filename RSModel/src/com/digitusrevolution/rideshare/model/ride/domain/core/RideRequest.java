@@ -28,7 +28,7 @@ public class RideRequest {
 	private int luggageCapacityRequired;
 	private int pickupPointVariation;
 	private int dropPointVariation;
-	private String status;
+	private RideRequestStatus status;
 	private User passenger;
 	private boolean ridePreference;
 	private Collection<Ride> preferredRides = new HashSet<Ride>();
@@ -98,10 +98,10 @@ public class RideRequest {
 	public void setLuggageCapacityRequired(int luggageCapacityRequired) {
 		this.luggageCapacityRequired = luggageCapacityRequired;
 	}
-	public String getStatus() {
+	public RideRequestStatus getStatus() {
 		return status;
 	}
-	public void setStatus(String status) {
+	public void setStatus(RideRequestStatus status) {
 		this.status = status;
 	}
 	public Sex getSexPreference() {

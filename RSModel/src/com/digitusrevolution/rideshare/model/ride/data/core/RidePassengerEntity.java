@@ -4,11 +4,15 @@ import java.beans.Transient;
 
 import javax.persistence.AssociationOverride;
 import javax.persistence.AssociationOverrides;
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
+import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
 @Entity
@@ -23,7 +27,9 @@ public class RidePassengerEntity {
 	//composite-id key
 	@EmbeddedId
     private RidePassengerId primaryKey = new RidePassengerId();
-	private String status;
+	@Column (name="status")
+	@Enumerated(EnumType.STRING)
+	private PassengerStatus status;
 
 	public RidePassengerId getPrimaryKey() {
 		return primaryKey;
@@ -49,11 +55,11 @@ public class RidePassengerEntity {
 		getPrimaryKey().setPassenger(passenger);
 	}
 
-	public String getStatus() {
+	public PassengerStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(PassengerStatus status) {
 		this.status = status;
 	}
 
