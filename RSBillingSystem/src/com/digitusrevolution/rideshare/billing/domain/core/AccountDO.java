@@ -103,8 +103,9 @@ public class AccountDO implements DomainObjectPKInteger<Account>{
 		if (balance >= amount){
 			account.setBalance(balance - amount);
 			update(account);
+		} else {
+			throw new InSufficientBalanceException("Not enough balance in the account. Current balance is:"+balance);			
 		}
-		throw new InSufficientBalanceException("Not enough balance in the account. Current balance is:"+balance);
 	}
 	
 	public void credit(Account account, float amount){

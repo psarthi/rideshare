@@ -22,7 +22,9 @@ import com.digitusrevolution.rideshare.common.math.google.SphericalUtil;
 import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.common.util.external.RouteBoxer;
+import com.digitusrevolution.rideshare.model.dto.RideDTO;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
@@ -72,6 +74,14 @@ public class DomainLayerTest {
 	public void test(){
 		
 		RideDO rideDO = new RideDO();
+		Ride ride = rideDO.get(1);
+		RideRequestDO rideRequestDO = new RideRequestDO();
+		RideRequest rideRequest = rideRequestDO.get(1);
+		RideDTO rideDTO = new RideDTO();
+		rideDTO.setRide(ride);
+		rideDTO.setRideRequest(rideRequest);
+		RESTClientUtil.generateBill(rideDTO);
+		
 //		rideDO.delete(1);
 //		rideDO.startRide(165);
 //		rideDO.pickupPassenger(165, 3);

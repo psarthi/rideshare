@@ -52,7 +52,7 @@ public class RideOfferManagementService {
 			RouteDO routeDO = new RouteDO();
 			GoogleDirection direction = routeDO.getDirection(ride.getStartPoint().getPoint(), ride.getEndPoint().getPoint(),startTimeUTC);
 			
-			User driver = RESTClientUtil.getUser(2);
+			User driver = RESTClientUtil.getUser(1);
 			ride.setDriver(driver);
 			
 			Vehicle vehicle = RESTClientUtil.getVehicle(driver.getId(), 1);

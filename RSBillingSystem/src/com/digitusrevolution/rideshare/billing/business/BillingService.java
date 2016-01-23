@@ -7,14 +7,13 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.billing.domain.core.BillDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
-import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
-import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.dto.RideDTO;
 
 public class BillingService {
 	
 	private static final Logger logger = LogManager.getLogger(BillingService.class.getName());
 	
-	public int generateBill(Ride ride, RideRequest rideRequest){
+	public int generateBill(RideDTO rideDTO){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		int number = 0;
@@ -22,7 +21,7 @@ public class BillingService {
 			transation = session.beginTransaction();
 
 			BillDO billDO = new BillDO();	
-			number = billDO.generateBill(ride, rideRequest);
+			number = billDO.generateBill(rideDTO.getRide(), rideDTO.getRideRequest());
 			
 			transation.commit();
 		} catch (RuntimeException e) {

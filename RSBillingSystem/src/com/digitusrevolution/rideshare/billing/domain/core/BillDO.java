@@ -165,21 +165,24 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	}
 	
 	public void approveBill(int billNumber){
-		bill = get(billNumber);
+		bill = getChild(billNumber);
 		if (bill.getStatus().equals(BillStatus.Pending) || bill.getStatus().equals(BillStatus.Rejected)){
 			bill.setStatus(BillStatus.Approved);
 			update(bill);
+		} else {
+			throw new NotAcceptableException("Bill can't be approved as its not in valid state (Pending/Rejected). Bill current status:"+bill.getStatus());			
 		}
-		throw new NotAcceptableException("Bill can't be approved as its not in valid state. Bill current state:"+bill.getStatus());
+
 	}
 	
 	public void rejectBill(int billNumber){
-		bill = get(billNumber);
+		bill = getChild(billNumber);
 		if (bill.getStatus().equals(BillStatus.Pending)){
 			bill.setStatus(BillStatus.Rejected);
 			update(bill);
+		} else {
+			throw new NotAcceptableException("Bill can't be rejected as its not in valid state (Pending). Bill current status:"+bill.getStatus());			
 		}
-		throw new NotAcceptableException("Bill can't be rejected as its not in valid state. Bill current state:"+bill.getStatus());
 	}
 
 	/*
@@ -188,14 +191,20 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	 */
 	public void makePayment(int billNumber){
 		bill = getChild(billNumber);
-		float amount = bill.getAmount();
-		float serviceChargePercentage = bill.getServiceChargePercentage();
-		float serviceCharge = amount * serviceChargePercentage;
-		float driverAmount = amount - serviceCharge;
-		AccountDO accountDO = new AccountDO();
-		accountDO.debit(bill.getPassenger().getAccount(), amount);
-		accountDO.credit(bill.getDriver().getAccount(), driverAmount);
-		accountDO.debit(bill.getCompany().getAccount(), serviceCharge);
+		if (bill.getStatus().equals(BillStatus.Approved)){
+			float amount = bill.getAmount();
+			float serviceChargePercentage = bill.getServiceChargePercentage();
+			float serviceCharge = amount * serviceChargePercentage;
+			float driverAmount = amount - serviceCharge;
+			AccountDO accountDO = new AccountDO();
+			accountDO.debit(bill.getPassenger().getAccount(), amount);
+			accountDO.credit(bill.getDriver().getAccount(), driverAmount);
+			accountDO.debit(bill.getCompany().getAccount(), serviceCharge);		
+			bill.setStatus(BillStatus.Paid);
+			update(bill);
+		} else {
+			throw new NotAcceptableException("Can't make payment as bill is not in valid state (Approved/Paid). Bill current status:"+bill.getStatus());
+		}
 	}
 
 }

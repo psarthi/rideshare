@@ -60,6 +60,7 @@ public class CompanyDataLoader {
 		company.setName("Digitus Revolution");
 		Currency currency = RESTClientUtil.getCurrency(1);
 		company.setCurrency(currency);
+		company.setServiceChargePercentage(0.1f);
 		CompanyDO companyDO = new CompanyDO();
 		companyDO.create(company);		
 	}
