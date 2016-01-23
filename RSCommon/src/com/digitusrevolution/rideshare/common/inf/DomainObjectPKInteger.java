@@ -1,12 +1,12 @@
 package com.digitusrevolution.rideshare.common.inf;
 
-public interface DomainObjectPKInteger<T> extends DomainObject<T>{
+public interface DomainObjectPKInteger<M> extends DomainObject<M>{
 
-	int create(T model);
+	int create(M model);
 
-	T get(int id);
+	M get(int id);
 
-	T getChild(int id);
+	M getChild(int id);
 	
 	void delete(int id);
 

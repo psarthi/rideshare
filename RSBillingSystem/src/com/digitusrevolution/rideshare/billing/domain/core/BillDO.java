@@ -197,13 +197,14 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 			float serviceCharge = amount * serviceChargePercentage;
 			float driverAmount = amount - serviceCharge;
 			AccountDO accountDO = new AccountDO();
-			accountDO.debit(bill.getPassenger().getAccount(), amount);
-			accountDO.credit(bill.getDriver().getAccount(), driverAmount);
-			accountDO.debit(bill.getCompany().getAccount(), serviceCharge);		
+			String remark = "Bill:"+billNumber+",Ride:"+bill.getRide().getId()+",RideRequest:"+bill.getRideRequest().getId();
+			accountDO.debit(bill.getPassenger().getAccount().getNumber(), amount, remark);
+			accountDO.credit(bill.getDriver().getAccount().getNumber(), driverAmount, remark);
+			accountDO.debit(bill.getCompany().getAccount().getNumber(), serviceCharge, remark);		
 			bill.setStatus(BillStatus.Paid);
 			update(bill);
 		} else {
-			throw new NotAcceptableException("Can't make payment as bill is not in valid state (Approved/Paid). Bill current status:"+bill.getStatus());
+			throw new NotAcceptableException("Can't make payment as bill is either not Approved or Paid. Bill current status:"+bill.getStatus());
 		}
 	}
 

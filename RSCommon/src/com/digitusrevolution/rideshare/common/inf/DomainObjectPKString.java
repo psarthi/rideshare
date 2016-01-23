@@ -1,12 +1,12 @@
 package com.digitusrevolution.rideshare.common.inf;
 
-public interface DomainObjectPKString<T> extends DomainObject<T>{
+public interface DomainObjectPKString<M> extends DomainObject<M>{
 	
-	String create(T model);
+	String create(M model);
 
-	T get(String name);
+	M get(String name);
 
-	T getChild(String name);	
+	M getChild(String name);	
 	
 	void delete(String name);
 	

@@ -1,5 +1,7 @@
 package com.digitusrevolution.rideshare.billing.domain.core;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +18,8 @@ import com.digitusrevolution.rideshare.common.inf.GenericDAO;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.AccountMapper;
 import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
+import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionType;
 
 public class AccountDO implements DomainObjectPKInteger<Account>{
 	
@@ -98,19 +102,41 @@ public class AccountDO implements DomainObjectPKInteger<Account>{
 		genericDAO.delete(accountEntity);
 	}
 	
-	public void debit(Account account, float amount){
+	public void debit(int accountNumber, float amount, String remark){
+		//Its important to get child, else old transaction would get deleted as transactions is part of child
+		//And if you just get account without old transactions, then it will consider only new transaction as part of this account
+		//Since account owns the relationship of transaction, so you need to get all child before updating
+		account = getChild(accountNumber);
 		float balance = account.getBalance();
 		if (balance >= amount){
 			account.setBalance(balance - amount);
+			Transaction transaction = new Transaction();
+			transaction.setAmount(amount);
+			ZonedDateTime dateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+			transaction.setDateTime(dateTime);
+			transaction.setType(TransactionType.Debit);
+			transaction.setRemark(remark);
+			account.getTransactions().add(transaction);
 			update(account);
 		} else {
 			throw new InSufficientBalanceException("Not enough balance in the account. Current balance is:"+balance);			
 		}
 	}
 	
-	public void credit(Account account, float amount){
+	public void credit(int accountNumber, float amount, String remark){
+		//Its important to get child, else old transaction would get deleted as transactions is part of child
+		//And if you just get account without old transactions, then it will consider only new transaction as part of this account
+		//Since account owns the relationship of transaction, so you need to get all child before updating
+		account = getChild(accountNumber);
 		float balance = account.getBalance();
 		account.setBalance(balance + amount);
+		Transaction transaction = new Transaction();
+		transaction.setAmount(amount);
+		ZonedDateTime dateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+		transaction.setDateTime(dateTime);
+		transaction.setType(TransactionType.Credit);
+		transaction.setRemark(remark);
+		account.getTransactions().add(transaction);
 		update(account);
 	}
 }

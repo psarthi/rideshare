@@ -2,11 +2,11 @@ package com.digitusrevolution.rideshare.common.inf;
 
 import java.util.List;
 
-public interface DomainObject<T>{
+public interface DomainObject<M>{
 	
-	List<T> getAll();
+	List<M> getAll();
 
-	void update(T model);
+	void update(M model);
 	
 	/**
      * Fetch domain model child

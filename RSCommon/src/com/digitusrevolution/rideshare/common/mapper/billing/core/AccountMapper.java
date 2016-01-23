@@ -13,11 +13,18 @@ public class AccountMapper implements Mapper<Account, AccountEntity>{
 		AccountEntity accountEntity = new AccountEntity();
 		accountEntity.setNumber(account.getNumber());
 		accountEntity.setBalance(account.getBalance());
+		
+		if (fetchChild){
+			accountEntity = getEntityChild(account, accountEntity);
+		}
+		
 		return accountEntity;
 	}
 
 	@Override
 	public AccountEntity getEntityChild(Account account, AccountEntity accountEntity) {
+		TransactionMapper transactionMapper = new TransactionMapper();
+		accountEntity.setTransactions(transactionMapper.getEntities(accountEntity.getTransactions(), account.getTransactions(), true));		
 		return accountEntity;
 	}
 
@@ -26,11 +33,17 @@ public class AccountMapper implements Mapper<Account, AccountEntity>{
 		Account account = new Account();
 		account.setNumber(accountEntity.getNumber());
 		account.setBalance(accountEntity.getBalance());
+		
+		if (fetchChild){
+			account = getDomainModelChild(account, accountEntity);
+		}
 		return account;
 	}
 
 	@Override
 	public Account getDomainModelChild(Account account, AccountEntity accountEntity) {
+		TransactionMapper transactionMapper = new TransactionMapper();
+		account.setTransactions(transactionMapper.getDomainModels(account.getTransactions(), accountEntity.getTransactions(), true));
 		return account;
 	}
 

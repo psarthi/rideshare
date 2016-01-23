@@ -1,9 +1,13 @@
 package com.digitusrevolution.rideshare.model.billing.domain.core;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 public class Account {
 	
 	private int number;
 	private float balance;
+	private Collection<Transaction> transactions = new HashSet<Transaction>();
 	
 	public int getNumber() {
 		return number;
@@ -44,6 +48,12 @@ public class Account {
 			return false;
 		}
 		return true;
+	}
+	public Collection<Transaction> getTransactions() {
+		return transactions;
+	}
+	public void setTransactions(Collection<Transaction> transactions) {
+		this.transactions = transactions;
 	}
 	
 }
