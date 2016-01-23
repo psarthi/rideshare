@@ -16,12 +16,12 @@ public class AccountService {
 	public int create(Account account) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
-		int id = 0;
+		int number = 0;
 		try {
 			transation = session.beginTransaction();
 
 			AccountDO accountDO = new AccountDO();	
-			id = accountDO.create(account);
+			number = accountDO.create(account);
 			
 			transation.commit();
 		} catch (RuntimeException e) {
@@ -37,7 +37,7 @@ public class AccountService {
 				session.close();				
 			}
 		}
-		return id;	
+		return number;	
 	}
 
 }

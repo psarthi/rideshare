@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
+import com.digitusrevolution.rideshare.common.exception.InSufficientBalanceException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.AccountMapper;
@@ -74,29 +75,80 @@ public class AccountDO implements DomainObjectPKInteger<Account>{
 	}
 
 	@Override
-	public Account get(int id) {
-		accountEntity = genericDAO.get(id);
+	public Account get(int number) {
+		accountEntity = genericDAO.get(number);
 		if (accountEntity == null){
-			throw new NotFoundException("No Data found with id: "+id);
+			throw new NotFoundException("No Data found with number: "+number);
 		}
 		setAccountEntity(accountEntity);
 		return account;
 	}
 
 	@Override
-	public Account getChild(int id) {
-		get(id);
+	public Account getChild(int number) {
+		get(number);
 		fetchChild();
 		return account;
 	}
 
 	@Override
-	public void delete(int id) {
-		account = get(id);
+	public void delete(int number) {
+		account = get(number);
 		setAccount(account);
 		genericDAO.delete(accountEntity);
 	}
 	
+	public void debit(Account account, float amount){
+		float balance = account.getBalance();
+		if (balance >= amount){
+			account.setBalance(balance - amount);
+			update(account);
+		}
+		throw new InSufficientBalanceException("Not enough balance in the account. Current balance is:"+balance);
+	}
 	
-
+	public void credit(Account account, float amount){
+		float balance = account.getBalance();
+		account.setBalance(balance + amount);
+		update(account);
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -23,10 +23,10 @@ public class AccountDomainResource implements DomainResource<Account>{
 
 	@Override
 	@GET
-	@Path("/{id}")
-	public Response get(@PathParam("id") int id, @QueryParam("fetchChild") String fetchChild){
+	@Path("/{number}")
+	public Response get(@PathParam("number") int number, @QueryParam("fetchChild") String fetchChild){
 		AccountDomainService accountDomainService = new AccountDomainService();
-		Account account = accountDomainService.get(id, Boolean.valueOf(fetchChild));
+		Account account = accountDomainService.get(number, Boolean.valueOf(fetchChild));
 		return Response.ok(account).build();
 	}
 

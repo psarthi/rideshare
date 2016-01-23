@@ -106,12 +106,12 @@ public class RESTClientUtil {
 		return vehicleCategory;
 	}
 	
-	public static Account getAccount(int id){
+	public static Account getAccount(int number){
 
 		RESTClientImpl<Account> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_ACCOUNT_URL");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(Integer.toString(id));
+		URI uri = uriBuilder.build(Integer.toString(number));
 		Response response = restClientUtil.get(uri);
 		Account account= response.readEntity(Account.class);
 		return account;

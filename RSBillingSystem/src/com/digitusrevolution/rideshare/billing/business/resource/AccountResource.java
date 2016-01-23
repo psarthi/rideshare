@@ -19,7 +19,7 @@ public class AccountResource {
 	public Response create(Account account){
 		
 		AccountService accountService = new AccountService();
-		int id = accountService.create(account);
-		return Response.ok(Integer.toString(id)).build();
+		int number = accountService.create(account);
+		return Response.ok(Integer.toString(number)).build();
 	}
 }

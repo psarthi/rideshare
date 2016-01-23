@@ -5,17 +5,22 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
+
 public class Bill {
-	
+
 	private int number;
+	//Reason for storing Passenger, Driver so that we have data handy available with every bill, instead of fetching data from ride/ride request
+	//Basic logic of all properties here is to have relationship available at one go instead of doing search again
 	private User passenger;
 	private User driver;
 	private Company company;
 	private Ride ride;
+	//Reason for rideRequest field, so that we don't have to search ride request number later on if required
 	private RideRequest rideRequest;
 	private float amount;
+	//Reason for storing this value, as if the service charge changes in between, so old bill would not get affected
 	private float serviceChargePercentage;
-	private BillStatus billStatus;
+	private BillStatus status;
 	
 	public int getNumber() {
 		return number;
@@ -97,12 +102,11 @@ public class Bill {
 	public void setRideRequest(RideRequest rideRequest) {
 		this.rideRequest = rideRequest;
 	}
-	public BillStatus getBillStatus() {
-		return billStatus;
+	public BillStatus getStatus() {
+		return status;
 	}
-	public void setBillStatus(BillStatus billStatus) {
-		this.billStatus = billStatus;
+	public void setStatus(BillStatus status) {
+		this.status = status;
 	}
-
 	
 }

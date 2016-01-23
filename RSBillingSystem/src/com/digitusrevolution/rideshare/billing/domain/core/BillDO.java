@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.management.openmbean.InvalidKeyException;
+import javax.ws.rs.NotAcceptableException;
 import javax.ws.rs.NotFoundException;
-import javax.ws.rs.WebApplicationException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,6 +17,7 @@ import com.digitusrevolution.rideshare.common.mapper.billing.core.BillMapper;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
+import com.digitusrevolution.rideshare.model.billing.domain.core.BillStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
@@ -24,7 +25,6 @@ import com.digitusrevolution.rideshare.model.user.domain.Fuel;
 import com.digitusrevolution.rideshare.model.user.domain.FuelType;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 
 public class BillDO implements DomainObjectPKInteger<Bill>{
 	
@@ -84,25 +84,25 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	}
 
 	@Override
-	public Bill get(int id) {
-		billEntity = billDAO.get(id);
+	public Bill get(int number) {
+		billEntity = billDAO.get(number);
 		if (billEntity == null){
-			throw new NotFoundException("No Data found with id: "+id);
+			throw new NotFoundException("No Data found with number: "+number);
 		}
 		setBillEntity(billEntity);
 		return bill;
 	}
 
 	@Override
-	public Bill getChild(int id) {
-		get(id);
+	public Bill getChild(int number) {
+		get(number);
 		fetchChild();
 		return bill;
 	}
 
 	@Override
-	public void delete(int id) {
-		bill = get(id);
+	public void delete(int number) {
+		bill = get(number);
 		setBill(bill);
 		billDAO.delete(billEntity);
 	}
@@ -112,9 +112,11 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	 * 
 	 * High level logic -
 	 * 
-	 * - Get ride and ride request
-	 * - Calculate bill based of fair/car etc.
-	 * - Generate bill with all details
+	 * - Get Fare for the ride
+	 * - Calculate total bill amount based on fare and travel distance
+	 * - Calculate service charge based on service charge 
+	 * - Set all the bill properties including status
+	 * - Create bill in the system
 	 * 
 	 */
 	public int generateBill(Ride ride, RideRequest rideRequest){
@@ -127,7 +129,6 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 		Company company = RESTClientUtil.getCompany(1);
 		float serviceChargePercentage = company.getServiceChargePercentage();
 		//Set Bill properties
-		Bill bill = new Bill();
 		bill.setAmount(amount);
 		bill.setServiceChargePercentage(serviceChargePercentage);
 		bill.setCompany(company);
@@ -135,12 +136,14 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 		bill.setPassenger(passenger);
 		bill.setRide(ride);
 		bill.setRideRequest(rideRequest);
+		bill.setStatus(BillStatus.Pending);
 		//Create Bill
-		int id = create(bill);
-		return id;
+		int number = create(bill);
+		return number;
 	}
 	
 	/*
+	 * Purpose - Get fare rate per meter basis (Note - Its not per Km as all data in the system is in meters)
 	 * 
 	 */
 	private float getFare(VehicleSubCategory vehicleSubCategory, User driver){
@@ -157,8 +160,42 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 		throw new NotFoundException("Fuel type is not found. Fuel type is:"+fuelType);
 	}
 	
-	public void payBill(){
-		
+	private BillStatus getStatus(int billNumber){
+		return billDAO.getStatus(billNumber);
+	}
+	
+	public void approveBill(int billNumber){
+		bill = get(billNumber);
+		if (bill.getStatus().equals(BillStatus.Pending) || bill.getStatus().equals(BillStatus.Rejected)){
+			bill.setStatus(BillStatus.Approved);
+			update(bill);
+		}
+		throw new NotAcceptableException("Bill can't be approved as its not in valid state. Bill current state:"+bill.getStatus());
+	}
+	
+	public void rejectBill(int billNumber){
+		bill = get(billNumber);
+		if (bill.getStatus().equals(BillStatus.Pending)){
+			bill.setStatus(BillStatus.Rejected);
+			update(bill);
+		}
+		throw new NotAcceptableException("Bill can't be rejected as its not in valid state. Bill current state:"+bill.getStatus());
+	}
+
+	/*
+	 * Purpose - Make payment to driver and company from Passenger account
+	 * 
+	 */
+	public void makePayment(int billNumber){
+		bill = getChild(billNumber);
+		float amount = bill.getAmount();
+		float serviceChargePercentage = bill.getServiceChargePercentage();
+		float serviceCharge = amount * serviceChargePercentage;
+		float driverAmount = amount - serviceCharge;
+		AccountDO accountDO = new AccountDO();
+		accountDO.debit(bill.getPassenger().getAccount(), amount);
+		accountDO.credit(bill.getDriver().getAccount(), driverAmount);
+		accountDO.debit(bill.getCompany().getAccount(), serviceCharge);
 	}
 
 }

@@ -3,7 +3,7 @@ package com.digitusrevolution.rideshare.model.billing.domain.core;
 public class Account {
 	
 	private int number;
-	private int balance;
+	private float balance;
 	
 	public int getNumber() {
 		return number;
@@ -11,17 +11,17 @@ public class Account {
 	public void setNumber(int number) {
 		this.number = number;
 	}
-	public int getBalance() {
+	public float getBalance() {
 		return balance;
 	}
-	public void setBalance(int balance) {
+	public void setBalance(float balance) {
 		this.balance = balance;
 	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + balance;
+		result = prime * result + Float.floatToIntBits(balance);
 		result = prime * result + number;
 		return result;
 	}
@@ -37,7 +37,7 @@ public class Account {
 			return false;
 		}
 		Account other = (Account) obj;
-		if (balance != other.balance) {
+		if (Float.floatToIntBits(balance) != Float.floatToIntBits(other.balance)) {
 			return false;
 		}
 		if (number != other.number) {
