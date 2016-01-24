@@ -293,7 +293,7 @@ public class RideAction {
 					notPickedPassengerList.add(ridePassenger.getPassenger());
 				}
 			}
-
+			
 			//This is the scenario, when some/all passenger has not been picked
 			if (passengerNotPicked){
 				for (User passenger : notPickedPassengerList) {
@@ -313,10 +313,17 @@ public class RideAction {
 					dropPassenger(rideId, passenger.getId());
 				}
 			}
-			//Now all passenger has been either dropped or cancelled, so no passenger on board
+			
+			//So now all passenger has been either dropped / cancelled
 			//Change the ride status to finished
+			//Note - You can't update the status upfront, otherwise drop/cancellation would not work if ride is in Finished state
+			//That's why you need to get the updated ride before updating the status, else it will overwrite the status which may have been 
+			//changed while dropping the passenger or cancelling the rid request
+			ride = rideDO.getChild(rideId);
 			ride.setStatus(RideStatus.Finished);
 			rideDO.update(ride);
+		} else {
+			throw new NotAcceptableException("Ride can't be ended as its not in valid state. Current ride status:"+rideStatus);
 		}
 	}
 
@@ -377,7 +384,7 @@ public class RideAction {
 					+ "Ride id:"+rideId+",Ride Request id:"+rideRequestId);
 		}
 	}
-	
+
 	/*
 	 * Purpose - Cancel ride
 	 * 
@@ -390,7 +397,7 @@ public class RideAction {
 	 * 
 	 */
 	public void cancelRide(int rideId){
-		
+
 		Ride ride = rideDO.getChild(rideId);
 		RideStatus rideStatus = ride.getStatus();
 		//Check if ride has not been finished
@@ -402,6 +409,8 @@ public class RideAction {
 			//Update the ride status as cancelled and update the db
 			ride.setStatus(RideStatus.Cancelled);
 			rideDO.update(ride);
+		} else {
+			throw new NotAcceptableException("Ride can't be cancelled as its not in valid state. Current ride status:"+rideStatus);
 		}
 	}
 
