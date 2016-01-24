@@ -66,6 +66,8 @@ public class RideRequestEntity {
 	private String rideDropPointId;
 	private int travelTime;
 	private int travelDistance;
+	@ManyToMany (mappedBy="cancelledRideRequests")
+	private Collection<RideEntity> cancelledRides = new HashSet<RideEntity>();
 	
 	public int getId() {
 		return id;
@@ -238,6 +240,12 @@ public class RideRequestEntity {
 			return false;
 		}
 		return true;
+	}
+	public Collection<RideEntity> getCancelledRides() {
+		return cancelledRides;
+	}
+	public void setCancelledRides(Collection<RideEntity> cancelledRides) {
+		this.cancelledRides = cancelledRides;
 	}
 
 }

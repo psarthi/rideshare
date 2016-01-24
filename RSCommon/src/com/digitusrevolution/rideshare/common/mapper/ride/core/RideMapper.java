@@ -33,6 +33,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		rideEntity.setLuggageCapacityOffered(ride.getLuggageCapacityOffered());
 		rideEntity.setRecur(ride.getRecur());
 		rideEntity.setStatus(ride.getStatus());
+		rideEntity.setSeatStatus(ride.getSeatStatus());
 		rideEntity.setSexPreference(ride.getSexPreference());
 		rideEntity.setTravelDistance(ride.getTravelDistance());
 
@@ -91,6 +92,14 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		Collection<RideRequestEntity> rejectedRideRequestEntities = rideRequestMapper.getEntities(rideEntity.getRejectedRideRequests(), 
 				ride.getRejectedRideRequests(), false);
 		rideEntity.setRejectedRideRequests(rejectedRideRequestEntities);
+		
+		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop
+		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
+		//is called irrespective of fetchChild status
+		Collection<RideRequestEntity> cancelledRideRequestEntities = rideRequestMapper.getEntities(rideEntity.getCancelledRideRequests(), 
+				ride.getCancelledRideRequests(), false);
+		rideEntity.setCancelledRideRequests(cancelledRideRequestEntities);
+
 
 		BillMapper billMapper = new BillMapper();
 		//Don't fetch child of bill as bill has ride and ride has bill, it will get into recursive loop
@@ -112,6 +121,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		ride.setLuggageCapacityOffered(rideEntity.getLuggageCapacityOffered());
 		ride.setRecur(rideEntity.getRecur());
 		ride.setStatus(rideEntity.getStatus());
+		ride.setSeatStatus(rideEntity.getSeatStatus());
 		ride.setSexPreference(rideEntity.getSexPreference());
 		ride.setTravelDistance(rideEntity.getTravelDistance());
 
@@ -165,6 +175,14 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		Collection<RideRequest> rejectedRideRequests = rideRequestMapper.getDomainModels(ride.getRejectedRideRequests(), 
 				rideEntity.getRejectedRideRequests(), false);
 		ride.setRejectedRideRequests(rejectedRideRequests);
+
+		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop
+		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
+		//is called irrespective of fetchChild status. Ride is calling ride request domain function and ride request is calling ride domain function
+		Collection<RideRequest> cancelledRideRequests = rideRequestMapper.getDomainModels(ride.getCancelledRideRequests(), 
+				rideEntity.getCancelledRideRequests(), false);
+		ride.setCancelledRideRequests(cancelledRideRequests);
+
 		
 		BillMapper billMapper = new BillMapper();
 		//Don't fetch child of bill as bill has ride and ride has bill, it will get into recursive loop

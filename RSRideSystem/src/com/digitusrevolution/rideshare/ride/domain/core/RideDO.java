@@ -32,6 +32,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
@@ -216,7 +217,12 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		for (Role role : roles) {
 			if (role.getName().equals(RoleName.Driver)){
 				driverStatus = true;
-				ride.setStatus(RideStatus.Unfulfilled);
+				//This will set the ride status
+				ride.setStatus(RideStatus.Planned);
+				//This will set the ride seat status if there is any seats offered
+				if (ride.getSeatOffered() > 0){
+					ride.setSeatStatus(RideSeatStatus.Available);
+				}
 				ride.setTravelDistance(travelDistance);
 				ZonedDateTime startTimeUTC = ride.getStartTime().withZoneSameInstant(ZoneOffset.UTC);
 				ride.setStartTime(startTimeUTC);				
@@ -491,6 +497,20 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		rideAction.dropPassenger(rideId, passengerId);
 	}
 
+	public void endRide(int rideId){
+		RideAction rideAction = new RideAction(this);
+		rideAction.endRide(rideId);
+	}
+	
+	public void cancelRideRequest(int rideId, int rideRequestId){
+		RideAction rideAction = new RideAction(this);
+		rideAction.cancelRideRequest(rideId, rideRequestId);
+	}
+	
+	public void cancelRide(int rideId){
+		RideAction rideAction = new RideAction(this);
+		rideAction.cancelRide(rideId);
+	}
 }
 
 

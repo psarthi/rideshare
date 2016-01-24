@@ -23,6 +23,7 @@ import javax.persistence.Table;
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
 import com.digitusrevolution.rideshare.model.ride.data.RecurringDetailEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
@@ -51,6 +52,9 @@ public class RideEntity {
 	@Column (name="status")
 	@Enumerated(EnumType.STRING)
 	private RideStatus status;
+	@Column (name="seatStatus")
+	@Enumerated(EnumType.STRING)
+	private RideSeatStatus seatStatus;
 	//Reason for Many to One relationship, one vehicle can offer many rides
 	@ManyToOne
 	private VehicleEntity vehicle;
@@ -70,8 +74,11 @@ public class RideEntity {
 	//Reason for many to many relationship, as one ride can reject multiple ride request and 
 	//one ride request can be rejected by multiple rides
 	@ManyToMany
-	@JoinTable(name="ride_rideRequest",joinColumns=@JoinColumn(name="ride_id"))
+	@JoinTable(name="ride_rejectedRideRequest",joinColumns=@JoinColumn(name="ride_id"))
 	private Collection<RideRequestEntity> rejectedRideRequests = new HashSet<RideRequestEntity>();
+	@ManyToMany
+	@JoinTable(name="ride_cancelledRideRequest",joinColumns=@JoinColumn(name="ride_id"))
+	private Collection<RideRequestEntity> cancelledRideRequests = new HashSet<RideRequestEntity>();
 	private int travelDistance;
 	
 	public int getId() {
@@ -229,6 +236,18 @@ public class RideEntity {
 			return false;
 		}
 		return true;
+	}
+	public Collection<RideRequestEntity> getCancelledRideRequests() {
+		return cancelledRideRequests;
+	}
+	public void setCancelledRideRequests(Collection<RideRequestEntity> cancelledRideRequests) {
+		this.cancelledRideRequests = cancelledRideRequests;
+	}
+	public RideSeatStatus getSeatStatus() {
+		return seatStatus;
+	}
+	public void setSeatStatus(RideSeatStatus seatStatus) {
+		this.seatStatus = seatStatus;
 	}
 
 }

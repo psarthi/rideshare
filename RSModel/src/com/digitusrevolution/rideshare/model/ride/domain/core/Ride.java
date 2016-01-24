@@ -13,6 +13,8 @@ import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 
+import javassist.NotFoundException;
+
 public class Ride {
 
 	//id data type needs to be finalized later, whether to use int, long, string
@@ -28,12 +30,14 @@ public class Ride {
 	private boolean recur;
 	private RecurringDetail recurringDetail;
 	private RideStatus status;
+	private RideSeatStatus seatStatus;
 	private Vehicle vehicle;
 	private User driver; 
 	private Collection<RidePassenger> passengers = new HashSet<RidePassenger>();
 	private Collection<Bill> bills = new HashSet<Bill>();
 	private Collection<RideRequest> acceptedRideRequests = new HashSet<RideRequest>();
 	private Collection<RideRequest> rejectedRideRequests = new HashSet<RideRequest>();
+	private Collection<RideRequest> cancelledRideRequests = new HashSet<RideRequest>();
 	private int travelDistance;
 	
 	public int getId() {
@@ -200,7 +204,36 @@ public class Ride {
 		}
 		return true;
 	}
-	
+	public Collection<RideRequest> getCancelledRideRequests() {
+		return cancelledRideRequests;
+	}
+	public void setCancelledRideRequests(Collection<RideRequest> cancelledRideRequests) {
+		this.cancelledRideRequests = cancelledRideRequests;
+	}
+	public RideSeatStatus getSeatStatus() {
+		return seatStatus;
+	}
+	public void setSeatStatus(RideSeatStatus seatStatus) {
+		this.seatStatus = seatStatus;
+	}
+	public RideRequest getRideRequestOfPassenger(int passengerId){
+		Collection<RideRequest> acceptedRideRequests = getAcceptedRideRequests();
+		for (RideRequest rideRequest : acceptedRideRequests) {
+			if (rideRequest.getPassenger().getId() == passengerId){
+				return rideRequest;
+			}
+		}
+		throw new RuntimeException("Ride Request not found for passenger id:"+passengerId);
+	}
+	public RidePassenger getRidePassenger(int passengerId){
+		Collection<RidePassenger> passengers = getPassengers();
+		for (RidePassenger ridePassenger : passengers) {
+			if (ridePassenger.getPassenger().getId() == passengerId){
+				return ridePassenger;
+			}
+		}
+		throw new RuntimeException("No passenger found with id:"+passengerId);
+	}
 
 	
 }

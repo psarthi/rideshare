@@ -30,6 +30,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
 import com.digitusrevolution.rideshare.ride.domain.TrustCategoryDO;
 import com.digitusrevolution.rideshare.ride.domain.TrustNetworkDO;
@@ -37,9 +38,9 @@ import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
 import com.digitusrevolution.rideshare.ride.domain.resource.RideRequestDomainResource;
 
-public class DomainLayerTest {
+public class RideDomainLayerTest {
 
-	private static final Logger logger = LogManager.getLogger(DomainLayerTest.class.getName());
+	private static final Logger logger = LogManager.getLogger(RideDomainLayerTest.class.getName());
 
 	public static void main(String args[]){
 
@@ -48,7 +49,7 @@ public class DomainLayerTest {
 		try {
 			transation = session.beginTransaction();
 
-			DomainLayerTest domainLayerTest = new DomainLayerTest();
+			RideDomainLayerTest domainLayerTest = new RideDomainLayerTest();
 			domainLayerTest.test();
 			transation.commit();
 
@@ -74,13 +75,17 @@ public class DomainLayerTest {
 	public void test(){
 		
 		RideDO rideDO = new RideDO();
-		Ride ride = rideDO.get(1);
-		RideRequestDO rideRequestDO = new RideRequestDO();
-		RideRequest rideRequest = rideRequestDO.get(1);
-		RideDTO rideDTO = new RideDTO();
-		rideDTO.setRide(ride);
-		rideDTO.setRideRequest(rideRequest);
-		RESTClientUtil.generateBill(rideDTO);
+	//	rideDO.acceptRideRequest(1, 1);
+		rideDO.cancelRideRequest(1,1);
+
+		
+//		Ride ride = rideDO.get(1);
+//		RideRequestDO rideRequestDO = new RideRequestDO();
+//		RideRequest rideRequest = rideRequestDO.get(1);
+//		RideDTO rideDTO = new RideDTO();
+//		rideDTO.setRide(ride);
+//		rideDTO.setRideRequest(rideRequest);
+//		RESTClientUtil.generateBill(rideDTO);
 		
 //		rideDO.delete(1);
 //		rideDO.startRide(165);

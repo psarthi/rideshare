@@ -57,6 +57,8 @@ public class RideOfferManagementService {
 			
 			Vehicle vehicle = RESTClientUtil.getVehicle(driver.getId(), 1);
 			ride.setVehicle(vehicle);
+			
+			ride.setSeatOffered(2);
 
 			TrustCategoryDO trustCategoryDO = new TrustCategoryDO();
 			TrustCategory trustCategory = trustCategoryDO.get(TrustCategoryName.Anonymous.toString());

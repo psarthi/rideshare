@@ -37,6 +37,7 @@ public class RideRequest {
 	private RidePoint rideDropPoint = new RidePoint();
 	private int travelTime;
 	private int travelDistance;
+	private Collection<Ride> cancelledRides = new HashSet<Ride>();
 	
 	public int getId() {
 		return id;
@@ -211,6 +212,12 @@ public class RideRequest {
 			return false;
 		}
 		return true;
+	}
+	public Collection<Ride> getCancelledRides() {
+		return cancelledRides;
+	}
+	public void setCancelledRides(Collection<Ride> cancelledRides) {
+		this.cancelledRides = cancelledRides;
 	}
 
 }

@@ -2,7 +2,6 @@ package com.digitusrevolution.rideshare.model.ride.data.core;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 
@@ -11,9 +10,9 @@ import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 @Embeddable
 public class RidePassengerId implements Serializable{
 	private static final long serialVersionUID = 1L;
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	private RideEntity ride;
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	private UserEntity passenger;
 	
 	public RideEntity getRide() {

@@ -1,6 +1,5 @@
 package com.digitusrevolution.rideshare.model.ride.domain.core;
 
-public enum RideStatus {
-
-	Planned, Started, Finished, Cancelled
+public enum RideSeatStatus {
+	Available, Unavailable
 }
