@@ -330,6 +330,9 @@ public class RideAction {
 	/*
 	 * Purpose - Cancel ride request post acceptance
 	 * 
+	 * Note - This cancellation is different than passenger cancelling their ride request on their own
+	 * 
+	 * 
 	 * High level logic -
 	 * 
 	 * - Check if ride request has been accepted

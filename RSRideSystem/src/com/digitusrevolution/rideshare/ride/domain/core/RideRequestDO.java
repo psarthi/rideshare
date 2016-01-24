@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.management.openmbean.InvalidKeyException;
+import javax.ws.rs.NotAcceptableException;
 import javax.ws.rs.NotFoundException;
 
 import org.apache.logging.log4j.LogManager;
@@ -37,7 +38,9 @@ import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
+import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.ride.data.RideRequestDAO;
@@ -654,6 +657,44 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 */
 	public RideRequestStatus getStatus(int rideRequestId){
 		return rideRequestDAO.getStatus(rideRequestId);
+	}
+	
+	/*
+	 * Purpose - Cancel the ride request which has been raised earlier
+	 * 
+	 * High level logic -
+	 * 
+	 * - Check if the ride is unfulfilled, if yes, then you can cancel
+	 * - Update the status of ride request as cancelled
+	 * - If its fulfilled, then check if the passenger has been picked
+	 * - If its not picked, then you can cancel, else it can't be cancelled
+	 * - If not picked, then call Cancel Ride Request function of ride 
+	 * - Update the status of ride request as cancelled 
+	 * 
+	 */
+	public void cancelRideRequest(int rideRequestId){
+		rideRequest = getChild(rideRequestId);
+		RideRequestStatus rideRequestStatus = rideRequest.getStatus();
+		if (rideRequestStatus.equals(RideRequestStatus.Unfulfilled)){
+			rideRequest.setStatus(RideRequestStatus.Cancelled);
+			update(rideRequest);
+		} else {
+			//Reason for getting child of ride as ride Request has basic ride object which doesn't have passenger list
+			int rideId = rideRequest.getAcceptedRide().getId();
+			RideDO rideDO = new RideDO();
+			Ride ride = rideDO.getChild(rideId);
+			RidePassenger ridePassenger = ride.getRidePassenger(rideRequest.getPassenger().getId());
+			if (ridePassenger.getStatus().equals(PassengerStatus.Confirmed)){
+				//This will cancel the ride request from confirmed ride
+				rideDO.cancelRideRequest(ride.getId(), rideRequestId);
+				//Once its cancelled from ride front, then we can cancel ride request
+				rideRequest.setStatus(RideRequestStatus.Cancelled);
+				update(rideRequest);
+			} else {
+				throw new NotAcceptableException("Ride request can't be cancelled as its already picked up. "
+						+ "Passenger current status:"+ridePassenger.getStatus());
+			}
+		}
 	}
 }
 
