@@ -13,6 +13,11 @@ import javax.persistence.Table;
 import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
+/*
+ * Purpose of this class is to break ManyToMany relationship between Ride and User to OneToMany from both sides,
+ * so that we can add extra fields of passenger such as Passenger Status
+ * 
+ */
 @Entity
 @Table(name="ride_passenger")
 public class RidePassengerEntity {

@@ -357,6 +357,10 @@ public class RideAction {
 				//Check if passenger is in confirmed state
 				if (passengerStatus.equals(PassengerStatus.Confirmed)){
 					//IMP - Remove passenger from the list, else it would add again due to cascade effect
+					//Reason for deleting using RidePassengerDO and not just by removing from the ride list
+					//as deletion is not working and it may be because we are not updating ride passenger of passenger 
+					//And since, Ride passenger has OneToMany relationship from Ride as well as User side, so updating from one side 
+					//may not be sufficient. We are not able to update User side as we are not maintaining ride passenger at User domain model
 					ride.getRidePassengers().remove(ridePassenger);
 					RidePassengerDO ridePassengerDO = new RidePassengerDO();
 					ridePassengerDO.delete(ridePassenger.getId());
