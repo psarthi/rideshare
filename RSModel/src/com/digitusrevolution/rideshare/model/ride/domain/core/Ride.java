@@ -13,8 +13,6 @@ import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 
-import javassist.NotFoundException;
-
 public class Ride {
 
 	//id data type needs to be finalized later, whether to use int, long, string
@@ -33,7 +31,7 @@ public class Ride {
 	private RideSeatStatus seatStatus;
 	private Vehicle vehicle;
 	private User driver; 
-	private Collection<RidePassenger> passengers = new HashSet<RidePassenger>();
+	private Collection<RidePassenger> ridePassengers = new HashSet<RidePassenger>();
 	private Collection<Bill> bills = new HashSet<Bill>();
 	private Collection<RideRequest> acceptedRideRequests = new HashSet<RideRequest>();
 	private Collection<RideRequest> rejectedRideRequests = new HashSet<RideRequest>();
@@ -136,11 +134,11 @@ public class Ride {
 	public void setDriver(User driver) {
 		this.driver = driver;
 	}
-	public Collection<RidePassenger> getPassengers() {
-		return passengers;
+	public Collection<RidePassenger> getRidePassengers() {
+		return ridePassengers;
 	}
-	public void setPassengers(Collection<RidePassenger> passengers) {
-		this.passengers = passengers;
+	public void setRidePassengers(Collection<RidePassenger> ridePassengers) {
+		this.ridePassengers = ridePassengers;
 	}
 	public Sex getSexPreference() {
 		return sexPreference;
@@ -226,7 +224,7 @@ public class Ride {
 		throw new RuntimeException("Ride Request not found for passenger id:"+passengerId);
 	}
 	public RidePassenger getRidePassenger(int passengerId){
-		Collection<RidePassenger> passengers = getPassengers();
+		Collection<RidePassenger> passengers = getRidePassengers();
 		for (RidePassenger ridePassenger : passengers) {
 			if (ridePassenger.getPassenger().getId() == passengerId){
 				return ridePassenger;

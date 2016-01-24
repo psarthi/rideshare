@@ -127,7 +127,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		setRide(ride);
 		rideDAO.delete(rideEntity);
 	}
-
+	
 	/*
 	 * This method should not be used from external classes and instead use offerRide method
 	 * This method is only used internally from offerRide

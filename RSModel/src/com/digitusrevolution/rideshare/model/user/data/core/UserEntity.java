@@ -76,7 +76,7 @@ public class UserEntity {
 	
 	//Reason for Many to Many relationship, as one user can take many rides and 
 	//one ride can have many users as passenger
-	@OneToMany(mappedBy="primaryKey.passenger",cascade=CascadeType.ALL)
+	@OneToMany(mappedBy="passenger")
 	private Collection<RidePassengerEntity> ridesTaken = new HashSet<RidePassengerEntity>();
 	//Reason for One to Many relationship, as one user can raise many ride request
 	//but one ride request can be raised by only one user acting as passenger

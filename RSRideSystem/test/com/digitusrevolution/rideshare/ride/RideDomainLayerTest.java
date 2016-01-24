@@ -75,8 +75,13 @@ public class RideDomainLayerTest {
 	public void test(){
 		
 		RideDO rideDO = new RideDO();
+
 	//	rideDO.acceptRideRequest(1, 1);
-		rideDO.cancelRideRequest(1,1);
+	//	rideDO.cancelRideRequest(1,1);
+	//	rideDO.startRide(1);
+	//	rideDO.pickupPassenger(1, 2);
+	//	rideDO.dropPassenger(1, 2);
+		rideDO.endRide(1);
 
 		
 //		Ride ride = rideDO.get(1);

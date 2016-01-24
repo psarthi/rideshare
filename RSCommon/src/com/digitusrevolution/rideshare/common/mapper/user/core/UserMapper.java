@@ -86,8 +86,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		//Don't get childs of ride request as it will get into recursive loop as ride request has passenger and passenger has rides
 		userEntity.setRideRequests(rideRequestMapper.getEntities(userEntity.getRideRequests(), user.getRideRequests(), false));
 		
-		//Note - We are not setting ridesTaken as that require ride entity which is not available in User and we don't have any requirement 
-		//of setting the ride through user entity
+		//Note - we are not setting rides taken as it require ride passenger in User, which we are not maintaining
 		
 		BillMapper billMapper = new BillMapper();
 		//Don't fetch child as bill has user and user has bill, so it will get into recursive loop

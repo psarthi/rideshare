@@ -63,8 +63,8 @@ public class RideEntity {
 	private UserEntity driver;
 	//Reason for Many to many relationship, as one ride can have many users who is passenger 
 	//and one user can be part of many rides as different passenger
-	@OneToMany(mappedBy="primaryKey.ride",cascade=CascadeType.ALL)
-	private Collection<RidePassengerEntity> passengers = new HashSet<RidePassengerEntity>();
+	@OneToMany(mappedBy="ride", cascade=CascadeType.ALL)
+	private Collection<RidePassengerEntity> ridePassengers = new HashSet<RidePassengerEntity>();
 	@OneToMany(mappedBy="ride")
 	private Collection<BillEntity> bills = new HashSet<BillEntity>();
 	//Reason for one to many relationship, as one ride can accept many ride requests 
@@ -171,11 +171,11 @@ public class RideEntity {
 	public void setDriver(UserEntity driver) {
 		this.driver = driver;
 	}
-	public Collection<RidePassengerEntity> getPassengers() {
-		return passengers;
+	public Collection<RidePassengerEntity> getRidePassengers() {
+		return ridePassengers;
 	}
-	public void setPassengers(Collection<RidePassengerEntity> passengers) {
-		this.passengers = passengers;
+	public void setRidePassengers(Collection<RidePassengerEntity> ridePassengers) {
+		this.ridePassengers = ridePassengers;
 	}
 	public Sex getSexPreference() {
 		return sexPreference;

@@ -71,12 +71,10 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 	@Override
 	public RideEntity getEntityChild(Ride ride, RideEntity rideEntity) {
 		
-		//This is a custom mapper class which doesn't implement standard Mapper interface, that's why method signature is different below
-		//And we are passing rideEntity as well which is not there in RidePassenger but required in RidePassengerEntity
-		//Reason for not fetching child, as ride passenger has user and user has ride which in turn has ride passenger, 
-		//so this will get into recursive loop
+		//Don't move this into entity/model function as this will call ride passenger entity and which has ride, 
+		//so that would call ride mapper entity/model and it will get into recursive loop 
 		RidePassengerMapper ridePassengerMapper = new RidePassengerMapper();
-		rideEntity.setPassengers(ridePassengerMapper.getEntities(rideEntity.getPassengers(), ride.getPassengers(), ride, false));
+		rideEntity.setRidePassengers(ridePassengerMapper.getEntities(rideEntity.getRidePassengers(), ride.getRidePassengers(), false));
 				
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
 		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop
@@ -154,12 +152,10 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 	@Override
 	public Ride getDomainModelChild(Ride ride, RideEntity rideEntity) {
 		
-		//This is a custom mapper class which doesn't implement standard Mapper interface, that's why method signature is different below
-		//And we are passing rideEntity as well which is not there in RidePassenger but required in RidePassengerEntity
-		//Reason for not fetching child, as ride passenger has user and user has ride which in turn has ride passenger, 
-		//so this will get into recursive loop
+		//Don't move this into entity/model function as this will call ride passenger entity and which has ride, 
+		//so that would call ride mapper entity/model and it will get into recursive loop 
 		RidePassengerMapper ridePassengerMapper = new RidePassengerMapper();
-		ride.setPassengers(ridePassengerMapper.getDomainModels(ride.getPassengers(), rideEntity.getPassengers(), false));
+		ride.setRidePassengers(ridePassengerMapper.getDomainModels(ride.getRidePassengers(), rideEntity.getRidePassengers(), false));
 				
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
 		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop

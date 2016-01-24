@@ -2,38 +2,84 @@ package com.digitusrevolution.rideshare.common.mapper.ride.core;
 
 import java.util.Collection;
 
+import com.digitusrevolution.rideshare.common.inf.Mapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity;
-import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
 
-/*
- * This is a custom mapper class which doesn't implement Mapper interface,
- * and its used only by Ride Mapper 
- * 
- */
-public class RidePassengerMapper{
+public class RidePassengerMapper implements Mapper<RidePassenger, RidePassengerEntity>{
 
-	public RidePassengerEntity getEntity(RidePassenger ridePassenger, Ride ride, boolean fetchChild) {
+
+	@Override
+	public RidePassengerEntity getEntity(RidePassenger ridePassenger, boolean fetchChild) {
 		RidePassengerEntity ridePassengerEntity = new RidePassengerEntity();
-		UserMapper userMapper = new UserMapper();
-		ridePassengerEntity.setPassenger(userMapper.getEntity(ridePassenger.getPassenger(), fetchChild));
+		ridePassengerEntity.setId(ridePassenger.getId());
+		ridePassengerEntity.setStatus(ridePassenger.getStatus());
+	
+		//Its important not to fetch child as this will get into recursive loop
+		//as ride has ride passenger and ride passenger has ride
+		//Don't move this into child, otherwise we won't be able to set ride
+		//as caller would not fetch child
 		RideMapper rideMapper = new RideMapper();
-		//Reason for getting ride instead of rideEntity, as rideEntity contains passenger and passenger contain ride entity and so on..
-		//i.e. recursive loop. So to avoid that we get Ride and then get rideEntity by not fetching child, so we get ride entity without passenger
-		ridePassengerEntity.setRide(rideMapper.getEntity(ride, fetchChild));
-		ridePassengerEntity.setStatus(ridePassenger.getStatus());		
+		ridePassengerEntity.setRide(rideMapper.getEntity(ridePassenger.getRide(), false));
+
+		//Its important not to fetch child as this will get into recursive loop
+		//as user has ride passenger and ride passenger has user
+		//Don't move this into child, otherwise we won't be able to set user
+		//as caller would not fetch child
+		UserMapper userMapper = new UserMapper();
+		ridePassengerEntity.setPassenger(userMapper.getEntity(ridePassenger.getPassenger(), false));
+
 		return ridePassengerEntity;
 	}
 
+	@Override
+	public RidePassengerEntity getEntityChild(RidePassenger ridePassenger, RidePassengerEntity ridePassengerEntity) {
+		return ridePassengerEntity;
+	}
+
+	@Override
 	public RidePassenger getDomainModel(RidePassengerEntity ridePassengerEntity, boolean fetchChild) {
 		RidePassenger ridePassenger = new RidePassenger();
+		ridePassenger.setId(ridePassengerEntity.getId());
+		ridePassenger.setStatus(ridePassengerEntity.getStatus());	
+		
+		//Its important not to fetch child as this will get into recursive loop
+		//as ride has ride passenger and ride passenger has ride
+		//Don't move this into child, otherwise we won't be able to set ride
+		//as caller would not fetch child
+		RideMapper rideMapper = new RideMapper();
+		ridePassenger.setRide(rideMapper.getDomainModel(ridePassengerEntity.getRide(), false));
+		
+		//Its important not to fetch child as this will get into recursive loop
+		//as user has ride passenger and ride passenger has user
+		//Don't move this into child, otherwise we won't be able to set user
+		//as caller would not fetch child
 		UserMapper userMapper = new UserMapper();
-		ridePassenger.setPassenger(userMapper.getDomainModel(ridePassengerEntity.getPassenger(), fetchChild));
-		ridePassenger.setStatus(ridePassengerEntity.getStatus());		
+		ridePassenger.setPassenger(userMapper.getDomainModel(ridePassengerEntity.getPassenger(), false));
+
 		return ridePassenger;
 	}
 
+
+	@Override
+	public RidePassenger getDomainModelChild(RidePassenger ridePassenger, RidePassengerEntity ridePassengerEntity) {
+
+		return ridePassenger;
+	}
+
+	@Override
+	public Collection<RidePassengerEntity> getEntities(Collection<RidePassengerEntity> ridePassengerEntities,
+			Collection<RidePassenger> ridePassengers, boolean fetchChild) {
+		for (RidePassenger ridePassenger : ridePassengers) {
+			RidePassengerEntity ridePassengerEntity = new RidePassengerEntity();
+			ridePassengerEntity = getEntity(ridePassenger, fetchChild);
+			ridePassengerEntities.add(ridePassengerEntity);
+		}
+		return ridePassengerEntities;
+	}
+
+	@Override
 	public Collection<RidePassenger> getDomainModels(Collection<RidePassenger> ridePassengers,
 			Collection<RidePassengerEntity> ridePassengerEntities, boolean fetchChild) {
 		for (RidePassengerEntity ridePassengerEntity : ridePassengerEntities) {
@@ -44,14 +90,27 @@ public class RidePassengerMapper{
 		return ridePassengers;
 	}
 
-	public Collection<RidePassengerEntity> getEntities(Collection<RidePassengerEntity> ridePassengerEntities,
-			Collection<RidePassenger> ridePassengers, Ride ride, boolean fetchChild) {
-		for (RidePassenger ridePassenger : ridePassengers) {
-			RidePassengerEntity ridePassengerEntity = new RidePassengerEntity();
-			ridePassengerEntity = getEntity(ridePassenger, ride, fetchChild);
-			ridePassengerEntities.add(ridePassengerEntity);
-		}
-		return ridePassengerEntities;
-	}
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

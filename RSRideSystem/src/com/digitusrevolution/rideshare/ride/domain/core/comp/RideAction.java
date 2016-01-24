@@ -20,6 +20,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
+import com.digitusrevolution.rideshare.ride.domain.core.RidePassengerDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
 
 public class RideAction {
@@ -82,8 +83,9 @@ public class RideAction {
 					//Adding passenger
 					RidePassenger ridePassenger = new RidePassenger();
 					ridePassenger.setPassenger(rideRequest.getPassenger());
+					ridePassenger.setRide(ride);
 					ridePassenger.setStatus(PassengerStatus.Confirmed);
-					ride.getPassengers().add(ridePassenger);
+					ride.getRidePassengers().add(ridePassenger);
 
 					//This will get the new status of seat post the acceptance of this ride request 
 					//Seat status may or may not change depending on total seats occupied vs offered 
@@ -156,8 +158,9 @@ public class RideAction {
 	 * - If its in valid state, then change the status to started
 	 * 
 	 */
-	public void startRide(int rideId){ 
-		Ride ride = rideDO.get(rideId);
+	public void startRide(int rideId){
+		//Get child else child properties would get deleted while updating, as Ride Passenger has cascade enabled
+		Ride ride = rideDO.getChild(rideId);
 		RideStatus rideCurrentStatus = ride.getStatus();
 		if (rideCurrentStatus.equals(RideStatus.Planned)){
 			ride.setStatus(RideStatus.Started);
@@ -180,6 +183,7 @@ public class RideAction {
 	 */
 	public void pickupPassenger(int rideId, int passengerId){
 		Ride ride = rideDO.getChild(rideId);
+		logger.debug("Passenger Count:"+ride.getRidePassengers().size());
 		RideStatus rideCurrentStatus = ride.getStatus();
 		//Check if ride is started
 		if (rideCurrentStatus.equals(RideStatus.Started)){
@@ -225,17 +229,17 @@ public class RideAction {
 		if (rideCurrentStatus.equals(RideStatus.Started)){
 			boolean passengerNotFound = true;
 			//Get matching passenger from list of passengers
-			RidePassenger passenger = ride.getRidePassenger(passengerId);
+			RidePassenger ridePassenger = ride.getRidePassenger(passengerId);
 			//This is actually not required, but doing it as extra check in the backend to make it full proof
-			if (passenger!=null){
+			if (ridePassenger!=null){
 				passengerNotFound = false;
 				//Check if passenger states is picked up
-				if (passenger.getStatus().equals(PassengerStatus.Picked)){
-					passenger.setStatus(PassengerStatus.Dropped);
+				if (ridePassenger.getStatus().equals(PassengerStatus.Picked)){
+					ridePassenger.setStatus(PassengerStatus.Dropped);
 					//Update the status in the db
 					rideDO.update(ride);
 				}else {
-					throw new NotAcceptableException("Passenger is not in valid state. Passenger current status:"+passenger.getStatus());					
+					throw new NotAcceptableException("Passenger is not in valid state. Passenger current status:"+ridePassenger.getStatus());					
 				}
 			} if (passengerNotFound){
 				throw new NotAcceptableException("Passenger is not available for this ride. Passenger Id:"+passengerId);
@@ -274,7 +278,7 @@ public class RideAction {
 			boolean passengerNotPicked = false;
 			List<User> onBoardedPassengerList = new ArrayList<>();
 			List<User> notPickedPassengerList = new ArrayList<>();
-			Collection<RidePassenger> ridePassengers = ride.getPassengers();
+			Collection<RidePassenger> ridePassengers = ride.getRidePassengers();
 			for (RidePassenger ridePassenger : ridePassengers) {
 				if (ridePassenger.getStatus().equals(PassengerStatus.Dropped)){
 					continue;
@@ -336,8 +340,8 @@ public class RideAction {
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.getChild(rideRequestId);
 		RideStatus rideStatus = ride.getStatus();
-		RidePassenger passenger = ride.getRidePassenger(rideRequest.getPassenger().getId());
-		PassengerStatus passengerStatus = passenger.getStatus();
+		RidePassenger ridePassenger = ride.getRidePassenger(rideRequest.getPassenger().getId());
+		PassengerStatus passengerStatus = ridePassenger.getStatus();
 		//Check if ride request has been accepted by this ride
 		//Accepted ride would be null for unfulfilled ride request, so need to check for null condition 
 		if (rideRequest.getAcceptedRide() !=null ? rideRequest.getAcceptedRide().getId() == ride.getId() : false){
@@ -345,8 +349,10 @@ public class RideAction {
 			if (!rideStatus.equals(RideStatus.Cancelled) || !rideStatus.equals(RideStatus.Finished)){
 				//Check if passenger is in confirmed state
 				if (passengerStatus.equals(PassengerStatus.Confirmed)){
-					//Remove passenger from passenger list
-					ride.getPassengers().remove(passenger);
+					//IMP - Remove passenger from the list, else it would add again due to cascade effect
+					ride.getRidePassengers().remove(ridePassenger);
+					RidePassengerDO ridePassengerDO = new RidePassengerDO();
+					ridePassengerDO.delete(ridePassenger.getId());
 					//Ride seat status would always become available as we are freeing up at least one seat in any case
 					//So even if its Unavailable before cancellation, this will make seat available
 					ride.setSeatStatus(RideSeatStatus.Available);
