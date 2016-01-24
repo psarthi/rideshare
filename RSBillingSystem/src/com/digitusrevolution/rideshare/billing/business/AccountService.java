@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import com.digitusrevolution.rideshare.billing.domain.core.AccountDO;
+import com.digitusrevolution.rideshare.billing.domain.core.VirtualAccountDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 
@@ -20,7 +20,7 @@ public class AccountService {
 		try {
 			transation = session.beginTransaction();
 
-			AccountDO accountDO = new AccountDO();	
+			VirtualAccountDO accountDO = new VirtualAccountDO();	
 			number = accountDO.create(account);
 			
 			transation.commit();

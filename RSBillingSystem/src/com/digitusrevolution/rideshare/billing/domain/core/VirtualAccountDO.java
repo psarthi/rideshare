@@ -21,15 +21,16 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
 import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionType;
 
-public class AccountDO implements DomainObjectPKInteger<Account>{
+//Need to implement Account Interface which is standard for any AccountDO implementation so that all type of account has same behavior
+public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.digitusrevolution.rideshare.billing.domain.core.Account{
 	
 	private Account account;
 	private AccountEntity accountEntity;
 	private AccountMapper accountMapper;
 	private final GenericDAO<AccountEntity, Integer> genericDAO; 
-	private static final Logger logger = LogManager.getLogger(AccountDO.class.getName());
+	private static final Logger logger = LogManager.getLogger(VirtualAccountDO.class.getName());
 	
-	public AccountDO() {
+	public VirtualAccountDO() {
 		account = new Account();
 		accountEntity = new AccountEntity();
 		accountMapper = new AccountMapper();
@@ -102,6 +103,7 @@ public class AccountDO implements DomainObjectPKInteger<Account>{
 		genericDAO.delete(accountEntity);
 	}
 	
+	@Override
 	public void debit(int accountNumber, float amount, String remark){
 		//Its important to get child, else old transaction would get deleted as transactions is part of child
 		//And if you just get account without old transactions, then it will consider only new transaction as part of this account
@@ -123,6 +125,7 @@ public class AccountDO implements DomainObjectPKInteger<Account>{
 		}
 	}
 	
+	@Override
 	public void credit(int accountNumber, float amount, String remark){
 		//Its important to get child, else old transaction would get deleted as transactions is part of child
 		//And if you just get account without old transactions, then it will consider only new transaction as part of this account

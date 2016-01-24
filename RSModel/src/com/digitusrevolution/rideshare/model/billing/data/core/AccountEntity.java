@@ -4,7 +4,10 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,6 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
 
 @Entity
 @Table(name="account")
@@ -23,6 +28,9 @@ public class AccountEntity {
 	@OneToMany (cascade=CascadeType.ALL)
 	@JoinTable(name="account_transaction",joinColumns=@JoinColumn(name="account_number"))
 	private Collection<TransactionEntity> transactions = new HashSet<TransactionEntity>();
+	@Column
+	@Enumerated(EnumType.STRING)
+	private AccountType type;
 	
 	public int getNumber() {
 		return number;
@@ -42,6 +50,7 @@ public class AccountEntity {
 		int result = 1;
 		result = prime * result + Float.floatToIntBits(balance);
 		result = prime * result + number;
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
 	@Override
@@ -62,6 +71,9 @@ public class AccountEntity {
 		if (number != other.number) {
 			return false;
 		}
+		if (type != other.type) {
+			return false;
+		}
 		return true;
 	}
 	public Collection<TransactionEntity> getTransactions() {
@@ -69,6 +81,12 @@ public class AccountEntity {
 	}
 	public void setTransactions(Collection<TransactionEntity> transactions) {
 		this.transactions = transactions;
+	}
+	public AccountType getType() {
+		return type;
+	}
+	public void setType(AccountType type) {
+		this.type = type;
 	}
 	
 }

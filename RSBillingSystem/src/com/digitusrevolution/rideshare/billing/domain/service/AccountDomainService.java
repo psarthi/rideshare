@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import com.digitusrevolution.rideshare.billing.domain.core.AccountDO;
+import com.digitusrevolution.rideshare.billing.domain.core.VirtualAccountDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.inf.DomainService;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
@@ -24,7 +24,7 @@ public class AccountDomainService implements DomainService<Account>{
 		try {
 			transation = session.beginTransaction();
 
-			AccountDO accountDO = new AccountDO();
+			VirtualAccountDO accountDO = new VirtualAccountDO();
 			if (fetchChild){
 				account = accountDO.getChild(number);
 			} else {
@@ -56,7 +56,7 @@ public class AccountDomainService implements DomainService<Account>{
 		try {
 			transation = session.beginTransaction();
 
-			AccountDO accountDO = new AccountDO();	
+			VirtualAccountDO accountDO = new VirtualAccountDO();	
 			accounts = accountDO.getAll();
 			
 			transation.commit();

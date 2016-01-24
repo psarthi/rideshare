@@ -13,6 +13,7 @@ public class AccountMapper implements Mapper<Account, AccountEntity>{
 		AccountEntity accountEntity = new AccountEntity();
 		accountEntity.setNumber(account.getNumber());
 		accountEntity.setBalance(account.getBalance());
+		accountEntity.setType(account.getType());
 		
 		if (fetchChild){
 			accountEntity = getEntityChild(account, accountEntity);
@@ -33,6 +34,7 @@ public class AccountMapper implements Mapper<Account, AccountEntity>{
 		Account account = new Account();
 		account.setNumber(accountEntity.getNumber());
 		account.setBalance(accountEntity.getBalance());
+		account.setType(accountEntity.getType());
 		
 		if (fetchChild){
 			account = getDomainModelChild(account, accountEntity);

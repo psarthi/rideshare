@@ -10,6 +10,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.billing.business.BillingService;
+import com.digitusrevolution.rideshare.model.dto.BillDTO;
 import com.digitusrevolution.rideshare.model.dto.RideDTO;
 
 @Path("/billing")
@@ -42,10 +43,10 @@ public class BillingResource {
 	}
 	
 	@POST
-	@Path("/{number}/pay")
-	public Response makePayment(@PathParam("number") int billNumber){
+	@Path("/pay")
+	public Response makePayment(BillDTO billDTO){
 		BillingService billingService = new BillingService();
-		billingService.makePayment(billNumber);
+		billingService.makePayment(billDTO);
 		return Response.ok().build();
 	}
 

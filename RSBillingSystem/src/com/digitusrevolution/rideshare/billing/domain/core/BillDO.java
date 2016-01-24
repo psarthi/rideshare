@@ -16,6 +16,7 @@ import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.BillMapper;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
+import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.domain.core.BillStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
@@ -189,23 +190,34 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	 * Purpose - Make payment to driver and company from Passenger account
 	 * 
 	 */
-	public void makePayment(int billNumber){
+	public void makePayment(int billNumber, AccountType accountType){
 		bill = getChild(billNumber);
 		if (bill.getStatus().equals(BillStatus.Approved)){
 			float amount = bill.getAmount();
 			float serviceChargePercentage = bill.getServiceChargePercentage();
 			float serviceCharge = amount * serviceChargePercentage;
 			float driverAmount = amount - serviceCharge;
-			AccountDO accountDO = new AccountDO();
+			//Get AccountDO for specific account type
+			Account accountDO = getAccountDO(accountType);
 			String remark = "Bill:"+billNumber+",Ride:"+bill.getRide().getId()+",RideRequest:"+bill.getRideRequest().getId();
-			accountDO.debit(bill.getPassenger().getAccount().getNumber(), amount, remark);
-			accountDO.credit(bill.getDriver().getAccount().getNumber(), driverAmount, remark);
-			accountDO.debit(bill.getCompany().getAccount().getNumber(), serviceCharge, remark);		
+			accountDO.debit(bill.getPassenger().getAccount(AccountType.Virtual).getNumber(), amount, remark);
+			accountDO.credit(bill.getDriver().getAccount(AccountType.Virtual).getNumber(), driverAmount, remark);
+			accountDO.debit(bill.getCompany().getAccount(AccountType.Virtual).getNumber(), serviceCharge, remark);		
 			bill.setStatus(BillStatus.Paid);
 			update(bill);
 		} else {
 			throw new NotAcceptableException("Can't make payment as bill is either not Approved or Paid. Bill current status:"+bill.getStatus());
 		}
+	}
+	
+	/*
+	 * Purpose - It should return appropriate Account DO Impl based on Account type
+	 */
+	private Account getAccountDO(AccountType accountType){
+		if (accountType.equals(AccountType.Virtual)){
+			return new VirtualAccountDO();
+		}
+		throw new NotFoundException("No appropriate account DO found for account type:"+accountType);
 	}
 
 }

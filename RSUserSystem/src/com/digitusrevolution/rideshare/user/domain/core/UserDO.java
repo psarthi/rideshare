@@ -147,7 +147,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		//Always use getChild instead of get whenever you are trying to update, so that you don't miss any fields where relationship is owned by this entity
 		//Otherwise while updating, that field relationship would be deleted
 		User user = getChild(userId);
-		user.setAccount(account);
+		user.getAccounts().add(account);
 		update(user);		
 	}
 	

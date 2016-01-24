@@ -8,6 +8,7 @@ public class Account {
 	private int number;
 	private float balance;
 	private Collection<Transaction> transactions = new HashSet<Transaction>();
+	private AccountType type;
 	
 	public int getNumber() {
 		return number;
@@ -27,6 +28,7 @@ public class Account {
 		int result = 1;
 		result = prime * result + Float.floatToIntBits(balance);
 		result = prime * result + number;
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
 	@Override
@@ -47,6 +49,9 @@ public class Account {
 		if (number != other.number) {
 			return false;
 		}
+		if (type != other.type) {
+			return false;
+		}
 		return true;
 	}
 	public Collection<Transaction> getTransactions() {
@@ -54,6 +59,12 @@ public class Account {
 	}
 	public void setTransactions(Collection<Transaction> transactions) {
 		this.transactions = transactions;
+	}
+	public AccountType getType() {
+		return type;
+	}
+	public void setType(AccountType type) {
+		this.type = type;
 	}
 	
 }

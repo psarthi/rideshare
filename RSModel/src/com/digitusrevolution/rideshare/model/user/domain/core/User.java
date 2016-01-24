@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
@@ -31,7 +32,7 @@ public class User {
 	private Collection<Vehicle> vehicles = new HashSet<Vehicle>();
 	private Collection<User> friends = new HashSet<User>();
 	private Collection<Role> roles = new HashSet<Role>();
-	private Account account;
+	private Collection<Account> accounts = new HashSet<Account>();
 	private int profileRating;
 
 	private Collection<Ride> ridesOffered = new HashSet<Ride>();
@@ -135,12 +136,12 @@ public class User {
 		this.roles = roles;
 	}
 
-	public Account getAccount() {
-		return account;
+	public Collection<Account> getAccounts() {
+		return accounts;
 	}
 
-	public void setAccount(Account account) {
-		this.account = account;
+	public void setAccounts(Collection<Account> accounts) {
+		this.accounts = accounts;
 	}
 
 	public Collection<RideRequest> getRideRequests() {
@@ -189,6 +190,16 @@ public class User {
 
 	public void setCountry(Country country) {
 		this.country = country;
+	}
+	
+	public Account getAccount(AccountType accountType){
+		Collection<Account> accounts = getAccounts();
+		for (Account account : accounts) {
+			if (account.getType().equals(accountType)){
+				return account;
+			}
+		}
+		throw new RuntimeException("No account found for the type:"+accountType);
 	}
 
 	@Override

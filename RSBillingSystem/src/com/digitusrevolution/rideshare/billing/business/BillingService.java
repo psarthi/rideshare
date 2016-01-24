@@ -7,6 +7,7 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.billing.domain.core.BillDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.model.dto.BillDTO;
 import com.digitusrevolution.rideshare.model.dto.RideDTO;
 
 public class BillingService {
@@ -90,14 +91,14 @@ public class BillingService {
 		}
 	}
 
-	public void makePayment(int billNumber){
+	public void makePayment(BillDTO billDTO){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		try {
 			transation = session.beginTransaction();
 
 			BillDO billDO = new BillDO();	
-			billDO.makePayment(billNumber);
+			billDO.makePayment(billDTO.getBillNumber(), billDTO.getAccountType());
 			
 			transation.commit();
 		} catch (RuntimeException e) {
