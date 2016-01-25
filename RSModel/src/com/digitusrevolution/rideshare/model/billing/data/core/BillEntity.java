@@ -81,6 +81,7 @@ public class BillEntity {
 		int result = 1;
 		result = prime * result + number;
 		result = prime * result + ((ride == null) ? 0 : ride.hashCode());
+		result = prime * result + ((rideRequest == null) ? 0 : rideRequest.hashCode());
 		return result;
 	}
 	@Override
@@ -103,6 +104,13 @@ public class BillEntity {
 				return false;
 			}
 		} else if (!ride.equals(other.ride)) {
+			return false;
+		}
+		if (rideRequest == null) {
+			if (other.rideRequest != null) {
+				return false;
+			}
+		} else if (!rideRequest.equals(other.rideRequest)) {
 			return false;
 		}
 		return true;

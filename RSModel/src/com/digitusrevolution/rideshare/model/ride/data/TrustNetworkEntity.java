@@ -58,7 +58,10 @@ public class TrustNetworkEntity {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((friends == null) ? 0 : friends.hashCode());
+		result = prime * result + ((groups == null) ? 0 : groups.hashCode());
 		result = prime * result + id;
+		result = prime * result + ((trustCategories == null) ? 0 : trustCategories.hashCode());
 		return result;
 	}
 	@Override
@@ -73,7 +76,28 @@ public class TrustNetworkEntity {
 			return false;
 		}
 		TrustNetworkEntity other = (TrustNetworkEntity) obj;
+		if (friends == null) {
+			if (other.friends != null) {
+				return false;
+			}
+		} else if (!friends.equals(other.friends)) {
+			return false;
+		}
+		if (groups == null) {
+			if (other.groups != null) {
+				return false;
+			}
+		} else if (!groups.equals(other.groups)) {
+			return false;
+		}
 		if (id != other.id) {
+			return false;
+		}
+		if (trustCategories == null) {
+			if (other.trustCategories != null) {
+				return false;
+			}
+		} else if (!trustCategories.equals(other.trustCategories)) {
 			return false;
 		}
 		return true;

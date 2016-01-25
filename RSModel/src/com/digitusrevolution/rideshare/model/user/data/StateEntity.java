@@ -47,7 +47,6 @@ public class StateEntity {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((cities == null) ? 0 : cities.hashCode());
 		result = prime * result + id;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
@@ -64,13 +63,6 @@ public class StateEntity {
 			return false;
 		}
 		StateEntity other = (StateEntity) obj;
-		if (cities == null) {
-			if (other.cities != null) {
-				return false;
-			}
-		} else if (!cities.equals(other.cities)) {
-			return false;
-		}
 		if (id != other.id) {
 			return false;
 		}

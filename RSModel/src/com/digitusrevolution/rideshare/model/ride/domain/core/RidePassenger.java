@@ -39,7 +39,6 @@ public class RidePassenger {
 		result = prime * result + id;
 		result = prime * result + ((passenger == null) ? 0 : passenger.hashCode());
 		result = prime * result + ((ride == null) ? 0 : ride.hashCode());
-		result = prime * result + ((status == null) ? 0 : status.hashCode());
 		return result;
 	}
 	@Override
@@ -69,9 +68,6 @@ public class RidePassenger {
 				return false;
 			}
 		} else if (!ride.equals(other.ride)) {
-			return false;
-		}
-		if (status != other.status) {
 			return false;
 		}
 		return true;

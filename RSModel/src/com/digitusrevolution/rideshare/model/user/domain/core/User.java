@@ -2,6 +2,7 @@ package com.digitusrevolution.rideshare.model.user.domain.core;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
@@ -10,7 +11,9 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
+import com.digitusrevolution.rideshare.model.user.domain.Feedback;
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
+import com.digitusrevolution.rideshare.model.user.domain.Preference;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.State;
@@ -40,6 +43,9 @@ public class User {
 	private Collection<Ride> ridesTaken = new HashSet<Ride>();
 	private Collection<RideRequest> rideRequests = new HashSet<RideRequest>();
 	private Collection<Bill> bills = new HashSet<Bill>();
+	
+	private Collection<Feedback> feedbacks = new LinkedList<Feedback>();
+	private Preference preference;
 	
 	public int getId() {
 		return id;
@@ -258,6 +264,22 @@ public class User {
 			return false;
 		}
 		return true;
+	}
+
+	public Collection<Feedback> getFeedbacks() {
+		return feedbacks;
+	}
+
+	public void setFeedbacks(Collection<Feedback> feedbacks) {
+		this.feedbacks = feedbacks;
+	}
+
+	public Preference getPreference() {
+		return preference;
+	}
+
+	public void setPreference(Preference preference) {
+		this.preference = preference;
 	}
 	
 	

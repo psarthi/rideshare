@@ -26,7 +26,6 @@ public class Account {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + Float.floatToIntBits(balance);
 		result = prime * result + number;
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
@@ -43,9 +42,6 @@ public class Account {
 			return false;
 		}
 		Account other = (Account) obj;
-		if (Float.floatToIntBits(balance) != Float.floatToIntBits(other.balance)) {
-			return false;
-		}
 		if (number != other.number) {
 			return false;
 		}
