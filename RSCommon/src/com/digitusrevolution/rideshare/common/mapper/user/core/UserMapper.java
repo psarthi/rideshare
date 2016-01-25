@@ -10,8 +10,12 @@ import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.CityMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.CountryMapper;
+import com.digitusrevolution.rideshare.common.mapper.user.FriendRequestMapper;
+import com.digitusrevolution.rideshare.common.mapper.user.PhotoMapper;
+import com.digitusrevolution.rideshare.common.mapper.user.PreferenceMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.RoleMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.StateMapper;
+import com.digitusrevolution.rideshare.common.mapper.user.UserFeedbackMapper;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
@@ -56,21 +60,15 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		//so that all child entities are set as well
 		RoleMapper roleMapper = new RoleMapper();
 		userEntity.setRoles(roleMapper.getEntities(userEntity.getRoles(), user.getRoles(), fetchChild));
+		
+		userEntity.setProfileRating(user.getProfileRating());
+		
+		PhotoMapper photoMapper = new PhotoMapper();
+		userEntity.setPhoto(photoMapper.getEntity(user.getPhoto(), fetchChild));
 				
 		if (fetchChild){
 			userEntity = getEntityChild(user, userEntity);			
 		} 
-
-		
-		/*
-		 * Pending -
-		 * 
-		 * - photo
-		 * - groups
-		 * - friends
-		 * - profileRating
-		 *  
-		 */
 		
 		return userEntity;				
 	}
@@ -91,6 +89,27 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		BillMapper billMapper = new BillMapper();
 		//Don't fetch child as bill has user and user has bill, so it will get into recursive loop
 		userEntity.setBills(billMapper.getEntities(userEntity.getBills(), user.getBills(), false));
+		
+		PreferenceMapper preferenceMapper = new PreferenceMapper();
+		userEntity.setPreference(preferenceMapper.getEntity(user.getPreference(), true));
+		
+		UserFeedbackMapper userFeedbackMapper = new UserFeedbackMapper();
+		//Don't fetch child as User has feedback and feedback has user
+		userEntity.setFeedbacks(userFeedbackMapper.getEntities(userEntity.getFeedbacks(), 
+				user.getFeedbacks(), false));
+		
+		FriendRequestMapper friendRequestMapper = new FriendRequestMapper();
+		//Don't fetch child as User has friend and friend has user
+		userEntity.setFriendRequests(friendRequestMapper.getEntities(userEntity.getFriendRequests(), 
+				user.getFriendRequests(), false));
+		
+		//Don't put this into entity/model function as entities call entity and this would call entities, so recursive loop 
+		//Also don't fetch child, as User has friends and friends has user
+		userEntity.setFriends(getEntities(userEntity.getFriends(), user.getFriends(), false));
+		
+		GroupMapper groupMapper = new GroupMapper();
+		//Don't fetch child as user has group and group has user, so recursive loop
+		userEntity.setGroups(groupMapper.getEntities(userEntity.getGroups(), user.getGroups(), false));
 		
 		return userEntity;
 		
@@ -134,6 +153,11 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		RoleMapper roleMapper = new RoleMapper();
 		user.setRoles(roleMapper.getDomainModels(user.getRoles(), userEntity.getRoles(), fetchChild));
 
+		user.setProfileRating(userEntity.getProfileRating());
+		
+		PhotoMapper photoMapper = new PhotoMapper();
+		user.setPhoto(photoMapper.getDomainModel(userEntity.getPhoto(), fetchChild));
+
 		
 		if (fetchChild){
 			user = getDomainModelChild(user, userEntity);
@@ -168,6 +192,27 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		//Don't fetch child as bill has user and user has bill, so it will get into recursive loop
 		user.setBills(billMapper.getDomainModels(user.getBills(), userEntity.getBills(), false));
 		
+		PreferenceMapper preferenceMapper = new PreferenceMapper();
+		user.setPreference(preferenceMapper.getDomainModel(userEntity.getPreference(), true));
+		
+		UserFeedbackMapper userFeedbackMapper = new UserFeedbackMapper();
+		//Don't fetch child as User has feedback and feedback has user
+		user.setFeedbacks(userFeedbackMapper.getDomainModels(user.getFeedbacks(), 
+				userEntity.getFeedbacks(), false));
+		
+		FriendRequestMapper friendRequestMapper = new FriendRequestMapper();
+		//Don't fetch child as User has friend and friend has user
+		user.setFriendRequests(friendRequestMapper.getDomainModels(user.getFriendRequests(), 
+				userEntity.getFriendRequests(), false));
+		
+		//Don't put this into entity/model function as entities call entity and this would call entities, so recursive loop 
+		//Also don't fetch child, as User has friends and friends has user
+		user.setFriends(getDomainModels(user.getFriends(), userEntity.getFriends(), false));
+		
+		GroupMapper groupMapper = new GroupMapper();
+		//Don't fetch child as user has group and group has user, so recursive loop
+		user.setGroups(groupMapper.getDomainModels(user.getGroups(), userEntity.getGroups(), false));
+
 		return user;
 	}
 	

@@ -23,7 +23,7 @@ public class Preference {
 	//Common Preference
 	private TrustNetwork trustNetwork;
 	private Sex sexPreference;
-	private float profileRating;
+	private float minProfileRating;
 	
 	public VehicleCategory getVehicleCategory() {
 		return vehicleCategory;
@@ -91,11 +91,11 @@ public class Preference {
 	public void setSexPreference(Sex sexPreference) {
 		this.sexPreference = sexPreference;
 	}
-	public float getProfileRating() {
-		return profileRating;
+	public float getMinProfileRating() {
+		return minProfileRating;
 	}
-	public void setProfileRating(float profileRating) {
-		this.profileRating = profileRating;
+	public void setMinProfileRating(float minProfileRating) {
+		this.minProfileRating = minProfileRating;
 	}
 	public int getId() {
 		return id;

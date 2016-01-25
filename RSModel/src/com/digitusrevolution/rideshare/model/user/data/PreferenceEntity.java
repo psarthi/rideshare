@@ -39,7 +39,7 @@ public class PreferenceEntity {
 	@OneToOne
 	private TrustNetworkEntity trustNetwork;
 	private Sex sexPreference;
-	private float profileRating;
+	private float minProfileRating;
 	
 
 	public VehicleCategoryEntity getVehicleCategory() {
@@ -108,11 +108,11 @@ public class PreferenceEntity {
 	public void setSexPreference(Sex sexPreference) {
 		this.sexPreference = sexPreference;
 	}
-	public float getProfileRating() {
-		return profileRating;
+	public float getMinProfileRating() {
+		return minProfileRating;
 	}
-	public void setProfileRating(float profileRating) {
-		this.profileRating = profileRating;
+	public void setMinProfileRating(float minProfileRating) {
+		this.minProfileRating = minProfileRating;
 	}
 	public int getId() {
 		return id;
