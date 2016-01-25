@@ -20,6 +20,7 @@ public class MembershipRequestMapper implements Mapper<MembershipRequest, Member
 		membershipRequestEntity.setUser(userMapper.getEntity(membershipRequest.getUser(), false));
 		membershipRequestEntity.setEmailForVerification(membershipRequest.getEmailForVerification());
 		membershipRequestEntity.setEmailVerificationStatus(membershipRequest.getEmailVerificationStatus());
+		membershipRequestEntity.setAdminRemark(membershipRequest.getAdminRemark());
 		return membershipRequestEntity;
 	}
 
@@ -39,6 +40,7 @@ public class MembershipRequestMapper implements Mapper<MembershipRequest, Member
 		membershipRequest.setUser(userMapper.getDomainModel(membershipRequestEntity.getUser(), false));
 		membershipRequest.setEmailForVerification(membershipRequestEntity.getEmailForVerification());
 		membershipRequest.setEmailVerificationStatus(membershipRequestEntity.getEmailVerificationStatus());
+		membershipRequest.setAdminRemark(membershipRequestEntity.getAdminRemark());
 		return membershipRequest;
 	}
 

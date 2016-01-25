@@ -15,6 +15,7 @@ public class MembershipRequest {
 	private EmailVerificationStatus emailVerificationStatus;
 	private String emailForVerification;
 	private ZonedDateTime createdDateTime;
+	private String adminRemark;
 	
 	public User getUser() {
 		return user;
@@ -89,5 +90,11 @@ public class MembershipRequest {
 	}
 	public void setEmailForVerification(String emailForVerification) {
 		this.emailForVerification = emailForVerification;
+	}
+	public String getAdminRemark() {
+		return adminRemark;
+	}
+	public void setAdminRemark(String adminRemark) {
+		this.adminRemark = adminRemark;
 	}
 }

@@ -42,6 +42,7 @@ public class MembershipRequestEntity {
 	private EmailVerificationStatus emailVerificationStatus;
 	private String emailForVerification;
 	private ZonedDateTime createdDateTime;
+	private String adminRemark;
 	
 
 	public int getId() {
@@ -117,5 +118,11 @@ public class MembershipRequestEntity {
 	}
 	public void setEmailForVerification(String emailForVerification) {
 		this.emailForVerification = emailForVerification;
+	}
+	public String getAdminRemark() {
+		return adminRemark;
+	}
+	public void setAdminRemark(String adminRemark) {
+		this.adminRemark = adminRemark;
 	}
 }
