@@ -64,7 +64,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		userEntity.setProfileRating(user.getProfileRating());
 		
 		PhotoMapper photoMapper = new PhotoMapper();
-		userEntity.setPhoto(photoMapper.getEntity(user.getPhoto(), fetchChild));
+		if (user.getPhoto()!=null) userEntity.setPhoto(photoMapper.getEntity(user.getPhoto(), fetchChild));
 				
 		if (fetchChild){
 			userEntity = getEntityChild(user, userEntity);			
@@ -91,7 +91,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		userEntity.setBills(billMapper.getEntities(userEntity.getBills(), user.getBills(), false));
 		
 		PreferenceMapper preferenceMapper = new PreferenceMapper();
-		userEntity.setPreference(preferenceMapper.getEntity(user.getPreference(), true));
+		if (user.getPreference()!=null) userEntity.setPreference(preferenceMapper.getEntity(user.getPreference(), true));
 		
 		UserFeedbackMapper userFeedbackMapper = new UserFeedbackMapper();
 		//Don't fetch child as User has feedback and feedback has user
@@ -156,7 +156,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		user.setProfileRating(userEntity.getProfileRating());
 		
 		PhotoMapper photoMapper = new PhotoMapper();
-		user.setPhoto(photoMapper.getDomainModel(userEntity.getPhoto(), fetchChild));
+		if (userEntity.getPhoto()!=null) user.setPhoto(photoMapper.getDomainModel(userEntity.getPhoto(), fetchChild));
 
 		
 		if (fetchChild){
@@ -193,7 +193,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		user.setBills(billMapper.getDomainModels(user.getBills(), userEntity.getBills(), false));
 		
 		PreferenceMapper preferenceMapper = new PreferenceMapper();
-		user.setPreference(preferenceMapper.getDomainModel(userEntity.getPreference(), true));
+		if (userEntity.getPreference()!=null)  user.setPreference(preferenceMapper.getDomainModel(userEntity.getPreference(), true));
 		
 		UserFeedbackMapper userFeedbackMapper = new UserFeedbackMapper();
 		//Don't fetch child as User has feedback and feedback has user
