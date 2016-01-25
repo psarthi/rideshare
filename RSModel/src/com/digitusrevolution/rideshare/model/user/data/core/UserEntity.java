@@ -2,9 +2,11 @@ package com.digitusrevolution.rideshare.model.user.data.core;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -26,9 +28,12 @@ import com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.data.CountryEntity;
+import com.digitusrevolution.rideshare.model.user.data.FriendRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
+import com.digitusrevolution.rideshare.model.user.data.PreferenceEntity;
 import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
 import com.digitusrevolution.rideshare.model.user.data.StateEntity;
+import com.digitusrevolution.rideshare.model.user.data.UserFeedbackEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 
 @Entity
@@ -55,7 +60,7 @@ public class UserEntity {
 	private CountryEntity country;
 	@OneToOne(cascade=CascadeType.ALL)
 	private PhotoEntity photo;
-	@ManyToMany(mappedBy="users")
+	@ManyToMany(mappedBy="members")
 	private Collection<GroupEntity> groups = new HashSet<GroupEntity>();
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="user_id")
@@ -69,7 +74,6 @@ public class UserEntity {
 	@OneToMany
 	@JoinTable(name="user_account",joinColumns=@JoinColumn(name="user_id"))
 	private Collection<AccountEntity> accounts = new HashSet<AccountEntity>();
-	private int profileRating;
 	
 	@OneToMany(mappedBy="driver")
 	private Collection<RideEntity> ridesOffered = new HashSet<RideEntity>();
@@ -86,6 +90,16 @@ public class UserEntity {
 	@OneToMany(mappedBy="passenger")
 	private Collection<BillEntity> bills = new HashSet<BillEntity>();
 
+	@OneToOne(cascade=CascadeType.ALL)
+	private PreferenceEntity preference;
+	@ElementCollection
+	@JoinTable(name="user_feedback",joinColumns=@JoinColumn(name="user_id"))
+	private Collection<UserFeedbackEntity> feedbacks = new LinkedList<UserFeedbackEntity>();
+	@ElementCollection
+	@JoinTable(name="user_friend_request",joinColumns=@JoinColumn(name="user_id"))
+	private Collection<FriendRequestEntity> friendRequests = new HashSet<FriendRequestEntity>();
+	private float profileRating;
+	
 	public int getId() {
 		return id;
 	}
@@ -131,10 +145,11 @@ public class UserEntity {
 		this.password = password;
 	}
 
-	public int getProfileRating() {
+	public float getProfileRating() {
 		return profileRating;
 	}
-	public void setProfileRating(int profileRating) {
+
+	public void setProfileRating(float profileRating) {
 		this.profileRating = profileRating;
 	}
 
@@ -298,6 +313,30 @@ public class UserEntity {
 			return false;
 		}
 		return true;
+	}
+
+	public PreferenceEntity getPreference() {
+		return preference;
+	}
+
+	public void setPreference(PreferenceEntity preference) {
+		this.preference = preference;
+	}
+
+	public Collection<UserFeedbackEntity> getFeedbacks() {
+		return feedbacks;
+	}
+
+	public void setFeedbacks(Collection<UserFeedbackEntity> feedbacks) {
+		this.feedbacks = feedbacks;
+	}
+
+	public Collection<FriendRequestEntity> getFriendRequests() {
+		return friendRequests;
+	}
+
+	public void setFriendRequests(Collection<FriendRequestEntity> friendRequests) {
+		this.friendRequests = friendRequests;
 	}
 
 }

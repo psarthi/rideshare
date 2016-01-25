@@ -1,15 +1,30 @@
-package com.digitusrevolution.rideshare.model.user.domain;
+package com.digitusrevolution.rideshare.model.user.data;
 
 import java.time.LocalTime;
 
-import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
-public class Preference {
+import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
+import com.digitusrevolution.rideshare.model.user.domain.Sex;
 
+@Entity
+@Table(name="user_preference")
+public class PreferenceEntity {
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	//Unable to find how to create PK as user id, so adding a new id but logically it would be right to have user id as PK
 	private int id;
 	//Ride Request Preference
-	private VehicleCategory vehicleCategory;
-	private VehicleSubCategory vehicleSubCategory;
+	@OneToOne
+	private VehicleCategoryEntity vehicleCategory;
+	@OneToOne
+	private VehicleSubCategoryEntity vehicleSubCategory;
 	private LocalTime pickupTimeVariation;
 	private int pickupPointVariation;
 	private int dropPointVariation;
@@ -21,21 +36,29 @@ public class Preference {
 	private int luggageCapacityOffered;
 
 	//Common Preference
-	private TrustNetwork trustNetwork;
+	@OneToOne
+	private TrustNetworkEntity trustNetwork;
 	private Sex sexPreference;
 	private float profileRating;
 	
-	public VehicleCategory getVehicleCategory() {
+
+	public VehicleCategoryEntity getVehicleCategory() {
 		return vehicleCategory;
 	}
-	public void setVehicleCategory(VehicleCategory vehicleCategory) {
+	public void setVehicleCategory(VehicleCategoryEntity vehicleCategory) {
 		this.vehicleCategory = vehicleCategory;
 	}
-	public VehicleSubCategory getVehicleSubCategory() {
+	public VehicleSubCategoryEntity getVehicleSubCategory() {
 		return vehicleSubCategory;
 	}
-	public void setVehicleSubCategory(VehicleSubCategory vehicleSubCategory) {
+	public void setVehicleSubCategory(VehicleSubCategoryEntity vehicleSubCategory) {
 		this.vehicleSubCategory = vehicleSubCategory;
+	}
+	public TrustNetworkEntity getTrustNetwork() {
+		return trustNetwork;
+	}
+	public void setTrustNetwork(TrustNetworkEntity trustNetwork) {
+		this.trustNetwork = trustNetwork;
 	}
 	public LocalTime getPickupTimeVariation() {
 		return pickupTimeVariation;
@@ -79,12 +102,6 @@ public class Preference {
 	public void setLuggageCapacityOffered(int luggageCapacityOffered) {
 		this.luggageCapacityOffered = luggageCapacityOffered;
 	}
-	public TrustNetwork getTrustNetwork() {
-		return trustNetwork;
-	}
-	public void setTrustNetwork(TrustNetwork trustNetwork) {
-		this.trustNetwork = trustNetwork;
-	}
 	public Sex getSexPreference() {
 		return sexPreference;
 	}
@@ -103,5 +120,4 @@ public class Preference {
 	public void setId(int id) {
 		this.id = id;
 	}
-
 }

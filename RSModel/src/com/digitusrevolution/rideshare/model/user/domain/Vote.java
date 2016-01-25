@@ -1,5 +1,5 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-public class Vote {
-
+public enum Vote {
+	Genuine, Fake
 }

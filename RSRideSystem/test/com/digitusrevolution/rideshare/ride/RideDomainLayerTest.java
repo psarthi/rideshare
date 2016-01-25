@@ -50,7 +50,7 @@ public class RideDomainLayerTest {
 			transation = session.beginTransaction();
 
 			RideDomainLayerTest domainLayerTest = new RideDomainLayerTest();
-			domainLayerTest.test();
+//			domainLayerTest.test();
 			transation.commit();
 
 			/*

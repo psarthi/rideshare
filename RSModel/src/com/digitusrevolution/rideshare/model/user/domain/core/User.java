@@ -11,7 +11,8 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
-import com.digitusrevolution.rideshare.model.user.domain.Feedback;
+import com.digitusrevolution.rideshare.model.user.domain.FriendRequest;
+import com.digitusrevolution.rideshare.model.user.domain.UserFeedback;
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.Preference;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
@@ -36,16 +37,16 @@ public class User {
 	private Collection<User> friends = new HashSet<User>();
 	private Collection<Role> roles = new HashSet<Role>();
 	private Collection<Account> accounts = new HashSet<Account>();
-	private int profileRating;
-
-	private Collection<Ride> ridesOffered = new HashSet<Ride>();
 	
+	private Collection<Ride> ridesOffered = new HashSet<Ride>();
 	private Collection<Ride> ridesTaken = new HashSet<Ride>();
 	private Collection<RideRequest> rideRequests = new HashSet<RideRequest>();
 	private Collection<Bill> bills = new HashSet<Bill>();
-	
-	private Collection<Feedback> feedbacks = new LinkedList<Feedback>();
+
 	private Preference preference;
+	private Collection<UserFeedback> feedbacks = new LinkedList<UserFeedback>();
+	private Collection<FriendRequest> friendRequests = new HashSet<FriendRequest>();	
+	private float profileRating;
 	
 	public int getId() {
 		return id;
@@ -103,10 +104,12 @@ public class User {
 	public void setPhoto(Photo photo) {
 		this.photo = photo;
 	}
-	public int getProfileRating() {
+
+	public float getProfileRating() {
 		return profileRating;
 	}
-	public void setProfileRating(int profileRating) {
+
+	public void setProfileRating(float profileRating) {
 		this.profileRating = profileRating;
 	}
 
@@ -266,11 +269,11 @@ public class User {
 		return true;
 	}
 
-	public Collection<Feedback> getFeedbacks() {
+	public Collection<UserFeedback> getFeedbacks() {
 		return feedbacks;
 	}
 
-	public void setFeedbacks(Collection<Feedback> feedbacks) {
+	public void setFeedbacks(Collection<UserFeedback> feedbacks) {
 		this.feedbacks = feedbacks;
 	}
 
@@ -280,6 +283,14 @@ public class User {
 
 	public void setPreference(Preference preference) {
 		this.preference = preference;
+	}
+
+	public Collection<FriendRequest> getFriendRequests() {
+		return friendRequests;
+	}
+
+	public void setFriendRequests(Collection<FriendRequest> friendRequests) {
+		this.friendRequests = friendRequests;
 	}
 	
 	
