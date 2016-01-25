@@ -9,6 +9,8 @@ public class Form {
 	private Collection<String> questions = new HashSet<String>();
 	private String remark;
 	private boolean emailVerification;
+	//This will store domain name, so that we can verify if the email belong to the same domain
+	private String emailDomain;
 	
 	public Collection<String> getQuestions() {
 		return questions;
@@ -77,6 +79,12 @@ public class Form {
 			return false;
 		}
 		return true;
+	}
+	public String getEmailDomain() {
+		return emailDomain;
+	}
+	public void setEmailDomain(String emailDomain) {
+		this.emailDomain = emailDomain;
 	}
 	
 	

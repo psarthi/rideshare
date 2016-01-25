@@ -19,6 +19,7 @@ import javax.persistence.Table;
 
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
+import com.digitusrevolution.rideshare.model.user.domain.EmailVerificationStatus;
 
 //Reason for creating entity and not using embedded as you can't have element collection inside embedded
 @Entity
@@ -36,6 +37,10 @@ public class MembershipRequestEntity {
 	@Column
 	@Enumerated(EnumType.STRING)
 	private ApprovalStatus status;
+	@Column
+	@Enumerated(EnumType.STRING)
+	private EmailVerificationStatus emailVerificationStatus;
+	private String emailForVerification;
 	private ZonedDateTime createdDateTime;
 	
 
@@ -69,6 +74,12 @@ public class MembershipRequestEntity {
 	public void setCreatedDateTime(ZonedDateTime createdDateTime) {
 		this.createdDateTime = createdDateTime;
 	}
+	public EmailVerificationStatus getEmailVerificationStatus() {
+		return emailVerificationStatus;
+	}
+	public void setEmailVerificationStatus(EmailVerificationStatus emailVerificationStatus) {
+		this.emailVerificationStatus = emailVerificationStatus;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -100,5 +111,11 @@ public class MembershipRequestEntity {
 			return false;
 		}
 		return true;
+	}
+	public String getEmailForVerification() {
+		return emailForVerification;
+	}
+	public void setEmailForVerification(String emailForVerification) {
+		this.emailForVerification = emailForVerification;
 	}
 }

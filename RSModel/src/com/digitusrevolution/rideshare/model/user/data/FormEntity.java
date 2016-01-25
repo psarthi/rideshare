@@ -25,6 +25,7 @@ public class FormEntity {
 	private Collection<String> questions = new HashSet<String>();
 	private String remark;
 	private boolean emailVerification;
+	private String emailDomain;
 	
 	public int getId() {
 		return id;
@@ -93,6 +94,12 @@ public class FormEntity {
 			return false;
 		}
 		return true;
+	}
+	public String getEmailDomain() {
+		return emailDomain;
+	}
+	public void setEmailDomain(String emailDomain) {
+		this.emailDomain = emailDomain;
 	}
 	
 	

@@ -12,6 +12,8 @@ public class MembershipRequest {
 	private User user;
 	private Collection<String> answers = new HashSet<String>();
 	private ApprovalStatus status;
+	private EmailVerificationStatus emailVerificationStatus;
+	private String emailForVerification;
 	private ZonedDateTime createdDateTime;
 	
 	public User getUser() {
@@ -75,5 +77,17 @@ public class MembershipRequest {
 			return false;
 		}
 		return true;
+	}
+	public EmailVerificationStatus getEmailVerificationStatus() {
+		return emailVerificationStatus;
+	}
+	public void setEmailVerificationStatus(EmailVerificationStatus emailVerificationStatus) {
+		this.emailVerificationStatus = emailVerificationStatus;
+	}
+	public String getEmailForVerification() {
+		return emailForVerification;
+	}
+	public void setEmailForVerification(String emailForVerification) {
+		this.emailForVerification = emailForVerification;
 	}
 }

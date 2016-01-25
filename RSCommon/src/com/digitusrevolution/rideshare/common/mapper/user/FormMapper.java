@@ -15,6 +15,7 @@ public class FormMapper implements Mapper<Form, FormEntity>{
 		formEntity.setQuestions(form.getQuestions());
 		formEntity.setRemark(form.getRemark());
 		formEntity.setEmailVerification(form.isEmailVerification());
+		formEntity.setEmailDomain(form.getEmailDomain());
 		return formEntity;
 	}
 
@@ -30,6 +31,7 @@ public class FormMapper implements Mapper<Form, FormEntity>{
 		form.setQuestions(formEntity.getQuestions());
 		form.setRemark(formEntity.getRemark());
 		form.setEmailVerification(formEntity.isEmailVerification());
+		form.setEmailDomain(formEntity.getEmailDomain());
 		return form;
 	}
 
