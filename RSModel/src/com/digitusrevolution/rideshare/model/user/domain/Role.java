@@ -1,15 +1,15 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
 
-public class Role implements DomainModel{
+public class Role{
 	
 	private RoleEntity entity = new RoleEntity();
 	private RoleName name;
 
 	public RoleName getName() {
-		return entity.getName();
+		name = entity.getName();
+		return name;
 	}
 
 	public void setName(RoleName name) {
@@ -26,13 +26,7 @@ public class Role implements DomainModel{
 	}
 
 	@Override
-	public void setUniqueInstanceVariable() {
-		name = getName();	
-	}
-	
-	@Override
 	public int hashCode() {
-		setUniqueInstanceVariable();
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
@@ -41,7 +35,6 @@ public class Role implements DomainModel{
 
 	@Override
 	public boolean equals(Object obj) {
-		setUniqueInstanceVariable();
 		if (this == obj) {
 			return true;
 		}

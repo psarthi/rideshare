@@ -3,12 +3,11 @@ package com.digitusrevolution.rideshare.model.ride.domain;
 import java.util.Collection;
 import java.util.HashSet;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
-public class TrustNetwork implements DomainModel{
+public class TrustNetwork{
 	
 	private TrustNetworkEntity entity = new TrustNetworkEntity();
 	private int id;
@@ -94,10 +93,4 @@ public class TrustNetwork implements DomainModel{
 		}
 		return true;
 	}
-	@Override
-	public void setUniqueInstanceVariable() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

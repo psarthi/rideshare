@@ -2,17 +2,14 @@ package com.digitusrevolution.rideshare.model.user.domain;
 
 import java.time.ZonedDateTime;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.FriendRequestEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
-public class FriendRequest implements DomainModel{
+public class FriendRequest{
 	
 	private FriendRequestEntity entity = new FriendRequestEntity();
 	private User friend = new User();
-	@SuppressWarnings("unused")
 	private ZonedDateTime createdDateTime;
-	@SuppressWarnings("unused")
 	private ApprovalStatus status;
 	
 	public User getFriend() {
@@ -24,26 +21,23 @@ public class FriendRequest implements DomainModel{
 		entity.setFriend(friend.getEntity());
 	}
 	public ZonedDateTime getCreatedDateTime() {
-		return entity.getCreatedDateTime();
+		createdDateTime = entity.getCreatedDateTime();
+		return createdDateTime;
 	}
 	public void setCreatedDateTime(ZonedDateTime createdDateTime) {
 		this.createdDateTime = createdDateTime;
 		entity.setCreatedDateTime(createdDateTime);
 	}
 	public ApprovalStatus getStatus() {
-		return entity.getStatus();
+		status = entity.getStatus();
+		return status;
 	}
 	public void setStatus(ApprovalStatus status) {
 		this.status = status;
 		entity.setStatus(status);
 	}
 	@Override
-	public void setUniqueInstanceVariable() {
-		//No instance variable, only reference variable
-	}
-	@Override
 	public int hashCode() {
-		setUniqueInstanceVariable();
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((friend == null) ? 0 : friend.hashCode());
@@ -51,7 +45,6 @@ public class FriendRequest implements DomainModel{
 	}
 	@Override
 	public boolean equals(Object obj) {
-		setUniqueInstanceVariable();
 		if (this == obj) {
 			return true;
 		}

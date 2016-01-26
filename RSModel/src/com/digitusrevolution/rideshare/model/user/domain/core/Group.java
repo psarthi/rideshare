@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.GroupFeedbackEntity;
 import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
@@ -15,7 +14,7 @@ import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.GroupFeedback;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 
-public class Group implements DomainModel{
+public class Group{
 
 	private GroupEntity entity = new GroupEntity();
 	private int id;
@@ -27,20 +26,16 @@ public class Group implements DomainModel{
 	private Collection<User> admins = new HashSet<User>();
 	private Collection<GroupFeedback> feedbacks = new LinkedList<GroupFeedback>();
 	private Form membershipForm = new Form();
-	@SuppressWarnings("unused")
 	private ZonedDateTime createdDateTime;
-	@SuppressWarnings("unused")
 	private String url;
-	@SuppressWarnings("unused")
 	private String information;
 	private Collection<MembershipRequest> membershipRequests = new HashSet<MembershipRequest>();
-	@SuppressWarnings("unused")
 	private int genuineVotes;
-	@SuppressWarnings("unused")
 	private int fakeVotes;
 
 	public int getId() {
-		return entity.getId();
+		id = entity.getId();
+		return id;
 	}
 
 	public void setId(int id) {
@@ -49,7 +44,8 @@ public class Group implements DomainModel{
 	}
 
 	public String getName() {
-		return entity.getName();
+		name = entity.getName();
+		return name;
 	}
 
 	public void setName(String name) {
@@ -147,7 +143,8 @@ public class Group implements DomainModel{
 	}
 
 	public ZonedDateTime getCreatedDateTime() {
-		return entity.getCreatedDateTime();
+		createdDateTime = entity.getCreatedDateTime();
+		return createdDateTime;
 	}
 
 	public void setCreatedDateTime(ZonedDateTime createdDateTime) {
@@ -156,7 +153,8 @@ public class Group implements DomainModel{
 	}
 
 	public String getUrl() {
-		return entity.getUrl();
+		url = entity.getUrl();
+		return url; 
 	}
 
 	public void setUrl(String url) {
@@ -165,7 +163,8 @@ public class Group implements DomainModel{
 	}
 
 	public String getInformation() {
-		return entity.getInformation();
+		information = entity.getInformation();
+		return information;
 	}
 
 	public void setInformation(String information) {
@@ -191,7 +190,8 @@ public class Group implements DomainModel{
 	}
 
 	public int getGenuineVotes() {
-		return entity.getGenuineVotes();
+		genuineVotes = entity.getGenuineVotes();
+		return genuineVotes;
 	}
 
 	public void setGenuineVotes(int genuineVotes) {
@@ -200,7 +200,8 @@ public class Group implements DomainModel{
 	}
 
 	public int getFakeVotes() {
-		return entity.getFakeVotes();
+		fakeVotes = entity.getFakeVotes();
+		return fakeVotes;
 	}
 
 	public void setFakeVotes(int fakeVotes) {
@@ -209,15 +210,7 @@ public class Group implements DomainModel{
 	}
 
 	@Override
-	public void setUniqueInstanceVariable() {
-		id = getId();
-		name = getName();
-		owner = getOwner();
-		
-	}
-	@Override
 	public int hashCode() {
-		setUniqueInstanceVariable();
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + id;
@@ -228,7 +221,6 @@ public class Group implements DomainModel{
 
 	@Override
 	public boolean equals(Object obj) {
-		setUniqueInstanceVariable();
 		if (this == obj) {
 			return true;
 		}

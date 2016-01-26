@@ -1,22 +1,23 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 
-public class City implements DomainModel{
+public class City{
 	
 	private CityEntity entity = new CityEntity();
 	private int id;
 	private String name;
 		
 	public int getId() {
-		return entity.getId();
+		id = entity.getId();
+		return id; 
 	}
 	public void setId(int id) {
 		this.id = id;
 		entity.setId(id);
 	}
 	public String getName() {
+		name = entity.getName();
 		return name;
 	}
 	public void setName(String name) {
@@ -31,7 +32,6 @@ public class City implements DomainModel{
 	}
 	@Override
 	public int hashCode() {
-		setUniqueInstanceVariable();
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + id;
@@ -40,7 +40,6 @@ public class City implements DomainModel{
 	}
 	@Override
 	public boolean equals(Object obj) {
-		setUniqueInstanceVariable();
 		if (this == obj) {
 			return true;
 		}
@@ -63,10 +62,5 @@ public class City implements DomainModel{
 		}
 		return true;
 	}
-	@Override
-	public void setUniqueInstanceVariable() {
-		id = getId();
-		name = getName();
-	}
-	
+
 }

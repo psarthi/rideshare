@@ -1,18 +1,17 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.GroupFeedbackEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
-public class GroupFeedback implements DomainModel{
+public class GroupFeedback{
 
 	private GroupFeedbackEntity entity = new GroupFeedbackEntity();
 	private User givenByUser = new User();
-	@SuppressWarnings("unused")
 	private Vote vote;
 
 	public Vote getVote() {
-		return entity.getVote();
+		vote = entity.getVote();
+		return vote;
 	}
 
 	public void setVote(Vote vote) {
@@ -31,13 +30,7 @@ public class GroupFeedback implements DomainModel{
 	}
 
 	@Override
-	public void setUniqueInstanceVariable() {
-		//No instance variable used for uniqueness
-	}
-	
-	@Override
 	public int hashCode() {
-		setUniqueInstanceVariable();
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((givenByUser == null) ? 0 : givenByUser.hashCode());
@@ -46,7 +39,6 @@ public class GroupFeedback implements DomainModel{
 
 	@Override
 	public boolean equals(Object obj) {
-		setUniqueInstanceVariable();
 		if (this == obj) {
 			return true;
 		}

@@ -9,7 +9,6 @@ import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
@@ -31,17 +30,15 @@ import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.State;
 
-public class User implements DomainModel{
+public class User{
 	
 	private UserEntity entity = new UserEntity();
 	private int id;
 	private String firstName;
 	private String lastName;
-	@SuppressWarnings("unused")
 	private Sex sex;
 	private String mobileNumber;
 	private String email;
-	@SuppressWarnings("unused")
 	private String password;
 	private City city = new City();
 	private State state = new State();
@@ -61,11 +58,11 @@ public class User implements DomainModel{
 	private Preference preference = new Preference();
 	private Collection<UserFeedback> feedbacks = new LinkedList<UserFeedback>();
 	private Collection<FriendRequest> friendRequests = new HashSet<FriendRequest>();	
-	@SuppressWarnings("unused")
 	private float profileRating;
 	
 	public int getId() {
-		return entity.getId();
+		id = entity.getId();
+		return id;
 	}
 	
 	public void setId(int id) {
@@ -74,42 +71,48 @@ public class User implements DomainModel{
 	}
 	
 	public String getFirstName() {
-		return entity.getFirstName();
+		firstName = entity.getFirstName();
+		return firstName;
 	}
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 		entity.setFirstName(firstName);
 	}
 	public String getLastName() {
-		return entity.getLastName();
+		lastName = entity.getLastName();
+		return lastName;
 	}
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 		entity.setLastName(lastName);
 	}
 	public Sex getSex() {
-		return entity.getSex();
+		sex = entity.getSex();
+		return sex;
 	}
 	public void setSex(Sex sex) {
 		this.sex = sex;
 		entity.setSex(sex);
 	}
 	public String getMobileNumber() {
-		return entity.getMobileNumber();
+		mobileNumber = entity.getMobileNumber();
+		return mobileNumber;
 	}
 	public void setMobileNumber(String mobileNumber) {
 		this.mobileNumber = mobileNumber;
 		entity.setMobileNumber(mobileNumber);
 	}
 	public String getEmail() {
-		return entity.getEmail();
+		email = entity.getEmail();
+		return email;
 	}
 	public void setEmail(String email) {
 		this.email = email;
 		entity.setEmail(email);
 	}
 	public String getPassword() {
-		return entity.getPassword();
+		password = entity.getPassword();
+		return password;
 	}
 	public void setPassword(String password) {
 		this.password = password;
@@ -133,7 +136,8 @@ public class User implements DomainModel{
 	}
 
 	public float getProfileRating() {
-		return entity.getProfileRating();
+		profileRating = entity.getProfileRating();
+		return profileRating;
 	}
 
 	public void setProfileRating(float profileRating) {
@@ -325,17 +329,7 @@ public class User implements DomainModel{
 	}
 	
 	@Override
-	public void setUniqueInstanceVariable() {
-		id = getId();
-		email = getEmail();
-		firstName = getFirstName();
-		lastName = getLastName();
-		mobileNumber = getMobileNumber();		
-	}
-	
-	@Override
 	public int hashCode() {
-		setUniqueInstanceVariable();
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
@@ -348,7 +342,6 @@ public class User implements DomainModel{
 
 	@Override
 	public boolean equals(Object obj) {
-		setUniqueInstanceVariable();
 		if (this == obj) {
 			return true;
 		}

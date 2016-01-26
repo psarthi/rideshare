@@ -1,50 +1,51 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity;
 
-public class VehicleSubCategory implements DomainModel{
+public class VehicleSubCategory{
 	
 	private VehicleSubCategoryEntity entity = new VehicleSubCategoryEntity();
 	private int id;
 	private String name;
-	@SuppressWarnings("unused")
 	private Boolean airConditioner;
-	@SuppressWarnings("unused")
 	private int averageMileage;
-	@SuppressWarnings("unused")
 	private FuelType fuelType;
 	
 	public int getId() {
-		return entity.getId();
+		id = entity.getId();
+		return id; 
 	}
 	public void setId(int id) {
 		this.id = id;
 		entity.setId(id);
 	}
 	public String getName() {
-		return entity.getName();
+		name = entity.getName();
+		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
 		entity.setName(name);
 	}
 	public Boolean getAirConditioner() {
-		return entity.getAirConditioner();
+		airConditioner = entity.getAirConditioner();
+		return airConditioner;
 	}
 	public void setAirConditioner(Boolean airConditioner) {
 		this.airConditioner = airConditioner;
 		entity.setAirConditioner(airConditioner);
 	}
 	public int getAverageMileage() {
-		return entity.getAverageMileage();
+		averageMileage = entity.getAverageMileage();
+		return averageMileage;
 	}
 	public void setAverageMileage(int averageMileage) {
 		this.averageMileage = averageMileage;
 		entity.setAverageMileage(averageMileage);
 	}
 	public FuelType getFuelType() {
-		return entity.getFuelType();
+		fuelType = entity.getFuelType();
+		return fuelType;
 	}
 	public void setFuelType(FuelType fuelType) {
 		this.fuelType = fuelType;
@@ -60,7 +61,6 @@ public class VehicleSubCategory implements DomainModel{
 	}
 	@Override
 	public int hashCode() {
-		setUniqueInstanceVariable();
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + id;
@@ -69,7 +69,6 @@ public class VehicleSubCategory implements DomainModel{
 	}
 	@Override
 	public boolean equals(Object obj) {
-		setUniqueInstanceVariable();
 		if (this == obj) {
 			return true;
 		}
@@ -91,12 +90,5 @@ public class VehicleSubCategory implements DomainModel{
 			return false;
 		}
 		return true;
-	}
-
-	@Override
-	public void setUniqueInstanceVariable() {
-		id = getId();
-		name = getName();
-	}
-	
+	}	
 }

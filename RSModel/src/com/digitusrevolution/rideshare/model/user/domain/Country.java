@@ -3,12 +3,11 @@ package com.digitusrevolution.rideshare.model.user.domain;
 import java.util.Collection;
 import java.util.HashSet;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.CountryEntity;
 import com.digitusrevolution.rideshare.model.user.data.FuelEntity;
 import com.digitusrevolution.rideshare.model.user.data.StateEntity;
 
-public class Country implements DomainModel{
+public class Country{
 
 	private CountryEntity entity = new CountryEntity();
 	private String name;
@@ -20,7 +19,8 @@ public class Country implements DomainModel{
 	private Currency currency = new Currency();
 	
 	public String getName() {
-		return entity.getName();
+		name = entity.getName();
+		return name; 
 	}
 	public void setName(String name) {
 		this.name = name;
@@ -72,7 +72,6 @@ public class Country implements DomainModel{
 	}
 	@Override
 	public int hashCode() {
-		setUniqueInstanceVariable();
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
@@ -80,7 +79,6 @@ public class Country implements DomainModel{
 	}
 	@Override
 	public boolean equals(Object obj) {
-		setUniqueInstanceVariable();
 		if (this == obj) {
 			return true;
 		}
@@ -100,9 +98,4 @@ public class Country implements DomainModel{
 		}
 		return true;
 	}
-	@Override
-	public void setUniqueInstanceVariable() {
-		name = getName();
-	}
-
 }

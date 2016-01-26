@@ -1,15 +1,13 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.user.data.UserFeedbackEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
-public class UserFeedback implements DomainModel{
+public class UserFeedback{
 	
 	private UserFeedbackEntity entity = new UserFeedbackEntity();
 	private User givenByUser = new User();
-	@SuppressWarnings("unused")
 	private int rating;
 	//Each feedback is associated with a ride only
 	private Ride ride = new Ride();
@@ -23,7 +21,8 @@ public class UserFeedback implements DomainModel{
 		entity.setGivenByUser(givenByUser.getEntity());
 	}
 	public int getRating() {
-		return entity.getRating();
+		rating = entity.getRating();
+		return rating;
 	}
 	public void setRating(int rating) {
 		this.rating = rating;
@@ -38,10 +37,6 @@ public class UserFeedback implements DomainModel{
 	public void setRide(Ride ride) {
 		this.ride = ride;
 		entity.setRide(ride.getEntity());
-	}
-	@Override
-	public void setUniqueInstanceVariable() {
-		//No unique instance variable
 	}
 	@Override
 	public int hashCode() {

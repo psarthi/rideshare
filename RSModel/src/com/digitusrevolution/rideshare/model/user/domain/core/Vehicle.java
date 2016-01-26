@@ -1,12 +1,11 @@
 package com.digitusrevolution.rideshare.model.user.domain.core;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 
-public class Vehicle implements DomainModel{
+public class Vehicle{
 
 	private VehicleEntity entity = new VehicleEntity();
 	private int id;
@@ -15,7 +14,8 @@ public class Vehicle implements DomainModel{
 	private Photo photo = new Photo();
 	
 	public int getId() {
-		return entity.getId();
+		id = entity.getId();
+		return id;
 	}
 
 	public void setId(int id) {
@@ -63,13 +63,7 @@ public class Vehicle implements DomainModel{
 	}
 
 	@Override
-	public void setUniqueInstanceVariable() {
-		id = getId();		
-	}
-
-	@Override
 	public int hashCode() {
-		setUniqueInstanceVariable();
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + id;
@@ -80,7 +74,6 @@ public class Vehicle implements DomainModel{
 
 	@Override
 	public boolean equals(Object obj) {
-		setUniqueInstanceVariable();
 		if (this == obj) {
 			return true;
 		}

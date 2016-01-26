@@ -4,9 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
 
-public class Account implements DomainModel{
+public class Account{
 	
 	private AccountEntity entity = new AccountEntity();
 	private int number;
@@ -65,11 +64,6 @@ public class Account implements DomainModel{
 	}
 	public void setType(AccountType type) {
 		this.type = type;
-	}
-	@Override
-	public void setUniqueInstanceVariable() {
-		// TODO Auto-generated method stub
-		
 	}
 	public AccountEntity getEntity() {
 		return entity;

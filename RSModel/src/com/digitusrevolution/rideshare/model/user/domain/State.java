@@ -3,11 +3,10 @@ package com.digitusrevolution.rideshare.model.user.domain;
 import java.util.Collection;
 import java.util.HashSet;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.data.StateEntity;
 
-public class State implements DomainModel{
+public class State{
 
 	private StateEntity entity = new StateEntity();
 	private int id;
@@ -15,14 +14,16 @@ public class State implements DomainModel{
 	private Collection<City> cities = new HashSet<City>();
 	
 	public int getId() {
-		return entity.getId();
+		id = entity.getId();
+		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
 		entity.setId(id);
 	}
 	public String getName() {
-		return entity.getName();
+		name = entity.getName();
+		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
@@ -51,7 +52,6 @@ public class State implements DomainModel{
 	}
 	@Override
 	public int hashCode() {
-		setUniqueInstanceVariable();
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + id;
@@ -60,7 +60,6 @@ public class State implements DomainModel{
 	}
 	@Override
 	public boolean equals(Object obj) {
-		setUniqueInstanceVariable();
 		if (this == obj) {
 			return true;
 		}
@@ -82,11 +81,5 @@ public class State implements DomainModel{
 			return false;
 		}
 		return true;
-	}
-	@Override
-	public void setUniqueInstanceVariable() {
-		id = getId();
-		name = getName();
-	}
-	
+	}	
 }

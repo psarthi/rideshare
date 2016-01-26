@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.model.ride.domain.core;
 
+import com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 /*
@@ -7,30 +8,45 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
  * so that we can add extra fields of passenger such as Passenger Status
  * 
  */
-public class RidePassenger {
+public class RidePassenger{
 	
+	private RidePassengerEntity entity = new RidePassengerEntity();
 	private int id;
-	private Ride ride;
-	private User passenger;
+	private Ride ride = new Ride();
+	private User passenger = new User();
 	private PassengerStatus status;
 	
 	public User getPassenger() {
+		passenger.setEntity(entity.getPassenger());
 		return passenger;
 	}
 	public void setPassenger(User passenger) {
 		this.passenger = passenger;
+		entity.setPassenger(passenger.getEntity());
 	}
 	public PassengerStatus getStatus() {
+		status = entity.getStatus();
 		return status;
 	}
 	public void setStatus(PassengerStatus status) {
 		this.status = status;
+		entity.setStatus(status);
 	}
 	public int getId() {
+		id = entity.getId();
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
+		entity.setId(id);
+	}
+	public Ride getRide() {
+		ride.setEntity(entity.getRide());
+		return ride;
+	}
+	public void setRide(Ride ride) {
+		this.ride = ride;
+		entity.setRide(ride.getEntity());
 	}
 	@Override
 	public int hashCode() {
@@ -72,11 +88,12 @@ public class RidePassenger {
 		}
 		return true;
 	}
-	public Ride getRide() {
-		return ride;
+
+	public RidePassengerEntity getEntity() {
+		return entity;
 	}
-	public void setRide(Ride ride) {
-		this.ride = ride;
+	public void setEntity(RidePassengerEntity entity) {
+		this.entity = entity;
 	}
 
 }

@@ -2,8 +2,11 @@ package com.digitusrevolution.rideshare.model.ride.domain;
 
 import java.time.ZonedDateTime;
 
-public class RecurringDetail {
+import com.digitusrevolution.rideshare.model.ride.data.RecurringDetailEntity;
+
+public class RecurringDetail{
 	
+	private RecurringDetailEntity entity = new RecurringDetailEntity();
 	private int id;
 	private ZonedDateTime startDate;
 	private ZonedDateTime endDate;
@@ -39,6 +42,14 @@ public class RecurringDetail {
 
 	public void setRepeatFrequency(String repeatFrequency) {
 		this.repeatFrequency = repeatFrequency;
+	}
+
+	public RecurringDetailEntity getEntity() {
+		return entity;
+	}
+
+	public void setEntity(RecurringDetailEntity entity) {
+		this.entity = entity;
 	}
 
 }

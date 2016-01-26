@@ -1,14 +1,13 @@
 package com.digitusrevolution.rideshare.model.billing.domain.core;
 
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 
-public class Bill implements DomainModel{
+public class Bill{
 
 	private BillEntity entity = new BillEntity();
 	private int number;
@@ -118,11 +117,6 @@ public class Bill implements DomainModel{
 	}
 	public void setStatus(BillStatus status) {
 		this.status = status;
-	}
-	@Override
-	public void setUniqueInstanceVariable() {
-		// TODO Auto-generated method stub
-		
 	}
 	public BillEntity getEntity() {
 		return entity;

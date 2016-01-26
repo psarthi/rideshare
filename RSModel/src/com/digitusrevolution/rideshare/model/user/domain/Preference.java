@@ -2,40 +2,29 @@ package com.digitusrevolution.rideshare.model.user.domain;
 
 import java.time.LocalTime;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.user.data.PreferenceEntity;
 
-public class Preference implements DomainModel{
+public class Preference{
 
 	private PreferenceEntity entity = new PreferenceEntity();
-	@SuppressWarnings("unused")
 	private int id;
 	//Ride Request Preference
 	private VehicleCategory vehicleCategory = new VehicleCategory();
 	private VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
-	@SuppressWarnings("unused")
 	private LocalTime pickupTimeVariation;
-	@SuppressWarnings("unused")
 	private int pickupPointVariation;
-	@SuppressWarnings("unused")
 	private int dropPointVariation;
-	@SuppressWarnings("unused")
 	private int seatRequired;
-	@SuppressWarnings("unused")
 	private int luggageCapacityRequired;
 	
 	//Ride Preference
-	@SuppressWarnings("unused")
 	private int seatOffered;
-	@SuppressWarnings("unused")
 	private int luggageCapacityOffered;
 
 	//Common Preference
 	private TrustNetwork trustNetwork = new TrustNetwork();
-	@SuppressWarnings("unused")
 	private Sex sexPreference;
-	@SuppressWarnings("unused")
 	private float minProfileRating;
 	
 	public VehicleCategory getVehicleCategory() {
@@ -55,49 +44,56 @@ public class Preference implements DomainModel{
 		entity.setVehicleSubCategory(vehicleSubCategory.getEntity());
 	}
 	public LocalTime getPickupTimeVariation() {
-		return entity.getPickupTimeVariation();
+		pickupTimeVariation = entity.getPickupTimeVariation();
+		return pickupTimeVariation;
 	}
 	public void setPickupTimeVariation(LocalTime pickupTimeVariation) {
 		this.pickupTimeVariation = pickupTimeVariation;
 		entity.setPickupTimeVariation(pickupTimeVariation);
 	}
 	public int getPickupPointVariation() {
-		return entity.getPickupPointVariation();
+		pickupPointVariation = entity.getPickupPointVariation();
+		return pickupPointVariation;
 	}
 	public void setPickupPointVariation(int pickupPointVariation) {
 		this.pickupPointVariation = pickupPointVariation;
 		entity.setPickupPointVariation(pickupPointVariation);
 	}
 	public int getDropPointVariation() {
-		return entity.getDropPointVariation();
+		dropPointVariation = entity.getDropPointVariation();
+		return dropPointVariation;
 	}
 	public void setDropPointVariation(int dropPointVariation) {
 		this.dropPointVariation = dropPointVariation;
 		entity.setDropPointVariation(dropPointVariation);
 	}
 	public int getSeatRequired() {
-		return entity.getSeatRequired();
+		seatRequired = entity.getSeatRequired();
+		return seatRequired;
 	}
 	public void setSeatRequired(int seatRequired) {
 		this.seatRequired = seatRequired;
 		entity.setSeatRequired(seatRequired);
 	}
 	public int getLuggageCapacityRequired() {
-		return entity.getLuggageCapacityRequired();
+		luggageCapacityOffered = entity.getLuggageCapacityRequired();
+		return luggageCapacityRequired;
 	}
 	public void setLuggageCapacityRequired(int luggageCapacityRequired) {
 		this.luggageCapacityRequired = luggageCapacityRequired;
 		entity.setSeatRequired(luggageCapacityRequired);
 	}
 	public int getSeatOffered() {
-		return entity.getSeatOffered();
+		seatOffered = entity.getSeatOffered();
+		return seatOffered;
 	}
 	public void setSeatOffered(int seatOffered) {
 		this.seatOffered = seatOffered;
 		entity.setSeatOffered(seatOffered);
 	}
 	public int getLuggageCapacityOffered() {
-		return entity.getLuggageCapacityOffered();
+		luggageCapacityOffered = entity.getLuggageCapacityOffered();
+		return luggageCapacityOffered;
 	}
 	public void setLuggageCapacityOffered(int luggageCapacityOffered) {
 		this.luggageCapacityOffered = luggageCapacityOffered;
@@ -112,29 +108,28 @@ public class Preference implements DomainModel{
 		entity.setTrustNetwork(trustNetwork.getEntity());
 	}
 	public Sex getSexPreference() {
-		return entity.getSexPreference();
+		sexPreference = entity.getSexPreference();
+		return sexPreference;
 	}
 	public void setSexPreference(Sex sexPreference) {
 		this.sexPreference = sexPreference;
 		entity.setSexPreference(sexPreference);
 	}
 	public float getMinProfileRating() {
-		return entity.getMinProfileRating();
+		minProfileRating = entity.getMinProfileRating();
+		return minProfileRating;
 	}
 	public void setMinProfileRating(float minProfileRating) {
 		this.minProfileRating = minProfileRating;
 		entity.setMinProfileRating(minProfileRating);
 	}
 	public int getId() {
-		return entity.getId();
+		id = entity.getId();
+		return id; 
 	}
 	public void setId(int id) {
 		this.id = id;
 		entity.setId(id);
-	}
-	@Override
-	public void setUniqueInstanceVariable() {
-		// TODO Auto-generated method stub		
 	}
 	public PreferenceEntity getEntity() {
 		return entity;

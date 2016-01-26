@@ -5,7 +5,6 @@ import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
@@ -15,7 +14,7 @@ import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
-public class RideRequest implements DomainModel{
+public class RideRequest{
 
 	private RideRequestEntity entity = new RideRequestEntity();
 	private int id;
@@ -221,11 +220,6 @@ public class RideRequest implements DomainModel{
 	}
 	public void setCancelledRides(Collection<Ride> cancelledRides) {
 		this.cancelledRides = cancelledRides;
-	}
-	@Override
-	public void setUniqueInstanceVariable() {
-		// TODO Auto-generated method stub
-		
 	}
 	public RideRequestEntity getEntity() {
 		return entity;
