@@ -2,8 +2,11 @@ package com.digitusrevolution.rideshare.model.billing.domain.core;
 
 import java.time.ZonedDateTime;
 
+import com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity;
+
 public class Transaction {
 	
+	private TransactionEntity entity = new TransactionEntity();
 	private int id;
 	private ZonedDateTime dateTime;
 	private TransactionType type;
@@ -11,34 +14,44 @@ public class Transaction {
 	private String remark;
 	
 	public ZonedDateTime getDateTime() {
+		dateTime = entity.getDateTime();
 		return dateTime;
 	}
 	public void setDateTime(ZonedDateTime dateTime) {
 		this.dateTime = dateTime;
+		entity.setDateTime(dateTime);
 	}
 	public TransactionType getType() {
+		type = entity.getType();
 		return type;
 	}
 	public void setType(TransactionType type) {
 		this.type = type;
+		entity.setType(type);
 	}
 	public float getAmount() {
+		amount = entity.getAmount();
 		return amount;
 	}
 	public void setAmount(float amount) {
 		this.amount = amount;
+		entity.setAmount(amount);
 	}
 	public String getRemark() {
+		remark = entity.getRemark();
 		return remark;
 	}
 	public void setRemark(String remark) {
 		this.remark = remark;
+		entity.setRemark(remark);
 	}
 	public int getId() {
+		id = entity.getId();
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
+		entity.setId(id);
 	}
 	@Override
 	public int hashCode() {
@@ -87,6 +100,12 @@ public class Transaction {
 			return false;
 		}
 		return true;
+	}
+	public TransactionEntity getEntity() {
+		return entity;
+	}
+	public void setEntity(TransactionEntity entity) {
+		this.entity = entity;
 	}
 
 }

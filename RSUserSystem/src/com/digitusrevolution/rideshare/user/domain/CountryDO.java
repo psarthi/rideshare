@@ -9,37 +9,25 @@ import javax.ws.rs.NotFoundException;
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKString;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
-import com.digitusrevolution.rideshare.common.mapper.user.CountryMapper;
 import com.digitusrevolution.rideshare.model.user.data.CountryEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
 
 public class CountryDO implements DomainObjectPKString<Country>{
 
 	private Country country;
-	private CountryEntity countryEntity;
-	private CountryMapper countryMapper;
 	private final GenericDAO<CountryEntity, String> genericDAO;
 	
 	public CountryDO() {
 		country = new Country();
-		countryEntity = new CountryEntity();
-		countryMapper = new CountryMapper();
 		genericDAO = new GenericDAOImpl<>(CountryEntity.class);
 	}
 	
 	public void setCountry(Country country) {
 		this.country = country;
-		countryEntity = countryMapper.getEntity(country, true);
 	}
 
-	public void setCountryEntity(CountryEntity countryEntity) {
-		this.countryEntity = countryEntity;
-		country = countryMapper.getDomainModel(countryEntity, false);
-	}
-
-	@Override
-	public void fetchChild() {
-		country = countryMapper.getDomainModelChild(country, countryEntity);
+	public Country getCountry() {
+		return country;
 	}
 
 	@Override
@@ -47,7 +35,7 @@ public class CountryDO implements DomainObjectPKString<Country>{
 		List<Country> countries = new ArrayList<>();
 		List<CountryEntity> countryEntities = genericDAO.getAll();
 		for (CountryEntity countryEntity : countryEntities) {
-			setCountryEntity(countryEntity);
+			country.setEntity(countryEntity);
 			countries.add(country);
 		}
 		return countries;
@@ -59,38 +47,31 @@ public class CountryDO implements DomainObjectPKString<Country>{
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+country.getName());
 		}
 		setCountry(country);
-		genericDAO.update(countryEntity);				
+		genericDAO.update(country.getEntity());				
 	}
 
 	@Override
 	public String create(Country country) {
 		setCountry(country);
-		String name = genericDAO.create(countryEntity);
+		String name = genericDAO.create(country.getEntity());
 		return name;
 	}
 
 	@Override
 	public Country get(String name) {
-		countryEntity = genericDAO.get(name);
+		CountryEntity countryEntity = genericDAO.get(name);
 		if (countryEntity == null){
 			throw new NotFoundException("No Data found with id: "+name);
 		}
-		setCountryEntity(countryEntity);
+		country.setEntity(countryEntity);
 		return country;
 	}
-
-	@Override
-	public Country getChild(String name) {
-		get(name);
-		fetchChild();
-		return country;
-	}
-
+	
 	@Override
 	public void delete(String name) {
 		country = get(name);
 		setCountry(country);
-		genericDAO.delete(countryEntity);				
+		genericDAO.delete(country.getEntity());				
 	}
 
 

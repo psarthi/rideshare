@@ -19,7 +19,7 @@ public class UserDomainService implements DomainService<User>{
 	private static final Logger logger = LogManager.getLogger(UserDomainService.class.getName());
 
 	@Override
-	public User get(int id, boolean fetchChild){
+	public User get(int id){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		User user = null;
@@ -27,11 +27,7 @@ public class UserDomainService implements DomainService<User>{
 			transation = session.beginTransaction();
 	
 			UserDO userDO = new UserDO();
-			if (fetchChild){
-				user = userDO.getChild(id);
-			} else {
-				user = userDO.get(id);			
-			}
+			user = userDO.get(id);			
 			
 			transation.commit();
 		} catch (RuntimeException e) {

@@ -34,11 +34,6 @@ public class VehicleDO implements DomainObjectPKInteger<Vehicle>{
 	}
 
 	@Override
-	public void fetchChild() {
-		
-	}
-
-	@Override
 	public int create(Vehicle vehicle) {
 		int id = vehicleDAO.create(vehicle.getEntity());
 		return id;
@@ -51,13 +46,6 @@ public class VehicleDO implements DomainObjectPKInteger<Vehicle>{
 			throw new NotFoundException("No Data found with id: "+id);
 		}
 		vehicle.setEntity(vehicleEntity);
-		return vehicle;
-	}
-
-	@Override
-	public Vehicle getChild(int id) {
-		get(id);
-		fetchChild();
 		return vehicle;
 	}
 

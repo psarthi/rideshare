@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
+import com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity;
 
 public class Account{
 	
@@ -14,16 +15,20 @@ public class Account{
 	private AccountType type;
 	
 	public int getNumber() {
+		number = entity.getNumber();
 		return number;
 	}
 	public void setNumber(int number) {
 		this.number = number;
+		entity.setNumber(number);
 	}
 	public float getBalance() {
+		balance = entity.getBalance();
 		return balance;
 	}
 	public void setBalance(float balance) {
 		this.balance = balance;
+		entity.setBalance(balance);
 	}
 	@Override
 	public int hashCode() {
@@ -54,16 +59,27 @@ public class Account{
 		return true;
 	}
 	public Collection<Transaction> getTransactions() {
+		Collection<TransactionEntity> transactionEntities = entity.getTransactions();
+		for (TransactionEntity transactionEntity : transactionEntities) {
+			Transaction transaction = new Transaction();
+			transaction.setEntity(transactionEntity);
+			transactions.add(transaction);
+		}
 		return transactions;
 	}
 	public void setTransactions(Collection<Transaction> transactions) {
 		this.transactions = transactions;
+		for (Transaction transaction : transactions) {
+			entity.getTransactions().add(transaction.getEntity());
+		}
 	}
 	public AccountType getType() {
+		type = entity.getType();
 		return type;
 	}
 	public void setType(AccountType type) {
 		this.type = type;
+		entity.setType(type);
 	}
 	public AccountEntity getEntity() {
 		return entity;

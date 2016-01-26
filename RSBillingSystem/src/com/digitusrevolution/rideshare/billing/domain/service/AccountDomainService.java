@@ -17,7 +17,7 @@ public class AccountDomainService implements DomainService<Account>{
 	private static final Logger logger = LogManager.getLogger(AccountDomainService.class.getName());
 
 	@Override
-	public Account get(int number, boolean fetchChild) {
+	public Account get(int number) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		Account account = null;
@@ -25,11 +25,7 @@ public class AccountDomainService implements DomainService<Account>{
 			transation = session.beginTransaction();
 
 			VirtualAccountDO accountDO = new VirtualAccountDO();
-			if (fetchChild){
-				account = accountDO.getChild(number);
-			} else {
-				account = accountDO.get(number);			
-			}
+			account = accountDO.get(number);			
 
 			transation.commit();
 		} catch (RuntimeException e) {

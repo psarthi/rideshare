@@ -53,7 +53,7 @@ public class RideAction {
 	 * 
 	 */
 	public void acceptRideRequest(int rideId, int rideRequestId){
-		Ride ride = rideDO.getChild(rideId);
+		Ride ride = rideDO.get(rideId);
 		RideStatus rideStatus = ride.getStatus();
 		RideSeatStatus rideSeatStatus = ride.getSeatStatus();
 		RideRequestDO rideRequestDO = new RideRequestDO();
@@ -160,7 +160,7 @@ public class RideAction {
 	 */
 	public void startRide(int rideId){
 		//Get child else child properties would get deleted while updating, as Ride Passenger has cascade enabled
-		Ride ride = rideDO.getChild(rideId);
+		Ride ride = rideDO.get(rideId);
 		RideStatus rideCurrentStatus = ride.getStatus();
 		if (rideCurrentStatus.equals(RideStatus.Planned)){
 			ride.setStatus(RideStatus.Started);
@@ -182,7 +182,7 @@ public class RideAction {
 	 * 
 	 */
 	public void pickupPassenger(int rideId, int passengerId){
-		Ride ride = rideDO.getChild(rideId);
+		Ride ride = rideDO.get(rideId);
 		logger.debug("Passenger Count:"+ride.getRidePassengers().size());
 		RideStatus rideCurrentStatus = ride.getStatus();
 		//Check if ride is started
@@ -223,7 +223,7 @@ public class RideAction {
 	 * 
 	 */
 	public void dropPassenger(int rideId, int passengerId){
-		Ride ride = rideDO.getChild(rideId);
+		Ride ride = rideDO.get(rideId);
 		RideStatus rideCurrentStatus = ride.getStatus();
 		//Check if ride is started
 		if (rideCurrentStatus.equals(RideStatus.Started)){
@@ -270,7 +270,7 @@ public class RideAction {
 	 * 
 	 */
 	public void endRide(int rideId){
-		Ride ride = rideDO.getChild(rideId);
+		Ride ride = rideDO.get(rideId);
 		RideStatus rideStatus = ride.getStatus();
 		//Check if the ride has been started
 		if (rideStatus.equals(RideStatus.Started)){
@@ -319,7 +319,7 @@ public class RideAction {
 			//Note - You can't update the status upfront, otherwise drop/cancellation would not work if ride is in Finished state
 			//That's why you need to get the updated ride before updating the status, else it will overwrite the status which may have been 
 			//changed while dropping the passenger or cancelling the rid request
-			ride = rideDO.getChild(rideId);
+			ride = rideDO.get(rideId);
 			ride.setStatus(RideStatus.Finished);
 			rideDO.update(ride);
 		} else {
@@ -346,9 +346,9 @@ public class RideAction {
 	 * 
 	 */
 	public void cancelRideRequest(int rideId, int rideRequestId){
-		Ride ride = rideDO.getChild(rideId);
+		Ride ride = rideDO.get(rideId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		RideRequest rideRequest = rideRequestDO.getChild(rideRequestId);
+		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
 		RideStatus rideStatus = ride.getStatus();
 		RidePassenger ridePassenger = ride.getRidePassenger(rideRequest.getPassenger().getId());
 		PassengerStatus passengerStatus = ridePassenger.getStatus();
@@ -405,7 +405,7 @@ public class RideAction {
 	 */
 	public void cancelRide(int rideId){
 
-		Ride ride = rideDO.getChild(rideId);
+		Ride ride = rideDO.get(rideId);
 		RideStatus rideStatus = ride.getStatus();
 		//Check if ride has not been finished
 		if (!rideStatus.equals(RideStatus.Finished)){

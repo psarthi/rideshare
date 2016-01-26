@@ -17,7 +17,7 @@ public class CurrencyDomainService implements DomainService<Currency>{
 	private static final Logger logger = LogManager.getLogger(CurrencyDomainService.class.getName());
 
 	@Override
-	public Currency get(int id, boolean fetchChild) {
+	public Currency get(int id) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		Currency currency = null;
@@ -25,11 +25,7 @@ public class CurrencyDomainService implements DomainService<Currency>{
 			transation = session.beginTransaction();
 
 			CurrencyDO currencyDO = new CurrencyDO();
-			if (fetchChild){
-				currency = currencyDO.getChild(id);
-			} else {
-				currency = currencyDO.get(id);			
-			}
+			currency = currencyDO.get(id);			
 
 			transation.commit();
 		} catch (RuntimeException e) {

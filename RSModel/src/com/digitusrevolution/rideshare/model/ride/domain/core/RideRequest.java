@@ -5,6 +5,7 @@ import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
@@ -22,19 +23,19 @@ public class RideRequest{
 	private RideRequestPoint dropPoint = new RideRequestPoint();
 	private ZonedDateTime pickupTime;
 	private LocalTime pickupTimeVariation;
-	private VehicleCategory vehicleCategory;
-	private VehicleSubCategory vehicleSubCategory;
-	private TrustNetwork trustNetwork;
+	private VehicleCategory vehicleCategory = new VehicleCategory();
+	private VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
+	private TrustNetwork trustNetwork = new TrustNetwork();
 	private Sex sexPreference;
 	private int seatRequired;
 	private int luggageCapacityRequired;
 	private int pickupPointVariation;
 	private int dropPointVariation;
 	private RideRequestStatus status;
-	private User passenger;
+	private User passenger = new User();
 	private boolean ridePreference;
 	private Collection<Ride> preferredRides = new HashSet<Ride>();
-	private Ride acceptedRide;
+	private Ride acceptedRide = new Ride();
 	private RidePoint ridePickupPoint = new RidePoint();
 	private RidePoint rideDropPoint = new RidePoint();
 	private int travelTime;
@@ -42,137 +43,218 @@ public class RideRequest{
 	private Collection<Ride> cancelledRides = new HashSet<Ride>();
 	
 	public int getId() {
+		id = entity.getId();
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
+		entity.setId(id);
 	}
 	public RideRequestPoint getPickupPoint() {
+		//Set only id as that's the only thing stored in hibernate db
+		pickupPoint.set_id(entity.getPickupPointId());
 		return pickupPoint;
 	}
 	public void setPickupPoint(RideRequestPoint pickupPoint) {
 		this.pickupPoint = pickupPoint;
+		//Set only id as that's the only thing stored in hibernate db
+		entity.setPickupPointId(pickupPoint.get_id());
 	}
 	public RideRequestPoint getDropPoint() {
+		//Set only id as that's the only thing stored in hibernate db
+		dropPoint.set_id(entity.getDropPointId());
 		return dropPoint;
 	}
 	public void setDropPoint(RideRequestPoint dropPoint) {
 		this.dropPoint = dropPoint;
+		//Set only id as that's the only thing stored in hibernate db
+		entity.setDropPointId(dropPoint.get_id());
 	}
 	public ZonedDateTime getPickupTime() {
+		pickupTime = entity.getPickupTime();
 		return pickupTime;
 	}
 	public void setPickupTime(ZonedDateTime pickupTime) {
 		this.pickupTime = pickupTime;
+		entity.setPickupTime(pickupTime);
 	}
 	public LocalTime getPickupTimeVariation() {
+		pickupTimeVariation = entity.getPickupTimeVariation();
 		return pickupTimeVariation;
 	}
 	public void setPickupTimeVariation(LocalTime pickupTimeVariation) {
 		this.pickupTimeVariation = pickupTimeVariation;
+		entity.setPickupTimeVariation(pickupTimeVariation);
 	}
 	public VehicleCategory getVehicleCategory() {
+		vehicleCategory.setEntity(entity.getVehicleCategory());
 		return vehicleCategory;
 	}
 	public void setVehicleCategory(VehicleCategory vehicleCategory) {
 		this.vehicleCategory = vehicleCategory;
+		entity.setVehicleCategory(vehicleCategory.getEntity());
 	}
 	public VehicleSubCategory getVehicleSubCategory() {
+		vehicleSubCategory.setEntity(entity.getVehicleSubCategory());
 		return vehicleSubCategory;
 	}
 	public void setVehicleSubCategory(VehicleSubCategory vehicleSubCategory) {
 		this.vehicleSubCategory = vehicleSubCategory;
+		entity.setVehicleSubCategory(vehicleSubCategory.getEntity());
 	}
 	public TrustNetwork getTrustNetwork() {
+		trustNetwork.setEntity(entity.getTrustNetwork());
 		return trustNetwork;
 	}
 	public void setTrustNetwork(TrustNetwork trustNetwork) {
 		this.trustNetwork = trustNetwork;
+		entity.setTrustNetwork(trustNetwork.getEntity());
 	}
 	public int getSeatRequired() {
+		entity.getSeatRequired();
 		return seatRequired;
 	}
 	public void setSeatRequired(int seatRequired) {
 		this.seatRequired = seatRequired;
+		entity.setSeatRequired(seatRequired);
 	}
 	public int getLuggageCapacityRequired() {
+		luggageCapacityRequired = entity.getLuggageCapacityRequired();
 		return luggageCapacityRequired;
 	}
 	public void setLuggageCapacityRequired(int luggageCapacityRequired) {
 		this.luggageCapacityRequired = luggageCapacityRequired;
+		entity.setLuggageCapacityRequired(luggageCapacityRequired);
 	}
 	public RideRequestStatus getStatus() {
+		status = entity.getStatus();
 		return status;
 	}
 	public void setStatus(RideRequestStatus status) {
 		this.status = status;
+		entity.setStatus(status);
 	}
 	public Sex getSexPreference() {
+		sexPreference = entity.getSexPreference();
 		return sexPreference;
 	}
 	public void setSexPreference(Sex sexPreference) {
 		this.sexPreference = sexPreference;
+		entity.setSexPreference(sexPreference);
 	}
 	public int getPickupPointVariation() {
+		pickupPointVariation = entity.getPickupPointVariation();
 		return pickupPointVariation;
 	}
 	public void setPickupPointVariation(int pickupPointVariation) {
 		this.pickupPointVariation = pickupPointVariation;
+		entity.setPickupPointVariation(pickupPointVariation);
 	}
 	public int getDropPointVariation() {
+		dropPointVariation = entity.getDropPointVariation();
 		return dropPointVariation;
 	}
 	public void setDropPointVariation(int dropPointVariation) {
 		this.dropPointVariation = dropPointVariation;
+		entity.setDropPointVariation(dropPointVariation);
 	}
 	public User getPassenger() {
+		passenger.setEntity(entity.getPassenger());
 		return passenger;
 	}
 	public void setPassenger(User passenger) {
 		this.passenger = passenger;
+		entity.setPassenger(passenger.getEntity());
 	}
 	public Collection<Ride> getPreferredRides() {
+		Collection<RideEntity> preferredRideEntities = entity.getPreferredRides();
+		for (RideEntity rideEntity : preferredRideEntities) {
+			Ride ride = new Ride();
+			ride.setEntity(rideEntity);
+			preferredRides.add(ride);
+		}
 		return preferredRides;
 	}
 	public void setPreferredRides(Collection<Ride> preferredRides) {
 		this.preferredRides = preferredRides;
+		for (Ride ride : preferredRides) {
+			entity.getPreferredRides().add(ride.getEntity());
+		}
 	}
 	public boolean getRidePreference() {
+		ridePreference = entity.getRidePreference();
 		return ridePreference;
 	}
 	public void setRidePreference(boolean ridePreference) {
 		this.ridePreference = ridePreference;
+		entity.setRidePreference(ridePreference);
 	}
 	public Ride getAcceptedRide() {
+		acceptedRide.setEntity(entity.getAcceptedRide());
 		return acceptedRide;
 	}
 	public void setAcceptedRide(Ride acceptedRide) {
 		this.acceptedRide = acceptedRide;
+		entity.setAcceptedRide(acceptedRide.getEntity());
 	}
 	public RidePoint getRidePickupPoint() {
+		//Only Id is required as that's what is stored in hibernate DB
+		ridePickupPoint.set_id(entity.getPickupPointId());
 		return ridePickupPoint;
 	}
 	public void setRidePickupPoint(RidePoint ridePickupPoint) {
 		this.ridePickupPoint = ridePickupPoint;
+		//Only Id is required as that's what is stored in hibernate DB
+		entity.setPickupPointId(pickupPoint.get_id());
 	}
 	public RidePoint getRideDropPoint() {
+		//Only Id is required as that's what is stored in hibernate DB
+		rideDropPoint.set_id(entity.getDropPointId());
 		return rideDropPoint;
 	}
 	public void setRideDropPoint(RidePoint rideDropPoint) {
 		this.rideDropPoint = rideDropPoint;
+		//Only Id is required as that's what is stored in hibernate DB
+		entity.setDropPointId(dropPoint.get_id());
 	}
 	public int getTravelTime() {
+		travelTime = entity.getTravelTime();
 		return travelTime;
 	}
 	public void setTravelTime(int travelTime) {
 		this.travelTime = travelTime;
+		entity.setTravelTime(travelTime);
 	}
 	public int getTravelDistance() {
+		travelDistance = entity.getTravelDistance();
 		return travelDistance;
 	}
 	public void setTravelDistance(int travelDistance) {
 		this.travelDistance = travelDistance;
+		entity.setTravelDistance(travelDistance);
 	}
+	public Collection<Ride> getCancelledRides() {
+		Collection<RideEntity> cancelledRideEntities = entity.getCancelledRides();
+		for (RideEntity rideEntity : cancelledRideEntities) {
+			Ride ride = new Ride();
+			ride.setEntity(rideEntity);
+			cancelledRides.add(ride);
+		}
+		return cancelledRides;
+	}
+	public void setCancelledRides(Collection<Ride> cancelledRides) {
+		this.cancelledRides = cancelledRides;
+		for (Ride ride : cancelledRides) {
+			entity.getCancelledRides().add(ride.getEntity());
+		}
+	}
+	public RideRequestEntity getEntity() {
+		return entity;
+	}
+	public void setEntity(RideRequestEntity entity) {
+		this.entity = entity;
+	}
+
 
 	@Override
 	public int hashCode() {
@@ -214,18 +296,6 @@ public class RideRequest{
 			return false;
 		}
 		return true;
-	}
-	public Collection<Ride> getCancelledRides() {
-		return cancelledRides;
-	}
-	public void setCancelledRides(Collection<Ride> cancelledRides) {
-		this.cancelledRides = cancelledRides;
-	}
-	public RideRequestEntity getEntity() {
-		return entity;
-	}
-	public void setEntity(RideRequestEntity entity) {
-		this.entity = entity;
 	}
 
 }

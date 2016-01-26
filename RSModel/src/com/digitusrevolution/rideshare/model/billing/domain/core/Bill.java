@@ -13,52 +13,94 @@ public class Bill{
 	private int number;
 	//Reason for storing Passenger, Driver so that we have data handy available with every bill, instead of fetching data from ride/ride request
 	//Basic logic of all properties here is to have relationship available at one go instead of doing search again
-	private User passenger;
-	private User driver;
-	private Company company;
-	private Ride ride;
+	private User passenger = new User();
+	private User driver = new User();
+	private Company company = new Company();
+	private Ride ride = new Ride();
 	//Reason for rideRequest field, so that we don't have to search ride request number later on if required
-	private RideRequest rideRequest;
+	private RideRequest rideRequest = new RideRequest();
 	private float amount;
 	//Reason for storing this value, as if the service charge changes in between, so old bill would not get affected
 	private float serviceChargePercentage;
 	private BillStatus status;
 	
 	public int getNumber() {
+		number = entity.getNumber();
 		return number;
 	}
 	public void setNumber(int number) {
 		this.number = number;
+		entity.setNumber(number);
 	}
 	public User getPassenger() {
+		passenger.setEntity(entity.getPassenger());
 		return passenger;
 	}
 	public void setPassenger(User passenger) {
 		this.passenger = passenger;
+		entity.setPassenger(passenger.getEntity());
 	}
 	public User getDriver() {
+		driver.setEntity(entity.getDriver());
 		return driver;
 	}
 	public void setDriver(User driver) {
 		this.driver = driver;
+		entity.setDriver(driver.getEntity());
 	}
 	public Company getCompany() {
+		company.setEntity(entity.getCompany());
 		return company;
 	}
 	public void setCompany(Company company) {
 		this.company = company;
+		entity.setCompany(company.getEntity());
 	}
 	public Ride getRide() {
+		ride.setEntity(entity.getRide());
 		return ride;
 	}
 	public void setRide(Ride ride) {
 		this.ride = ride;
+		entity.setRide(ride.getEntity());
 	}
 	public float getAmount() {
+		amount = entity.getAmount();
 		return amount;
 	}
 	public void setAmount(float amount) {
 		this.amount = amount;
+		entity.setAmount(amount);
+	}
+	public float getServiceChargePercentage() {
+		serviceChargePercentage = entity.getServiceChargePercentage();
+		return serviceChargePercentage;
+	}
+	public void setServiceChargePercentage(float serviceChargePercentage) {
+		this.serviceChargePercentage = serviceChargePercentage;
+		entity.setServiceChargePercentage(serviceChargePercentage);
+	}
+	public RideRequest getRideRequest() {
+		rideRequest.setEntity(entity.getRideRequest());
+		return rideRequest;
+	}
+	public void setRideRequest(RideRequest rideRequest) {
+		this.rideRequest = rideRequest;
+		entity.setRideRequest(rideRequest.getEntity());
+	}
+	public BillStatus getStatus() {
+		status = entity.getStatus();
+		return status;
+	}
+	public void setStatus(BillStatus status) {
+		this.status = status;
+		entity.setStatus(status);
+	}
+	public BillEntity getEntity() {
+		return entity;
+	}
+	public void setEntity(BillEntity entity) {
+		this.entity = entity;
 	}
 	@Override
 	public int hashCode() {
@@ -99,30 +141,6 @@ public class Bill{
 			return false;
 		}
 		return true;
-	}
-	public float getServiceChargePercentage() {
-		return serviceChargePercentage;
-	}
-	public void setServiceChargePercentage(float serviceChargePercentage) {
-		this.serviceChargePercentage = serviceChargePercentage;
-	}
-	public RideRequest getRideRequest() {
-		return rideRequest;
-	}
-	public void setRideRequest(RideRequest rideRequest) {
-		this.rideRequest = rideRequest;
-	}
-	public BillStatus getStatus() {
-		return status;
-	}
-	public void setStatus(BillStatus status) {
-		this.status = status;
-	}
-	public BillEntity getEntity() {
-		return entity;
-	}
-	public void setEntity(BillEntity entity) {
-		this.entity = entity;
 	}
 	
 }

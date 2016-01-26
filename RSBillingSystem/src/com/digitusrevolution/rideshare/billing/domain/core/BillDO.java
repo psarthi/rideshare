@@ -13,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.billing.data.BillDAO;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
-import com.digitusrevolution.rideshare.common.mapper.billing.core.BillMapper;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
@@ -30,26 +29,20 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 public class BillDO implements DomainObjectPKInteger<Bill>{
 	
 	private Bill bill;
-	private BillEntity billEntity;
 	private final BillDAO billDAO;
-	private BillMapper billMapper;
 	private static final Logger logger = LogManager.getLogger(BillDO.class.getName());
 	
 	public BillDO() {
 		bill = new Bill();
-		billEntity = new BillEntity();
 		billDAO = new BillDAO();
-		billMapper = new BillMapper();
 	}
 
 	public void setBill(Bill bill) {
 		this.bill = bill;
-		billEntity = billMapper.getEntity(bill, true);
 	}
 
-	public void setBillEntity(BillEntity billEntity) {
-		this.billEntity = billEntity;
-		bill = billMapper.getDomainModel(billEntity, false);
+	public Bill getBill() {
+		return bill;
 	}
 
 	@Override
@@ -57,7 +50,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 		List<Bill> bills = new ArrayList<>();
 		List<BillEntity> billEntities = billDAO.getAll();
 		for (BillEntity billEntity : billEntities) {
-			setBillEntity(billEntity);
+			bill.setEntity(billEntity);
 			bills.add(bill);
 		}
 		return bills;
@@ -69,35 +62,23 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+bill.getNumber());
 		}
 		setBill(bill);
-		billDAO.update(billEntity);
-	}
-
-	@Override
-	public void fetchChild() {
-		bill = billMapper.getDomainModelChild(bill, billEntity);
+		billDAO.update(bill.getEntity());
 	}
 
 	@Override
 	public int create(Bill bill) {
 		setBill(bill);
-		int id = billDAO.create(billEntity);
+		int id = billDAO.create(bill.getEntity());
 		return id;
 	}
 
 	@Override
 	public Bill get(int number) {
-		billEntity = billDAO.get(number);
+		BillEntity billEntity = billDAO.get(number);
 		if (billEntity == null){
 			throw new NotFoundException("No Data found with number: "+number);
 		}
-		setBillEntity(billEntity);
-		return bill;
-	}
-
-	@Override
-	public Bill getChild(int number) {
-		get(number);
-		fetchChild();
+		bill.setEntity(billEntity);
 		return bill;
 	}
 
@@ -105,7 +86,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	public void delete(int number) {
 		bill = get(number);
 		setBill(bill);
-		billDAO.delete(billEntity);
+		billDAO.delete(bill.getEntity());
 	}
 	
 	/*
@@ -166,7 +147,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	}
 	
 	public void approveBill(int billNumber){
-		bill = getChild(billNumber);
+		bill = get(billNumber);
 		if (bill.getStatus().equals(BillStatus.Pending) || bill.getStatus().equals(BillStatus.Rejected)){
 			bill.setStatus(BillStatus.Approved);
 			update(bill);
@@ -177,7 +158,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	}
 	
 	public void rejectBill(int billNumber){
-		bill = getChild(billNumber);
+		bill = get(billNumber);
 		if (bill.getStatus().equals(BillStatus.Pending)){
 			bill.setStatus(BillStatus.Rejected);
 			update(bill);
@@ -191,7 +172,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	 * 
 	 */
 	public void makePayment(int billNumber, AccountType accountType){
-		bill = getChild(billNumber);
+		bill = get(billNumber);
 		if (bill.getStatus().equals(BillStatus.Approved)){
 			float amount = bill.getAmount();
 			float serviceChargePercentage = bill.getServiceChargePercentage();

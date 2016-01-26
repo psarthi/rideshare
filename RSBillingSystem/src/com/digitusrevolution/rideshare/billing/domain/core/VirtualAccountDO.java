@@ -15,7 +15,6 @@ import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.exception.InSufficientBalanceException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
-import com.digitusrevolution.rideshare.common.mapper.billing.core.AccountMapper;
 import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
@@ -25,26 +24,20 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionType
 public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.digitusrevolution.rideshare.billing.domain.core.Account{
 	
 	private Account account;
-	private AccountEntity accountEntity;
-	private AccountMapper accountMapper;
 	private final GenericDAO<AccountEntity, Integer> genericDAO; 
 	private static final Logger logger = LogManager.getLogger(VirtualAccountDO.class.getName());
 	
 	public VirtualAccountDO() {
 		account = new Account();
-		accountEntity = new AccountEntity();
-		accountMapper = new AccountMapper();
 		genericDAO = new GenericDAOImpl<>(AccountEntity.class);
 	}
 
 	public void setAccount(Account account) {
 		this.account = account;
-		accountEntity = accountMapper.getEntity(account, true);
 	}
-
-	public void setAccountEntity(AccountEntity accountEntity) {
-		this.accountEntity = accountEntity;
-		account = accountMapper.getDomainModel(accountEntity, false);
+	
+	public Account getAccount() {
+		return account;
 	}
 
 	@Override
@@ -52,7 +45,7 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.dig
 		List<Account> accounts = new ArrayList<>();
 		List<AccountEntity> accountEntities = genericDAO.getAll();
 		for (AccountEntity accountEntity : accountEntities) {
-			setAccountEntity(accountEntity);
+			account.setEntity(accountEntity);
 			accounts.add(account);
 		}
 		return accounts;
@@ -64,35 +57,23 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.dig
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+account.getNumber());
 		}
 		setAccount(account);
-		genericDAO.update(accountEntity);
-	}
-
-	@Override
-	public void fetchChild() {
-		account = accountMapper.getDomainModelChild(account, accountEntity);
+		genericDAO.update(account.getEntity());
 	}
 
 	@Override
 	public int create(Account account) {
 		setAccount(account);
-		int id = genericDAO.create(accountEntity);
+		int id = genericDAO.create(account.getEntity());
 		return id;
 	}
 
 	@Override
 	public Account get(int number) {
-		accountEntity = genericDAO.get(number);
+		AccountEntity accountEntity = genericDAO.get(number);
 		if (accountEntity == null){
 			throw new NotFoundException("No Data found with number: "+number);
 		}
-		setAccountEntity(accountEntity);
-		return account;
-	}
-
-	@Override
-	public Account getChild(int number) {
-		get(number);
-		fetchChild();
+		account.setEntity(accountEntity);
 		return account;
 	}
 
@@ -100,15 +81,14 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.dig
 	public void delete(int number) {
 		account = get(number);
 		setAccount(account);
-		genericDAO.delete(accountEntity);
+		genericDAO.delete(account.getEntity());
 	}
 	
 	@Override
 	public void debit(int accountNumber, float amount, String remark){
-		//Its important to get child, else old transaction would get deleted as transactions is part of child
 		//And if you just get account without old transactions, then it will consider only new transaction as part of this account
-		//Since account owns the relationship of transaction, so you need to get all child before updating
-		account = getChild(accountNumber);
+		//Since account owns the relationship of transaction, so you need to get all old transactions before updating
+		account = get(accountNumber);
 		float balance = account.getBalance();
 		if (balance >= amount){
 			account.setBalance(balance - amount);
@@ -127,10 +107,9 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.dig
 	
 	@Override
 	public void credit(int accountNumber, float amount, String remark){
-		//Its important to get child, else old transaction would get deleted as transactions is part of child
 		//And if you just get account without old transactions, then it will consider only new transaction as part of this account
-		//Since account owns the relationship of transaction, so you need to get all child before updating
-		account = getChild(accountNumber);
+		//Since account owns the relationship of transaction, so you need to get all old transactions before updating
+		account = get(accountNumber);
 		float balance = account.getBalance();
 		account.setBalance(balance + amount);
 		Transaction transaction = new Transaction();

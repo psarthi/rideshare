@@ -9,7 +9,6 @@ import javax.ws.rs.NotFoundException;
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
-import com.digitusrevolution.rideshare.common.mapper.user.VehicleCategoryMapper;
 import com.digitusrevolution.rideshare.model.user.data.VehicleCategoryEntity;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 
@@ -28,11 +27,6 @@ public class VehicleCategoryDO implements DomainObjectPKInteger<VehicleCategory>
 	}
 
 	@Override
-	public void fetchChild(){
-
-	}
-
-	@Override
 	public int create(VehicleCategory vehicleCategory) {
 		int id = genericDAO.create(vehicleCategory.getEntity());
 		return id;
@@ -45,13 +39,6 @@ public class VehicleCategoryDO implements DomainObjectPKInteger<VehicleCategory>
 			throw new NotFoundException("No Data found with id: "+id);
 		}
 		vehicleCategory.setEntity(vehicleCategoryEntity);
-		return vehicleCategory;
-	}
-
-	@Override
-	public VehicleCategory getChild(int id) {
-		get(id);
-		fetchChild();
 		return vehicleCategory;
 	}
 

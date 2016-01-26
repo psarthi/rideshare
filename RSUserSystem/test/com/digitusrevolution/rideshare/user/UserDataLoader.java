@@ -58,7 +58,7 @@ public class UserDataLoader {
 			
 			dataLoader.loadUser();
 			dataLoader.loadVehicle();
-			dataLoader.addAccount();
+	//		dataLoader.addAccount();
 			
 			
 			transation.commit();
@@ -105,8 +105,10 @@ public class UserDataLoader {
 		City city = new City();
 		city.setName("Bangalore");
 		state.getCities().add(city);
+		state.setCities(state.getCities());
 
 		country.getStates().add(state);
+		country.setStates(country.getStates());
 		
 		CountryDO countryDO = new CountryDO();
 		countryDO.create(country);
@@ -119,7 +121,8 @@ public class UserDataLoader {
 		Role role = new Role();
 		role.setName(RoleName.Passenger);
 		roleDO.create(role);
-		role.setName(RoleName.Driver);
+		Role role1 = new Role();
+		role1.setName(RoleName.Driver);
 		roleDO.create(role);		
 	
 	}
@@ -206,7 +209,7 @@ public class UserDataLoader {
 		
 		for (int i=1;i<3;i++){
 			UserDO userDO = new UserDO();
-			User user = userDO.getChild(i);
+			User user = userDO.get(i);
 			userDO.setUser(user);			
 			userDO.addVehicle(vehicle);
 		}	

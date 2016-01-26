@@ -7,7 +7,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -24,9 +23,9 @@ public class AccountDomainResource implements DomainResource<Account>{
 	@Override
 	@GET
 	@Path("/{number}")
-	public Response get(@PathParam("number") int number, @QueryParam("fetchChild") String fetchChild){
+	public Response get(@PathParam("number") int number){
 		AccountDomainService accountDomainService = new AccountDomainService();
-		Account account = accountDomainService.get(number, Boolean.valueOf(fetchChild));
+		Account account = accountDomainService.get(number);
 		return Response.ok(account).build();
 	}
 

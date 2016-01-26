@@ -1,14 +1,25 @@
 package com.digitusrevolution.rideshare.model.ride.domain;
 
+import com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity;
+
 public class TrustCategory {
 	
+	private TrustCategoryEntity entity = new TrustCategoryEntity();
 	private TrustCategoryName name;
 
 	public TrustCategoryName getName() {
+		name = entity.getName();
 		return name;
 	}
 	public void setName(TrustCategoryName name) {
 		this.name = name;
+		entity.setName(name);
+	}
+	public TrustCategoryEntity getEntity() {
+		return entity;
+	}
+	public void setEntity(TrustCategoryEntity entity) {
+		this.entity = entity;
 	}
 	@Override
 	public int hashCode() {

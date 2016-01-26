@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface DomainService<M> {
 
-	M get(int id, boolean fetchChild);
+	M get(int id);
 
 	List<M> getAll();
 }

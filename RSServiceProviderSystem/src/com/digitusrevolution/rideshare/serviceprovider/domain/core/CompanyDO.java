@@ -19,35 +19,28 @@ import com.digitusrevolution.rideshare.serviceprovider.data.CompanyDAO;
 public class CompanyDO implements DomainObjectPKInteger<Company>{
 	
 	private Company company;
-	private CompanyEntity companyEntity;
 	private final CompanyDAO companyDAO;
-	private CompanyMapper companyMapper;
 	private static final Logger logger = LogManager.getLogger(CompanyDO.class.getName());
 	
 	public CompanyDO() {
 		company = new Company();
-		companyEntity = new CompanyEntity();
 		companyDAO = new CompanyDAO();
-		companyMapper = new CompanyMapper();
+	}
+
+	public Company getCompany() {
+		return company;
 	}
 
 	public void setCompany(Company company) {
 		this.company = company;
-		companyEntity = companyMapper.getEntity(company, true);
 	}
-
-	public void setCompanyEntity(CompanyEntity companyEntity) {
-		this.companyEntity = companyEntity;
-		company = companyMapper.getDomainModel(companyEntity, false);
-	}
-
 
 	@Override
 	public List<Company> getAll() {
 		List<Company> companies = new ArrayList<>();
 		List<CompanyEntity> companyEntities = companyDAO.getAll();
 		for (CompanyEntity companyEntity : companyEntities) {
-			setCompanyEntity(companyEntity);
+			company.setEntity(companyEntity);
 			companies.add(company);
 		}
 		return companies;
@@ -59,35 +52,23 @@ public class CompanyDO implements DomainObjectPKInteger<Company>{
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+company.getId());
 		}
 		setCompany(company);
-		companyDAO.update(companyEntity);
-	}
-
-	@Override
-	public void fetchChild() {
-		company = companyMapper.getDomainModelChild(company, companyEntity);
+		companyDAO.update(company.getEntity());
 	}
 
 	@Override
 	public int create(Company company) {
 		setCompany(company);
-		int id = companyDAO.create(companyEntity);
+		int id = companyDAO.create(company.getEntity());
 		return id;
 	}
 
 	@Override
 	public Company get(int id) {
-		companyEntity = companyDAO.get(id);
+		CompanyEntity companyEntity = companyDAO.get(id);
 		if (companyEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);
 		}
-		setCompanyEntity(companyEntity);
-		return company;
-	}
-
-	@Override
-	public Company getChild(int id) {
-		get(id);
-		fetchChild();
+		company.setEntity(companyEntity);
 		return company;
 	}
 
@@ -95,15 +76,14 @@ public class CompanyDO implements DomainObjectPKInteger<Company>{
 	public void delete(int id) {
 		company = get(id);
 		setCompany(company);
-		companyDAO.delete(companyEntity);
+		companyDAO.delete(company.getEntity());
 	}
 	
 	/*
 	 * Purpose - Add account to company
 	 */
 	public void addAccount(int companyId, Account account){
-		//Reason for getting child instead of just basic entity, as if we miss any fields owned by this entity, then that would be deleted while updating
-		Company company = getChild(companyId);
+		Company company = get(companyId);
 		company.getAccounts().add(account);
 		update(company);
 	}
