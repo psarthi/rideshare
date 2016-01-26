@@ -10,7 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
-import com.digitusrevolution.rideshare.common.mapper.user.core.VehicleMapper;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.data.VehicleDAO;
@@ -18,50 +17,40 @@ import com.digitusrevolution.rideshare.user.data.VehicleDAO;
 public class VehicleDO implements DomainObjectPKInteger<Vehicle>{
 
 	private Vehicle vehicle;
-	private VehicleEntity vehicleEntity;
-	private VehicleMapper vehicleMapper;
 	private final VehicleDAO vehicleDAO;
 	private static final Logger logger = LogManager.getLogger(VehicleDO.class.getName());
 	
 	public VehicleDO(){
 		vehicle = new Vehicle();
-		vehicleEntity = new VehicleEntity();
-		vehicleMapper = new VehicleMapper();
 		vehicleDAO = new VehicleDAO();
 	}
 
 	public void setVehicle(Vehicle vehicle) {
 		this.vehicle = vehicle;
-		vehicleEntity = vehicleMapper.getEntity(vehicle, true);
 	}
 
-	private void setVehicleEntity(VehicleEntity vehicleEntity) {
-		this.vehicleEntity = vehicleEntity;
-		vehicle = vehicleMapper.getDomainModel(vehicleEntity,false);
+	public Vehicle getVehicle() {
+		return vehicle;
 	}
 
 	@Override
 	public void fetchChild() {
-		vehicle = vehicleMapper.getDomainModelChild(vehicle, vehicleEntity);
 		
 	}
 
 	@Override
 	public int create(Vehicle vehicle) {
-		logger.entry();
-		setVehicle(vehicle);
-		int id = vehicleDAO.create(vehicleEntity);
-		logger.exit();
+		int id = vehicleDAO.create(vehicle.getEntity());
 		return id;
 	}
 
 	@Override
 	public Vehicle get(int id) {
-		vehicleEntity = vehicleDAO.get(id);
+		VehicleEntity vehicleEntity = vehicleDAO.get(id);
 		if (vehicleEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);
 		}
-		setVehicleEntity(vehicleEntity);
+		vehicle.setEntity(vehicleEntity);
 		return vehicle;
 	}
 
@@ -77,7 +66,8 @@ public class VehicleDO implements DomainObjectPKInteger<Vehicle>{
 		List<Vehicle> vehicles = new ArrayList<>();
 		List<VehicleEntity> vehicleEntities = vehicleDAO.getAll();
 		for (VehicleEntity vehicleEntity : vehicleEntities) {
-			setVehicleEntity(vehicleEntity);
+			Vehicle vehicle = new Vehicle();
+			vehicle.setEntity(vehicleEntity);
 			vehicles.add(vehicle);
 		}
 		return vehicles;
@@ -88,15 +78,13 @@ public class VehicleDO implements DomainObjectPKInteger<Vehicle>{
 		if (vehicle.getId()==0){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+vehicle.getId());
 		}
-		setVehicle(vehicle);
-		vehicleDAO.update(vehicleEntity);		
+		vehicleDAO.update(vehicle.getEntity());		
 	}
 
 	@Override
 	public void delete(int id) {
 		vehicle = get(id);
-		setVehicle(vehicle);
-		vehicleDAO.delete(vehicleEntity);		
+		vehicleDAO.delete(vehicle.getEntity());		
 	}
 	
 }

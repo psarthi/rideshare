@@ -1,25 +1,46 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-public class Currency {
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
+import com.digitusrevolution.rideshare.model.user.data.CurrencyEntity;
 
+public class Currency implements DomainModel{
+
+	private CurrencyEntity entity = new CurrencyEntity();
 	private int id;
 	private String name;
+	@SuppressWarnings("unused")
 	private float conversionRate;
 	
 	public int getId() {
-		return id;
+		return entity.getId();
 	}
 	public void setId(int id) {
 		this.id = id;
+		entity.setId(id);
 	}
 	public String getName() {
-		return name;
+		return entity.getName();
 	}
 	public void setName(String name) {
 		this.name = name;
+		entity.setName(name);
+	}
+	public CurrencyEntity getEntity() {
+		return entity;
+	}
+	public void setEntity(CurrencyEntity entity) {
+		this.entity = entity;
+	}
+	public float getConversionRate() {
+		return entity.getConversionRate();
+	}
+	public void setConversionRate(float conversionRate) {
+		this.conversionRate = conversionRate;
+		entity.setConversionRate(conversionRate);
 	}
 	@Override
 	public int hashCode() {
+		setUniqueInstanceVariable();
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + id;
@@ -28,6 +49,7 @@ public class Currency {
 	}
 	@Override
 	public boolean equals(Object obj) {
+		setUniqueInstanceVariable();
 		if (this == obj) {
 			return true;
 		}
@@ -50,11 +72,9 @@ public class Currency {
 		}
 		return true;
 	}
-	public float getConversionRate() {
-		return conversionRate;
+	@Override
+	public void setUniqueInstanceVariable() {
+		id = getId();
+		name = getName();
 	}
-	public void setConversionRate(float conversionRate) {
-		this.conversionRate = conversionRate;
-	}
-	
 }

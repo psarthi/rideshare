@@ -1,13 +1,16 @@
 package com.digitusrevolution.rideshare.model.billing.domain.core;
 
+import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 
-public class Bill {
+public class Bill implements DomainModel{
 
+	private BillEntity entity = new BillEntity();
 	private int number;
 	//Reason for storing Passenger, Driver so that we have data handy available with every bill, instead of fetching data from ride/ride request
 	//Basic logic of all properties here is to have relationship available at one go instead of doing search again
@@ -115,6 +118,17 @@ public class Bill {
 	}
 	public void setStatus(BillStatus status) {
 		this.status = status;
+	}
+	@Override
+	public void setUniqueInstanceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
+	public BillEntity getEntity() {
+		return entity;
+	}
+	public void setEntity(BillEntity entity) {
+		this.entity = entity;
 	}
 	
 }

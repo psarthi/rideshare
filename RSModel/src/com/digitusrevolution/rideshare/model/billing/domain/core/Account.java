@@ -3,8 +3,12 @@ package com.digitusrevolution.rideshare.model.billing.domain.core;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class Account {
+import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
+
+public class Account implements DomainModel{
 	
+	private AccountEntity entity = new AccountEntity();
 	private int number;
 	private float balance;
 	private Collection<Transaction> transactions = new HashSet<Transaction>();
@@ -61,6 +65,17 @@ public class Account {
 	}
 	public void setType(AccountType type) {
 		this.type = type;
+	}
+	@Override
+	public void setUniqueInstanceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
+	public AccountEntity getEntity() {
+		return entity;
+	}
+	public void setEntity(AccountEntity entity) {
+		this.entity = entity;
 	}
 	
 }

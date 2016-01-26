@@ -1,24 +1,37 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-public class Fuel {
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
+import com.digitusrevolution.rideshare.model.user.data.FuelEntity;
+
+public class Fuel implements DomainModel{
 	
+	private FuelEntity entity = new FuelEntity();
 	private FuelType type;
 	private float price;
 	
 	public FuelType getType() {
-		return type;
+		return entity.getType();
 	}
 	public void setType(FuelType type) {
 		this.type = type;
+		entity.setType(type);
 	}
 	public float getPrice() {
-		return price;
+		return entity.getPrice();
 	}
 	public void setPrice(float price) {
 		this.price = price;
+		entity.setPrice(price);
+	}
+	public FuelEntity getEntity() {
+		return entity;
+	}
+	public void setEntity(FuelEntity entity) {
+		this.entity = entity;
 	}
 	@Override
 	public int hashCode() {
+		setUniqueInstanceVariable();
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + Float.floatToIntBits(price);
@@ -27,6 +40,7 @@ public class Fuel {
 	}
 	@Override
 	public boolean equals(Object obj) {
+		setUniqueInstanceVariable();
 		if (this == obj) {
 			return true;
 		}
@@ -44,6 +58,11 @@ public class Fuel {
 			return false;
 		}
 		return true;
+	}
+	@Override
+	public void setUniqueInstanceVariable() {
+		price = getPrice();
+		type = getType();
 	}
 
 	

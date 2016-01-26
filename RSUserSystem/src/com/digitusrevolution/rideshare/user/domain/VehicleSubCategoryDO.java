@@ -16,47 +16,35 @@ import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 public class VehicleSubCategoryDO implements DomainObjectPKInteger<VehicleSubCategory>{
 	
 	private VehicleSubCategory vehicleSubCategory;
-	private VehicleSubCategoryEntity vehicleSubCategoryEntity;
-	private VehicleSubCategoryMapper vehicleSubCategoryMapper;
 	private final GenericDAO<VehicleSubCategoryEntity, Integer> genericDAO;
 	
 	public VehicleSubCategoryDO() {
 		vehicleSubCategory = new VehicleSubCategory();
-		vehicleSubCategoryEntity = new VehicleSubCategoryEntity();
-		vehicleSubCategoryMapper = new VehicleSubCategoryMapper();
 		genericDAO = new GenericDAOImpl<>(VehicleSubCategoryEntity.class);
 	}
 
 	public void setVehicleSubCategory(VehicleSubCategory vehicleSubCategory) {
 		this.vehicleSubCategory = vehicleSubCategory;
-		vehicleSubCategoryEntity = vehicleSubCategoryMapper.getEntity(vehicleSubCategory, true);
-	}
-
-	private void setVehicleSubCategoryEntity(VehicleSubCategoryEntity vehicleSubCategoryEntity) {
-		this.vehicleSubCategoryEntity = vehicleSubCategoryEntity;
-		vehicleSubCategory = vehicleSubCategoryMapper.getDomainModel(vehicleSubCategoryEntity, false);
 	}
 
 	@Override
 	public void fetchChild() {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	@Override
 	public int create(VehicleSubCategory vehicleSubCategory) {
-		setVehicleSubCategory(vehicleSubCategory);
-		int id = genericDAO.create(vehicleSubCategoryEntity);
+		int id = genericDAO.create(vehicleSubCategory.getEntity());
 		return id;
 	}
 
 	@Override
 	public VehicleSubCategory get(int id) {
-		vehicleSubCategoryEntity = genericDAO.get(id);
+		VehicleSubCategoryEntity vehicleSubCategoryEntity = genericDAO.get(id);
 		if (vehicleSubCategoryEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);
 		}
-		setVehicleSubCategoryEntity(vehicleSubCategoryEntity);
+		vehicleSubCategory.setEntity(vehicleSubCategoryEntity);
 		return vehicleSubCategory;
 	}
 
@@ -72,7 +60,8 @@ public class VehicleSubCategoryDO implements DomainObjectPKInteger<VehicleSubCat
 		List<VehicleSubCategory> vehicleSubCategories = new ArrayList<>();
 		List<VehicleSubCategoryEntity> vehicleSubCategoryEntities = genericDAO.getAll();
 		for (VehicleSubCategoryEntity vehicleSubCategoryEntity : vehicleSubCategoryEntities) {
-			setVehicleSubCategoryEntity(vehicleSubCategoryEntity);
+			VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
+			vehicleSubCategory.setEntity(vehicleSubCategoryEntity);
 			vehicleSubCategories.add(vehicleSubCategory);
 		}
 		return vehicleSubCategories;
@@ -83,14 +72,12 @@ public class VehicleSubCategoryDO implements DomainObjectPKInteger<VehicleSubCat
 		if (vehicleSubCategory.getId()==0){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+vehicleSubCategory.getId());
 		}
-		setVehicleSubCategory(vehicleSubCategory);
-		genericDAO.update(vehicleSubCategoryEntity);				
+		genericDAO.update(vehicleSubCategory.getEntity());				
 	}
 
 	@Override
 	public void delete(int id) {
 		vehicleSubCategory = get(id);
-		setVehicleSubCategory(vehicleSubCategory);
-		genericDAO.delete(vehicleSubCategoryEntity);			
+		genericDAO.delete(vehicleSubCategory.getEntity());			
 	}
 }

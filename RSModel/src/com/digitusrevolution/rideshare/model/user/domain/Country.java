@@ -3,42 +3,76 @@ package com.digitusrevolution.rideshare.model.user.domain;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class Country {
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
+import com.digitusrevolution.rideshare.model.user.data.CountryEntity;
+import com.digitusrevolution.rideshare.model.user.data.FuelEntity;
+import com.digitusrevolution.rideshare.model.user.data.StateEntity;
 
+public class Country implements DomainModel{
+
+	private CountryEntity entity = new CountryEntity();
 	private String name;
 	private Collection<State> states = new HashSet<State>();
 	//Reason for having fuel at country level and not at state level
 	//Prices vary on regular basis and number of states are high, so managing around the globe would be difficult
 	//Apart from that, variation of fuel prices are not that high, so avg price would do and maintenance would be less
 	private Collection<Fuel> fuels = new HashSet<Fuel>();
-	private Currency currency;
+	private Currency currency = new Currency();
 	
 	public String getName() {
-		return name;
+		return entity.getName();
 	}
 	public void setName(String name) {
 		this.name = name;
+		entity.setName(name);
 	}
 	public Currency getCurrency() {
+		currency.setEntity(entity.getCurrency());
 		return currency;
 	}
 	public void setCurrency(Currency currency) {
 		this.currency = currency;
+		entity.setCurrency(currency.getEntity());
 	}
 	public Collection<State> getStates() {
+		Collection<StateEntity> stateEntities = entity.getStates();
+		for (StateEntity stateEntity : stateEntities) {
+			State state = new State();
+			state.setEntity(stateEntity);
+			states.add(state);
+		}
 		return states;
 	}
 	public void setStates(Collection<State> states) {
 		this.states = states;
+		for (State state : states) {
+			entity.getStates().add(state.getEntity());
+		}
 	}
 	public Collection<Fuel> getFuels() {
+		Collection<FuelEntity> fuelEntities = entity.getFuels();
+		for (FuelEntity fuelEntity : fuelEntities) {
+			Fuel fuel = new Fuel();
+			fuel.setEntity(fuelEntity);
+			fuels.add(fuel);
+		}
 		return fuels;
 	}
 	public void setFuels(Collection<Fuel> fuels) {
 		this.fuels = fuels;
+		for (Fuel fuel : fuels) {
+			entity.getFuels().add(fuel.getEntity());
+		}
+	}
+	public CountryEntity getEntity() {
+		return entity;
+	}
+	public void setEntity(CountryEntity entity) {
+		this.entity = entity;
 	}
 	@Override
 	public int hashCode() {
+		setUniqueInstanceVariable();
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
@@ -46,6 +80,7 @@ public class Country {
 	}
 	@Override
 	public boolean equals(Object obj) {
+		setUniqueInstanceVariable();
 		if (this == obj) {
 			return true;
 		}
@@ -64,6 +99,10 @@ public class Country {
 			return false;
 		}
 		return true;
+	}
+	@Override
+	public void setUniqueInstanceVariable() {
+		name = getName();
 	}
 
 }

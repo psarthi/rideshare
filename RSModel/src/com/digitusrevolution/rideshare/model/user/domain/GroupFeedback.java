@@ -1,30 +1,43 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
+import com.digitusrevolution.rideshare.model.user.data.GroupFeedbackEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
-public class GroupFeedback{
+public class GroupFeedback implements DomainModel{
 
-	private User givenByUser;
+	private GroupFeedbackEntity entity = new GroupFeedbackEntity();
+	private User givenByUser = new User();
+	@SuppressWarnings("unused")
 	private Vote vote;
 
 	public Vote getVote() {
-		return vote;
+		return entity.getVote();
 	}
 
 	public void setVote(Vote vote) {
 		this.vote = vote;
+		entity.setVote(vote);
 	}
 
 	public User getGivenByUser() {
+		givenByUser.setEntity(entity.getGivenByUser());
 		return givenByUser;
 	}
 
 	public void setGivenByUser(User givenByUser) {
 		this.givenByUser = givenByUser;
+		entity.setGivenByUser(givenByUser.getEntity());
 	}
 
 	@Override
+	public void setUniqueInstanceVariable() {
+		//No instance variable used for uniqueness
+	}
+	
+	@Override
 	public int hashCode() {
+		setUniqueInstanceVariable();
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((givenByUser == null) ? 0 : givenByUser.hashCode());
@@ -33,6 +46,7 @@ public class GroupFeedback{
 
 	@Override
 	public boolean equals(Object obj) {
+		setUniqueInstanceVariable();
 		if (this == obj) {
 			return true;
 		}
@@ -51,6 +65,14 @@ public class GroupFeedback{
 			return false;
 		}
 		return true;
+	}
+
+	public GroupFeedbackEntity getEntity() {
+		return entity;
+	}
+
+	public void setEntity(GroupFeedbackEntity entity) {
+		this.entity = entity;
 	}
 
 }

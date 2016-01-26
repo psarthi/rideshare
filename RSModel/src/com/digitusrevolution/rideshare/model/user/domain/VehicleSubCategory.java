@@ -1,33 +1,66 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-public class VehicleSubCategory {
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
+import com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity;
+
+public class VehicleSubCategory implements DomainModel{
 	
+	private VehicleSubCategoryEntity entity = new VehicleSubCategoryEntity();
 	private int id;
 	private String name;
+	@SuppressWarnings("unused")
 	private Boolean airConditioner;
+	@SuppressWarnings("unused")
 	private int averageMileage;
+	@SuppressWarnings("unused")
 	private FuelType fuelType;
 	
 	public int getId() {
-		return id;
+		return entity.getId();
 	}
 	public void setId(int id) {
 		this.id = id;
+		entity.setId(id);
 	}
 	public String getName() {
-		return name;
+		return entity.getName();
 	}
 	public void setName(String name) {
 		this.name = name;
+		entity.setName(name);
 	}
 	public Boolean getAirConditioner() {
-		return airConditioner;
+		return entity.getAirConditioner();
 	}
 	public void setAirConditioner(Boolean airConditioner) {
 		this.airConditioner = airConditioner;
+		entity.setAirConditioner(airConditioner);
+	}
+	public int getAverageMileage() {
+		return entity.getAverageMileage();
+	}
+	public void setAverageMileage(int averageMileage) {
+		this.averageMileage = averageMileage;
+		entity.setAverageMileage(averageMileage);
+	}
+	public FuelType getFuelType() {
+		return entity.getFuelType();
+	}
+	public void setFuelType(FuelType fuelType) {
+		this.fuelType = fuelType;
+		entity.setFuelType(fuelType);
+	}
+
+	public VehicleSubCategoryEntity getEntity() {
+		return entity;
+	}
+
+	public void setEntity(VehicleSubCategoryEntity entity) {
+		this.entity = entity;
 	}
 	@Override
 	public int hashCode() {
+		setUniqueInstanceVariable();
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + id;
@@ -36,6 +69,7 @@ public class VehicleSubCategory {
 	}
 	@Override
 	public boolean equals(Object obj) {
+		setUniqueInstanceVariable();
 		if (this == obj) {
 			return true;
 		}
@@ -58,18 +92,11 @@ public class VehicleSubCategory {
 		}
 		return true;
 	}
-	public int getAverageMileage() {
-		return averageMileage;
-	}
-	public void setAverageMileage(int averageMileage) {
-		this.averageMileage = averageMileage;
-	}
-	public FuelType getFuelType() {
-		return fuelType;
-	}
-	public void setFuelType(FuelType fuelType) {
-		this.fuelType = fuelType;
-	}
 
+	@Override
+	public void setUniqueInstanceVariable() {
+		id = getId();
+		name = getName();
+	}
 	
 }

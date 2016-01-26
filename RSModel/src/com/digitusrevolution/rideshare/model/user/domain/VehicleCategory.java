@@ -3,38 +3,69 @@ package com.digitusrevolution.rideshare.model.user.domain;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class VehicleCategory {
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
+import com.digitusrevolution.rideshare.model.user.data.VehicleCategoryEntity;
+import com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity;
 
+public class VehicleCategory implements DomainModel{
+
+	private VehicleCategoryEntity entity = new VehicleCategoryEntity();
 	private int id;
 	private String name;
 	private Collection<VehicleSubCategory> subCategories = new HashSet<VehicleSubCategory>();
-
+	
 	public int getId() {
-		return id;
+		return entity.getId();
 	}
 
 	public void setId(int id) {
 		this.id = id;
+		entity.setId(id);
 	}
 
-	public Collection<VehicleSubCategory> getSubCategories() {
+	public Collection<VehicleSubCategory> getSubCategories() {		
+		Collection<VehicleSubCategoryEntity> subCategoryEntities = entity.getSubCategories();
+		for (VehicleSubCategoryEntity vehicleSubCategoryEntity : subCategoryEntities) {
+			VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
+			vehicleSubCategory.setEntity(vehicleSubCategoryEntity);
+			subCategories.add(vehicleSubCategory);
+		}
 		return subCategories;
 	}
 
 	public void setSubCategories(Collection<VehicleSubCategory> subCategories) {
 		this.subCategories = subCategories;
+		for (VehicleSubCategory vehicleSubCategory : subCategories) {
+			entity.getSubCategories().add(vehicleSubCategory.getEntity());
+		}
 	}
 
 	public String getName() {
-		return name;
+		return entity.getName();
 	}
 
 	public void setName(String name) {
 		this.name = name;
+		entity.setName(name);
+	}
+
+	public VehicleCategoryEntity getEntity() {
+		return entity;
+	}
+
+	public void setEntity(VehicleCategoryEntity entity) {
+		this.entity = entity;
 	}
 
 	@Override
+	public void setUniqueInstanceVariable() {
+		id = getId();
+		name = getName();
+	}	
+	
+	@Override
 	public int hashCode() {
+		setUniqueInstanceVariable();
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + id;
@@ -44,6 +75,7 @@ public class VehicleCategory {
 
 	@Override
 	public boolean equals(Object obj) {
+		setUniqueInstanceVariable();
 		if (this == obj) {
 			return true;
 		}
@@ -66,7 +98,5 @@ public class VehicleCategory {
 		}
 		return true;
 	}
-
-	
 
 }

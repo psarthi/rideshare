@@ -5,7 +5,9 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
+import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.RecurringDetail;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
@@ -13,8 +15,9 @@ import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 
-public class Ride {
+public class Ride implements DomainModel{
 
+	private RideEntity entity = new RideEntity();
 	//id data type needs to be finalized later, whether to use int, long, string
 	private int id;
 	private ZonedDateTime startTime;
@@ -231,6 +234,17 @@ public class Ride {
 			}
 		}
 		throw new RuntimeException("No passenger found with id:"+passengerId);
+	}
+	@Override
+	public void setUniqueInstanceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
+	public RideEntity getEntity() {
+		return entity;
+	}
+	public void setEntity(RideEntity entity) {
+		this.entity = entity;
 	}
 
 	

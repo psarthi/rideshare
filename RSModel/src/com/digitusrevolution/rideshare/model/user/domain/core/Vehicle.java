@@ -1,50 +1,75 @@
 package com.digitusrevolution.rideshare.model.user.domain.core;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
+import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 
-public class Vehicle {
+public class Vehicle implements DomainModel{
 
+	private VehicleEntity entity = new VehicleEntity();
 	private int id;
-	private VehicleCategory vehicleCategory;
-	private VehicleSubCategory vehicleSubCategory;
-	private Photo photo;
+	private VehicleCategory vehicleCategory = new VehicleCategory();
+	private VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
+	private Photo photo = new Photo();
 	
 	public int getId() {
-		return id;
+		return entity.getId();
 	}
 
 	public void setId(int id) {
 		this.id = id;
+		entity.setId(id);
 	}
 
 	public VehicleSubCategory getVehicleSubCategory() {
+		vehicleSubCategory.setEntity(entity.getVehicleSubCategory());
 		return vehicleSubCategory;
 	}
 
 	public void setVehicleSubCategory(VehicleSubCategory vehicleSubCategory) {
 		this.vehicleSubCategory = vehicleSubCategory;
+		entity.setVehicleSubCategory(vehicleSubCategory.getEntity());
 	}
 
 	public VehicleCategory getVehicleCategory() {
+		vehicleCategory.setEntity(entity.getVehicleCategory());
 		return vehicleCategory;
 	}
 
 	public void setVehicleCategory(VehicleCategory vehicleCategory) {
 		this.vehicleCategory = vehicleCategory;
+		entity.setVehicleCategory(vehicleCategory.getEntity());
+		
 	}
 
 	public Photo getPhoto() {
+		photo.setEntity(entity.getPhoto());
 		return photo;
 	}
 
 	public void setPhoto(Photo photo) {
 		this.photo = photo;
+		entity.setPhoto(photo.getEntity());
+	}
+	
+	public VehicleEntity getEntity() {
+		return entity;
+	}
+
+	public void setEntity(VehicleEntity entity) {
+		this.entity = entity;
+	}
+
+	@Override
+	public void setUniqueInstanceVariable() {
+		id = getId();		
 	}
 
 	@Override
 	public int hashCode() {
+		setUniqueInstanceVariable();
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + id;
@@ -55,6 +80,7 @@ public class Vehicle {
 
 	@Override
 	public boolean equals(Object obj) {
+		setUniqueInstanceVariable();
 		if (this == obj) {
 			return true;
 		}
@@ -84,5 +110,6 @@ public class Vehicle {
 		}
 		return true;
 	}
+
 
 }
