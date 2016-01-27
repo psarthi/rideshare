@@ -9,6 +9,7 @@ import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
@@ -30,7 +31,7 @@ import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.State;
 
-public class User{
+public class User implements DomainModel{
 	
 	private UserEntity entity = new UserEntity();
 	private int id;
@@ -61,7 +62,6 @@ public class User{
 	private float profileRating;
 	
 	public int getId() {
-		id = entity.getId();
 		return id;
 	}
 	
@@ -71,7 +71,6 @@ public class User{
 	}
 	
 	public String getFirstName() {
-		firstName = entity.getFirstName();
 		return firstName;
 	}
 	public void setFirstName(String firstName) {
@@ -79,7 +78,6 @@ public class User{
 		entity.setFirstName(firstName);
 	}
 	public String getLastName() {
-		lastName = entity.getLastName();
 		return lastName;
 	}
 	public void setLastName(String lastName) {
@@ -87,7 +85,6 @@ public class User{
 		entity.setLastName(lastName);
 	}
 	public Sex getSex() {
-		sex = entity.getSex();
 		return sex;
 	}
 	public void setSex(Sex sex) {
@@ -95,7 +92,6 @@ public class User{
 		entity.setSex(sex);
 	}
 	public String getMobileNumber() {
-		mobileNumber = entity.getMobileNumber();
 		return mobileNumber;
 	}
 	public void setMobileNumber(String mobileNumber) {
@@ -103,7 +99,6 @@ public class User{
 		entity.setMobileNumber(mobileNumber);
 	}
 	public String getEmail() {
-		email = entity.getEmail();
 		return email;
 	}
 	public void setEmail(String email) {
@@ -111,7 +106,6 @@ public class User{
 		entity.setEmail(email);
 	}
 	public String getPassword() {
-		password = entity.getPassword();
 		return password;
 	}
 	public void setPassword(String password) {
@@ -136,7 +130,6 @@ public class User{
 	}
 
 	public float getProfileRating() {
-		profileRating = entity.getProfileRating();
 		return profileRating;
 	}
 
@@ -436,9 +429,19 @@ public class User{
 
 	public void setEntity(UserEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
 	}
 
-
-	
+	@Override
+	public void setDomainModelPrimitiveVariable(){
+		id = entity.getId();
+		firstName = entity.getFirstName();
+		lastName = entity.getLastName();
+		sex = entity.getSex();
+		mobileNumber = entity.getMobileNumber();
+		email = entity.getEmail();
+		password = entity.getPassword();
+		profileRating = entity.getProfileRating();
+	}
 	
 }

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.GroupFeedbackEntity;
 import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
@@ -14,7 +15,7 @@ import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.GroupFeedback;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 
-public class Group{
+public class Group implements DomainModel{
 
 	private GroupEntity entity = new GroupEntity();
 	private int id;
@@ -34,7 +35,6 @@ public class Group{
 	private int fakeVotes;
 
 	public int getId() {
-		id = entity.getId();
 		return id;
 	}
 
@@ -44,7 +44,6 @@ public class Group{
 	}
 
 	public String getName() {
-		name = entity.getName();
 		return name;
 	}
 
@@ -69,6 +68,7 @@ public class Group{
 
 	public void setEntity(GroupEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
 	}
 
 	public Collection<User> getMembers() {
@@ -143,7 +143,6 @@ public class Group{
 	}
 
 	public ZonedDateTime getCreatedDateTime() {
-		createdDateTime = entity.getCreatedDateTime();
 		return createdDateTime;
 	}
 
@@ -153,7 +152,6 @@ public class Group{
 	}
 
 	public String getUrl() {
-		url = entity.getUrl();
 		return url; 
 	}
 
@@ -163,7 +161,6 @@ public class Group{
 	}
 
 	public String getInformation() {
-		information = entity.getInformation();
 		return information;
 	}
 
@@ -190,7 +187,6 @@ public class Group{
 	}
 
 	public int getGenuineVotes() {
-		genuineVotes = entity.getGenuineVotes();
 		return genuineVotes;
 	}
 
@@ -200,7 +196,6 @@ public class Group{
 	}
 
 	public int getFakeVotes() {
-		fakeVotes = entity.getFakeVotes();
 		return fakeVotes;
 	}
 
@@ -249,5 +244,16 @@ public class Group{
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		id = entity.getId();
+		name = entity.getName();
+		createdDateTime = entity.getCreatedDateTime();
+		url = entity.getUrl();
+		information = entity.getInformation();
+		genuineVotes = entity.getGenuineVotes();
+		fakeVotes = entity.getFakeVotes();	
 	}
 }

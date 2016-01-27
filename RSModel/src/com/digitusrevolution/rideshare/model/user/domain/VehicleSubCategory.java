@@ -1,8 +1,9 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity;
 
-public class VehicleSubCategory{
+public class VehicleSubCategory implements DomainModel{
 	
 	private VehicleSubCategoryEntity entity = new VehicleSubCategoryEntity();
 	private int id;
@@ -12,7 +13,6 @@ public class VehicleSubCategory{
 	private FuelType fuelType;
 	
 	public int getId() {
-		id = entity.getId();
 		return id; 
 	}
 	public void setId(int id) {
@@ -20,7 +20,6 @@ public class VehicleSubCategory{
 		entity.setId(id);
 	}
 	public String getName() {
-		name = entity.getName();
 		return name;
 	}
 	public void setName(String name) {
@@ -28,7 +27,6 @@ public class VehicleSubCategory{
 		entity.setName(name);
 	}
 	public Boolean getAirConditioner() {
-		airConditioner = entity.getAirConditioner();
 		return airConditioner;
 	}
 	public void setAirConditioner(Boolean airConditioner) {
@@ -36,7 +34,6 @@ public class VehicleSubCategory{
 		entity.setAirConditioner(airConditioner);
 	}
 	public int getAverageMileage() {
-		averageMileage = entity.getAverageMileage();
 		return averageMileage;
 	}
 	public void setAverageMileage(int averageMileage) {
@@ -44,7 +41,6 @@ public class VehicleSubCategory{
 		entity.setAverageMileage(averageMileage);
 	}
 	public FuelType getFuelType() {
-		fuelType = entity.getFuelType();
 		return fuelType;
 	}
 	public void setFuelType(FuelType fuelType) {
@@ -58,6 +54,7 @@ public class VehicleSubCategory{
 
 	public void setEntity(VehicleSubCategoryEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
 	}
 	@Override
 	public int hashCode() {
@@ -90,5 +87,14 @@ public class VehicleSubCategory{
 			return false;
 		}
 		return true;
+	}
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		airConditioner = entity.getAirConditioner();
+		averageMileage = entity.getAverageMileage();
+		fuelType = entity.getFuelType();
+		id = entity.getId();
+		name = entity.getName();
+		
 	}	
 }

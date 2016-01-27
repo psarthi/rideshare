@@ -1,11 +1,12 @@
 package com.digitusrevolution.rideshare.model.user.domain.core;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 
-public class Vehicle{
+public class Vehicle implements DomainModel{
 
 	private VehicleEntity entity = new VehicleEntity();
 	private int id;
@@ -14,7 +15,6 @@ public class Vehicle{
 	private Photo photo = new Photo();
 	
 	public int getId() {
-		id = entity.getId();
 		return id;
 	}
 
@@ -60,6 +60,12 @@ public class Vehicle{
 
 	public void setEntity(VehicleEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
+	}
+
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		id = entity.getId();		
 	}
 
 	@Override
@@ -103,6 +109,5 @@ public class Vehicle{
 		}
 		return true;
 	}
-
 
 }

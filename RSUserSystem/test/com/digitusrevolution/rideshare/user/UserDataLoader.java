@@ -98,6 +98,7 @@ public class UserDataLoader {
 		fuel.setPrice(60);
 
 		country.getFuels().add(fuel);
+		country.setFuels(country.getFuels());
 		
 		State state = new State();
 		state.setName("Karnataka");
@@ -123,7 +124,7 @@ public class UserDataLoader {
 		roleDO.create(role);
 		Role role1 = new Role();
 		role1.setName(RoleName.Driver);
-		roleDO.create(role);		
+		roleDO.create(role1);		
 	
 	}
 	
@@ -132,15 +133,17 @@ public class UserDataLoader {
 		UserDO userDO = new UserDO();
 		CityDO cityDO = new CityDO();
 		RoleDO roleDO = new RoleDO();
-		User user = new User();
+
 		City city = new City();
 		Role role = new Role();
 		role = roleDO.get(RoleName.Passenger.toString());
-		user.getRoles().add(role);
+
 
 	
 		for (int i=1; i<6; i++){
-	
+			User user = new User();
+			user.getRoles().add(role);
+			user.setRoles(user.getRoles());
 			user.setFirstName("firstName-"+i);
 			user.setLastName("lastName-"+i);
 			user.setEmail("email-"+i);
@@ -190,6 +193,7 @@ public class UserDataLoader {
 		VehicleCategory vehicleCategory = vehicleCategoryDO.get(1);
 		
 		vehicleCategory.getSubCategories().add(vehicleSubCategory);
+		vehicleCategory.setSubCategories(vehicleCategory.getSubCategories());
 		vehicleCategoryDO.update(vehicleCategory);
 	}
 

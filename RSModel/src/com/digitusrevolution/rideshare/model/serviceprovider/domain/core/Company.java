@@ -6,10 +6,11 @@ import java.util.HashSet;
 import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.serviceprovider.data.core.CompanyEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
 
-public class Company{
+public class Company implements DomainModel{
 	
 	private CompanyEntity entity = new CompanyEntity();
 	private int id;
@@ -19,7 +20,6 @@ public class Company{
 	private float serviceChargePercentage; 
 	
 	public int getId() {
-		id = entity.getId();
 		return id;
 	}
 	public void setId(int id) {
@@ -27,7 +27,6 @@ public class Company{
 		entity.setId(id);
 	}
 	public String getName() {
-		name = entity.getName();
 		return name;
 	}
 	public void setName(String name) {
@@ -58,7 +57,6 @@ public class Company{
 		entity.setCurrency(currency.getEntity());
 	}
 	public float getServiceChargePercentage() {
-		serviceChargePercentage = entity.getServiceChargePercentage();
 		return serviceChargePercentage;
 	}
 	public void setServiceChargePercentage(float serviceChargePercentage) {
@@ -80,6 +78,12 @@ public class Company{
 	}
 	public void setEntity(CompanyEntity entity) {
 		this.entity = entity;
+	}
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		id = entity.getId();
+		name = entity.getName();		
+		serviceChargePercentage = entity.getServiceChargePercentage();
 	}
 
 }

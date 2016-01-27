@@ -1,15 +1,15 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
 
-public class Photo{
+public class Photo implements DomainModel{
 
 	private PhotoEntity entity = new PhotoEntity();
 	private int id;
 	private String imageLocation;
 	
 	public int getId() {
-		id = entity.getId();
 		return id;
 	}
 	public void setId(int id) {
@@ -18,7 +18,6 @@ public class Photo{
 	}
 	
 	public String getImageLocation() {
-		imageLocation = entity.getImageLocation();
 		return imageLocation;
 	}
 	public void setImageLocation(String imageLocation) {
@@ -30,5 +29,11 @@ public class Photo{
 	}
 	public void setEntity(PhotoEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
+	}
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		id = entity.getId();
+		imageLocation = entity.getImageLocation();
 	}	
 }

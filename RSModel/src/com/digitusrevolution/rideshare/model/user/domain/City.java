@@ -1,15 +1,15 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 
-public class City{
+public class City implements DomainModel{
 	
 	private CityEntity entity = new CityEntity();
 	private int id;
 	private String name;
 		
 	public int getId() {
-		id = entity.getId();
 		return id; 
 	}
 	public void setId(int id) {
@@ -17,7 +17,6 @@ public class City{
 		entity.setId(id);
 	}
 	public String getName() {
-		name = entity.getName();
 		return name;
 	}
 	public void setName(String name) {
@@ -29,6 +28,7 @@ public class City{
 	}
 	public void setEntity(CityEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
 	}
 	@Override
 	public int hashCode() {
@@ -61,6 +61,11 @@ public class City{
 			return false;
 		}
 		return true;
+	}
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		id = entity.getId();
+		name = entity.getName();		
 	}
 
 }

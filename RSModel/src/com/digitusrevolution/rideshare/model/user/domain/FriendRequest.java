@@ -2,10 +2,11 @@ package com.digitusrevolution.rideshare.model.user.domain;
 
 import java.time.ZonedDateTime;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.FriendRequestEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
-public class FriendRequest{
+public class FriendRequest implements DomainModel{
 	
 	private FriendRequestEntity entity = new FriendRequestEntity();
 	private User friend = new User();
@@ -21,7 +22,6 @@ public class FriendRequest{
 		entity.setFriend(friend.getEntity());
 	}
 	public ZonedDateTime getCreatedDateTime() {
-		createdDateTime = entity.getCreatedDateTime();
 		return createdDateTime;
 	}
 	public void setCreatedDateTime(ZonedDateTime createdDateTime) {
@@ -29,7 +29,6 @@ public class FriendRequest{
 		entity.setCreatedDateTime(createdDateTime);
 	}
 	public ApprovalStatus getStatus() {
-		status = entity.getStatus();
 		return status;
 	}
 	public void setStatus(ApprovalStatus status) {
@@ -69,6 +68,12 @@ public class FriendRequest{
 	}
 	public void setEntity(FriendRequestEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
+	}
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		createdDateTime = entity.getCreatedDateTime();
+		status = entity.getStatus();
 	}
 
 	

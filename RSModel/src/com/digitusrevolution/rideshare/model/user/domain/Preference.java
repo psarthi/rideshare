@@ -2,10 +2,11 @@ package com.digitusrevolution.rideshare.model.user.domain;
 
 import java.time.LocalTime;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.user.data.PreferenceEntity;
 
-public class Preference{
+public class Preference implements DomainModel{
 
 	private PreferenceEntity entity = new PreferenceEntity();
 	private int id;
@@ -44,7 +45,6 @@ public class Preference{
 		entity.setVehicleSubCategory(vehicleSubCategory.getEntity());
 	}
 	public LocalTime getPickupTimeVariation() {
-		pickupTimeVariation = entity.getPickupTimeVariation();
 		return pickupTimeVariation;
 	}
 	public void setPickupTimeVariation(LocalTime pickupTimeVariation) {
@@ -52,7 +52,6 @@ public class Preference{
 		entity.setPickupTimeVariation(pickupTimeVariation);
 	}
 	public int getPickupPointVariation() {
-		pickupPointVariation = entity.getPickupPointVariation();
 		return pickupPointVariation;
 	}
 	public void setPickupPointVariation(int pickupPointVariation) {
@@ -60,7 +59,6 @@ public class Preference{
 		entity.setPickupPointVariation(pickupPointVariation);
 	}
 	public int getDropPointVariation() {
-		dropPointVariation = entity.getDropPointVariation();
 		return dropPointVariation;
 	}
 	public void setDropPointVariation(int dropPointVariation) {
@@ -68,7 +66,6 @@ public class Preference{
 		entity.setDropPointVariation(dropPointVariation);
 	}
 	public int getSeatRequired() {
-		seatRequired = entity.getSeatRequired();
 		return seatRequired;
 	}
 	public void setSeatRequired(int seatRequired) {
@@ -76,7 +73,6 @@ public class Preference{
 		entity.setSeatRequired(seatRequired);
 	}
 	public int getLuggageCapacityRequired() {
-		luggageCapacityOffered = entity.getLuggageCapacityRequired();
 		return luggageCapacityRequired;
 	}
 	public void setLuggageCapacityRequired(int luggageCapacityRequired) {
@@ -84,7 +80,6 @@ public class Preference{
 		entity.setSeatRequired(luggageCapacityRequired);
 	}
 	public int getSeatOffered() {
-		seatOffered = entity.getSeatOffered();
 		return seatOffered;
 	}
 	public void setSeatOffered(int seatOffered) {
@@ -92,7 +87,6 @@ public class Preference{
 		entity.setSeatOffered(seatOffered);
 	}
 	public int getLuggageCapacityOffered() {
-		luggageCapacityOffered = entity.getLuggageCapacityOffered();
 		return luggageCapacityOffered;
 	}
 	public void setLuggageCapacityOffered(int luggageCapacityOffered) {
@@ -108,7 +102,6 @@ public class Preference{
 		entity.setTrustNetwork(trustNetwork.getEntity());
 	}
 	public Sex getSexPreference() {
-		sexPreference = entity.getSexPreference();
 		return sexPreference;
 	}
 	public void setSexPreference(Sex sexPreference) {
@@ -116,7 +109,6 @@ public class Preference{
 		entity.setSexPreference(sexPreference);
 	}
 	public float getMinProfileRating() {
-		minProfileRating = entity.getMinProfileRating();
 		return minProfileRating;
 	}
 	public void setMinProfileRating(float minProfileRating) {
@@ -124,7 +116,6 @@ public class Preference{
 		entity.setMinProfileRating(minProfileRating);
 	}
 	public int getId() {
-		id = entity.getId();
 		return id; 
 	}
 	public void setId(int id) {
@@ -136,6 +127,20 @@ public class Preference{
 	}
 	public void setEntity(PreferenceEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
+	}
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		dropPointVariation = entity.getDropPointVariation();
+		id = entity.getId();
+		luggageCapacityOffered = entity.getLuggageCapacityOffered();
+		luggageCapacityOffered = entity.getLuggageCapacityRequired();
+		minProfileRating = entity.getMinProfileRating();
+		pickupPointVariation = entity.getPickupPointVariation();
+		pickupTimeVariation = entity.getPickupTimeVariation();
+		seatOffered = entity.getSeatOffered();		
+		seatRequired = entity.getSeatRequired();
+		sexPreference = entity.getSexPreference();
 	}
 
 }

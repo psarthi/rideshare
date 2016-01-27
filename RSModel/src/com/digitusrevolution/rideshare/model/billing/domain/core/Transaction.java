@@ -3,8 +3,9 @@ package com.digitusrevolution.rideshare.model.billing.domain.core;
 import java.time.ZonedDateTime;
 
 import com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity;
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 
-public class Transaction {
+public class Transaction implements DomainModel{
 	
 	private TransactionEntity entity = new TransactionEntity();
 	private int id;
@@ -14,7 +15,6 @@ public class Transaction {
 	private String remark;
 	
 	public ZonedDateTime getDateTime() {
-		dateTime = entity.getDateTime();
 		return dateTime;
 	}
 	public void setDateTime(ZonedDateTime dateTime) {
@@ -22,7 +22,6 @@ public class Transaction {
 		entity.setDateTime(dateTime);
 	}
 	public TransactionType getType() {
-		type = entity.getType();
 		return type;
 	}
 	public void setType(TransactionType type) {
@@ -30,7 +29,6 @@ public class Transaction {
 		entity.setType(type);
 	}
 	public float getAmount() {
-		amount = entity.getAmount();
 		return amount;
 	}
 	public void setAmount(float amount) {
@@ -38,7 +36,6 @@ public class Transaction {
 		entity.setAmount(amount);
 	}
 	public String getRemark() {
-		remark = entity.getRemark();
 		return remark;
 	}
 	public void setRemark(String remark) {
@@ -46,7 +43,6 @@ public class Transaction {
 		entity.setRemark(remark);
 	}
 	public int getId() {
-		id = entity.getId();
 		return id;
 	}
 	public void setId(int id) {
@@ -106,6 +102,15 @@ public class Transaction {
 	}
 	public void setEntity(TransactionEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
+	}
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		dateTime = entity.getDateTime();
+		type = entity.getType();
+		amount = entity.getAmount();
+		remark = entity.getRemark();
+		id = entity.getId();
 	}
 
 }

@@ -3,10 +3,11 @@ package com.digitusrevolution.rideshare.model.user.domain;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.VehicleCategoryEntity;
 import com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity;
 
-public class VehicleCategory{
+public class VehicleCategory implements DomainModel{
 
 	private VehicleCategoryEntity entity = new VehicleCategoryEntity();
 	private int id;
@@ -14,7 +15,6 @@ public class VehicleCategory{
 	private Collection<VehicleSubCategory> subCategories = new HashSet<VehicleSubCategory>();
 	
 	public int getId() {
-		id = entity.getId();
 		return id; 
 	}
 
@@ -41,7 +41,6 @@ public class VehicleCategory{
 	}
 
 	public String getName() {
-		name = entity.getName();
 		return name;
 	}
 
@@ -56,6 +55,7 @@ public class VehicleCategory{
 
 	public void setEntity(VehicleCategoryEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
 	}
 
 	@Override
@@ -90,6 +90,12 @@ public class VehicleCategory{
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		id = entity.getId();
+		name = entity.getName();
 	}
 
 }

@@ -1,16 +1,16 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.GroupFeedbackEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
-public class GroupFeedback{
+public class GroupFeedback implements DomainModel{
 
 	private GroupFeedbackEntity entity = new GroupFeedbackEntity();
 	private User givenByUser = new User();
 	private Vote vote;
 
 	public Vote getVote() {
-		vote = entity.getVote();
 		return vote;
 	}
 
@@ -65,6 +65,13 @@ public class GroupFeedback{
 
 	public void setEntity(GroupFeedbackEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
+	}
+
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		vote = entity.getVote();
+		
 	}
 
 }

@@ -3,10 +3,11 @@ package com.digitusrevolution.rideshare.model.user.domain;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.data.StateEntity;
 
-public class State{
+public class State implements DomainModel{
 
 	private StateEntity entity = new StateEntity();
 	private int id;
@@ -14,7 +15,6 @@ public class State{
 	private Collection<City> cities = new HashSet<City>();
 	
 	public int getId() {
-		id = entity.getId();
 		return id;
 	}
 	public void setId(int id) {
@@ -22,7 +22,6 @@ public class State{
 		entity.setId(id);
 	}
 	public String getName() {
-		name = entity.getName();
 		return name;
 	}
 	public void setName(String name) {
@@ -49,6 +48,7 @@ public class State{
 	}
 	public void setEntity(StateEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
 	}
 	@Override
 	public int hashCode() {
@@ -81,5 +81,11 @@ public class State{
 			return false;
 		}
 		return true;
+	}
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		id = entity.getId();
+		name = entity.getName();
+		
 	}	
 }

@@ -6,6 +6,7 @@ import java.util.HashSet;
 
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity;
@@ -17,7 +18,7 @@ import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 
-public class Ride{
+public class Ride implements DomainModel{
 
 	private RideEntity entity = new RideEntity();
 	//id data type needs to be finalized later, whether to use int, long, string
@@ -44,7 +45,6 @@ public class Ride{
 	private int travelDistance;
 	
 	public int getId() {
-		id = entity.getId();
 		return id; 
 	}
 	public void setId(int id) {
@@ -52,7 +52,6 @@ public class Ride{
 		entity.setId(id);
 	}
 	public ZonedDateTime getStartTime() {
-		startTime = entity.getStartTime();
 		return startTime;
 	}
 	public void setStartTime(ZonedDateTime startTime) {
@@ -60,9 +59,6 @@ public class Ride{
 		entity.setStartTime(startTime);
 	}
 	public RidePoint getStartPoint() {
-		//We will set only start point from entity and rest of the details needs to be set in DO
-		//By fetching data from mongodb
-		startPoint.set_id(entity.getStartPointId());
 		return startPoint;
 	}
 	public void setStartPoint(RidePoint startPoint) {
@@ -71,7 +67,6 @@ public class Ride{
 		entity.setStartPointId(startPoint.get_id());
 	}
 	public int getSeatOffered() {
-		seatOffered = entity.getSeatOffered();
 		return seatOffered;
 	}
 	public void setSeatOffered(int seatOffered) {
@@ -79,7 +74,6 @@ public class Ride{
 		entity.setSeatOffered(seatOffered);
 	}
 	public int getLuggageCapacityOffered() {
-		luggageCapacityOffered = entity.getLuggageCapacityOffered();
 		return luggageCapacityOffered;
 	}
 	public void setLuggageCapacityOffered(int luggageCapacityOffered) {
@@ -87,7 +81,6 @@ public class Ride{
 		entity.setLuggageCapacityOffered(luggageCapacityOffered);
 	}
 	public boolean getRecur() {
-		recur = entity.getRecur();
 		return recur;
 	}
 	public void setRecur(boolean recur) {
@@ -103,7 +96,6 @@ public class Ride{
 		entity.setRecurringDetail(recurringDetail.getEntity());
 	}
 	public RideStatus getStatus() {
-		status = entity.getStatus();
 		return status;
 	}
 	public void setStatus(RideStatus status) {
@@ -135,9 +127,6 @@ public class Ride{
 		entity.setVehicle(vehicle.getEntity());
 	}
 	public RidePoint getEndPoint() {
-		//We are storing only id in the hibernate db
-		//rest of the properties needs to be set in DO
-		endPoint.set_id(entity.getEndPointId());
 		return endPoint;
 	}
 	public void setEndPoint(RidePoint endPoint) {
@@ -214,7 +203,6 @@ public class Ride{
 		}
 	}
 	public Sex getSexPreference() {
-		sexPreference = entity.getSexPreference();
 		return sexPreference;
 	}
 	public void setSexPreference(Sex sexPreference) {
@@ -222,7 +210,6 @@ public class Ride{
 		entity.setSexPreference(sexPreference);
 	}
 	public int getTravelDistance() {
-		travelDistance = entity.getTravelDistance();
 		return travelDistance;
 	}
 	public void setTravelDistance(int travelDistance) {
@@ -245,7 +232,6 @@ public class Ride{
 		}
 	}
 	public RideSeatStatus getSeatStatus() {
-		seatStatus = entity.getSeatStatus();
 		return seatStatus;
 	}
 	public void setSeatStatus(RideSeatStatus seatStatus) {
@@ -324,6 +310,26 @@ public class Ride{
 	}
 	public void setEntity(RideEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
+	}
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		id = entity.getId();
+		luggageCapacityOffered = entity.getLuggageCapacityOffered();
+		recur = entity.getRecur();
+		seatOffered = entity.getSeatOffered();
+		seatStatus = entity.getSeatStatus();
+		sexPreference = entity.getSexPreference();
+		startTime = entity.getStartTime();
+		status = entity.getStatus();
+		travelDistance = entity.getTravelDistance();
+		//We will set only start point from entity and rest of the details needs to be set in DO
+		//By fetching data from mongodb
+		startPoint.set_id(entity.getStartPointId());
+		//We are storing only id in the hibernate db
+		//rest of the properties needs to be set in DO
+		endPoint.set_id(entity.getEndPointId());
+
 	}
 
 	

@@ -4,10 +4,11 @@ import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
-public class MembershipRequest{
+public class MembershipRequest implements DomainModel{
 
 	private MembershipRequestEntity entity = new MembershipRequestEntity();
 	private int id;
@@ -28,7 +29,6 @@ public class MembershipRequest{
 		entity.setUser(user.getEntity());
 	}
 	public Collection<String> getAnswers() {
-		answers = entity.getAnswers();
 		return answers;
 	}
 	public void setAnswers(Collection<String> answers) {
@@ -36,7 +36,6 @@ public class MembershipRequest{
 		entity.setAnswers(answers);
 	}
 	public ApprovalStatus getStatus() {
-		status = entity.getStatus();
 		return status;
 	}
 	public void setStatus(ApprovalStatus status) {
@@ -44,7 +43,6 @@ public class MembershipRequest{
 		entity.setStatus(status);
 	}
 	public ZonedDateTime getCreatedDateTime() {
-		createdDateTime = entity.getCreatedDateTime();
 		return createdDateTime;
 	}
 	public void setCreatedDateTime(ZonedDateTime createdDateTime) {
@@ -52,7 +50,6 @@ public class MembershipRequest{
 		entity.setCreatedDateTime(createdDateTime);
 	}
 	public int getId() {
-		id = entity.getId();
 		return id;
 	}
 	public void setId(int id) {
@@ -60,7 +57,6 @@ public class MembershipRequest{
 		entity.setId(id);
 	}
 	public EmailVerificationStatus getEmailVerificationStatus() {
-		emailVerificationStatus = entity.getEmailVerificationStatus();
 		return emailVerificationStatus;
 	}
 	public void setEmailVerificationStatus(EmailVerificationStatus emailVerificationStatus) {
@@ -68,7 +64,6 @@ public class MembershipRequest{
 		entity.setEmailVerificationStatus(emailVerificationStatus);
 	}
 	public String getEmailForVerification() {
-		emailForVerification = entity.getEmailForVerification();
 		return emailForVerification;
 	}
 	public void setEmailForVerification(String emailForVerification) {
@@ -76,7 +71,6 @@ public class MembershipRequest{
 		entity.setEmailForVerification(emailForVerification);
 	}
 	public String getAdminRemark() {
-		adminRemark = entity.getAdminRemark();
 		return adminRemark;
 	}
 	public void setAdminRemark(String adminRemark) {
@@ -120,5 +114,16 @@ public class MembershipRequest{
 	}
 	public void setEntity(MembershipRequestEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
+	}
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		adminRemark = entity.getAdminRemark();
+		answers = entity.getAnswers();
+		createdDateTime = entity.getCreatedDateTime();
+		emailForVerification = entity.getEmailForVerification();
+		emailVerificationStatus = entity.getEmailVerificationStatus();
+		id = entity.getId();
+		status = entity.getStatus();
 	}
 }

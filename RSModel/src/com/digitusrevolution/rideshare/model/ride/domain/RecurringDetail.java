@@ -2,9 +2,10 @@ package com.digitusrevolution.rideshare.model.ride.domain;
 
 import java.time.ZonedDateTime;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.ride.data.RecurringDetailEntity;
 
-public class RecurringDetail{
+public class RecurringDetail implements DomainModel{
 	
 	private RecurringDetailEntity entity = new RecurringDetailEntity();
 	private int id;
@@ -13,7 +14,6 @@ public class RecurringDetail{
 	private String repeatFrequency;
 
 	public int getId() {
-		id = entity.getId();
 		return id;
 	}
 
@@ -23,7 +23,6 @@ public class RecurringDetail{
 	}
 
 	public ZonedDateTime getStartDate() {
-		startDate = entity.getStartDate();
 		return startDate;
 	}
 
@@ -33,7 +32,6 @@ public class RecurringDetail{
 	}
 
 	public ZonedDateTime getEndDate() {
-		endDate = entity.getEndDate();
 		return endDate;
 	}
 
@@ -43,7 +41,6 @@ public class RecurringDetail{
 	}
 
 	public String getRepeatFrequency() {
-		repeatFrequency = entity.getRepeatFrequency();
 		return repeatFrequency;
 	}
 
@@ -58,6 +55,17 @@ public class RecurringDetail{
 
 	public void setEntity(RecurringDetailEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
+	}
+
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		id = entity.getId();
+		startDate = entity.getStartDate();
+		endDate = entity.getEndDate();
+		repeatFrequency = entity.getRepeatFrequency();
+		
+		
 	}
 
 }

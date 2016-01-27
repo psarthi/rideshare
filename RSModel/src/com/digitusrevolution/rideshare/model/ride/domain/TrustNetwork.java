@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.model.ride.domain;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
@@ -10,7 +11,7 @@ import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
-public class TrustNetwork{
+public class TrustNetwork implements DomainModel{
 	
 	private TrustNetworkEntity entity = new TrustNetworkEntity();
 	private int id;
@@ -19,7 +20,6 @@ public class TrustNetwork{
 	private Collection<Group> groups = new HashSet<Group>();
 	
 	public int getId() {
-		id = entity.getId();
 		return id;
 	}
 	public void setId(int id) {
@@ -76,6 +76,7 @@ public class TrustNetwork{
 	}
 	public void setEntity(TrustNetworkEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
 	}
 	@Override
 	public int hashCode() {
@@ -124,5 +125,10 @@ public class TrustNetwork{
 			return false;
 		}
 		return true;
+	}
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		id = entity.getId();
+		
 	}
 }

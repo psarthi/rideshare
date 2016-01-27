@@ -5,6 +5,7 @@ import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
@@ -15,7 +16,7 @@ import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
-public class RideRequest{
+public class RideRequest implements DomainModel{
 
 	private RideRequestEntity entity = new RideRequestEntity();
 	private int id;
@@ -43,7 +44,6 @@ public class RideRequest{
 	private Collection<Ride> cancelledRides = new HashSet<Ride>();
 	
 	public int getId() {
-		id = entity.getId();
 		return id;
 	}
 	public void setId(int id) {
@@ -51,8 +51,6 @@ public class RideRequest{
 		entity.setId(id);
 	}
 	public RideRequestPoint getPickupPoint() {
-		//Set only id as that's the only thing stored in hibernate db
-		pickupPoint.set_id(entity.getPickupPointId());
 		return pickupPoint;
 	}
 	public void setPickupPoint(RideRequestPoint pickupPoint) {
@@ -61,8 +59,6 @@ public class RideRequest{
 		entity.setPickupPointId(pickupPoint.get_id());
 	}
 	public RideRequestPoint getDropPoint() {
-		//Set only id as that's the only thing stored in hibernate db
-		dropPoint.set_id(entity.getDropPointId());
 		return dropPoint;
 	}
 	public void setDropPoint(RideRequestPoint dropPoint) {
@@ -71,7 +67,6 @@ public class RideRequest{
 		entity.setDropPointId(dropPoint.get_id());
 	}
 	public ZonedDateTime getPickupTime() {
-		pickupTime = entity.getPickupTime();
 		return pickupTime;
 	}
 	public void setPickupTime(ZonedDateTime pickupTime) {
@@ -79,7 +74,6 @@ public class RideRequest{
 		entity.setPickupTime(pickupTime);
 	}
 	public LocalTime getPickupTimeVariation() {
-		pickupTimeVariation = entity.getPickupTimeVariation();
 		return pickupTimeVariation;
 	}
 	public void setPickupTimeVariation(LocalTime pickupTimeVariation) {
@@ -111,7 +105,6 @@ public class RideRequest{
 		entity.setTrustNetwork(trustNetwork.getEntity());
 	}
 	public int getSeatRequired() {
-		entity.getSeatRequired();
 		return seatRequired;
 	}
 	public void setSeatRequired(int seatRequired) {
@@ -119,7 +112,6 @@ public class RideRequest{
 		entity.setSeatRequired(seatRequired);
 	}
 	public int getLuggageCapacityRequired() {
-		luggageCapacityRequired = entity.getLuggageCapacityRequired();
 		return luggageCapacityRequired;
 	}
 	public void setLuggageCapacityRequired(int luggageCapacityRequired) {
@@ -127,7 +119,6 @@ public class RideRequest{
 		entity.setLuggageCapacityRequired(luggageCapacityRequired);
 	}
 	public RideRequestStatus getStatus() {
-		status = entity.getStatus();
 		return status;
 	}
 	public void setStatus(RideRequestStatus status) {
@@ -135,7 +126,6 @@ public class RideRequest{
 		entity.setStatus(status);
 	}
 	public Sex getSexPreference() {
-		sexPreference = entity.getSexPreference();
 		return sexPreference;
 	}
 	public void setSexPreference(Sex sexPreference) {
@@ -143,7 +133,6 @@ public class RideRequest{
 		entity.setSexPreference(sexPreference);
 	}
 	public int getPickupPointVariation() {
-		pickupPointVariation = entity.getPickupPointVariation();
 		return pickupPointVariation;
 	}
 	public void setPickupPointVariation(int pickupPointVariation) {
@@ -151,7 +140,6 @@ public class RideRequest{
 		entity.setPickupPointVariation(pickupPointVariation);
 	}
 	public int getDropPointVariation() {
-		dropPointVariation = entity.getDropPointVariation();
 		return dropPointVariation;
 	}
 	public void setDropPointVariation(int dropPointVariation) {
@@ -182,7 +170,6 @@ public class RideRequest{
 		}
 	}
 	public boolean getRidePreference() {
-		ridePreference = entity.getRidePreference();
 		return ridePreference;
 	}
 	public void setRidePreference(boolean ridePreference) {
@@ -198,8 +185,6 @@ public class RideRequest{
 		entity.setAcceptedRide(acceptedRide.getEntity());
 	}
 	public RidePoint getRidePickupPoint() {
-		//Only Id is required as that's what is stored in hibernate DB
-		ridePickupPoint.set_id(entity.getPickupPointId());
 		return ridePickupPoint;
 	}
 	public void setRidePickupPoint(RidePoint ridePickupPoint) {
@@ -208,8 +193,6 @@ public class RideRequest{
 		entity.setPickupPointId(pickupPoint.get_id());
 	}
 	public RidePoint getRideDropPoint() {
-		//Only Id is required as that's what is stored in hibernate DB
-		rideDropPoint.set_id(entity.getDropPointId());
 		return rideDropPoint;
 	}
 	public void setRideDropPoint(RidePoint rideDropPoint) {
@@ -218,7 +201,6 @@ public class RideRequest{
 		entity.setDropPointId(dropPoint.get_id());
 	}
 	public int getTravelTime() {
-		travelTime = entity.getTravelTime();
 		return travelTime;
 	}
 	public void setTravelTime(int travelTime) {
@@ -226,7 +208,6 @@ public class RideRequest{
 		entity.setTravelTime(travelTime);
 	}
 	public int getTravelDistance() {
-		travelDistance = entity.getTravelDistance();
 		return travelDistance;
 	}
 	public void setTravelDistance(int travelDistance) {
@@ -253,6 +234,7 @@ public class RideRequest{
 	}
 	public void setEntity(RideRequestEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
 	}
 
 
@@ -296,6 +278,30 @@ public class RideRequest{
 			return false;
 		}
 		return true;
+	}
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		//Set only id as that's the only thing stored in hibernate db
+		dropPoint.set_id(entity.getDropPointId());
+		dropPointVariation = entity.getDropPointVariation();
+		id = entity.getId();
+		luggageCapacityRequired = entity.getLuggageCapacityRequired();
+		//Set only id as that's the only thing stored in hibernate db
+		pickupPoint.set_id(entity.getPickupPointId());
+		pickupPointVariation = entity.getPickupPointVariation();
+		pickupTime = entity.getPickupTime();
+		pickupTimeVariation = entity.getPickupTimeVariation();
+		//Only Id is required as that's what is stored in hibernate DB
+		rideDropPoint.set_id(entity.getDropPointId());
+		//Only Id is required as that's what is stored in hibernate DB
+		ridePickupPoint.set_id(entity.getPickupPointId());
+		ridePreference = entity.getRidePreference();
+		seatRequired = entity.getSeatRequired();
+		sexPreference = entity.getSexPreference();
+		status = entity.getStatus();
+		travelDistance = entity.getTravelDistance();
+		travelTime = entity.getTravelTime();
+		
 	}
 
 }

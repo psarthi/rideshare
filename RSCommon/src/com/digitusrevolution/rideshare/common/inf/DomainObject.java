@@ -6,6 +6,6 @@ public interface DomainObject<M>{
 	
 	List<M> getAll();
 
-	void update(M model);	
+	void update(M model);
 	
 }

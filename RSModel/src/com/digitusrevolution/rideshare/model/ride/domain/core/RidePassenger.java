@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.model.ride.domain.core;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
@@ -8,7 +9,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
  * so that we can add extra fields of passenger such as Passenger Status
  * 
  */
-public class RidePassenger{
+public class RidePassenger implements DomainModel{
 	
 	private RidePassengerEntity entity = new RidePassengerEntity();
 	private int id;
@@ -25,7 +26,6 @@ public class RidePassenger{
 		entity.setPassenger(passenger.getEntity());
 	}
 	public PassengerStatus getStatus() {
-		status = entity.getStatus();
 		return status;
 	}
 	public void setStatus(PassengerStatus status) {
@@ -33,7 +33,6 @@ public class RidePassenger{
 		entity.setStatus(status);
 	}
 	public int getId() {
-		id = entity.getId();
 		return id;
 	}
 	public void setId(int id) {
@@ -94,6 +93,13 @@ public class RidePassenger{
 	}
 	public void setEntity(RidePassengerEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
+	}
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		id = entity.getId();
+		status = entity.getStatus();
+		
 	}
 
 }

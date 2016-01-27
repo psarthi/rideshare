@@ -1,13 +1,14 @@
 package com.digitusrevolution.rideshare.model.billing.domain.core;
 
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 
-public class Bill{
+public class Bill implements DomainModel{
 
 	private BillEntity entity = new BillEntity();
 	private int number;
@@ -25,7 +26,6 @@ public class Bill{
 	private BillStatus status;
 	
 	public int getNumber() {
-		number = entity.getNumber();
 		return number;
 	}
 	public void setNumber(int number) {
@@ -65,7 +65,6 @@ public class Bill{
 		entity.setRide(ride.getEntity());
 	}
 	public float getAmount() {
-		amount = entity.getAmount();
 		return amount;
 	}
 	public void setAmount(float amount) {
@@ -73,7 +72,6 @@ public class Bill{
 		entity.setAmount(amount);
 	}
 	public float getServiceChargePercentage() {
-		serviceChargePercentage = entity.getServiceChargePercentage();
 		return serviceChargePercentage;
 	}
 	public void setServiceChargePercentage(float serviceChargePercentage) {
@@ -89,7 +87,6 @@ public class Bill{
 		entity.setRideRequest(rideRequest.getEntity());
 	}
 	public BillStatus getStatus() {
-		status = entity.getStatus();
 		return status;
 	}
 	public void setStatus(BillStatus status) {
@@ -101,6 +98,7 @@ public class Bill{
 	}
 	public void setEntity(BillEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
 	}
 	@Override
 	public int hashCode() {
@@ -141,6 +139,13 @@ public class Bill{
 			return false;
 		}
 		return true;
+	}
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		number = entity.getNumber();
+		amount = entity.getAmount();
+		serviceChargePercentage = entity.getServiceChargePercentage();
+		status = entity.getStatus();
 	}
 	
 }

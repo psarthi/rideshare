@@ -5,8 +5,9 @@ import java.util.HashSet;
 
 import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
 import com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity;
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 
-public class Account{
+public class Account implements DomainModel{
 	
 	private AccountEntity entity = new AccountEntity();
 	private int number;
@@ -15,7 +16,6 @@ public class Account{
 	private AccountType type;
 	
 	public int getNumber() {
-		number = entity.getNumber();
 		return number;
 	}
 	public void setNumber(int number) {
@@ -23,7 +23,6 @@ public class Account{
 		entity.setNumber(number);
 	}
 	public float getBalance() {
-		balance = entity.getBalance();
 		return balance;
 	}
 	public void setBalance(float balance) {
@@ -74,7 +73,6 @@ public class Account{
 		}
 	}
 	public AccountType getType() {
-		type = entity.getType();
 		return type;
 	}
 	public void setType(AccountType type) {
@@ -86,6 +84,13 @@ public class Account{
 	}
 	public void setEntity(AccountEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
+	}
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		number = entity.getNumber();
+		balance = entity.getBalance();
+		type = entity.getType();
 	}
 	
 }

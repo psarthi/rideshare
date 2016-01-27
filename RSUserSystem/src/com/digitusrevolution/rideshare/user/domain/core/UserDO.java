@@ -98,9 +98,12 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		if (user.getVehicles().size()==0){
 			RoleDO roleDO = new RoleDO();
 			Role role = roleDO.get(RoleName.Driver.toString());
-			user.getRoles().add(role);
+			Collection<Role> roles = user.getRoles();
+			roles.add(role);
+			user.setRoles(roles);
 		}
 		user.getVehicles().add(vehicle);
+		user.setVehicles(user.getVehicles());
 		update(user);
 	}
 	
@@ -125,8 +128,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		user = get(userId);
 		user.getAccounts().add(account);
 		update(user);		
-	}
-	
+	}	
 }
 
 

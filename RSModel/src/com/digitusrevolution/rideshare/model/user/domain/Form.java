@@ -3,9 +3,10 @@ package com.digitusrevolution.rideshare.model.user.domain;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.FormEntity;
 
-public class Form{
+public class Form implements DomainModel{
 
 	private FormEntity entity = new FormEntity();
 	private int id;
@@ -16,7 +17,6 @@ public class Form{
 	private String emailDomain;
 	
 	public Collection<String> getQuestions() {
-		questions = entity.getQuestions();
 		return questions;
 	}
 	public void setQuestions(Collection<String> questions) {
@@ -24,7 +24,6 @@ public class Form{
 		entity.setQuestions(questions);
 	}
 	public String getRemark() {
-		remark = entity.getRemark();
 		return remark;
 	}
 	public void setRemark(String remark) {
@@ -32,7 +31,6 @@ public class Form{
 		entity.setRemark(remark);
 	}
 	public boolean isEmailVerification() {
-		emailVerification = entity.isEmailVerification();
 		return emailVerification;
 	}
 	public void setEmailVerification(boolean emailVerification) {
@@ -40,7 +38,6 @@ public class Form{
 		entity.setEmailVerification(emailVerification);
 	}
 	public int getId() {
-		id = entity.getId();
 		return id;
 	}
 	public void setId(int id) {
@@ -48,7 +45,6 @@ public class Form{
 		entity.setId(id);
 	}
 	public String getEmailDomain() {
-		emailDomain = entity.getEmailDomain();
 		return emailDomain;
 	}
 	public void setEmailDomain(String emailDomain) {
@@ -60,6 +56,7 @@ public class Form{
 	}
 	public void setEntity(FormEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
 	}
 
 	@Override
@@ -105,6 +102,14 @@ public class Form{
 			return false;
 		}
 		return true;
+	}
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		id = entity.getId();
+		remark = entity.getRemark();
+		questions = entity.getQuestions();
+		emailVerification = entity.isEmailVerification();
+		emailDomain = entity.getEmailDomain();	
 	}
 
 }

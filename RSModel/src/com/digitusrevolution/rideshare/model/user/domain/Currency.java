@@ -1,8 +1,9 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
+import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.user.data.CurrencyEntity;
 
-public class Currency{
+public class Currency implements DomainModel{
 
 	private CurrencyEntity entity = new CurrencyEntity();
 	private int id;
@@ -10,7 +11,6 @@ public class Currency{
 	private float conversionRate;
 	
 	public int getId() {
-		id = entity.getId();
 		return id;
 	}
 	public void setId(int id) {
@@ -18,7 +18,6 @@ public class Currency{
 		entity.setId(id);
 	}
 	public String getName() {
-		name = entity.getName();
 		return name;
 	}
 	public void setName(String name) {
@@ -30,9 +29,9 @@ public class Currency{
 	}
 	public void setEntity(CurrencyEntity entity) {
 		this.entity = entity;
+		setDomainModelPrimitiveVariable();
 	}
 	public float getConversionRate() {
-		conversionRate = entity.getConversionRate();
 		return conversionRate;
 	}
 	public void setConversionRate(float conversionRate) {
@@ -70,5 +69,11 @@ public class Currency{
 			return false;
 		}
 		return true;
+	}
+	@Override
+	public void setDomainModelPrimitiveVariable() {
+		id = entity.getId();
+		name = entity.getName();
+		conversionRate = entity.getConversionRate();
 	}
 }
