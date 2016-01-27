@@ -10,7 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
-import com.digitusrevolution.rideshare.common.mapper.serviceprovider.core.CompanyMapper;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.serviceprovider.data.core.CompanyEntity;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
@@ -51,13 +50,11 @@ public class CompanyDO implements DomainObjectPKInteger<Company>{
 		if (company.getId()==0){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+company.getId());
 		}
-		setCompany(company);
 		companyDAO.update(company.getEntity());
 	}
 
 	@Override
 	public int create(Company company) {
-		setCompany(company);
 		int id = companyDAO.create(company.getEntity());
 		return id;
 	}
@@ -75,7 +72,6 @@ public class CompanyDO implements DomainObjectPKInteger<Company>{
 	@Override
 	public void delete(int id) {
 		company = get(id);
-		setCompany(company);
 		companyDAO.delete(company.getEntity());
 	}
 	

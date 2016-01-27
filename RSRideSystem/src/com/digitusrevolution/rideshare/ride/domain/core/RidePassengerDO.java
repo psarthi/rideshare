@@ -46,13 +46,11 @@ public class RidePassengerDO implements DomainObjectPKInteger<RidePassenger>{
 		if (ridePassenger.getId()==0){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+ridePassenger.getId());
 		}
-		setRidePassenger(ridePassenger);
 		genericDAO.update(ridePassenger.getEntity());		
 	}
 
 	@Override
 	public int create(RidePassenger ridePassenger) {
-		setRidePassenger(ridePassenger);
 		int id = genericDAO.create(ridePassenger.getEntity());
 		return id;
 	}
@@ -70,7 +68,6 @@ public class RidePassengerDO implements DomainObjectPKInteger<RidePassenger>{
 	@Override
 	public void delete(int id) {
 		ridePassenger = get(id);
-		setRidePassenger(ridePassenger);
 		genericDAO.delete(ridePassenger.getEntity());		
 	}
 

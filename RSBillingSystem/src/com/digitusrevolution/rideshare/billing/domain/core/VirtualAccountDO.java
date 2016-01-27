@@ -56,13 +56,11 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.dig
 		if (account.getNumber()==0){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+account.getNumber());
 		}
-		setAccount(account);
 		genericDAO.update(account.getEntity());
 	}
 
 	@Override
 	public int create(Account account) {
-		setAccount(account);
 		int id = genericDAO.create(account.getEntity());
 		return id;
 	}
@@ -80,7 +78,6 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.dig
 	@Override
 	public void delete(int number) {
 		account = get(number);
-		setAccount(account);
 		genericDAO.delete(account.getEntity());
 	}
 	

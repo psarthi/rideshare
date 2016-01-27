@@ -32,7 +32,6 @@ public class CityDO implements DomainObjectPKInteger<City>{
 
 	@Override
 	public int create(City city) {
-		setCity(city);
 		int id = genericDAO.create(city.getEntity());
 		return id;
 	}
@@ -69,7 +68,6 @@ public class CityDO implements DomainObjectPKInteger<City>{
 	@Override
 	public void delete(int id) {
 		city = get(id);
-		setCity(city);
 		genericDAO.delete(city.getEntity());			
 	}
 

@@ -46,13 +46,11 @@ public class CountryDO implements DomainObjectPKString<Country>{
 		if (country.getName().isEmpty()){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+country.getName());
 		}
-		setCountry(country);
 		genericDAO.update(country.getEntity());				
 	}
 
 	@Override
 	public String create(Country country) {
-		setCountry(country);
 		String name = genericDAO.create(country.getEntity());
 		return name;
 	}
@@ -70,7 +68,6 @@ public class CountryDO implements DomainObjectPKString<Country>{
 	@Override
 	public void delete(String name) {
 		country = get(name);
-		setCountry(country);
 		genericDAO.delete(country.getEntity());				
 	}
 

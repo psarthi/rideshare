@@ -46,13 +46,11 @@ public class CurrencyDO implements DomainObjectPKInteger<Currency>{
 		if (currency.getId()==0){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+currency.getId());
 		}
-		setCurrency(currency);
 		genericDAO.update(currency.getEntity());				
 	}
 
 	@Override
 	public int create(Currency currency) {
-		setCurrency(currency);
 		int id = genericDAO.create(currency.getEntity());
 		return id;
 	}
@@ -70,7 +68,6 @@ public class CurrencyDO implements DomainObjectPKInteger<Currency>{
 	@Override
 	public void delete(int id) {
 		currency = get(id);
-		setCurrency(currency);
 		genericDAO.delete(currency.getEntity());			
 	}
 

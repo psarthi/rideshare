@@ -46,13 +46,11 @@ public class StateDO implements DomainObjectPKInteger<State>{
 		if (state.getId()==0){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+state.getId());
 		}
-		setState(state);
 		genericDAO.update(state.getEntity());				
 	}
 
 	@Override
 	public int create(State state) {
-		setState(state);
 		int id = genericDAO.create(state.getEntity());
 		return id;
 	}
@@ -70,7 +68,6 @@ public class StateDO implements DomainObjectPKInteger<State>{
 	@Override
 	public void delete(int id) {
 		state = get(id);
-		setState(state);
 		genericDAO.delete(state.getEntity());			
 	}
 	

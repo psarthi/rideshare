@@ -33,7 +33,6 @@ public class RoleDO implements DomainObjectPKString<Role>{
 
 	@Override
 	public String create(Role role) {
-		setRole(role);
 		//Converting RoleName Enum to String
 		String name = genericDAO.create(role.getEntity()).toString();
 		return name;
@@ -66,14 +65,12 @@ public class RoleDO implements DomainObjectPKString<Role>{
 		if (role.getName().toString().isEmpty()){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+role.getName());
 		}
-		setRole(role);
 		genericDAO.update(role.getEntity());				
 	}
 
 	@Override
 	public void delete(String name) {
 		role = get(name);
-		setRole(role);
 		genericDAO.delete(role.getEntity());				
 	}
 }

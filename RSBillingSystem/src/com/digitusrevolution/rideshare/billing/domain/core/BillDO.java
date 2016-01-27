@@ -61,13 +61,11 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 		if (bill.getNumber()==0){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+bill.getNumber());
 		}
-		setBill(bill);
 		billDAO.update(bill.getEntity());
 	}
 
 	@Override
 	public int create(Bill bill) {
-		setBill(bill);
 		int id = billDAO.create(bill.getEntity());
 		return id;
 	}
@@ -85,7 +83,6 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	@Override
 	public void delete(int number) {
 		bill = get(number);
-		setBill(bill);
 		billDAO.delete(bill.getEntity());
 	}
 	

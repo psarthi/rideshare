@@ -100,7 +100,6 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		if (ride.getId()==0){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+ride.getId());
 		}
-		setRide(ride);
 		rideDAO.update(ride.getEntity());
 	}
 
@@ -108,7 +107,6 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	@Override
 	public void delete(int id) {
 		ride = get(id);
-		setRide(ride);
 		rideDAO.delete(ride.getEntity());
 	}
 	
@@ -124,7 +122,6 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	@Override
 	public int create(Ride ride) {
 		logger.entry();
-		setRide(ride);
 		int id = rideDAO.create(ride.getEntity());
 		logger.exit();		
 		return id;
