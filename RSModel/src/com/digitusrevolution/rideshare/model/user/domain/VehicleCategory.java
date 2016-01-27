@@ -108,11 +108,10 @@ public class VehicleCategory implements DomainModel{
 
 	@Override
 	public void fetchReferenceVariable() {
-		subCategories = getSubCategories();
+		Collection<VehicleSubCategory> subCategories = getSubCategories();
 		for (VehicleSubCategory vehicleSubCategory : subCategories) {
 			vehicleSubCategory.fetchReferenceVariable();
 		}
-		
 	}
 
 }

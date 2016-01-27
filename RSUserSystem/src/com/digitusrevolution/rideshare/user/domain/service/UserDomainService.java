@@ -27,7 +27,7 @@ public class UserDomainService implements DomainService<User>{
 			transation = session.beginTransaction();
 	
 			UserDO userDO = new UserDO();
-			user = userDO.get(id);			
+			user = userDO.getWithEagerFetch(id);			
 			
 			transation.commit();
 		} catch (RuntimeException e) {

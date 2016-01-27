@@ -1,5 +1,7 @@
 package com.digitusrevolution.rideshare.user;
 
+import java.time.LocalTime;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
@@ -12,11 +14,14 @@ import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.model.user.domain.Fuel;
 import com.digitusrevolution.rideshare.model.user.domain.FuelType;
+import com.digitusrevolution.rideshare.model.user.domain.Photo;
+import com.digitusrevolution.rideshare.model.user.domain.Preference;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
@@ -51,14 +56,14 @@ public class UserDataLoader {
 			
 			UserDataLoader dataLoader = new UserDataLoader();
 	
-//			dataLoader.loadCountry();
-//			dataLoader.loadRole();
-//			dataLoader.loadVehicleCategory();
-//			dataLoader.loadVehicleSubCategory();
-//			
-//			dataLoader.loadUser();
-//			dataLoader.loadVehicle();
-			dataLoader.addAccount();
+			dataLoader.loadCountry();
+			dataLoader.loadRole();
+			dataLoader.loadVehicleCategory();
+			dataLoader.loadVehicleSubCategory();
+			
+			dataLoader.loadUser();
+			dataLoader.loadVehicle();
+//			dataLoader.addAccount();
 			
 			
 			transation.commit();
@@ -139,6 +144,9 @@ public class UserDataLoader {
 	
 		for (int i=1; i<6; i++){
 			User user = new User();
+			Photo photo = new Photo();
+			photo.setImageLocation("Dummy");
+			user.setPhoto(photo);
 			user.addRole(role);
 			user.setFirstName("firstName-"+i);
 			user.setLastName("lastName-"+i);
@@ -205,6 +213,9 @@ public class UserDataLoader {
 		Vehicle vehicle = new Vehicle();
 		vehicle.setVehicleCategory(vehicleCategory);
 		vehicle.setVehicleSubCategory(vehicleSubCategory);
+		Photo photo = new Photo();
+		photo.setImageLocation("Dummy");
+		vehicle.setPhoto(photo);
 		
 		for (int i=1;i<2;i++){
 			UserDO userDO = new UserDO();
@@ -219,6 +230,26 @@ public class UserDataLoader {
 			userDO.addAccount(i, account);			
 		}
 
+	}
+	
+	public void loadPreference(){
+		Preference preference = new Preference();
+		preference.setDropPointVariation(500);
+		preference.setLuggageCapacityOffered(2);
+		preference.setLuggageCapacityRequired(2);
+		preference.setMinProfileRating(4);
+		preference.setPickupPointVariation(500);
+		LocalTime localTime = LocalTime.of(0, 30);
+		preference.setPickupTimeVariation(localTime);
+		preference.setSeatOffered(2);
+		preference.setSeatRequired(2);
+		preference.setSexPreference(Sex.Female);
+		VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();
+		VehicleCategory vehicleCategory = vehicleCategoryDO.get(1);
+		preference.setVehicleCategory(vehicleCategory);
+		VehicleSubCategoryDO vehicleSubCategoryDO = new VehicleSubCategoryDO();
+		VehicleSubCategory vehicleSubCategory = vehicleSubCategoryDO.get(1);
+		preference.setVehicleSubCategory(vehicleSubCategory);
 	}
 
 	

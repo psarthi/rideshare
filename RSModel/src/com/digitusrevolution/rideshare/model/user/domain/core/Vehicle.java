@@ -114,6 +114,7 @@ public class Vehicle implements DomainModel{
 	public void fetchReferenceVariable() {
 		getVehicleCategory().fetchReferenceVariable();
 		getVehicleSubCategory().fetchReferenceVariable();
+	//	getPhoto().fetchReferenceVariable();
 	}
 
 }

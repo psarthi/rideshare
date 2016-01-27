@@ -291,7 +291,6 @@ public class Group implements DomainModel{
 
 	@Override
 	public void fetchReferenceVariable() {
-		// TODO Auto-generated method stub
 		
 	}
 }

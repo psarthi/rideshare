@@ -123,7 +123,9 @@ public class Country implements DomainModel{
 	}
 	@Override
 	public void fetchReferenceVariable() {
-		// TODO Auto-generated method stub
+		getStates();
+		getFuels();
+		getCurrency();
 		
 	}
 }

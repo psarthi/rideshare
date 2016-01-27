@@ -513,8 +513,32 @@ public class User implements DomainModel{
 
 	@Override
 	public void fetchReferenceVariable() {
-		// TODO Auto-generated method stub
-		
+		getCity().fetchReferenceVariable();
+		getState().fetchReferenceVariable();
+		getCountry().fetchReferenceVariable();
+		getPhoto().fetchReferenceVariable();
+		getGroups();
+		vehicles = getVehicles();
+		for (Vehicle vehicle : vehicles) {
+			vehicle.fetchReferenceVariable();
+		}
+		//Don't fetch reference, else recursive loop
+		getFriends();
+		roles = getRoles();
+		for (Role role : roles) {
+			role.fetchReferenceVariable();
+		}
+		accounts = getAccounts();
+		for (Account account : accounts) {
+			account.fetchReferenceVariable();
+		}
+		getRidesTaken();
+		getRideRequests();
+		getRidesOffered();
+		getBills();
+		getPreference().fetchReferenceVariable();
+		getFeedbacks();
+		getFriendRequests();		
 	}
 
 }
