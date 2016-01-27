@@ -32,7 +32,7 @@ import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.State;
 
 public class User implements DomainModel{
-	
+
 	private UserEntity entity = new UserEntity();
 	private int id;
 	private String firstName;
@@ -50,7 +50,7 @@ public class User implements DomainModel{
 	private Collection<User> friends = new HashSet<User>();
 	private Collection<Role> roles = new HashSet<Role>();
 	private Collection<Account> accounts = new HashSet<Account>();
-	
+
 	private Collection<Ride> ridesOffered = new HashSet<Ride>();
 	private Collection<Ride> ridesTaken = new HashSet<Ride>();
 	private Collection<RideRequest> rideRequests = new HashSet<RideRequest>();
@@ -60,16 +60,16 @@ public class User implements DomainModel{
 	private Collection<UserFeedback> feedbacks = new LinkedList<UserFeedback>();
 	private Collection<FriendRequest> friendRequests = new HashSet<FriendRequest>();	
 	private float profileRating;
-	
+
 	public int getId() {
 		return id;
 	}
-	
+
 	public void setId(int id) {
 		this.id = id;	
 		entity.setId(id);
 	}
-	
+
 	public String getFirstName() {
 		return firstName;
 	}
@@ -139,148 +139,199 @@ public class User implements DomainModel{
 	}
 
 	public Collection<Group> getGroups() {
-		Collection<GroupEntity> groupEntities = entity.getGroups();
-		for (GroupEntity groupEntity : groupEntities) {
-			Group group = new Group();
-			group.setEntity(groupEntity);
-			groups.add(group);
+		if (groups.isEmpty()){
+			Collection<GroupEntity> groupEntities = entity.getGroups();
+			for (GroupEntity groupEntity : groupEntities) {
+				Group group = new Group();
+				group.setEntity(groupEntity);
+				groups.add(group);
+			}
 		}
 		return groups;
 	}
 
 	public void setGroups(Collection<Group> groups) {
 		this.groups = groups;
+		entity.getGroups().clear();
 		for (Group group : groups) {
 			entity.getGroups().add(group.getEntity());
 		}
 	}
 
+	public void addGroup(Group group){
+		groups.add(group);
+		entity.getGroups().add(group.getEntity());
+	}
+
 	public Collection<Vehicle> getVehicles() {
-		Collection<VehicleEntity> vehicleEntities = entity.getVehicles();
-		for (VehicleEntity vehicleEntity : vehicleEntities) {
-			Vehicle vehicle = new Vehicle();
-			vehicle.setEntity(vehicleEntity);
-			vehicles.add(vehicle);
+		if (vehicles.isEmpty()){
+			Collection<VehicleEntity> vehicleEntities = entity.getVehicles();
+			for (VehicleEntity vehicleEntity : vehicleEntities) {
+				Vehicle vehicle = new Vehicle();
+				vehicle.setEntity(vehicleEntity);
+				vehicles.add(vehicle);
+			}			
 		}
 		return vehicles;
 	}
 
 	public void setVehicles(Collection<Vehicle> vehicles) {
 		this.vehicles = vehicles;
+		entity.getVehicles().clear();
 		for (Vehicle vehicle : vehicles) {
 			entity.getVehicles().add(vehicle.getEntity());
 		}
 	}
 
+	public void addVehicle(Vehicle vehicle) {
+		vehicles.add(vehicle);
+		entity.getVehicles().add(vehicle.getEntity());
+	}
+
 	public Collection<User> getFriends() {
-		Collection<UserEntity> friendEntities = entity.getFriends();
-		for (UserEntity userEntity : friendEntities) {
-			User friend = new User();
-			friend.setEntity(userEntity);
-			friends.add(friend);
+		if (friends.isEmpty()){
+			Collection<UserEntity> friendEntities = entity.getFriends();
+			for (UserEntity userEntity : friendEntities) {
+				User friend = new User();
+				friend.setEntity(userEntity);
+				friends.add(friend);
+			}
 		}
 		return friends;
 	}
 
 	public void setFriends(Collection<User> friends) {
 		this.friends = friends;
+		entity.getFriends().clear();
 		for (User user : friends) {
 			entity.getFriends().add(user.getEntity());
 		}
 	}
 
+	public void addFriend(User friend){
+		friends.add(friend);
+		entity.getFriends().add(friend.getEntity());
+	}
+
 	public Collection<Role> getRoles() {
-		Collection<RoleEntity> roleEntities = entity.getRoles();
-		for (RoleEntity roleEntity : roleEntities) {
-			Role role = new Role();
-			role.setEntity(roleEntity);
-			roles.add(role);
+		if (roles.isEmpty()){
+			Collection<RoleEntity> roleEntities = entity.getRoles();
+			for (RoleEntity roleEntity : roleEntities) {
+				Role role = new Role();
+				role.setEntity(roleEntity);
+				roles.add(role);
+			}
 		}
 		return roles;
 	}
 
 	public void setRoles(Collection<Role> roles) {
 		this.roles = roles;
+		entity.getRoles().clear();
 		for (Role role : roles) {
 			entity.getRoles().add(role.getEntity());
 		}
 	}
 
+	public void addRole(Role role) {
+		roles.add(role);
+		entity.getRoles().add(role.getEntity());
+	}	
+
 	public Collection<Account> getAccounts() {
-		Collection<AccountEntity> accountEntities = entity.getAccounts();
-		for (AccountEntity accountEntity : accountEntities) {
-			Account account = new Account();
-			account.setEntity(accountEntity);
-			accounts.add(account);
+		if (accounts.isEmpty()){
+			Collection<AccountEntity> accountEntities = entity.getAccounts();
+			for (AccountEntity accountEntity : accountEntities) {
+				Account account = new Account();
+				account.setEntity(accountEntity);
+				accounts.add(account);
+			}
 		}
 		return accounts;
 	}
 
 	public void setAccounts(Collection<Account> accounts) {
 		this.accounts = accounts;
+		entity.getAccounts().clear();
 		for (Account account : accounts) {
 			entity.getAccounts().add(account.getEntity());
 		}
 	}
 
+	public void addAccount(Account account){
+		accounts.add(account);
+		entity.getAccounts().add(account.getEntity());
+	}
+
 	public Collection<RideRequest> getRideRequests() {
-		Collection<RideRequestEntity> rideRequestEntities = entity.getRideRequests();
-		for (RideRequestEntity rideRequestEntity : rideRequestEntities) {
-			RideRequest rideRequest = new RideRequest();
-			rideRequest.setEntity(rideRequestEntity);
-			rideRequests.add(rideRequest);
+		if (rideRequests.isEmpty()){
+			Collection<RideRequestEntity> rideRequestEntities = entity.getRideRequests();
+			for (RideRequestEntity rideRequestEntity : rideRequestEntities) {
+				RideRequest rideRequest = new RideRequest();
+				rideRequest.setEntity(rideRequestEntity);
+				rideRequests.add(rideRequest);
+			}
 		}
 		return rideRequests;
 	}
 
 	public void setRideRequests(Collection<RideRequest> rideRequests) {
 		this.rideRequests = rideRequests;
+		entity.getRideRequests().clear();
 		for (RideRequest rideRequest : rideRequests) {
 			entity.getRideRequests().add(rideRequest.getEntity());
 		}
 	}
 
 	public Collection<Bill> getBills() {
-		Collection<BillEntity> billEntities = entity.getBills();
-		for (BillEntity billEntity : billEntities) {
-			Bill bill = new Bill();
-			bill.setEntity(billEntity);
-			bills.add(bill);
+		if (bills.isEmpty()){
+			Collection<BillEntity> billEntities = entity.getBills();
+			for (BillEntity billEntity : billEntities) {
+				Bill bill = new Bill();
+				bill.setEntity(billEntity);
+				bills.add(bill);
+			}
 		}
 		return bills;
 	}
 
 	public void setBills(Collection<Bill> bills) {
 		this.bills = bills;
+		entity.getBills().clear();
 		for (Bill bill : bills) {
 			entity.getBills().add(bill.getEntity());
 		}
 	}
 
 	public Collection<Ride> getRidesOffered() {
-		Collection<RideEntity> rideEntities = entity.getRidesOffered();
-		for (RideEntity rideEntity : rideEntities) {
-			Ride ride = new Ride();
-			ride.setEntity(rideEntity);
-			ridesOffered.add(ride);
+		if (ridesOffered.isEmpty()){
+			Collection<RideEntity> rideEntities = entity.getRidesOffered();
+			for (RideEntity rideEntity : rideEntities) {
+				Ride ride = new Ride();
+				ride.setEntity(rideEntity);
+				ridesOffered.add(ride);
+			}
 		}
 		return ridesOffered;
 	}
 
 	public void setRidesOffered(Collection<Ride> ridesOffered) {
 		this.ridesOffered = ridesOffered;
+		entity.getRidesOffered().clear();
 		for (Ride ride : ridesOffered) {
 			entity.getRidesOffered().add(ride.getEntity());
 		}
 	}
 
 	public Collection<Ride> getRidesTaken() {
-		Collection<RidePassengerEntity> ridePassengerEntities = entity.getRidesTaken();
-		for (RidePassengerEntity ridePassengerEntity : ridePassengerEntities) {
-			Ride ride = new Ride();
-			//Note - Our entity and domain model is different for this case, so getting ride from ride passenger
-			ride.setEntity(ridePassengerEntity.getRide());
-			ridesTaken.add(ride);
+		if (ridesTaken.isEmpty()){
+			Collection<RidePassengerEntity> ridePassengerEntities = entity.getRidesTaken();
+			for (RidePassengerEntity ridePassengerEntity : ridePassengerEntities) {
+				Ride ride = new Ride();
+				//Note - Our entity and domain model is different for this case, so getting ride from ride passenger
+				ride.setEntity(ridePassengerEntity.getRide());
+				ridesTaken.add(ride);
+			}
 		}
 		return ridesTaken;
 	}
@@ -310,7 +361,7 @@ public class User implements DomainModel{
 		this.country = country;
 		entity.setCountry(country.getEntity());
 	}
-	
+
 	public Account getAccount(AccountType accountType){
 		Collection<Account> accounts = getAccounts();
 		for (Account account : accounts) {
@@ -320,7 +371,7 @@ public class User implements DomainModel{
 		}
 		throw new RuntimeException("No account found for the type:"+accountType);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -380,20 +431,28 @@ public class User implements DomainModel{
 	}
 
 	public Collection<UserFeedback> getFeedbacks() {
-		Collection<UserFeedbackEntity> feedbackEntities = entity.getFeedbacks();
-		for (UserFeedbackEntity userFeedbackEntity : feedbackEntities) {
-			UserFeedback feedback = new UserFeedback();
-			feedback.setEntity(userFeedbackEntity);
-			feedbacks.add(feedback);
+		if (feedbacks.isEmpty()){
+			Collection<UserFeedbackEntity> feedbackEntities = entity.getFeedbacks();
+			for (UserFeedbackEntity userFeedbackEntity : feedbackEntities) {
+				UserFeedback feedback = new UserFeedback();
+				feedback.setEntity(userFeedbackEntity);
+				feedbacks.add(feedback);
+			}
 		}
 		return feedbacks;
 	}
 
 	public void setFeedbacks(Collection<UserFeedback> feedbacks) {
 		this.feedbacks = feedbacks;
+		entity.getFeedbacks().clear();
 		for (UserFeedback userFeedback : feedbacks) {
 			entity.getFeedbacks().add(userFeedback.getEntity());
 		}
+	}
+
+	public void addFeedback(UserFeedback feedback){
+		feedbacks.add(feedback);
+		entity.getFeedbacks().add(feedback.getEntity());
 	}
 
 	public Preference getPreference() {
@@ -407,22 +466,30 @@ public class User implements DomainModel{
 	}
 
 	public Collection<FriendRequest> getFriendRequests() {
-		Collection<FriendRequestEntity> friendRequestEntities = entity.getFriendRequests();
-		for (FriendRequestEntity friendRequestEntity : friendRequestEntities) {
-			FriendRequest friendRequest = new FriendRequest();
-			friendRequest.setEntity(friendRequestEntity);
-			friendRequests.add(friendRequest);
+		if (friendRequests.isEmpty()){
+			Collection<FriendRequestEntity> friendRequestEntities = entity.getFriendRequests();
+			for (FriendRequestEntity friendRequestEntity : friendRequestEntities) {
+				FriendRequest friendRequest = new FriendRequest();
+				friendRequest.setEntity(friendRequestEntity);
+				friendRequests.add(friendRequest);
+			}
 		}
 		return friendRequests;
 	}
 
 	public void setFriendRequests(Collection<FriendRequest> friendRequests) {
 		this.friendRequests = friendRequests;
+		entity.getFriendRequests().clear();
 		for (FriendRequest friendRequest : friendRequests) {
 			entity.getFriendRequests().add(friendRequest.getEntity());
 		}
 	}
 
+	public void addFriendRequest(FriendRequest friendRequest){
+		friendRequests.add(friendRequest);
+		entity.getFriendRequests().add(friendRequest.getEntity());
+	}
+	
 	public UserEntity getEntity() {
 		return entity;
 	}
@@ -443,5 +510,5 @@ public class User implements DomainModel{
 		password = entity.getPassword();
 		profileRating = entity.getProfileRating();
 	}
-	
+
 }

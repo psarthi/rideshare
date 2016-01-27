@@ -13,7 +13,7 @@ public class VehicleCategory implements DomainModel{
 	private int id;
 	private String name;
 	private Collection<VehicleSubCategory> subCategories = new HashSet<VehicleSubCategory>();
-	
+
 	public int getId() {
 		return id; 
 	}
@@ -23,21 +23,29 @@ public class VehicleCategory implements DomainModel{
 		entity.setId(id);
 	}
 
-	public Collection<VehicleSubCategory> getSubCategories() {		
-		Collection<VehicleSubCategoryEntity> subCategoryEntities = entity.getSubCategories();
-		for (VehicleSubCategoryEntity vehicleSubCategoryEntity : subCategoryEntities) {
-			VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
-			vehicleSubCategory.setEntity(vehicleSubCategoryEntity);
-			subCategories.add(vehicleSubCategory);
+	public Collection<VehicleSubCategory> getSubCategories() {	
+		if (subCategories.isEmpty()){
+			Collection<VehicleSubCategoryEntity> subCategoryEntities = entity.getSubCategories();
+			for (VehicleSubCategoryEntity vehicleSubCategoryEntity : subCategoryEntities) {
+				VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
+				vehicleSubCategory.setEntity(vehicleSubCategoryEntity);
+				subCategories.add(vehicleSubCategory);
+			}
 		}
 		return subCategories;
 	}
 
 	public void setSubCategories(Collection<VehicleSubCategory> subCategories) {
 		this.subCategories = subCategories;
+		entity.getSubCategories().clear();
 		for (VehicleSubCategory vehicleSubCategory : subCategories) {
 			entity.getSubCategories().add(vehicleSubCategory.getEntity());
 		}
+	}
+	
+	public void addSubCategory(VehicleSubCategory subCategory){
+		subCategories.add(subCategory);
+		entity.getSubCategories().add(subCategory.getEntity());
 	}
 
 	public String getName() {

@@ -21,7 +21,7 @@ public class Group implements DomainModel{
 	private int id;
 	private String name;
 	private Photo photo = new Photo();
-	
+
 	private Collection<User> members = new HashSet<User>();
 	private User owner = new User();
 	private Collection<User> admins = new HashSet<User>();
@@ -72,20 +72,28 @@ public class Group implements DomainModel{
 	}
 
 	public Collection<User> getMembers() {
-		Collection<UserEntity> memberEntities = entity.getMembers();
-		for (UserEntity userEntity : memberEntities) {
-			User member = new User();
-			member.setEntity(userEntity);
-			members.add(member);
+		if (members.isEmpty()){
+			Collection<UserEntity> memberEntities = entity.getMembers();
+			for (UserEntity userEntity : memberEntities) {
+				User member = new User();
+				member.setEntity(userEntity);
+				members.add(member);
+			}
 		}
 		return members;
 	}
 
 	public void setMembers(Collection<User> members) {
 		this.members = members;
+		entity.getMembers().clear();
 		for (User member : members) {
 			entity.getMembers().add(member.getEntity());
 		}
+	}
+
+	public void addMember(User member){
+		members.add(member);
+		entity.getMembers().add(member.getEntity());
 	}
 
 	public User getOwner() {
@@ -99,37 +107,53 @@ public class Group implements DomainModel{
 	}
 
 	public Collection<User> getAdmins() {
-		Collection<UserEntity> adminEntities = entity.getAdmins();
-		for (UserEntity userEntity : adminEntities) {
-			User admin = new User();
-			admin.setEntity(userEntity);
-			admins.add(admin);
+		if (admins.isEmpty()){
+			Collection<UserEntity> adminEntities = entity.getAdmins();
+			for (UserEntity userEntity : adminEntities) {
+				User admin = new User();
+				admin.setEntity(userEntity);
+				admins.add(admin);
+			}
 		}
 		return admins;
 	}
 
 	public void setAdmins(Collection<User> admins) {
 		this.admins = admins;
+		entity.getAdmins().clear();
 		for (User user : admins) {
 			entity.getAdmins().add(user.getEntity());
 		}
 	}
 
+	public void addAdmin(User admin){
+		admins.add(admin);
+		entity.getAdmins().add(admin.getEntity());
+	}
+
 	public Collection<GroupFeedback> getFeedbacks() {
-		Collection<GroupFeedbackEntity> feedbackEntities = entity.getFeedbacks();
-		for (GroupFeedbackEntity groupFeedbackEntity : feedbackEntities) {
-			GroupFeedback feedback = new GroupFeedback();
-			feedback.setEntity(groupFeedbackEntity);
-			feedbacks.add(feedback);
+		if (feedbacks.isEmpty()){
+			Collection<GroupFeedbackEntity> feedbackEntities = entity.getFeedbacks();
+			for (GroupFeedbackEntity groupFeedbackEntity : feedbackEntities) {
+				GroupFeedback feedback = new GroupFeedback();
+				feedback.setEntity(groupFeedbackEntity);
+				feedbacks.add(feedback);
+			}
 		}
 		return feedbacks;
 	}
 
 	public void setFeedbacks(Collection<GroupFeedback> feedbacks) {
 		this.feedbacks = feedbacks;
+		entity.getFeedbacks().clear();
 		for (GroupFeedback groupFeedback : feedbacks) {
 			entity.getFeedbacks().add(groupFeedback.getEntity());
 		}
+	}
+
+	public void addFeedback(GroupFeedback feedback){
+		feedbacks.add(feedback);
+		entity.getFeedbacks().add(feedback.getEntity());
 	}
 
 	public Form getMembershipForm() {
@@ -170,20 +194,28 @@ public class Group implements DomainModel{
 	}
 
 	public Collection<MembershipRequest> getMembershipRequests() {
-		Collection<MembershipRequestEntity> membershipRequestEntities = entity.getMembershipRequests();
-		for (MembershipRequestEntity membershipRequestEntity : membershipRequestEntities) {
-			MembershipRequest membershipRequest = new MembershipRequest();
-			membershipRequest.setEntity(membershipRequestEntity);
-			membershipRequests.add(membershipRequest);
+		if (membershipRequests.isEmpty()){
+			Collection<MembershipRequestEntity> membershipRequestEntities = entity.getMembershipRequests();
+			for (MembershipRequestEntity membershipRequestEntity : membershipRequestEntities) {
+				MembershipRequest membershipRequest = new MembershipRequest();
+				membershipRequest.setEntity(membershipRequestEntity);
+				membershipRequests.add(membershipRequest);
+			}
 		}
 		return membershipRequests;
 	}
 
 	public void setMembershipRequests(Collection<MembershipRequest> membershipRequests) {
 		this.membershipRequests = membershipRequests;
+		entity.getMembershipRequests().clear();
 		for (MembershipRequest membershipRequest : membershipRequests) {
 			entity.getMembershipRequests().add(membershipRequest.getEntity());
 		}
+	}
+	
+	public void addMembershipRequest(MembershipRequest membershipRequest){
+		membershipRequests.add(membershipRequest);
+		entity.getMembershipRequests().add(membershipRequest.getEntity());
 	}
 
 	public int getGenuineVotes() {

@@ -13,7 +13,7 @@ public class State implements DomainModel{
 	private int id;
 	private String name;
 	private Collection<City> cities = new HashSet<City>();
-	
+
 	public int getId() {
 		return id;
 	}
@@ -29,20 +29,29 @@ public class State implements DomainModel{
 		entity.setName(name);
 	}
 	public Collection<City> getCities() {
-		Collection<CityEntity> cityEntities = entity.getCities();
-		for (CityEntity cityEntity : cityEntities) {
-			City city = new City();
-			city.setEntity(cityEntity);
-			cities.add(city);
+		if (cities.isEmpty()){
+			Collection<CityEntity> cityEntities = entity.getCities();
+			for (CityEntity cityEntity : cityEntities) {
+				City city = new City();
+				city.setEntity(cityEntity);
+				cities.add(city);
+			}
 		}
 		return cities;
 	}
 	public void setCities(Collection<City> cities) {
 		this.cities = cities;
+		entity.getCities().clear();
 		for (City city : cities) {
 			entity.getCities().add(city.getEntity());
 		}
 	}
+	
+	public void addCity(City city){
+		cities.add(city);
+		entity.getCities().add(city.getEntity());
+	}
+	
 	public StateEntity getEntity() {
 		return entity;
 	}
@@ -86,6 +95,6 @@ public class State implements DomainModel{
 	public void setDomainModelPrimitiveVariable() {
 		id = entity.getId();
 		name = entity.getName();
-		
+
 	}	
 }

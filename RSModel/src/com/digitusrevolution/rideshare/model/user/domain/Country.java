@@ -18,7 +18,7 @@ public class Country implements DomainModel{
 	//Apart from that, variation of fuel prices are not that high, so avg price would do and maintenance would be less
 	private Collection<Fuel> fuels = new HashSet<Fuel>();
 	private Currency currency = new Currency();
-	
+
 	public String getName() {
 		return name; 
 	}
@@ -35,35 +35,53 @@ public class Country implements DomainModel{
 		entity.setCurrency(currency.getEntity());
 	}
 	public Collection<State> getStates() {
-		Collection<StateEntity> stateEntities = entity.getStates();
-		for (StateEntity stateEntity : stateEntities) {
-			State state = new State();
-			state.setEntity(stateEntity);
-			states.add(state);
+		if (states.isEmpty()){
+			Collection<StateEntity> stateEntities = entity.getStates();
+			for (StateEntity stateEntity : stateEntities) {
+				State state = new State();
+				state.setEntity(stateEntity);
+				states.add(state);
+			}
 		}
 		return states;
 	}
 	public void setStates(Collection<State> states) {
 		this.states = states;
+		entity.getStates().clear();
 		for (State state : states) {
 			entity.getStates().add(state.getEntity());
 		}
 	}
+
+	public void addState(State state){
+		states.add(state);
+		entity.getStates().add(state.getEntity());
+	}
+
 	public Collection<Fuel> getFuels() {
-		Collection<FuelEntity> fuelEntities = entity.getFuels();
-		for (FuelEntity fuelEntity : fuelEntities) {
-			Fuel fuel = new Fuel();
-			fuel.setEntity(fuelEntity);
-			fuels.add(fuel);
+		if (fuels.isEmpty()){
+			Collection<FuelEntity> fuelEntities = entity.getFuels();
+			for (FuelEntity fuelEntity : fuelEntities) {
+				Fuel fuel = new Fuel();
+				fuel.setEntity(fuelEntity);
+				fuels.add(fuel);
+			}
 		}
 		return fuels;
 	}
 	public void setFuels(Collection<Fuel> fuels) {
 		this.fuels = fuels;
+		entity.getFuels().clear();
 		for (Fuel fuel : fuels) {
 			entity.getFuels().add(fuel.getEntity());
 		}
 	}
+	
+	public void addFuel(Fuel fuel){
+		fuels.add(fuel);
+		entity.getFuels().add(fuel.getEntity());
+	}
+	
 	public CountryEntity getEntity() {
 		return entity;
 	}

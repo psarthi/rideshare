@@ -85,16 +85,12 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	
 	public void addVehicle(int userId, Vehicle vehicle){
 		user = get(userId);
-		user.getVehicles().add(vehicle);
-		user.setVehicles(user.getVehicles());
 		if (user.getVehicles().size()==0){
 			RoleDO roleDO = new RoleDO();
 			Role role = roleDO.get(RoleName.Driver.toString());
-			user.getRoles().add(role);
-			user.setRoles(user.getRoles());
+			user.addRole(role);
 		}
-		user.getVehicles().add(vehicle);
-		user.setVehicles(user.getVehicles());
+		user.addVehicle(vehicle);
 		update(user);
 	}
 	
@@ -117,8 +113,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		//Always use getChild instead of get whenever you are trying to update, so that you don't miss any fields where relationship is owned by this entity
 		//Otherwise while updating, that field relationship would be deleted
 		user = get(userId);
-		user.getAccounts().add(account);
-		user.setAccounts(user.getAccounts());
+		user.addAccount(account);
 		update(user);		
 	}	
 }

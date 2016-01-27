@@ -97,19 +97,16 @@ public class UserDataLoader {
 		fuel.setType(FuelType.Petrol);
 		fuel.setPrice(60);
 
-		country.getFuels().add(fuel);
-		country.setFuels(country.getFuels());
+		country.addFuel(fuel);
 		
 		State state = new State();
 		state.setName("Karnataka");
 		
 		City city = new City();
 		city.setName("Bangalore");
-		state.getCities().add(city);
-		state.setCities(state.getCities());
+		state.addCity(city);
 
-		country.getStates().add(state);
-		country.setStates(country.getStates());
+		country.addState(state);
 		
 		CountryDO countryDO = new CountryDO();
 		countryDO.create(country);
@@ -142,8 +139,7 @@ public class UserDataLoader {
 	
 		for (int i=1; i<6; i++){
 			User user = new User();
-			user.getRoles().add(role);
-			user.setRoles(user.getRoles());
+			user.addRole(role);
 			user.setFirstName("firstName-"+i);
 			user.setLastName("lastName-"+i);
 			user.setEmail("email-"+i);
@@ -192,8 +188,7 @@ public class UserDataLoader {
 		VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();	
 		VehicleCategory vehicleCategory = vehicleCategoryDO.get(1);
 		
-		vehicleCategory.getSubCategories().add(vehicleSubCategory);
-		vehicleCategory.setSubCategories(vehicleCategory.getSubCategories());
+		vehicleCategory.addSubCategory(vehicleSubCategory);
 		vehicleCategoryDO.update(vehicleCategory);
 	}
 
@@ -211,7 +206,7 @@ public class UserDataLoader {
 		vehicle.setVehicleCategory(vehicleCategory);
 		vehicle.setVehicleSubCategory(vehicleSubCategory);
 		
-		for (int i=1;i<3;i++){
+		for (int i=1;i<2;i++){
 			UserDO userDO = new UserDO();
 			userDO.addVehicle(i, vehicle);
 		}	

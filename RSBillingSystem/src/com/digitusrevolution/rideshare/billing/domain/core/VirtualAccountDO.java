@@ -84,8 +84,7 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.dig
 			transaction.setDateTime(dateTime);
 			transaction.setType(TransactionType.Debit);
 			transaction.setRemark(remark);
-			account.getTransactions().add(transaction);
-			account.setTransactions(account.getTransactions());
+			account.addTransaction(transaction);
 			update(account);
 		} else {
 			throw new InSufficientBalanceException("Not enough balance in the account. Current balance is:"+balance);			
@@ -105,8 +104,7 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.dig
 		transaction.setDateTime(dateTime);
 		transaction.setType(TransactionType.Credit);
 		transaction.setRemark(remark);
-		account.getTransactions().add(transaction);
-		account.setTransactions(account.getTransactions());
+		account.addTransaction(transaction);
 		update(account);
 	}
 }

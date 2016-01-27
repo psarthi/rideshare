@@ -46,8 +46,7 @@ public class RideRequestManagementService {
 			TrustCategory trustCategory = trustCategoryDO.get(TrustCategoryName.Anonymous.toString());
 	 
 			TrustNetwork trustNetwork = new TrustNetwork();
-			trustNetwork.getTrustCategories().add(trustCategory);
-			trustNetwork.setTrustCategories(trustNetwork.getTrustCategories());
+			trustNetwork.addTrustCategory(trustCategory);
 			rideRequest.setTrustNetwork(trustNetwork);
 			
 			rideRequest.setPickupPointVariation(1000);

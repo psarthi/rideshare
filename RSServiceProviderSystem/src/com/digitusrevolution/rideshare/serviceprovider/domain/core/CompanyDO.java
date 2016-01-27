@@ -69,8 +69,7 @@ public class CompanyDO implements DomainObjectPKInteger<Company>{
 	 */
 	public void addAccount(int companyId, Account account){
 		Company company = get(companyId);
-		company.getAccounts().add(account);
-		company.setAccounts(company.getAccounts());
+		company.addAccount(account);
 		update(company);
 	}
 

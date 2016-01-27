@@ -42,7 +42,7 @@ public class RideRequest implements DomainModel{
 	private int travelTime;
 	private int travelDistance;
 	private Collection<Ride> cancelledRides = new HashSet<Ride>();
-	
+
 	public int getId() {
 		return id;
 	}
@@ -155,20 +155,29 @@ public class RideRequest implements DomainModel{
 		entity.setPassenger(passenger.getEntity());
 	}
 	public Collection<Ride> getPreferredRides() {
-		Collection<RideEntity> preferredRideEntities = entity.getPreferredRides();
-		for (RideEntity rideEntity : preferredRideEntities) {
-			Ride ride = new Ride();
-			ride.setEntity(rideEntity);
-			preferredRides.add(ride);
+		if (preferredRides.isEmpty()){
+			Collection<RideEntity> preferredRideEntities = entity.getPreferredRides();
+			for (RideEntity rideEntity : preferredRideEntities) {
+				Ride ride = new Ride();
+				ride.setEntity(rideEntity);
+				preferredRides.add(ride);
+			}	
 		}
 		return preferredRides;
 	}
 	public void setPreferredRides(Collection<Ride> preferredRides) {
 		this.preferredRides = preferredRides;
+		entity.getPreferredRides().clear();
 		for (Ride ride : preferredRides) {
 			entity.getPreferredRides().add(ride.getEntity());
 		}
 	}
+
+	public void addPreferredRide(Ride preferredRide) {
+		preferredRides.add(preferredRide);
+		entity.getPreferredRides().add(preferredRide.getEntity());
+	}
+
 	public boolean getRidePreference() {
 		return ridePreference;
 	}
@@ -215,19 +224,26 @@ public class RideRequest implements DomainModel{
 		entity.setTravelDistance(travelDistance);
 	}
 	public Collection<Ride> getCancelledRides() {
-		Collection<RideEntity> cancelledRideEntities = entity.getCancelledRides();
-		for (RideEntity rideEntity : cancelledRideEntities) {
-			Ride ride = new Ride();
-			ride.setEntity(rideEntity);
-			cancelledRides.add(ride);
+		if (cancelledRides.isEmpty()){
+			Collection<RideEntity> cancelledRideEntities = entity.getCancelledRides();
+			for (RideEntity rideEntity : cancelledRideEntities) {
+				Ride ride = new Ride();
+				ride.setEntity(rideEntity);
+				cancelledRides.add(ride);
+			}
 		}
 		return cancelledRides;
 	}
 	public void setCancelledRides(Collection<Ride> cancelledRides) {
 		this.cancelledRides = cancelledRides;
+		entity.getCancelledRides().clear();
 		for (Ride ride : cancelledRides) {
 			entity.getCancelledRides().add(ride.getEntity());
 		}
+	}
+	public void addCancelledRide(Ride cancelledRide) {
+		cancelledRides.add(cancelledRide);
+		entity.getCancelledRides().add(cancelledRide.getEntity());
 	}
 	public RideRequestEntity getEntity() {
 		return entity;
@@ -301,7 +317,7 @@ public class RideRequest implements DomainModel{
 		status = entity.getStatus();
 		travelDistance = entity.getTravelDistance();
 		travelTime = entity.getTravelTime();
-		
+
 	}
 
 }
