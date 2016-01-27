@@ -40,6 +40,7 @@ public class TrustNetworkDO implements DomainObjectPKInteger<TrustNetwork>{
 		List<TrustNetwork> trustNetworks = new ArrayList<>();
 		List<TrustNetworkEntity> trustNetworkEntities = genericDAO.getAll();
 		for (TrustNetworkEntity trustNetworkEntity : trustNetworkEntities) {
+			TrustNetwork trustNetwork = new TrustNetwork();
 			trustNetwork.setEntity(trustNetworkEntity);
 			trustNetworks.add(trustNetwork);
 		}

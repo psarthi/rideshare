@@ -70,6 +70,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		List<Ride> rides = new ArrayList<>();
 		List<RideEntity> rideEntities = rideDAO.getAll();
 		for (RideEntity rideEntity : rideEntities) {
+			Ride ride = new Ride();
 			ride.setEntity(rideEntity);
 			setRidePickupAndDropPoints(ride);
 			rides.add(ride);
@@ -306,6 +307,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		List<RideEntity> rideEntities = rideDAO.getUpcomingRides(user.getEntity(), limit);
 		List<Ride> rides = new LinkedList<>();
 		for (RideEntity rideEntity : rideEntities) {
+			Ride ride = new Ride();
 			ride.setEntity(rideEntity);
 			rides.add(ride);
 		}

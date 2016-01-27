@@ -75,6 +75,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		List<RideRequest> rideRequests = new ArrayList<>();
 		List<RideRequestEntity> rideRequestEntities = rideRequestDAO.getAll();
 		for (RideRequestEntity rideRequestEntity : rideRequestEntities) {
+			RideRequest rideRequest = new RideRequest();
 			rideRequest.setEntity(rideRequestEntity);
 			setRideRequestPoint(rideRequest);
 			rideRequests.add(rideRequest);

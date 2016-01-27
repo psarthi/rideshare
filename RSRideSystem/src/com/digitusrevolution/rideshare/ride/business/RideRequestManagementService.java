@@ -47,6 +47,7 @@ public class RideRequestManagementService {
 	 
 			TrustNetwork trustNetwork = new TrustNetwork();
 			trustNetwork.getTrustCategories().add(trustCategory);
+			trustNetwork.setTrustCategories(trustNetwork.getTrustCategories());
 			rideRequest.setTrustNetwork(trustNetwork);
 			
 			rideRequest.setPickupPointVariation(1000);

@@ -35,6 +35,7 @@ public class RidePassengerDO implements DomainObjectPKInteger<RidePassenger>{
 		List<RidePassenger> ridePassengers = new ArrayList<>();
 		List<RidePassengerEntity> ridePassengerEntities = genericDAO.getAll();
 		for (RidePassengerEntity ridePassengerEntity : ridePassengerEntities) {
+			RidePassenger ridePassenger = new RidePassenger();
 			ridePassenger.setEntity(ridePassengerEntity);
 			ridePassengers.add(ridePassenger);
 		}

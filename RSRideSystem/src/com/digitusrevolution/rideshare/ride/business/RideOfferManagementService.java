@@ -65,6 +65,7 @@ public class RideOfferManagementService {
 	 
 			TrustNetwork trustNetwork = new TrustNetwork();
 			trustNetwork.getTrustCategories().add(trustCategory);
+			trustNetwork.setTrustCategories(trustNetwork.getTrustCategories());
 			ride.setTrustNetwork(trustNetwork);
 			
 			ride.setRecur(false);

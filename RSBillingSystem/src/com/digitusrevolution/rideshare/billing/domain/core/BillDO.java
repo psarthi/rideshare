@@ -50,6 +50,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 		List<Bill> bills = new ArrayList<>();
 		List<BillEntity> billEntities = billDAO.getAll();
 		for (BillEntity billEntity : billEntities) {
+			Bill bill = new Bill();
 			bill.setEntity(billEntity);
 			bills.add(bill);
 		}

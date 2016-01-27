@@ -41,6 +41,7 @@ public class TrustCategoryDO implements DomainObjectPKString<TrustCategory>{
 		List<TrustCategory> trustCategories = new ArrayList<>();
 		List<TrustCategoryEntity> trustCategoryEntities = genericDAO.getAll();
 		for (TrustCategoryEntity trustCategoryEntity : trustCategoryEntities) {
+			TrustCategory trustCategory = new TrustCategory();
 			trustCategory.setEntity(trustCategoryEntity);
 			trustCategories.add(trustCategory);
 		}

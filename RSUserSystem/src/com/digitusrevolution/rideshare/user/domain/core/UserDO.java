@@ -61,6 +61,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		List<User> users = new ArrayList<>();
 		List<UserEntity> userEntities = userDAO.getAll();
 		for (UserEntity userEntity : userEntities) {
+			User user = new User();
 			user.setEntity(userEntity);
 			users.add(user);
 		}

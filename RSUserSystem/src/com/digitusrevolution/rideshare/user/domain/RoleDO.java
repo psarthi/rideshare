@@ -54,6 +54,7 @@ public class RoleDO implements DomainObjectPKString<Role>{
 		List<Role> roles = new ArrayList<>();
 		List<RoleEntity> roleEntities = genericDAO.getAll();
 		for (RoleEntity roleEntity : roleEntities) {
+			Role role = new Role();
 			role.setEntity(roleEntity);
 			roles.add(role);
 		}

@@ -35,6 +35,7 @@ public class StateDO implements DomainObjectPKInteger<State>{
 		List<State> states = new ArrayList<>();
 		List<StateEntity> stateEntities = genericDAO.getAll();
 		for (StateEntity stateEntity : stateEntities) {
+			State state = new State();
 			state.setEntity(stateEntity);
 			states.add(state);
 		}

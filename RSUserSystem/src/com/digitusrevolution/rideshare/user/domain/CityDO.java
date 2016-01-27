@@ -51,6 +51,7 @@ public class CityDO implements DomainObjectPKInteger<City>{
 		List<City> cities = new ArrayList<>();
 		List<CityEntity> cityEntities = genericDAO.getAll();
 		for (CityEntity cityEntity : cityEntities) {
+			City city = new City();
 			city.setEntity(cityEntity);
 			cities.add(city);
 		}

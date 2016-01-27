@@ -39,6 +39,7 @@ public class CompanyDO implements DomainObjectPKInteger<Company>{
 		List<Company> companies = new ArrayList<>();
 		List<CompanyEntity> companyEntities = companyDAO.getAll();
 		for (CompanyEntity companyEntity : companyEntities) {
+			Company company = new Company();
 			company.setEntity(companyEntity);
 			companies.add(company);
 		}
@@ -81,6 +82,7 @@ public class CompanyDO implements DomainObjectPKInteger<Company>{
 	public void addAccount(int companyId, Account account){
 		Company company = get(companyId);
 		company.getAccounts().add(account);
+		company.setAccounts(company.getAccounts());
 		update(company);
 	}
 

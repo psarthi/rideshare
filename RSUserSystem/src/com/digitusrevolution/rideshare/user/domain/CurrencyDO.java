@@ -35,6 +35,7 @@ public class CurrencyDO implements DomainObjectPKInteger<Currency>{
 		List<Currency> currencies = new ArrayList<>();
 		List<CurrencyEntity> currencyEntities = genericDAO.getAll();
 		for (CurrencyEntity currencyEntity : currencyEntities) {
+			Currency currency = new Currency();
 			currency.setEntity(currencyEntity);
 			currencies.add(currency);
 		}

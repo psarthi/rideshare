@@ -86,6 +86,7 @@ public class RideAction {
 					ridePassenger.setRide(ride);
 					ridePassenger.setStatus(PassengerStatus.Confirmed);
 					ride.getRidePassengers().add(ridePassenger);
+					ride.setRidePassengers(ride.getRidePassengers());
 
 					//This will get the new status of seat post the acceptance of this ride request 
 					//Seat status may or may not change depending on total seats occupied vs offered 
@@ -143,7 +144,8 @@ public class RideAction {
 		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
 		Ride ride = rideDO.get(rideId);
 
-		ride.getRejectedRideRequests().add(rideRequest);	
+		ride.getRejectedRideRequests().add(rideRequest);
+		ride.setRejectedRideRequests(ride.getRejectedRideRequests());
 
 		//This will update the ride details in DB
 		rideDO.update(ride);
@@ -376,6 +378,7 @@ public class RideAction {
 					rideRequest.setAcceptedRide(null);
 					//Add ride request in cancelled list
 					ride.getCancelledRideRequests().add(rideRequest);
+					ride.setCancelledRideRequests(ride.getCancelledRideRequests());
 					//This will update ride and ride request in db
 					rideDO.update(ride);
 					rideRequestDO.update(rideRequest);

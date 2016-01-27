@@ -35,6 +35,7 @@ public class CountryDO implements DomainObjectPKString<Country>{
 		List<Country> countries = new ArrayList<>();
 		List<CountryEntity> countryEntities = genericDAO.getAll();
 		for (CountryEntity countryEntity : countryEntities) {
+			Country country = new Country();
 			country.setEntity(countryEntity);
 			countries.add(country);
 		}

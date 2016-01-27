@@ -45,6 +45,7 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.dig
 		List<Account> accounts = new ArrayList<>();
 		List<AccountEntity> accountEntities = genericDAO.getAll();
 		for (AccountEntity accountEntity : accountEntities) {
+			Account account = new Account();
 			account.setEntity(accountEntity);
 			accounts.add(account);
 		}
@@ -96,6 +97,7 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.dig
 			transaction.setType(TransactionType.Debit);
 			transaction.setRemark(remark);
 			account.getTransactions().add(transaction);
+			account.setTransactions(account.getTransactions());
 			update(account);
 		} else {
 			throw new InSufficientBalanceException("Not enough balance in the account. Current balance is:"+balance);			
@@ -116,6 +118,7 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.dig
 		transaction.setType(TransactionType.Credit);
 		transaction.setRemark(remark);
 		account.getTransactions().add(transaction);
+		account.setTransactions(account.getTransactions());
 		update(account);
 	}
 }
