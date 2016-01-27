@@ -142,5 +142,10 @@ public class Preference implements DomainModel{
 		seatRequired = entity.getSeatRequired();
 		sexPreference = entity.getSexPreference();
 	}
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

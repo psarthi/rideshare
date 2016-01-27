@@ -76,4 +76,9 @@ public class Currency implements DomainModel{
 		name = entity.getName();
 		conversionRate = entity.getConversionRate();
 	}
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
 }

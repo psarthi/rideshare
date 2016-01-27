@@ -73,6 +73,13 @@ public class CompanyDO implements DomainObjectPKInteger<Company>{
 		update(company);
 	}
 
+	@Override
+	public Company getWithEagerFetch(int id) {
+		company = get(id);
+		company.fetchReferenceVariable();
+		return company;
+	}
+
 }
 
 

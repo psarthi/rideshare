@@ -187,6 +187,13 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 		throw new NotFoundException("No appropriate account DO found for account type:"+accountType);
 	}
 
+	@Override
+	public Bill getWithEagerFetch(int number) {
+		bill = get(number);
+		bill.fetchReferenceVariable();
+		return bill;
+	}
+
 }
 
 

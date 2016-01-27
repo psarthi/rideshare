@@ -75,6 +75,11 @@ public class FriendRequest implements DomainModel{
 		createdDateTime = entity.getCreatedDateTime();
 		status = entity.getStatus();
 	}
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
 
 	
 }

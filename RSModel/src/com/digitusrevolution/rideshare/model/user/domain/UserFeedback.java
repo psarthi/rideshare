@@ -87,4 +87,9 @@ public class UserFeedback implements DomainModel{
 		rating = entity.getRating();
 		
 	}
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
 }

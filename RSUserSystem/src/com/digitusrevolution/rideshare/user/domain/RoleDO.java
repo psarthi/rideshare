@@ -62,4 +62,11 @@ public class RoleDO implements DomainObjectPKString<Role>{
 		role = get(name);
 		genericDAO.delete(role.getEntity());				
 	}
+
+	@Override
+	public Role getWithEagerFetch(String name) {
+		role = get(name);
+		role.fetchReferenceVariable();
+		return role;
+	}
 }

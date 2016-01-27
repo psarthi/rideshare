@@ -126,4 +126,9 @@ public class MembershipRequest implements DomainModel{
 		id = entity.getId();
 		status = entity.getStatus();
 	}
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
 }

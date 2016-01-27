@@ -115,6 +115,13 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		user = get(userId);
 		user.addAccount(account);
 		update(user);		
+	}
+
+	@Override
+	public User getWithEagerFetch(int id) {
+		user = get(id);
+		user.fetchReferenceVariable();
+		return user;
 	}	
 }
 

@@ -63,4 +63,11 @@ public class VehicleSubCategoryDO implements DomainObjectPKInteger<VehicleSubCat
 		vehicleSubCategory = get(id);
 		genericDAO.delete(vehicleSubCategory.getEntity());			
 	}
+
+	@Override
+	public VehicleSubCategory getWithEagerFetch(int id) {
+		vehicleSubCategory = get(id);
+		vehicleSubCategory.fetchReferenceVariable();
+		return vehicleSubCategory;
+	}
 }

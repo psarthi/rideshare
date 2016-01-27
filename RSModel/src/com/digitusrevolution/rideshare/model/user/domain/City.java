@@ -67,5 +67,10 @@ public class City implements DomainModel{
 		id = entity.getId();
 		name = entity.getName();		
 	}
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

@@ -288,4 +288,10 @@ public class Group implements DomainModel{
 		genuineVotes = entity.getGenuineVotes();
 		fakeVotes = entity.getFakeVotes();	
 	}
+
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
 }

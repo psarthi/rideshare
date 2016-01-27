@@ -25,7 +25,7 @@ public class VehicleDomainService implements DomainService<Vehicle>{
 			transation = session.beginTransaction();
 	
 			VehicleDO vehicleDO = new VehicleDO();
-			vehicle = vehicleDO.get(id);			
+			vehicle = vehicleDO.getWithEagerFetch(id);	
 			
 			transation.commit();
 		} catch (RuntimeException e) {

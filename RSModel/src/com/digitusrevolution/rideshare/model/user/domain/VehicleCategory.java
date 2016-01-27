@@ -106,4 +106,13 @@ public class VehicleCategory implements DomainModel{
 		name = entity.getName();
 	}
 
+	@Override
+	public void fetchReferenceVariable() {
+		subCategories = getSubCategories();
+		for (VehicleSubCategory vehicleSubCategory : subCategories) {
+			vehicleSubCategory.fetchReferenceVariable();
+		}
+		
+	}
+
 }

@@ -110,4 +110,10 @@ public class Vehicle implements DomainModel{
 		return true;
 	}
 
+	@Override
+	public void fetchReferenceVariable() {
+		getVehicleCategory().fetchReferenceVariable();
+		getVehicleSubCategory().fetchReferenceVariable();
+	}
+
 }

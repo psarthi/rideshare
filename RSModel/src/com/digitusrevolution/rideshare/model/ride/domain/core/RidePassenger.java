@@ -101,5 +101,10 @@ public class RidePassenger implements DomainModel{
 		status = entity.getStatus();
 		
 	}
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

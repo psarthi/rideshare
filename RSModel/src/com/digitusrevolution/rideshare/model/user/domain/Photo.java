@@ -35,5 +35,10 @@ public class Photo implements DomainModel{
 	public void setDomainModelPrimitiveVariable() {
 		id = entity.getId();
 		imageLocation = entity.getImageLocation();
+	}
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
 	}	
 }

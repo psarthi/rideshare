@@ -74,4 +74,10 @@ public class GroupFeedback implements DomainModel{
 		
 	}
 
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

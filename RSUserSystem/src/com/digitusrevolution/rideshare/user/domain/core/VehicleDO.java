@@ -36,7 +36,14 @@ public class VehicleDO implements DomainObjectPKInteger<Vehicle>{
 		vehicle.setEntity(vehicleEntity);
 		return vehicle;
 	}
-
+	
+	@Override
+	public Vehicle getWithEagerFetch(int id){
+		vehicle = get(id);
+		vehicle.fetchReferenceVariable();
+		return vehicle;
+	}
+	
 	@Override
 	public List<Vehicle> getAll() {
 		List<Vehicle> vehicles = new ArrayList<>();

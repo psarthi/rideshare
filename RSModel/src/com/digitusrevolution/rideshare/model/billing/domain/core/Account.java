@@ -99,5 +99,10 @@ public class Account implements DomainModel{
 		balance = entity.getBalance();
 		type = entity.getType();
 	}
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

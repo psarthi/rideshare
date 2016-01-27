@@ -511,4 +511,10 @@ public class User implements DomainModel{
 		profileRating = entity.getProfileRating();
 	}
 
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

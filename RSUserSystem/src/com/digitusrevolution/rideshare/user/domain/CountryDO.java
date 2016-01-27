@@ -60,5 +60,12 @@ public class CountryDO implements DomainObjectPKString<Country>{
 		genericDAO.delete(country.getEntity());				
 	}
 
+	@Override
+	public Country getWithEagerFetch(String name) {
+		country = get(name);
+		country.fetchReferenceVariable();
+		return country;
+	}
+
 
 }

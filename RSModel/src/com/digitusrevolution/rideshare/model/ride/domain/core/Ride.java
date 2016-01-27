@@ -371,6 +371,11 @@ public class Ride implements DomainModel{
 		endPoint.set_id(entity.getEndPointId());
 
 	}
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
 
 
 }

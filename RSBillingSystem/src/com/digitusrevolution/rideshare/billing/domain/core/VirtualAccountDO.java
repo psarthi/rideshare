@@ -107,6 +107,13 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.dig
 		account.addTransaction(transaction);
 		update(account);
 	}
+
+	@Override
+	public Account getWithEagerFetch(int number) {
+		account = get(number);
+		account.fetchReferenceVariable();
+		return account;
+	}
 }
 
 

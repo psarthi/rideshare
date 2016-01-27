@@ -662,6 +662,13 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			}
 		}
 	}
+
+	@Override
+	public RideRequest getWithEagerFetch(int id) {
+		rideRequest = get(id);
+		rideRequest.fetchReferenceVariable();
+		return rideRequest;
+	}
 }
 
 

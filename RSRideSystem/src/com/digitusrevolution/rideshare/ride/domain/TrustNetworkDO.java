@@ -66,4 +66,11 @@ public class TrustNetworkDO implements DomainObjectPKInteger<TrustNetwork>{
 		trustNetwork.setEntity(trustNetworkEntity);
 		return trustNetwork;
 	}
+
+	@Override
+	public TrustNetwork getWithEagerFetch(int id) {
+		trustNetwork = get(id);
+		trustNetwork.fetchReferenceVariable();
+		return trustNetwork;
+	}
 }

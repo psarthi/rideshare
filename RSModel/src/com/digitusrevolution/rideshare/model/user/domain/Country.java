@@ -121,4 +121,9 @@ public class Country implements DomainModel{
 	public void setDomainModelPrimitiveVariable() {
 		name = entity.getName();
 	}
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
 }

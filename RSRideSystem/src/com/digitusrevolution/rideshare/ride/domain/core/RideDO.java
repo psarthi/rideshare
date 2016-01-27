@@ -472,6 +472,13 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		RideAction rideAction = new RideAction(this);
 		rideAction.cancelRide(rideId);
 	}
+
+	@Override
+	public Ride getWithEagerFetch(int id) {
+		ride = get(id);
+		ride.fetchReferenceVariable();
+		return ride;
+	}
 }
 
 

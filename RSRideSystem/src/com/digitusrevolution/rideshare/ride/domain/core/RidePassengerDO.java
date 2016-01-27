@@ -60,4 +60,11 @@ public class RidePassengerDO implements DomainObjectPKInteger<RidePassenger>{
 		genericDAO.delete(ridePassenger.getEntity());		
 	}
 
+	@Override
+	public RidePassenger getWithEagerFetch(int id) {
+		ridePassenger = get(id);
+		ridePassenger.fetchReferenceVariable();
+		return ridePassenger;
+	}
+
 }

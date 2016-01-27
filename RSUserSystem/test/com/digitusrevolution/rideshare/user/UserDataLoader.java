@@ -51,14 +51,14 @@ public class UserDataLoader {
 			
 			UserDataLoader dataLoader = new UserDataLoader();
 	
-			dataLoader.loadCountry();
-			dataLoader.loadRole();
-			dataLoader.loadVehicleCategory();
-			dataLoader.loadVehicleSubCategory();
-			
-			dataLoader.loadUser();
-			dataLoader.loadVehicle();
-	//		dataLoader.addAccount();
+//			dataLoader.loadCountry();
+//			dataLoader.loadRole();
+//			dataLoader.loadVehicleCategory();
+//			dataLoader.loadVehicleSubCategory();
+//			
+//			dataLoader.loadUser();
+//			dataLoader.loadVehicle();
+			dataLoader.addAccount();
 			
 			
 			transation.commit();

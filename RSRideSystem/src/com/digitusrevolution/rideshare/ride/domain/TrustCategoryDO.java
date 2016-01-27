@@ -67,4 +67,11 @@ public class TrustCategoryDO implements DomainObjectPKString<TrustCategory>{
 		trustCategory.setEntity(trustCategoryEntity);
 		return trustCategory;
 	}
+
+	@Override
+	public TrustCategory getWithEagerFetch(String name) {
+		trustCategory = get(name);
+		trustCategory.fetchReferenceVariable();
+		return trustCategory;
+	}
 }

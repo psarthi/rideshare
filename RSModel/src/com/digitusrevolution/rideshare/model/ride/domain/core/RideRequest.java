@@ -319,5 +319,10 @@ public class RideRequest implements DomainModel{
 		travelTime = entity.getTravelTime();
 
 	}
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

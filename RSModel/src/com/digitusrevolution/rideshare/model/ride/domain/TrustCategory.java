@@ -51,5 +51,10 @@ public class TrustCategory implements DomainModel{
 		name = entity.getName();
 		
 	}
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

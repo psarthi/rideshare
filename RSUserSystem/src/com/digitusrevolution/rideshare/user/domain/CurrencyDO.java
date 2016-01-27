@@ -60,4 +60,11 @@ public class CurrencyDO implements DomainObjectPKInteger<Currency>{
 		genericDAO.delete(currency.getEntity());			
 	}
 
+	@Override
+	public Currency getWithEagerFetch(int id) {
+		currency = get(id);
+		currency.fetchReferenceVariable();
+		return currency;
+	}
+
 }

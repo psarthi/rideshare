@@ -112,5 +112,10 @@ public class Transaction implements DomainModel{
 		remark = entity.getRemark();
 		id = entity.getId();
 	}
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

@@ -63,5 +63,10 @@ public class Fuel implements DomainModel{
 		price = entity.getPrice();
 		type = entity.getType();
 	}
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

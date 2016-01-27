@@ -60,4 +60,11 @@ public class CityDO implements DomainObjectPKInteger<City>{
 		genericDAO.delete(city.getEntity());			
 	}
 
+	@Override
+	public City getWithEagerFetch(int id) {
+		city = get(id);
+		city.fetchReferenceVariable();
+		return city;
+	}
+
 }

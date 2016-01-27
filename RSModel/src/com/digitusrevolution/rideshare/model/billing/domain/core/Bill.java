@@ -147,5 +147,10 @@ public class Bill implements DomainModel{
 		serviceChargePercentage = entity.getServiceChargePercentage();
 		status = entity.getStatus();
 	}
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

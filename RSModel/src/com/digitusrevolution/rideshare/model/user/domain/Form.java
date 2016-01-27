@@ -111,5 +111,10 @@ public class Form implements DomainModel{
 		emailVerification = entity.isEmailVerification();
 		emailDomain = entity.getEmailDomain();	
 	}
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

@@ -6,6 +6,8 @@ public interface DomainObjectPKString<M> extends DomainObject<M>{
 
 	M get(String name);	
 	
+	M getWithEagerFetch(String name);
+	
 	void delete(String name);
 	
 }

@@ -59,5 +59,12 @@ public class StateDO implements DomainObjectPKInteger<State>{
 		state = get(id);
 		genericDAO.delete(state.getEntity());			
 	}
+
+	@Override
+	public State getWithEagerFetch(int id) {
+		state = get(id);
+		state.fetchReferenceVariable();
+		return state;
+	}
 	
 }

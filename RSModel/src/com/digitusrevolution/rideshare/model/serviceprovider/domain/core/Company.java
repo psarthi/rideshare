@@ -94,5 +94,10 @@ public class Company implements DomainModel{
 		name = entity.getName();		
 		serviceChargePercentage = entity.getServiceChargePercentage();
 	}
+	@Override
+	public void fetchReferenceVariable() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
