@@ -15,21 +15,8 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
 public class RidePassengerDO implements DomainObjectPKInteger<RidePassenger>{
 	
 	private RidePassenger ridePassenger;
-	private GenericDAO<RidePassengerEntity, Integer> genericDAO;
+	private GenericDAO<RidePassengerEntity, Integer> genericDAO = new GenericDAOImpl<>(RidePassengerEntity.class);
 	
-	public RidePassengerDO() {
-		ridePassenger = new RidePassenger();
-		genericDAO = new GenericDAOImpl<>(RidePassengerEntity.class);
-	}
-
-	public void setRidePassenger(RidePassenger ridePassenger) {
-		this.ridePassenger = ridePassenger;
-	}
-
-	public RidePassenger getRidePassenger() {
-		return ridePassenger;
-	}
-
 	@Override
 	public List<RidePassenger> getAll() {
 		List<RidePassenger> ridePassengers = new ArrayList<>();
@@ -58,6 +45,7 @@ public class RidePassengerDO implements DomainObjectPKInteger<RidePassenger>{
 
 	@Override
 	public RidePassenger get(int id) {
+		ridePassenger = new RidePassenger();
 		RidePassengerEntity ridePassengerEntity = genericDAO.get(id);
 		if (ridePassengerEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);

@@ -24,22 +24,9 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionType
 public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.digitusrevolution.rideshare.billing.domain.core.Account{
 	
 	private Account account;
-	private final GenericDAO<AccountEntity, Integer> genericDAO; 
+	private final GenericDAO<AccountEntity, Integer> genericDAO = new GenericDAOImpl<>(AccountEntity.class); 
 	private static final Logger logger = LogManager.getLogger(VirtualAccountDO.class.getName());
 	
-	public VirtualAccountDO() {
-		account = new Account();
-		genericDAO = new GenericDAOImpl<>(AccountEntity.class);
-	}
-
-	public void setAccount(Account account) {
-		this.account = account;
-	}
-	
-	public Account getAccount() {
-		return account;
-	}
-
 	@Override
 	public List<Account> getAll() {
 		List<Account> accounts = new ArrayList<>();
@@ -68,6 +55,7 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.dig
 
 	@Override
 	public Account get(int number) {
+		account = new Account();
 		AccountEntity accountEntity = genericDAO.get(number);
 		if (accountEntity == null){
 			throw new NotFoundException("No Data found with number: "+number);

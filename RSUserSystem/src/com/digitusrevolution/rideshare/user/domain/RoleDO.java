@@ -16,20 +16,7 @@ import com.digitusrevolution.rideshare.model.user.domain.RoleName;
 public class RoleDO implements DomainObjectPKString<Role>{
 
 	private Role role;
-	private final GenericDAO<RoleEntity, RoleName> genericDAO;
-
-	public RoleDO() {
-		role = new Role();
-		genericDAO = new GenericDAOImpl<>(RoleEntity.class);
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
-	}
-	
-	public Role getRole() {
-		return role;
-	}
+	private final GenericDAO<RoleEntity, RoleName> genericDAO = new GenericDAOImpl<>(RoleEntity.class);
 
 	@Override
 	public String create(Role role) {
@@ -40,6 +27,7 @@ public class RoleDO implements DomainObjectPKString<Role>{
 
 	@Override
 	public Role get(String name) {
+		role = new Role();
 		//Converting name to RoleName enum
 		RoleEntity roleEntity = genericDAO.get(RoleName.valueOf(name));
 		if (roleEntity == null){

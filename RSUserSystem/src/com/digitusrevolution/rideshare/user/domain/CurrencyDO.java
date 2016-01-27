@@ -15,21 +15,8 @@ import com.digitusrevolution.rideshare.model.user.domain.Currency;
 public class CurrencyDO implements DomainObjectPKInteger<Currency>{
 	
 	private Currency currency;
-	private final GenericDAO<CurrencyEntity, Integer> genericDAO;
+	private final GenericDAO<CurrencyEntity, Integer> genericDAO = new GenericDAOImpl<>(CurrencyEntity.class);
 	
-	public CurrencyDO() {
-		currency = new Currency();
-		genericDAO = new GenericDAOImpl<>(CurrencyEntity.class);
-	}
-
-	public void setCurrency(Currency currency) {
-		this.currency = currency;
-	}
-
-	public Currency getCurrency() {
-		return currency;
-	}
-
 	@Override
 	public List<Currency> getAll() {
 		List<Currency> currencies = new ArrayList<>();
@@ -58,6 +45,7 @@ public class CurrencyDO implements DomainObjectPKInteger<Currency>{
 
 	@Override
 	public Currency get(int id) {
+		currency = new Currency();
 		CurrencyEntity currencyEntity = genericDAO.get(id);
 		if (currencyEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);

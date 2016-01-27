@@ -25,20 +25,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 
 	private User user;
 	private static final Logger logger = LogManager.getLogger(UserDO.class.getName());
-	private final UserDAO userDAO;
-
-	public UserDO(){
-		user = new User();
-		userDAO = new UserDAO();
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-	public User getUser() {
-		return user;
-	}
+	private final UserDAO userDAO = new UserDAO();
 
 	@Override
 	public int create(User user){
@@ -48,6 +35,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 
 	@Override
 	public User get(int id){
+		user = new User();
 		UserEntity userEntity = userDAO.get(id);
 		if (userEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);
@@ -95,7 +83,10 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		return user.getRoles();
 	}
 	
-	public void addVehicle(Vehicle vehicle){		
+	public void addVehicle(int userId, Vehicle vehicle){
+		user = get(userId);
+		user.getVehicles().add(vehicle);
+		user.setVehicles(user.getVehicles());
 		if (user.getVehicles().size()==0){
 			RoleDO roleDO = new RoleDO();
 			Role role = roleDO.get(RoleName.Driver.toString());

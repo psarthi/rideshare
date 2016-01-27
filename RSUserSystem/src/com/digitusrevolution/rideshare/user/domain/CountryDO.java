@@ -15,21 +15,8 @@ import com.digitusrevolution.rideshare.model.user.domain.Country;
 public class CountryDO implements DomainObjectPKString<Country>{
 
 	private Country country;
-	private final GenericDAO<CountryEntity, String> genericDAO;
+	private final GenericDAO<CountryEntity, String> genericDAO = new GenericDAOImpl<>(CountryEntity.class);
 	
-	public CountryDO() {
-		country = new Country();
-		genericDAO = new GenericDAOImpl<>(CountryEntity.class);
-	}
-	
-	public void setCountry(Country country) {
-		this.country = country;
-	}
-
-	public Country getCountry() {
-		return country;
-	}
-
 	@Override
 	public List<Country> getAll() {
 		List<Country> countries = new ArrayList<>();
@@ -58,6 +45,7 @@ public class CountryDO implements DomainObjectPKString<Country>{
 
 	@Override
 	public Country get(String name) {
+		country = new Country();
 		CountryEntity countryEntity = genericDAO.get(name);
 		if (countryEntity == null){
 			throw new NotFoundException("No Data found with id: "+name);

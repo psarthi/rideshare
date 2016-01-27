@@ -15,17 +15,8 @@ import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 public class VehicleCategoryDO implements DomainObjectPKInteger<VehicleCategory>{
 	
 	private VehicleCategory vehicleCategory;
-	private final GenericDAO<VehicleCategoryEntity, Integer> genericDAO;
+	private final GenericDAO<VehicleCategoryEntity, Integer> genericDAO = new GenericDAOImpl<>(VehicleCategoryEntity.class);
 	
-	public VehicleCategoryDO() {
-		vehicleCategory = new VehicleCategory();
-		genericDAO = new GenericDAOImpl<>(VehicleCategoryEntity.class);
-	}
-	
-	public void setVehicleCategory(VehicleCategory vehicleCategory) {
-		this.vehicleCategory = vehicleCategory;
-	}
-
 	@Override
 	public int create(VehicleCategory vehicleCategory) {
 		int id = genericDAO.create(vehicleCategory.getEntity());
@@ -34,6 +25,7 @@ public class VehicleCategoryDO implements DomainObjectPKInteger<VehicleCategory>
 
 	@Override
 	public VehicleCategory get(int id) {
+		vehicleCategory = new VehicleCategory();
 		VehicleCategoryEntity vehicleCategoryEntity = genericDAO.get(id);
 		if (vehicleCategoryEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);

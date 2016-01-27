@@ -19,23 +19,10 @@ import com.digitusrevolution.rideshare.model.ride.domain.TrustCategoryName;
 public class TrustCategoryDO implements DomainObjectPKString<TrustCategory>{
 	
 	private TrustCategory trustCategory;
-	private final GenericDAO<TrustCategoryEntity, TrustCategoryName> genericDAO;
+	private final GenericDAO<TrustCategoryEntity, TrustCategoryName> genericDAO = new GenericDAOImpl<>(TrustCategoryEntity.class);
 	private static final Logger logger = LogManager.getLogger(TrustCategoryDO.class.getName());
 
 	
-	public TrustCategoryDO() {
-		trustCategory = new TrustCategory();
-		genericDAO = new GenericDAOImpl<>(TrustCategoryEntity.class);
-	}
-	
-	public void setTrustCategory(TrustCategory trustCategory) {
-		this.trustCategory = trustCategory;
-	}
-
-	public TrustCategory getTrustCategory() {
-		return trustCategory;
-	}
-
 	@Override
 	public List<TrustCategory> getAll() {
 		List<TrustCategory> trustCategories = new ArrayList<>();
@@ -53,21 +40,18 @@ public class TrustCategoryDO implements DomainObjectPKString<TrustCategory>{
 		if (trustCategory.getName().toString().isEmpty()){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+trustCategory.getName());
 		}
-		setTrustCategory(trustCategory);
 		genericDAO.update(trustCategory.getEntity());		
 	}
 
 	@Override
 	public void delete(String name) {
 		trustCategory = get(name);
-		setTrustCategory(trustCategory);
 		genericDAO.delete(trustCategory.getEntity());		
 	}
 
 	@Override
 	public String create(TrustCategory trustCategory) {
 		logger.entry();
-		setTrustCategory(trustCategory);
 		String name = genericDAO.create(trustCategory.getEntity()).toString();
 		logger.exit();
 		return name;
@@ -75,6 +59,7 @@ public class TrustCategoryDO implements DomainObjectPKString<TrustCategory>{
 
 	@Override
 	public TrustCategory get(String name) {
+		trustCategory = new TrustCategory();
 		TrustCategoryEntity trustCategoryEntity = genericDAO.get(TrustCategoryName.valueOf(name));
 		if (trustCategoryEntity == null){
 			throw new NotFoundException("No Data found with id: "+name);

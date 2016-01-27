@@ -29,22 +29,9 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 public class BillDO implements DomainObjectPKInteger<Bill>{
 	
 	private Bill bill;
-	private final BillDAO billDAO;
+	private final BillDAO billDAO = new BillDAO();
 	private static final Logger logger = LogManager.getLogger(BillDO.class.getName());
 	
-	public BillDO() {
-		bill = new Bill();
-		billDAO = new BillDAO();
-	}
-
-	public void setBill(Bill bill) {
-		this.bill = bill;
-	}
-
-	public Bill getBill() {
-		return bill;
-	}
-
 	@Override
 	public List<Bill> getAll() {
 		List<Bill> bills = new ArrayList<>();
@@ -73,6 +60,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 
 	@Override
 	public Bill get(int number) {
+		bill = new Bill();
 		BillEntity billEntity = billDAO.get(number);
 		if (billEntity == null){
 			throw new NotFoundException("No Data found with number: "+number);

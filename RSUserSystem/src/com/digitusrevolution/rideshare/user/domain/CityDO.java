@@ -15,21 +15,8 @@ import com.digitusrevolution.rideshare.model.user.domain.City;
 public class CityDO implements DomainObjectPKInteger<City>{
 	
 	private City city;
-	private final GenericDAO<CityEntity, Integer> genericDAO;
+	private final GenericDAO<CityEntity, Integer> genericDAO = new GenericDAOImpl<>(CityEntity.class);
 	
-	public CityDO() {
-		city = new City();
-		genericDAO = new GenericDAOImpl<>(CityEntity.class);
-	}
-
-	public void setCity(City city) {
-		this.city = city;
-	}
-
-	public City getCity() {
-		return city;
-	}
-
 	@Override
 	public int create(City city) {
 		int id = genericDAO.create(city.getEntity());
@@ -38,6 +25,7 @@ public class CityDO implements DomainObjectPKInteger<City>{
 
 	@Override
 	public City get(int id) {
+		city = new City();
 		CityEntity cityEntity = genericDAO.get(id);
 		if (cityEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);

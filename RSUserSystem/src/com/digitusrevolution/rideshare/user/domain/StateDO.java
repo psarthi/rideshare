@@ -15,20 +15,7 @@ import com.digitusrevolution.rideshare.model.user.domain.State;
 public class StateDO implements DomainObjectPKInteger<State>{
 	
 	private State state;
-	private final GenericDAO<StateEntity, Integer> genericDAO;
-	
-	public StateDO() {
-		state = new State();
-		genericDAO = new GenericDAOImpl<>(StateEntity.class);
-	}
-
-	public void setState(State state) {
-		this.state = state;
-	}
-
-	public State getState() {
-		return state;
-	}
+	private final GenericDAO<StateEntity, Integer> genericDAO = new GenericDAOImpl<>(StateEntity.class);
 
 	@Override
 	public List<State> getAll() {
@@ -58,6 +45,7 @@ public class StateDO implements DomainObjectPKInteger<State>{
 
 	@Override
 	public State get(int id) {
+		state = new State();
 		StateEntity stateEntity = genericDAO.get(id);
 		if (stateEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);

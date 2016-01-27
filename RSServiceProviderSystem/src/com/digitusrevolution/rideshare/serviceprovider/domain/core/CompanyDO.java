@@ -18,22 +18,9 @@ import com.digitusrevolution.rideshare.serviceprovider.data.CompanyDAO;
 public class CompanyDO implements DomainObjectPKInteger<Company>{
 	
 	private Company company;
-	private final CompanyDAO companyDAO;
+	private final CompanyDAO companyDAO = new CompanyDAO();
 	private static final Logger logger = LogManager.getLogger(CompanyDO.class.getName());
 	
-	public CompanyDO() {
-		company = new Company();
-		companyDAO = new CompanyDAO();
-	}
-
-	public Company getCompany() {
-		return company;
-	}
-
-	public void setCompany(Company company) {
-		this.company = company;
-	}
-
 	@Override
 	public List<Company> getAll() {
 		List<Company> companies = new ArrayList<>();
@@ -62,6 +49,7 @@ public class CompanyDO implements DomainObjectPKInteger<Company>{
 
 	@Override
 	public Company get(int id) {
+		company = new Company();
 		CompanyEntity companyEntity = companyDAO.get(id);
 		if (companyEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);

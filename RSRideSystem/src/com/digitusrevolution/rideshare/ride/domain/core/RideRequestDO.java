@@ -53,22 +53,9 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 
 	private static final Logger logger = LogManager.getLogger(RideRequestDO.class.getName());
 	private RideRequest rideRequest;
-	private final RideRequestDAO rideRequestDAO;
-	private final RideRequestPointDAO rideRequestPointDAO;
+	private final RideRequestDAO rideRequestDAO = new RideRequestDAO();
+	private final RideRequestPointDAO rideRequestPointDAO = new RideRequestPointDAO();
 
-	public RideRequestDO() {
-		rideRequest = new RideRequest();
-		rideRequestDAO = new RideRequestDAO();
-		rideRequestPointDAO = new RideRequestPointDAO();
-	}
-
-	public void setRideRequest(RideRequest rideRequest) {
-		this.rideRequest = rideRequest;
-	}
-
-	public RideRequest getRideRequest() {
-		return rideRequest;
-	}
 
 	@Override
 	public List<RideRequest> getAll() {
@@ -127,6 +114,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 
 	@Override
 	public RideRequest get(int id) {
+		rideRequest = new RideRequest();
 		RideRequestEntity rideRequestEntity = rideRequestDAO.get(id);
 		if (rideRequestEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);

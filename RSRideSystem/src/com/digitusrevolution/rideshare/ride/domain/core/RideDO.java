@@ -48,22 +48,8 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 
 	private static final Logger logger = LogManager.getLogger(RideDO.class.getName());
 	private Ride ride;
-	private final RideDAO rideDAO;
-	private final RidePointDAO ridePointDAO;
-
-	public RideDO() {
-		ride = new Ride();
-		rideDAO = new RideDAO();
-		ridePointDAO = new RidePointDAO();
-	}
-
-	public void setRide(Ride ride) {
-		this.ride = ride;
-	}
-
-	public Ride getRide() {
-		return ride;
-	}
+	private final RideDAO rideDAO = new RideDAO();
+	private final RidePointDAO ridePointDAO = new RidePointDAO();
 
 	@Override
 	public List<Ride> getAll() {
@@ -130,6 +116,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 
 	@Override
 	public Ride get(int id) {
+		ride = new Ride();
 		RideEntity rideEntity = rideDAO.get(id);
 		if (rideEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);
