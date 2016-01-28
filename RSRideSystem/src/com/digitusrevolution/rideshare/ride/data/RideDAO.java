@@ -35,10 +35,9 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
-		String initialStatus = PropertyReader.getInstance().getProperty("RIDE_INITIAL_STATUS");
 		@SuppressWarnings("unchecked")
 		List<RideEntity> rideEntities = criteria.add(Restrictions.in("id", rideIds))
-		.add(Restrictions.eq("status", initialStatus)).list();
+		.add(Restrictions.eq("status", RideStatus.Planned)).list();
 
 		Set<RideEntity> rideEntitiesSet = new HashSet<>(rideEntities);
 		return rideEntitiesSet;		
