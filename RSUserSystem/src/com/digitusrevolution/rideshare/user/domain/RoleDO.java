@@ -9,6 +9,7 @@ import javax.ws.rs.NotFoundException;
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKString;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
+import com.digitusrevolution.rideshare.common.mapper.user.RoleMapper;
 import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
@@ -16,24 +17,55 @@ import com.digitusrevolution.rideshare.model.user.domain.RoleName;
 public class RoleDO implements DomainObjectPKString<Role>{
 
 	private Role role;
-	private final GenericDAO<RoleEntity, RoleName> genericDAO = new GenericDAOImpl<>(RoleEntity.class);
+	private RoleEntity roleEntity;
+	private RoleMapper roleMapper;
+	private final GenericDAO<RoleEntity, RoleName> genericDAO;
+
+	public RoleDO() {
+		role = new Role();
+		roleEntity = new RoleEntity();
+		roleMapper = new RoleMapper();
+		genericDAO = new GenericDAOImpl<>(RoleEntity.class);
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+		roleEntity = roleMapper.getEntity(role, true);
+	}
+
+	private void setRoleEntity(RoleEntity roleEntity) {
+		this.roleEntity = roleEntity;
+		role = roleMapper.getDomainModel(roleEntity, false);
+	}
+
+	@Override
+	public void fetchChild() {
+		// TODO Auto-generated method stub
+	}
 
 	@Override
 	public String create(Role role) {
+		setRole(role);
 		//Converting RoleName Enum to String
-		String name = genericDAO.create(role.getEntity()).toString();
+		String name = genericDAO.create(roleEntity).toString();
 		return name;
 	}
 
 	@Override
 	public Role get(String name) {
-		role = new Role();
 		//Converting name to RoleName enum
-		RoleEntity roleEntity = genericDAO.get(RoleName.valueOf(name));
+		roleEntity = genericDAO.get(RoleName.valueOf(name));
 		if (roleEntity == null){
 			throw new NotFoundException("No Data found with id: "+name);
 		}
-		role.setEntity(roleEntity);
+		setRoleEntity(roleEntity);
+		return role;
+	}
+
+	@Override
+	public Role getChild(String name) {
+		get(name);
+		fetchChild();
 		return role;
 	}
 
@@ -42,8 +74,7 @@ public class RoleDO implements DomainObjectPKString<Role>{
 		List<Role> roles = new ArrayList<>();
 		List<RoleEntity> roleEntities = genericDAO.getAll();
 		for (RoleEntity roleEntity : roleEntities) {
-			Role role = new Role();
-			role.setEntity(roleEntity);
+			setRoleEntity(roleEntity);
 			roles.add(role);
 		}
 		return roles;
@@ -54,19 +85,14 @@ public class RoleDO implements DomainObjectPKString<Role>{
 		if (role.getName().toString().isEmpty()){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+role.getName());
 		}
-		genericDAO.update(role.getEntity());				
+		setRole(role);
+		genericDAO.update(roleEntity);				
 	}
 
 	@Override
 	public void delete(String name) {
 		role = get(name);
-		genericDAO.delete(role.getEntity());				
-	}
-
-	@Override
-	public Role getWithEagerFetch(String name) {
-		role = get(name);
-		role.fetchReferenceVariable();
-		return role;
+		setRole(role);
+		genericDAO.delete(roleEntity);				
 	}
 }

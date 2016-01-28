@@ -1,11 +1,7 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
-import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
-
-public class Role implements DomainModel{
+public class Role {
 	
-	private RoleEntity entity = new RoleEntity();
 	private RoleName name;
 
 	public RoleName getName() {
@@ -14,16 +10,6 @@ public class Role implements DomainModel{
 
 	public void setName(RoleName name) {
 		this.name = name;
-		entity.setName(name);
-	}
-
-	public RoleEntity getEntity() {
-		return entity;
-	}
-
-	public void setEntity(RoleEntity entity) {
-		this.entity = entity;
-		setDomainModelPrimitiveVariable();
 	}
 
 	@Override
@@ -51,18 +37,6 @@ public class Role implements DomainModel{
 		}
 		return true;
 	}
-
-	@Override
-	public void setDomainModelPrimitiveVariable() {
-		name = entity.getName();
-		
-	}
-
-	@Override
-	public void fetchReferenceVariable() {
-		// TODO Auto-generated method stub
-		
-	}
-
+	
 
 }

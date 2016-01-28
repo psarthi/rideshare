@@ -8,4 +8,15 @@ public interface DomainObject<M>{
 
 	void update(M model);
 	
+	/**
+     * Fetch domain model child
+     * 
+     *<P>Sample code -
+     * 
+     *<P> user = userMapper.getDomainModelChild(user, userEntity);				
+     * 
+     */
+	void fetchChild();
+	
+	
 }

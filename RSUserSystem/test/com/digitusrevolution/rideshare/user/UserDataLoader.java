@@ -1,7 +1,5 @@
 package com.digitusrevolution.rideshare.user;
 
-import java.time.LocalTime;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
@@ -14,14 +12,11 @@ import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
-import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.model.user.domain.Fuel;
 import com.digitusrevolution.rideshare.model.user.domain.FuelType;
-import com.digitusrevolution.rideshare.model.user.domain.Photo;
-import com.digitusrevolution.rideshare.model.user.domain.Preference;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
@@ -63,7 +58,7 @@ public class UserDataLoader {
 			
 			dataLoader.loadUser();
 			dataLoader.loadVehicle();
-//			dataLoader.addAccount();
+			dataLoader.addAccount();
 			
 			
 			transation.commit();
@@ -102,16 +97,16 @@ public class UserDataLoader {
 		fuel.setType(FuelType.Petrol);
 		fuel.setPrice(60);
 
-		country.addFuel(fuel);
+		country.getFuels().add(fuel);
 		
 		State state = new State();
 		state.setName("Karnataka");
 		
 		City city = new City();
 		city.setName("Bangalore");
-		state.addCity(city);
+		state.getCities().add(city);
 
-		country.addState(state);
+		country.getStates().add(state);
 		
 		CountryDO countryDO = new CountryDO();
 		countryDO.create(country);
@@ -124,9 +119,8 @@ public class UserDataLoader {
 		Role role = new Role();
 		role.setName(RoleName.Passenger);
 		roleDO.create(role);
-		Role role1 = new Role();
-		role1.setName(RoleName.Driver);
-		roleDO.create(role1);		
+		role.setName(RoleName.Driver);
+		roleDO.create(role);		
 	
 	}
 	
@@ -135,19 +129,15 @@ public class UserDataLoader {
 		UserDO userDO = new UserDO();
 		CityDO cityDO = new CityDO();
 		RoleDO roleDO = new RoleDO();
-
+		User user = new User();
 		City city = new City();
 		Role role = new Role();
 		role = roleDO.get(RoleName.Passenger.toString());
-
+		user.getRoles().add(role);
 
 	
 		for (int i=1; i<6; i++){
-			User user = new User();
-			Photo photo = new Photo();
-			photo.setImageLocation("Dummy");
-			user.setPhoto(photo);
-			user.addRole(role);
+	
 			user.setFirstName("firstName-"+i);
 			user.setLastName("lastName-"+i);
 			user.setEmail("email-"+i);
@@ -196,7 +186,7 @@ public class UserDataLoader {
 		VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();	
 		VehicleCategory vehicleCategory = vehicleCategoryDO.get(1);
 		
-		vehicleCategory.addSubCategory(vehicleSubCategory);
+		vehicleCategory.getSubCategories().add(vehicleSubCategory);
 		vehicleCategoryDO.update(vehicleCategory);
 	}
 
@@ -213,13 +203,12 @@ public class UserDataLoader {
 		Vehicle vehicle = new Vehicle();
 		vehicle.setVehicleCategory(vehicleCategory);
 		vehicle.setVehicleSubCategory(vehicleSubCategory);
-		Photo photo = new Photo();
-		photo.setImageLocation("Dummy");
-		vehicle.setPhoto(photo);
 		
-		for (int i=1;i<2;i++){
+		for (int i=1;i<3;i++){
 			UserDO userDO = new UserDO();
-			userDO.addVehicle(i, vehicle);
+			User user = userDO.getChild(i);
+			userDO.setUser(user);			
+			userDO.addVehicle(vehicle);
 		}	
 	}
 	
@@ -230,26 +219,6 @@ public class UserDataLoader {
 			userDO.addAccount(i, account);			
 		}
 
-	}
-	
-	public void loadPreference(){
-		Preference preference = new Preference();
-		preference.setDropPointVariation(500);
-		preference.setLuggageCapacityOffered(2);
-		preference.setLuggageCapacityRequired(2);
-		preference.setMinProfileRating(4);
-		preference.setPickupPointVariation(500);
-		LocalTime localTime = LocalTime.of(0, 30);
-		preference.setPickupTimeVariation(localTime);
-		preference.setSeatOffered(2);
-		preference.setSeatRequired(2);
-		preference.setSexPreference(Sex.Female);
-		VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();
-		VehicleCategory vehicleCategory = vehicleCategoryDO.get(1);
-		preference.setVehicleCategory(vehicleCategory);
-		VehicleSubCategoryDO vehicleSubCategoryDO = new VehicleSubCategoryDO();
-		VehicleSubCategory vehicleSubCategory = vehicleSubCategoryDO.get(1);
-		preference.setVehicleSubCategory(vehicleSubCategory);
 	}
 
 	

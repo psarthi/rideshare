@@ -1,11 +1,7 @@
 package com.digitusrevolution.rideshare.model.ride.domain;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
-import com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity;
-
-public class TrustCategory implements DomainModel{
+public class TrustCategory {
 	
-	private TrustCategoryEntity entity = new TrustCategoryEntity();
 	private TrustCategoryName name;
 
 	public TrustCategoryName getName() {
@@ -13,14 +9,6 @@ public class TrustCategory implements DomainModel{
 	}
 	public void setName(TrustCategoryName name) {
 		this.name = name;
-		entity.setName(name);
-	}
-	public TrustCategoryEntity getEntity() {
-		return entity;
-	}
-	public void setEntity(TrustCategoryEntity entity) {
-		this.entity = entity;
-		setDomainModelPrimitiveVariable();
 	}
 	@Override
 	public int hashCode() {
@@ -45,16 +33,6 @@ public class TrustCategory implements DomainModel{
 			return false;
 		}
 		return true;
-	}
-	@Override
-	public void setDomainModelPrimitiveVariable() {
-		name = entity.getName();
-		
-	}
-	@Override
-	public void fetchReferenceVariable() {
-		// TODO Auto-generated method stub
-		
 	}
 	
 }

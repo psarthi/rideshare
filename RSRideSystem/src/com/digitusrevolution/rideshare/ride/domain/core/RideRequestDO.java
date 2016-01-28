@@ -26,6 +26,7 @@ import org.geojson.MultiPolygon;
 import org.geojson.Polygon;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
+import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
 import com.digitusrevolution.rideshare.common.math.google.LatLng;
 import com.digitusrevolution.rideshare.common.math.google.SphericalUtil;
 import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
@@ -53,18 +54,42 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 
 	private static final Logger logger = LogManager.getLogger(RideRequestDO.class.getName());
 	private RideRequest rideRequest;
-	private final RideRequestDAO rideRequestDAO = new RideRequestDAO();
-	private final RideRequestPointDAO rideRequestPointDAO = new RideRequestPointDAO();
+	private RideRequestEntity rideRequestEntity;
+	private RideRequestMapper rideRequestMapper;
+	private final RideRequestDAO rideRequestDAO;
+	private final RideRequestPointDAO rideRequestPointDAO;
 
+	public RideRequestDO() {
+		rideRequest = new RideRequest();
+		rideRequestEntity = new RideRequestEntity();
+		rideRequestMapper = new RideRequestMapper();
+		rideRequestDAO = new RideRequestDAO();
+		rideRequestPointDAO = new RideRequestPointDAO();
+	}
+
+	public void setRideRequest(RideRequest rideRequest) {
+		this.rideRequest = rideRequest;
+		rideRequestEntity = rideRequestMapper.getEntity(rideRequest, true);
+	}
+
+	private void setRideRequestEntity(RideRequestEntity rideRequestEntity) {
+		this.rideRequestEntity = rideRequestEntity;
+		rideRequest = rideRequestMapper.getDomainModel(rideRequestEntity, false);
+		setRideRequestPoint(rideRequest);
+	}
+
+	@Override
+	public void fetchChild() {
+		rideRequest = rideRequestMapper.getDomainModelChild(rideRequest, rideRequestEntity);
+
+	}
 
 	@Override
 	public List<RideRequest> getAll() {
 		List<RideRequest> rideRequests = new ArrayList<>();
 		List<RideRequestEntity> rideRequestEntities = rideRequestDAO.getAll();
 		for (RideRequestEntity rideRequestEntity : rideRequestEntities) {
-			RideRequest rideRequest = new RideRequest();
-			rideRequest.setEntity(rideRequestEntity);
-			setRideRequestPoint(rideRequest);
+			setRideRequestEntity(rideRequestEntity);
 			rideRequests.add(rideRequest);
 		}
 		return rideRequests;
@@ -84,14 +109,16 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		if (rideRequest.getId()==0){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+rideRequest.getId());
 		}
-		rideRequestDAO.update(rideRequest.getEntity());
+		setRideRequest(rideRequest);
+		rideRequestDAO.update(rideRequestEntity);
 
 	}
 
 	@Override
 	public void delete(int id) {
 		rideRequest = get(id);
-		rideRequestDAO.delete(rideRequest.getEntity());
+		setRideRequest(rideRequest);
+		rideRequestDAO.delete(rideRequestEntity);
 		rideRequestPointDAO.deletePointsOfRideRequest(id);
 	}
 
@@ -107,20 +134,19 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	@Override
 	public int create(RideRequest rideRequest) {
 		logger.entry();
-		int id = rideRequestDAO.create(rideRequest.getEntity());
+		setRideRequest(rideRequest);
+		int id = rideRequestDAO.create(rideRequestEntity);
 		logger.exit();
 		return id;
 	}
 
 	@Override
 	public RideRequest get(int id) {
-		rideRequest = new RideRequest();
-		RideRequestEntity rideRequestEntity = rideRequestDAO.get(id);
+		rideRequestEntity = rideRequestDAO.get(id);
 		if (rideRequestEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);
 		}
-		rideRequest.setEntity(rideRequestEntity);
-		setRideRequestPoint(rideRequest);
+		setRideRequestEntity(rideRequestEntity);
 		return rideRequest;
 	}
 
@@ -132,6 +158,13 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		RideRequestPoint dropPoint = rideRequestPointDAO.get(rideRequest.getDropPoint().get_id());
 		rideRequest.setPickupPoint(pickupPoint);
 		rideRequest.setDropPoint(dropPoint);
+	}
+
+	@Override
+	public RideRequest getChild(int id) {
+		get(id);
+		fetchChild();
+		return rideRequest;
 	}
 
 	/* 
@@ -640,15 +673,16 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * 
 	 */
 	public void cancelRideRequest(int rideRequestId){
-		rideRequest = get(rideRequestId);
+		rideRequest = getChild(rideRequestId);
 		RideRequestStatus rideRequestStatus = rideRequest.getStatus();
 		if (rideRequestStatus.equals(RideRequestStatus.Unfulfilled)){
 			rideRequest.setStatus(RideRequestStatus.Cancelled);
 			update(rideRequest);
 		} else {
+			//Reason for getting child of ride as ride Request has basic ride object which doesn't have passenger list
 			int rideId = rideRequest.getAcceptedRide().getId();
 			RideDO rideDO = new RideDO();
-			Ride ride = rideDO.get(rideId);
+			Ride ride = rideDO.getChild(rideId);
 			RidePassenger ridePassenger = ride.getRidePassenger(rideRequest.getPassenger().getId());
 			if (ridePassenger.getStatus().equals(PassengerStatus.Confirmed)){
 				//This will cancel the ride request from confirmed ride
@@ -661,13 +695,6 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 						+ "Passenger current status:"+ridePassenger.getStatus());
 			}
 		}
-	}
-
-	@Override
-	public RideRequest getWithEagerFetch(int id) {
-		rideRequest = get(id);
-		rideRequest.fetchReferenceVariable();
-		return rideRequest;
 	}
 }
 

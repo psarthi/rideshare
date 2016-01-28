@@ -3,12 +3,8 @@ package com.digitusrevolution.rideshare.model.user.domain;
 import java.util.Collection;
 import java.util.HashSet;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
-import com.digitusrevolution.rideshare.model.user.data.FormEntity;
+public class Form {
 
-public class Form implements DomainModel{
-
-	private FormEntity entity = new FormEntity();
 	private int id;
 	private Collection<String> questions = new HashSet<String>();
 	private String remark;
@@ -21,44 +17,25 @@ public class Form implements DomainModel{
 	}
 	public void setQuestions(Collection<String> questions) {
 		this.questions = questions;
-		entity.setQuestions(questions);
 	}
 	public String getRemark() {
 		return remark;
 	}
 	public void setRemark(String remark) {
 		this.remark = remark;
-		entity.setRemark(remark);
 	}
 	public boolean isEmailVerification() {
 		return emailVerification;
 	}
 	public void setEmailVerification(boolean emailVerification) {
 		this.emailVerification = emailVerification;
-		entity.setEmailVerification(emailVerification);
 	}
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
-		entity.setId(id);
 	}
-	public String getEmailDomain() {
-		return emailDomain;
-	}
-	public void setEmailDomain(String emailDomain) {
-		this.emailDomain = emailDomain;
-		entity.setEmailDomain(emailDomain);
-	}
-	public FormEntity getEntity() {
-		return entity;
-	}
-	public void setEntity(FormEntity entity) {
-		this.entity = entity;
-		setDomainModelPrimitiveVariable();
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -103,18 +80,13 @@ public class Form implements DomainModel{
 		}
 		return true;
 	}
-	@Override
-	public void setDomainModelPrimitiveVariable() {
-		id = entity.getId();
-		remark = entity.getRemark();
-		questions = entity.getQuestions();
-		emailVerification = entity.isEmailVerification();
-		emailDomain = entity.getEmailDomain();	
+	public String getEmailDomain() {
+		return emailDomain;
 	}
-	@Override
-	public void fetchReferenceVariable() {
-		// TODO Auto-generated method stub
-		
+	public void setEmailDomain(String emailDomain) {
+		this.emailDomain = emailDomain;
 	}
-
+	
+	
+	
 }

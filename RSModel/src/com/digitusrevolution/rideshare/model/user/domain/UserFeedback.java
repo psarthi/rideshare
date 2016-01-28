@@ -1,42 +1,35 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
-import com.digitusrevolution.rideshare.model.user.data.UserFeedbackEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
-public class UserFeedback implements DomainModel{
+public class UserFeedback{
 	
-	private UserFeedbackEntity entity = new UserFeedbackEntity();
-	private User givenByUser = new User();
+	private User givenByUser;
 	private int rating;
 	//Each feedback is associated with a ride only
-	private Ride ride = new Ride();
+	private Ride ride;
+
 
 	public User getGivenByUser() {
-		givenByUser.setEntity(entity.getGivenByUser());
 		return givenByUser;
 	}
 	public void setGivenByUser(User givenByUser) {
 		this.givenByUser = givenByUser;
-		entity.setGivenByUser(givenByUser.getEntity());
 	}
 	public int getRating() {
 		return rating;
 	}
 	public void setRating(int rating) {
 		this.rating = rating;
-		entity.setRating(rating);
 	}
 
 	public Ride getRide() {
-		ride.setEntity(entity.getRide());
 		return ride;
 	}
 
 	public void setRide(Ride ride) {
 		this.ride = ride;
-		entity.setRide(ride.getEntity());
 	}
 	@Override
 	public int hashCode() {
@@ -73,23 +66,5 @@ public class UserFeedback implements DomainModel{
 			return false;
 		}
 		return true;
-	}
-
-	public UserFeedbackEntity getEntity() {
-		return entity;
-	}
-	public void setEntity(UserFeedbackEntity entity) {
-		this.entity = entity;
-		setDomainModelPrimitiveVariable();
-	}
-	@Override
-	public void setDomainModelPrimitiveVariable() {
-		rating = entity.getRating();
-		
-	}
-	@Override
-	public void fetchReferenceVariable() {
-		// TODO Auto-generated method stub
-		
 	}
 }

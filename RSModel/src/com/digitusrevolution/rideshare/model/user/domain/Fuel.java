@@ -1,11 +1,7 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
-import com.digitusrevolution.rideshare.model.user.data.FuelEntity;
-
-public class Fuel implements DomainModel{
+public class Fuel {
 	
-	private FuelEntity entity = new FuelEntity();
 	private FuelType type;
 	private float price;
 	
@@ -14,21 +10,12 @@ public class Fuel implements DomainModel{
 	}
 	public void setType(FuelType type) {
 		this.type = type;
-		entity.setType(type);
 	}
 	public float getPrice() {
 		return price;
 	}
 	public void setPrice(float price) {
 		this.price = price;
-		entity.setPrice(price);
-	}
-	public FuelEntity getEntity() {
-		return entity;
-	}
-	public void setEntity(FuelEntity entity) {
-		this.entity = entity;
-		setDomainModelPrimitiveVariable();
 	}
 	@Override
 	public int hashCode() {
@@ -58,15 +45,6 @@ public class Fuel implements DomainModel{
 		}
 		return true;
 	}
-	@Override
-	public void setDomainModelPrimitiveVariable() {
-		price = entity.getPrice();
-		type = entity.getType();
-	}
-	@Override
-	public void fetchReferenceVariable() {
-		// TODO Auto-generated method stub
-		
-	}
+
 	
 }

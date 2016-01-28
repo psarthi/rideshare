@@ -17,7 +17,7 @@ public class VehicleCategoryDomainService implements DomainService<VehicleCatego
 	private static final Logger logger = LogManager.getLogger(VehicleCategoryDomainService.class.getName());
 
 	@Override
-	public VehicleCategory get(int id) {
+	public VehicleCategory get(int id, boolean fetchChild) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		VehicleCategory vehicleCategory = null;
@@ -25,7 +25,11 @@ public class VehicleCategoryDomainService implements DomainService<VehicleCatego
 			transation = session.beginTransaction();
 
 			VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();
-			vehicleCategory = vehicleCategoryDO.get(id);			
+			if (fetchChild){
+				vehicleCategory = vehicleCategoryDO.getChild(id);
+			} else {
+				vehicleCategory = vehicleCategoryDO.get(id);			
+			}
 
 			transation.commit();
 		} catch (RuntimeException e) {

@@ -1,13 +1,10 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
-import com.digitusrevolution.rideshare.model.user.data.GroupFeedbackEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
-public class GroupFeedback implements DomainModel{
+public class GroupFeedback{
 
-	private GroupFeedbackEntity entity = new GroupFeedbackEntity();
-	private User givenByUser = new User();
+	private User givenByUser;
 	private Vote vote;
 
 	public Vote getVote() {
@@ -16,17 +13,14 @@ public class GroupFeedback implements DomainModel{
 
 	public void setVote(Vote vote) {
 		this.vote = vote;
-		entity.setVote(vote);
 	}
 
 	public User getGivenByUser() {
-		givenByUser.setEntity(entity.getGivenByUser());
 		return givenByUser;
 	}
 
 	public void setGivenByUser(User givenByUser) {
 		this.givenByUser = givenByUser;
-		entity.setGivenByUser(givenByUser.getEntity());
 	}
 
 	@Override
@@ -57,27 +51,6 @@ public class GroupFeedback implements DomainModel{
 			return false;
 		}
 		return true;
-	}
-
-	public GroupFeedbackEntity getEntity() {
-		return entity;
-	}
-
-	public void setEntity(GroupFeedbackEntity entity) {
-		this.entity = entity;
-		setDomainModelPrimitiveVariable();
-	}
-
-	@Override
-	public void setDomainModelPrimitiveVariable() {
-		vote = entity.getVote();
-		
-	}
-
-	@Override
-	public void fetchReferenceVariable() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

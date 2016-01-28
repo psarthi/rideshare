@@ -4,10 +4,10 @@
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/test"/>
-        <dependent-module archiveName="RSModel.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/RSModel/RSModel">
+        <dependent-module archiveName="RSCommon-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/RSCommon/RSCommon">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="RSCommon.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/RSCommon/RSCommon">
+        <dependent-module archiveName="RSModel-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/RSModel/RSModel">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="context-root" value="RSRideSystem"/>

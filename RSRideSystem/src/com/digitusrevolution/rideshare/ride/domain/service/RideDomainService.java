@@ -17,7 +17,7 @@ public class RideDomainService implements DomainService<Ride>{
 	private static final Logger logger = LogManager.getLogger(RideDomainService.class.getName());
 
 	@Override
-	public Ride get(int id) {
+	public Ride get(int id, boolean fetchChild) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		Ride ride = null;
@@ -25,7 +25,11 @@ public class RideDomainService implements DomainService<Ride>{
 			transation = session.beginTransaction();
 
 			RideDO rideDO = new RideDO();
-			ride = rideDO.get(id);			
+			if (fetchChild){
+				ride = rideDO.getChild(id);
+			} else {
+				ride = rideDO.get(id);			
+			}
 
 			transation.commit();
 		} catch (RuntimeException e) {

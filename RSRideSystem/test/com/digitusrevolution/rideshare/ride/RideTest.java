@@ -12,7 +12,7 @@ public class RideTest {
 	public static void main(String[] args) {
 		
 		RideDomainResource rideDomainResource = new RideDomainResource();
-		Response response = rideDomainResource.get(70);
+		Response response = rideDomainResource.get(70, "true");
 		System.out.println(response.toString());
 	}
 

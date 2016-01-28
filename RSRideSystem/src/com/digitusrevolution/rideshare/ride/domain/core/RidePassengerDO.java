@@ -9,21 +9,40 @@ import javax.ws.rs.NotFoundException;
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
+import com.digitusrevolution.rideshare.common.mapper.ride.core.RidePassengerMapper;
 import com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
 
 public class RidePassengerDO implements DomainObjectPKInteger<RidePassenger>{
 	
 	private RidePassenger ridePassenger;
-	private GenericDAO<RidePassengerEntity, Integer> genericDAO = new GenericDAOImpl<>(RidePassengerEntity.class);
+	private RidePassengerEntity ridePassengerEntity;
+	private RidePassengerMapper ridePassengerMapper;
+	private GenericDAO<RidePassengerEntity, Integer> genericDAO;
 	
+	public RidePassengerDO() {
+		ridePassenger = new RidePassenger();
+		ridePassengerEntity = new RidePassengerEntity();
+		ridePassengerMapper = new RidePassengerMapper();
+		genericDAO = new GenericDAOImpl<>(RidePassengerEntity.class);
+	}
+
+	public void setRidePassenger(RidePassenger ridePassenger) {
+		this.ridePassenger = ridePassenger;
+		ridePassengerEntity = ridePassengerMapper.getEntity(ridePassenger, true);
+	}
+
+	public void setRidePassengerEntity(RidePassengerEntity ridePassengerEntity) {
+		this.ridePassengerEntity = ridePassengerEntity;
+		ridePassenger = ridePassengerMapper.getDomainModel(ridePassengerEntity, false);
+	}
+
 	@Override
 	public List<RidePassenger> getAll() {
 		List<RidePassenger> ridePassengers = new ArrayList<>();
 		List<RidePassengerEntity> ridePassengerEntities = genericDAO.getAll();
 		for (RidePassengerEntity ridePassengerEntity : ridePassengerEntities) {
-			RidePassenger ridePassenger = new RidePassenger();
-			ridePassenger.setEntity(ridePassengerEntity);
+			setRidePassengerEntity(ridePassengerEntity);
 			ridePassengers.add(ridePassenger);
 		}
 		return ridePassengers;
@@ -34,37 +53,44 @@ public class RidePassengerDO implements DomainObjectPKInteger<RidePassenger>{
 		if (ridePassenger.getId()==0){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+ridePassenger.getId());
 		}
-		genericDAO.update(ridePassenger.getEntity());		
+		setRidePassenger(ridePassenger);
+		genericDAO.update(ridePassengerEntity);		
+	}
+
+	@Override
+	public void fetchChild() {
+		ridePassenger = ridePassengerMapper.getDomainModelChild(ridePassenger, ridePassengerEntity);		
 	}
 
 	@Override
 	public int create(RidePassenger ridePassenger) {
-		int id = genericDAO.create(ridePassenger.getEntity());
+		setRidePassenger(ridePassenger);
+		int id = genericDAO.create(ridePassengerEntity);
 		return id;
 	}
 
 	@Override
 	public RidePassenger get(int id) {
-		ridePassenger = new RidePassenger();
-		RidePassengerEntity ridePassengerEntity = genericDAO.get(id);
+		ridePassengerEntity = genericDAO.get(id);
 		if (ridePassengerEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);
 		}
-		ridePassenger.setEntity(ridePassengerEntity);
+		setRidePassengerEntity(ridePassengerEntity);
+		return ridePassenger;
+	}
+
+	@Override
+	public RidePassenger getChild(int id) {
+		get(id);
+		fetchChild();
 		return ridePassenger;
 	}
 
 	@Override
 	public void delete(int id) {
 		ridePassenger = get(id);
-		genericDAO.delete(ridePassenger.getEntity());		
-	}
-
-	@Override
-	public RidePassenger getWithEagerFetch(int id) {
-		ridePassenger = get(id);
-		ridePassenger.fetchReferenceVariable();
-		return ridePassenger;
+		setRidePassenger(ridePassenger);
+		genericDAO.delete(ridePassengerEntity);		
 	}
 
 }

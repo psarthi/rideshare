@@ -12,9 +12,7 @@ import org.hibernate.Transaction;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategoryName;
-import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.ride.domain.TrustCategoryDO;
-import com.digitusrevolution.rideshare.ride.domain.TrustNetworkDO;
 
 
 @Path("/domain/loaddata/ride")
@@ -34,7 +32,6 @@ public class RideDataLoader {
 
 			//Trust Category needs to be loaded only once
 			dataLoader.loadTrustCategory();
-			dataLoader.loadTrustNetwork();
 			
 			transation.commit();
 
@@ -64,15 +61,5 @@ public class RideDataLoader {
 			TrustCategoryDO trustCategoryDO = new TrustCategoryDO();
 			trustCategoryDO.create(trustCategory);			
 		}
-		
-		public void loadTrustNetwork(){
-			TrustCategoryDO trustCategoryDO = new TrustCategoryDO();
-			TrustCategory trustCategory = trustCategoryDO.get("Anynomous");
-			TrustNetwork trustNetwork = new TrustNetwork();
-			trustNetwork.addTrustCategory(trustCategory);
-			TrustNetworkDO trustNetworkDO = new TrustNetworkDO();
-			trustNetworkDO.create(trustNetwork);
-		}
-
 		
 }

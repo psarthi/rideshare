@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.billing.data.BillDAO;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
+import com.digitusrevolution.rideshare.common.mapper.billing.core.BillMapper;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
@@ -29,16 +30,34 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 public class BillDO implements DomainObjectPKInteger<Bill>{
 	
 	private Bill bill;
-	private final BillDAO billDAO = new BillDAO();
+	private BillEntity billEntity;
+	private final BillDAO billDAO;
+	private BillMapper billMapper;
 	private static final Logger logger = LogManager.getLogger(BillDO.class.getName());
 	
+	public BillDO() {
+		bill = new Bill();
+		billEntity = new BillEntity();
+		billDAO = new BillDAO();
+		billMapper = new BillMapper();
+	}
+
+	public void setBill(Bill bill) {
+		this.bill = bill;
+		billEntity = billMapper.getEntity(bill, true);
+	}
+
+	public void setBillEntity(BillEntity billEntity) {
+		this.billEntity = billEntity;
+		bill = billMapper.getDomainModel(billEntity, false);
+	}
+
 	@Override
 	public List<Bill> getAll() {
 		List<Bill> bills = new ArrayList<>();
 		List<BillEntity> billEntities = billDAO.getAll();
 		for (BillEntity billEntity : billEntities) {
-			Bill bill = new Bill();
-			bill.setEntity(billEntity);
+			setBillEntity(billEntity);
 			bills.add(bill);
 		}
 		return bills;
@@ -49,30 +68,44 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 		if (bill.getNumber()==0){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+bill.getNumber());
 		}
-		billDAO.update(bill.getEntity());
+		setBill(bill);
+		billDAO.update(billEntity);
+	}
+
+	@Override
+	public void fetchChild() {
+		bill = billMapper.getDomainModelChild(bill, billEntity);
 	}
 
 	@Override
 	public int create(Bill bill) {
-		int id = billDAO.create(bill.getEntity());
+		setBill(bill);
+		int id = billDAO.create(billEntity);
 		return id;
 	}
 
 	@Override
 	public Bill get(int number) {
-		bill = new Bill();
-		BillEntity billEntity = billDAO.get(number);
+		billEntity = billDAO.get(number);
 		if (billEntity == null){
 			throw new NotFoundException("No Data found with number: "+number);
 		}
-		bill.setEntity(billEntity);
+		setBillEntity(billEntity);
+		return bill;
+	}
+
+	@Override
+	public Bill getChild(int number) {
+		get(number);
+		fetchChild();
 		return bill;
 	}
 
 	@Override
 	public void delete(int number) {
 		bill = get(number);
-		billDAO.delete(bill.getEntity());
+		setBill(bill);
+		billDAO.delete(billEntity);
 	}
 	
 	/*
@@ -133,7 +166,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	}
 	
 	public void approveBill(int billNumber){
-		bill = get(billNumber);
+		bill = getChild(billNumber);
 		if (bill.getStatus().equals(BillStatus.Pending) || bill.getStatus().equals(BillStatus.Rejected)){
 			bill.setStatus(BillStatus.Approved);
 			update(bill);
@@ -144,7 +177,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	}
 	
 	public void rejectBill(int billNumber){
-		bill = get(billNumber);
+		bill = getChild(billNumber);
 		if (bill.getStatus().equals(BillStatus.Pending)){
 			bill.setStatus(BillStatus.Rejected);
 			update(bill);
@@ -158,7 +191,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	 * 
 	 */
 	public void makePayment(int billNumber, AccountType accountType){
-		bill = get(billNumber);
+		bill = getChild(billNumber);
 		if (bill.getStatus().equals(BillStatus.Approved)){
 			float amount = bill.getAmount();
 			float serviceChargePercentage = bill.getServiceChargePercentage();
@@ -185,13 +218,6 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 			return new VirtualAccountDO();
 		}
 		throw new NotFoundException("No appropriate account DO found for account type:"+accountType);
-	}
-
-	@Override
-	public Bill getWithEagerFetch(int number) {
-		bill = get(number);
-		bill.fetchReferenceVariable();
-		return bill;
 	}
 
 }

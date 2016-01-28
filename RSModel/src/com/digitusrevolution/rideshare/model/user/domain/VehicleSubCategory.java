@@ -1,11 +1,7 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
-import com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity;
-
-public class VehicleSubCategory implements DomainModel{
+public class VehicleSubCategory {
 	
-	private VehicleSubCategoryEntity entity = new VehicleSubCategoryEntity();
 	private int id;
 	private String name;
 	private Boolean airConditioner;
@@ -13,48 +9,22 @@ public class VehicleSubCategory implements DomainModel{
 	private FuelType fuelType;
 	
 	public int getId() {
-		return id; 
+		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
-		entity.setId(id);
 	}
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
-		entity.setName(name);
 	}
 	public Boolean getAirConditioner() {
 		return airConditioner;
 	}
 	public void setAirConditioner(Boolean airConditioner) {
 		this.airConditioner = airConditioner;
-		entity.setAirConditioner(airConditioner);
-	}
-	public int getAverageMileage() {
-		return averageMileage;
-	}
-	public void setAverageMileage(int averageMileage) {
-		this.averageMileage = averageMileage;
-		entity.setAverageMileage(averageMileage);
-	}
-	public FuelType getFuelType() {
-		return fuelType;
-	}
-	public void setFuelType(FuelType fuelType) {
-		this.fuelType = fuelType;
-		entity.setFuelType(fuelType);
-	}
-
-	public VehicleSubCategoryEntity getEntity() {
-		return entity;
-	}
-
-	public void setEntity(VehicleSubCategoryEntity entity) {
-		this.entity = entity;
-		setDomainModelPrimitiveVariable();
 	}
 	@Override
 	public int hashCode() {
@@ -88,18 +58,18 @@ public class VehicleSubCategory implements DomainModel{
 		}
 		return true;
 	}
-	@Override
-	public void setDomainModelPrimitiveVariable() {
-		airConditioner = entity.getAirConditioner();
-		averageMileage = entity.getAverageMileage();
-		fuelType = entity.getFuelType();
-		id = entity.getId();
-		name = entity.getName();
-		
+	public int getAverageMileage() {
+		return averageMileage;
 	}
-	@Override
-	public void fetchReferenceVariable() {
-		// TODO Auto-generated method stub
-		
-	}	
+	public void setAverageMileage(int averageMileage) {
+		this.averageMileage = averageMileage;
+	}
+	public FuelType getFuelType() {
+		return fuelType;
+	}
+	public void setFuelType(FuelType fuelType) {
+		this.fuelType = fuelType;
+	}
+
+	
 }

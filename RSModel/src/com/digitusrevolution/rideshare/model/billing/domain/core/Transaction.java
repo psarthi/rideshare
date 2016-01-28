@@ -2,12 +2,8 @@ package com.digitusrevolution.rideshare.model.billing.domain.core;
 
 import java.time.ZonedDateTime;
 
-import com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity;
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
-
-public class Transaction implements DomainModel{
+public class Transaction {
 	
-	private TransactionEntity entity = new TransactionEntity();
 	private int id;
 	private ZonedDateTime dateTime;
 	private TransactionType type;
@@ -19,35 +15,30 @@ public class Transaction implements DomainModel{
 	}
 	public void setDateTime(ZonedDateTime dateTime) {
 		this.dateTime = dateTime;
-		entity.setDateTime(dateTime);
 	}
 	public TransactionType getType() {
 		return type;
 	}
 	public void setType(TransactionType type) {
 		this.type = type;
-		entity.setType(type);
 	}
 	public float getAmount() {
 		return amount;
 	}
 	public void setAmount(float amount) {
 		this.amount = amount;
-		entity.setAmount(amount);
 	}
 	public String getRemark() {
 		return remark;
 	}
 	public void setRemark(String remark) {
 		this.remark = remark;
-		entity.setRemark(remark);
 	}
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
-		entity.setId(id);
 	}
 	@Override
 	public int hashCode() {
@@ -96,26 +87,6 @@ public class Transaction implements DomainModel{
 			return false;
 		}
 		return true;
-	}
-	public TransactionEntity getEntity() {
-		return entity;
-	}
-	public void setEntity(TransactionEntity entity) {
-		this.entity = entity;
-		setDomainModelPrimitiveVariable();
-	}
-	@Override
-	public void setDomainModelPrimitiveVariable() {
-		dateTime = entity.getDateTime();
-		type = entity.getType();
-		amount = entity.getAmount();
-		remark = entity.getRemark();
-		id = entity.getId();
-	}
-	@Override
-	public void fetchReferenceVariable() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

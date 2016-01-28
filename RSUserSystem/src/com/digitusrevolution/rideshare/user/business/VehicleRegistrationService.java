@@ -6,6 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
@@ -22,7 +23,9 @@ public class VehicleRegistrationService {
 			transation = session.beginTransaction();
 
 			UserDO userDO = new UserDO();
-			userDO.addVehicle(userId, vehicle);
+			User user = userDO.get(userId);
+			userDO.setUser(user);
+			userDO.addVehicle(vehicle);
 			
 			transation.commit();
 		} catch (RuntimeException e) {

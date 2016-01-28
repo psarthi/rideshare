@@ -1,18 +1,15 @@
 package com.digitusrevolution.rideshare.model.user.domain.core;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
-import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 
-public class Vehicle implements DomainModel{
+public class Vehicle {
 
-	private VehicleEntity entity = new VehicleEntity();
 	private int id;
-	private VehicleCategory vehicleCategory = new VehicleCategory();
-	private VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
-	private Photo photo = new Photo();
+	private VehicleCategory vehicleCategory;
+	private VehicleSubCategory vehicleSubCategory;
+	private Photo photo;
 	
 	public int getId() {
 		return id;
@@ -20,52 +17,30 @@ public class Vehicle implements DomainModel{
 
 	public void setId(int id) {
 		this.id = id;
-		entity.setId(id);
 	}
 
 	public VehicleSubCategory getVehicleSubCategory() {
-		vehicleSubCategory.setEntity(entity.getVehicleSubCategory());
 		return vehicleSubCategory;
 	}
 
 	public void setVehicleSubCategory(VehicleSubCategory vehicleSubCategory) {
 		this.vehicleSubCategory = vehicleSubCategory;
-		entity.setVehicleSubCategory(vehicleSubCategory.getEntity());
 	}
 
 	public VehicleCategory getVehicleCategory() {
-		vehicleCategory.setEntity(entity.getVehicleCategory());
 		return vehicleCategory;
 	}
 
 	public void setVehicleCategory(VehicleCategory vehicleCategory) {
 		this.vehicleCategory = vehicleCategory;
-		entity.setVehicleCategory(vehicleCategory.getEntity());
-		
 	}
 
 	public Photo getPhoto() {
-		photo.setEntity(entity.getPhoto());
 		return photo;
 	}
 
 	public void setPhoto(Photo photo) {
 		this.photo = photo;
-		entity.setPhoto(photo.getEntity());
-	}
-	
-	public VehicleEntity getEntity() {
-		return entity;
-	}
-
-	public void setEntity(VehicleEntity entity) {
-		this.entity = entity;
-		setDomainModelPrimitiveVariable();
-	}
-
-	@Override
-	public void setDomainModelPrimitiveVariable() {
-		id = entity.getId();		
 	}
 
 	@Override
@@ -108,13 +83,6 @@ public class Vehicle implements DomainModel{
 			return false;
 		}
 		return true;
-	}
-
-	@Override
-	public void fetchReferenceVariable() {
-		getVehicleCategory().fetchReferenceVariable();
-		getVehicleSubCategory().fetchReferenceVariable();
-	//	getPhoto().fetchReferenceVariable();
 	}
 
 }

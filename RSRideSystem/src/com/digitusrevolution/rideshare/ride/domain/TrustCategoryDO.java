@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKString;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
+import com.digitusrevolution.rideshare.common.mapper.ride.TrustCategoryMapper;
 import com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategoryName;
@@ -19,17 +20,35 @@ import com.digitusrevolution.rideshare.model.ride.domain.TrustCategoryName;
 public class TrustCategoryDO implements DomainObjectPKString<TrustCategory>{
 	
 	private TrustCategory trustCategory;
-	private final GenericDAO<TrustCategoryEntity, TrustCategoryName> genericDAO = new GenericDAOImpl<>(TrustCategoryEntity.class);
+	private TrustCategoryEntity trustCategoryEntity;
+	private TrustCategoryMapper trustCategoryMapper;
+	private final GenericDAO<TrustCategoryEntity, TrustCategoryName> genericDAO;
 	private static final Logger logger = LogManager.getLogger(TrustCategoryDO.class.getName());
 
 	
+	public TrustCategoryDO() {
+		trustCategory = new TrustCategory();
+		trustCategoryEntity = new TrustCategoryEntity();
+		trustCategoryMapper = new TrustCategoryMapper();
+		genericDAO = new GenericDAOImpl<>(TrustCategoryEntity.class);
+	}
+	
+	public void setTrustCategory(TrustCategory trustCategory) {
+		this.trustCategory = trustCategory;
+		trustCategoryEntity = trustCategoryMapper.getEntity(trustCategory, true);
+	}
+
+	private void setTrustCategoryEntity(TrustCategoryEntity trustCategoryEntity) {
+		this.trustCategoryEntity = trustCategoryEntity;
+		trustCategory = trustCategoryMapper.getDomainModel(trustCategoryEntity, false);
+	}
+
 	@Override
 	public List<TrustCategory> getAll() {
 		List<TrustCategory> trustCategories = new ArrayList<>();
 		List<TrustCategoryEntity> trustCategoryEntities = genericDAO.getAll();
 		for (TrustCategoryEntity trustCategoryEntity : trustCategoryEntities) {
-			TrustCategory trustCategory = new TrustCategory();
-			trustCategory.setEntity(trustCategoryEntity);
+			setTrustCategoryEntity(trustCategoryEntity);
 			trustCategories.add(trustCategory);
 		}
 		return trustCategories;
@@ -40,38 +59,47 @@ public class TrustCategoryDO implements DomainObjectPKString<TrustCategory>{
 		if (trustCategory.getName().toString().isEmpty()){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+trustCategory.getName());
 		}
-		genericDAO.update(trustCategory.getEntity());		
+		setTrustCategory(trustCategory);
+		genericDAO.update(trustCategoryEntity);		
 	}
 
 	@Override
 	public void delete(String name) {
 		trustCategory = get(name);
-		genericDAO.delete(trustCategory.getEntity());		
+		setTrustCategory(trustCategory);
+		genericDAO.delete(trustCategoryEntity);		
+	}
+
+	@Override
+	public void fetchChild() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public String create(TrustCategory trustCategory) {
 		logger.entry();
-		String name = genericDAO.create(trustCategory.getEntity()).toString();
+		setTrustCategory(trustCategory);
+		String name = genericDAO.create(trustCategoryEntity).toString();
 		logger.exit();
 		return name;
 	}
 
 	@Override
 	public TrustCategory get(String name) {
-		trustCategory = new TrustCategory();
-		TrustCategoryEntity trustCategoryEntity = genericDAO.get(TrustCategoryName.valueOf(name));
+		trustCategoryEntity = genericDAO.get(TrustCategoryName.valueOf(name));
 		if (trustCategoryEntity == null){
 			throw new NotFoundException("No Data found with id: "+name);
 		}
-		trustCategory.setEntity(trustCategoryEntity);
+		setTrustCategoryEntity(trustCategoryEntity);
 		return trustCategory;
 	}
 
 	@Override
-	public TrustCategory getWithEagerFetch(String name) {
-		trustCategory = get(name);
-		trustCategory.fetchReferenceVariable();
+	public TrustCategory getChild(String name) {
+		get(name);
+		fetchChild();
 		return trustCategory;
 	}
+
 }

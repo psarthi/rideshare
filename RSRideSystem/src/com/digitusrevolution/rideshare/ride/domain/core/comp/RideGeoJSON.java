@@ -59,7 +59,7 @@ public class RideGeoJSON {
 		featureCollection.addAll(rideRequestGeoJSONFeatures);
 		//This will get all route along with start and end point for all matching rides
 		for (RideMatchInfo rideMatchInfo : rideMatchInfos) {
-			Ride ride = rideDO.get(rideMatchInfo.getRideId());
+			Ride ride = rideDO.getChild(rideMatchInfo.getRideId());
 			List<Feature> rideGeoJsonFeatures = getRideGeoJson(ride);
 			featureCollection.addAll(rideGeoJsonFeatures);
 		}
@@ -71,7 +71,7 @@ public class RideGeoJSON {
 	 */
 	public FeatureCollection getRidePoints(int rideId){
 		FeatureCollection featureCollection = new FeatureCollection();
-		featureCollection.addAll(getRidePoints(rideDO.get(rideId)));
+		featureCollection.addAll(getRidePoints(rideDO.getChild(rideId)));
 		return featureCollection;
 	}
 	

@@ -7,6 +7,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -23,9 +24,9 @@ public class RideRequestDomainResource implements DomainResource<RideRequest>{
 	@Override
 	@GET
 	@Path("/{id}")
-	public Response get(@PathParam("id") int id) {
+	public Response get(@PathParam("id") int id, @QueryParam("fetchChild") String fetchChild) {
 		RideRequestDomainService rideRequestDomainService = new RideRequestDomainService();
-		RideRequest rideRequest = rideRequestDomainService.get(id);
+		RideRequest rideRequest = rideRequestDomainService.get(id, Boolean.valueOf(fetchChild));
 		return Response.ok(rideRequest).build();
 	}
 

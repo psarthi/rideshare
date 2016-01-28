@@ -3,103 +3,39 @@ package com.digitusrevolution.rideshare.model.ride.domain;
 import java.util.Collection;
 import java.util.HashSet;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
-import com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity;
-import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
-import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
-import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
-public class TrustNetwork implements DomainModel{
-
-	private TrustNetworkEntity entity = new TrustNetworkEntity();
+public class TrustNetwork {
+	
 	private int id;
 	private Collection<TrustCategory> trustCategories = new HashSet<TrustCategory>();
 	private Collection<User> friends = new HashSet<User>();
 	private Collection<Group> groups = new HashSet<Group>();
-
+	
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
-		entity.setId(id);
 	}
 	public Collection<TrustCategory> getTrustCategories() {
-		if (trustCategories.isEmpty()){
-			Collection<TrustCategoryEntity> trustCategorieEntities = entity.getTrustCategories();
-			for (TrustCategoryEntity trustCategoryEntity : trustCategorieEntities) {
-				TrustCategory trustCategory = new TrustCategory();
-				trustCategory.setEntity(trustCategoryEntity);
-				trustCategories.add(trustCategory);
-			}
-		}
 		return trustCategories;
 	}
 	public void setTrustCategories(Collection<TrustCategory> trustCategories) {
 		this.trustCategories = trustCategories;
-		entity.getTrustCategories().clear();
-		for (TrustCategory trustCategory : trustCategories) {
-			entity.getTrustCategories().add(trustCategory.getEntity());
-		}
 	}
-	public void addTrustCategory(TrustCategory trustCategory) {
-		trustCategories.add(trustCategory);
-		entity.getTrustCategories().add(trustCategory.getEntity());
-	}
-
 	public Collection<User> getFriends() {
-		if (friends.isEmpty()){
-			Collection<UserEntity> friendEntities = entity.getFriends();
-			for (UserEntity userEntity : friendEntities) {
-				User user = new User();
-				user.setEntity(userEntity);
-				friends.add(user);
-			}
-		}
 		return friends;
 	}
 	public void setFriends(Collection<User> friends) {
 		this.friends = friends;
-		entity.getFriends().clear();
-		for (User user : friends) {
-			entity.getFriends().add(user.getEntity());
-		}
 	}
-	public void addFriend(User friend) {
-		friends.add(friend);
-		entity.getFriends().add(friend.getEntity());
-	}
-
 	public Collection<Group> getGroups() {
-		if (groups.isEmpty()){
-			Collection<GroupEntity> groupEntities = entity.getGroups();
-			for (GroupEntity groupEntity : groupEntities) {
-				Group group = new Group();
-				group.setEntity(groupEntity);
-				groups.add(group);
-			}
-		}
 		return groups;
 	}
 	public void setGroups(Collection<Group> groups) {
 		this.groups = groups;
-		entity.getGroups().clear();
-		for (Group group : groups) {
-			entity.getGroups().add(group.getEntity());
-		}
-	}
-	public void addGroup(Group group) {
-		groups.add(group);
-		entity.getGroups().add(group.getEntity());
-	}
-	public TrustNetworkEntity getEntity() {
-		return entity;
-	}
-	public void setEntity(TrustNetworkEntity entity) {
-		this.entity = entity;
-		setDomainModelPrimitiveVariable();
 	}
 	@Override
 	public int hashCode() {
@@ -149,14 +85,5 @@ public class TrustNetwork implements DomainModel{
 		}
 		return true;
 	}
-	@Override
-	public void setDomainModelPrimitiveVariable() {
-		id = entity.getId();
 
-	}
-	@Override
-	public void fetchReferenceVariable() {
-		// TODO Auto-generated method stub
-		
-	}
 }

@@ -3,61 +3,29 @@ package com.digitusrevolution.rideshare.model.user.domain;
 import java.util.Collection;
 import java.util.HashSet;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
-import com.digitusrevolution.rideshare.model.user.data.CityEntity;
-import com.digitusrevolution.rideshare.model.user.data.StateEntity;
+public class State {
 
-public class State implements DomainModel{
-
-	private StateEntity entity = new StateEntity();
 	private int id;
 	private String name;
 	private Collection<City> cities = new HashSet<City>();
-
+	
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
-		entity.setId(id);
 	}
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
-		entity.setName(name);
 	}
 	public Collection<City> getCities() {
-		if (cities.isEmpty()){
-			Collection<CityEntity> cityEntities = entity.getCities();
-			for (CityEntity cityEntity : cityEntities) {
-				City city = new City();
-				city.setEntity(cityEntity);
-				cities.add(city);
-			}
-		}
 		return cities;
 	}
 	public void setCities(Collection<City> cities) {
 		this.cities = cities;
-		entity.getCities().clear();
-		for (City city : cities) {
-			entity.getCities().add(city.getEntity());
-		}
-	}
-	
-	public void addCity(City city){
-		cities.add(city);
-		entity.getCities().add(city.getEntity());
-	}
-	
-	public StateEntity getEntity() {
-		return entity;
-	}
-	public void setEntity(StateEntity entity) {
-		this.entity = entity;
-		setDomainModelPrimitiveVariable();
 	}
 	@Override
 	public int hashCode() {
@@ -91,15 +59,5 @@ public class State implements DomainModel{
 		}
 		return true;
 	}
-	@Override
-	public void setDomainModelPrimitiveVariable() {
-		id = entity.getId();
-		name = entity.getName();
-
-	}
-	@Override
-	public void fetchReferenceVariable() {
-		getCities();
-		
-	}	
+	
 }

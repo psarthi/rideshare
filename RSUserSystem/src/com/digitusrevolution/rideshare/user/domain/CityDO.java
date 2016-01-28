@@ -9,28 +9,62 @@ import javax.ws.rs.NotFoundException;
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
+import com.digitusrevolution.rideshare.common.mapper.user.CityMapper;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 
 public class CityDO implements DomainObjectPKInteger<City>{
 	
 	private City city;
-	private final GenericDAO<CityEntity, Integer> genericDAO = new GenericDAOImpl<>(CityEntity.class);
+	private CityEntity cityEntity;
+	private CityMapper cityMapper;
+	private final GenericDAO<CityEntity, Integer> genericDAO;
 	
+	public CityDO() {
+		city = new City();
+		cityEntity = new CityEntity();
+		cityMapper = new CityMapper();
+		genericDAO = new GenericDAOImpl<>(CityEntity.class);
+	}
+
+	public void setCity(City city) {
+		this.city = city;
+		cityEntity = cityMapper.getEntity(city, true);
+		
+	}
+
+	private void setCityEntity(CityEntity cityEntity) {
+		this.cityEntity = cityEntity;
+		city = cityMapper.getDomainModel(cityEntity, false);
+	}
+
+	@Override
+	public void fetchChild() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	@Override
 	public int create(City city) {
-		int id = genericDAO.create(city.getEntity());
+		setCity(city);
+		int id = genericDAO.create(cityEntity);
 		return id;
 	}
 
 	@Override
 	public City get(int id) {
-		city = new City();
-		CityEntity cityEntity = genericDAO.get(id);
+		cityEntity = genericDAO.get(id);
 		if (cityEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);
 		}
-		city.setEntity(cityEntity);
+		setCityEntity(cityEntity);
+		return city;
+	}
+
+	@Override
+	public City getChild(int id) {
+		get(id);
+		fetchChild();
 		return city;
 	}
 
@@ -39,8 +73,7 @@ public class CityDO implements DomainObjectPKInteger<City>{
 		List<City> cities = new ArrayList<>();
 		List<CityEntity> cityEntities = genericDAO.getAll();
 		for (CityEntity cityEntity : cityEntities) {
-			City city = new City();
-			city.setEntity(cityEntity);
+			setCityEntity(cityEntity);
 			cities.add(city);
 		}
 		return cities;
@@ -51,20 +84,15 @@ public class CityDO implements DomainObjectPKInteger<City>{
 		if (city.getId()==0){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+city.getId());
 		}
-		genericDAO.update(city.getEntity());				
+		setCity(city);
+		genericDAO.update(cityEntity);				
 	}
 
 	@Override
 	public void delete(int id) {
 		city = get(id);
-		genericDAO.delete(city.getEntity());			
-	}
-
-	@Override
-	public City getWithEagerFetch(int id) {
-		city = get(id);
-		city.fetchReferenceVariable();
-		return city;
+		setCity(city);
+		genericDAO.delete(cityEntity);			
 	}
 
 }

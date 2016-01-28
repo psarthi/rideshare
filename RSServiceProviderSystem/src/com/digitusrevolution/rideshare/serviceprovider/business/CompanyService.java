@@ -40,7 +40,7 @@ public class CompanyService {
 		}	
 	}
 	
-	public Company get(int id) {
+	public Company get(int id, boolean fetchChild) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		Company company = null;
@@ -48,8 +48,12 @@ public class CompanyService {
 			transation = session.beginTransaction();
 
 			CompanyDO companyDO = new CompanyDO();
-			company = companyDO.get(id);			
-	
+			if (fetchChild){
+				company = companyDO.getChild(id);
+			} else {
+				company = companyDO.get(id);			
+			}
+
 			transation.commit();
 		} catch (RuntimeException e) {
 			if (transation!=null){

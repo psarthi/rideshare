@@ -1,34 +1,21 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
-import com.digitusrevolution.rideshare.model.inf.DomainModel;
-import com.digitusrevolution.rideshare.model.user.data.CityEntity;
-
-public class City implements DomainModel{
+public class City {
 	
-	private CityEntity entity = new CityEntity();
 	private int id;
 	private String name;
-		
+	
 	public int getId() {
-		return id; 
+		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
-		entity.setId(id);
 	}
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
-		entity.setName(name);
-	}
-	public CityEntity getEntity() {
-		return entity;
-	}
-	public void setEntity(CityEntity entity) {
-		this.entity = entity;
-		setDomainModelPrimitiveVariable();
 	}
 	@Override
 	public int hashCode() {
@@ -62,15 +49,5 @@ public class City implements DomainModel{
 		}
 		return true;
 	}
-	@Override
-	public void setDomainModelPrimitiveVariable() {
-		id = entity.getId();
-		name = entity.getName();		
-	}
-	@Override
-	public void fetchReferenceVariable() {
-		// TODO Auto-generated method stub
-		
-	}
-
+	
 }

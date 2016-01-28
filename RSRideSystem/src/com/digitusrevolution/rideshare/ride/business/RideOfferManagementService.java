@@ -64,7 +64,7 @@ public class RideOfferManagementService {
 			TrustCategory trustCategory = trustCategoryDO.get(TrustCategoryName.Anonymous.toString());
 	 
 			TrustNetwork trustNetwork = new TrustNetwork();
-			trustNetwork.addTrustCategory(trustCategory);
+			trustNetwork.getTrustCategories().add(trustCategory);
 			ride.setTrustNetwork(trustNetwork);
 			
 			ride.setRecur(false);

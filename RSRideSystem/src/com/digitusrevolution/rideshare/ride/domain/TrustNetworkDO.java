@@ -12,23 +12,48 @@ import org.apache.logging.log4j.Logger;
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
+import com.digitusrevolution.rideshare.common.mapper.ride.TrustNetworkMapper;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 
 public class TrustNetworkDO implements DomainObjectPKInteger<TrustNetwork>{
 
 	private TrustNetwork trustNetwork;
-	private final GenericDAO<TrustNetworkEntity, Integer> genericDAO = new GenericDAOImpl<>(TrustNetworkEntity.class);
+	private TrustNetworkEntity trustNetworkEntity;
+	private TrustNetworkMapper trustNetworkMapper;
+	private final GenericDAO<TrustNetworkEntity, Integer> genericDAO;
 	private static final Logger logger = LogManager.getLogger(TrustNetworkDO.class.getName());
 
+
+	public TrustNetworkDO() {
+		trustNetwork = new TrustNetwork();
+		trustNetworkEntity = new TrustNetworkEntity();
+		trustNetworkMapper = new TrustNetworkMapper();
+		genericDAO = new GenericDAOImpl<>(TrustNetworkEntity.class);
+	}
+
+	public void setTrustNetwork(TrustNetwork trustNetwork) {
+		this.trustNetwork = trustNetwork;
+		trustNetworkEntity = trustNetworkMapper.getEntity(trustNetwork, true);
+	}
+
+	private void setTrustNetworkEntity(TrustNetworkEntity trustNetworkEntity) {
+		this.trustNetworkEntity = trustNetworkEntity;
+		trustNetwork = trustNetworkMapper.getDomainModel(trustNetworkEntity, false);
+	}
+
+	@Override
+	public void fetchChild() {
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
 	public List<TrustNetwork> getAll() {
 		List<TrustNetwork> trustNetworks = new ArrayList<>();
 		List<TrustNetworkEntity> trustNetworkEntities = genericDAO.getAll();
 		for (TrustNetworkEntity trustNetworkEntity : trustNetworkEntities) {
-			TrustNetwork trustNetwork = new TrustNetwork();
-			trustNetwork.setEntity(trustNetworkEntity);
+			setTrustNetworkEntity(trustNetworkEntity);
 			trustNetworks.add(trustNetwork);
 		}
 		return trustNetworks;
@@ -39,38 +64,40 @@ public class TrustNetworkDO implements DomainObjectPKInteger<TrustNetwork>{
 		if (trustNetwork.getId()==0){
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+trustNetwork.getId());
 		}
-		genericDAO.update(trustNetwork.getEntity());		
+		setTrustNetwork(trustNetwork);
+		genericDAO.update(trustNetworkEntity);		
 	}
 
 	@Override
 	public void delete(int id) {
-		trustNetwork = new TrustNetwork();
 		trustNetwork = get(id);
-		genericDAO.delete(trustNetwork.getEntity());		
+		setTrustNetwork(trustNetwork);
+		genericDAO.delete(trustNetworkEntity);		
 	}
 
 	@Override
 	public int create(TrustNetwork trustNetwork) {
 		logger.entry();
-		int id = genericDAO.create(trustNetwork.getEntity());
+		setTrustNetwork(trustNetwork);
+		int id = genericDAO.create(trustNetworkEntity);
 		logger.exit();
 		return id;
 	}
 
 	@Override
 	public TrustNetwork get(int id) {
-		TrustNetworkEntity trustNetworkEntity = genericDAO.get(id);
+		trustNetworkEntity = genericDAO.get(id);
 		if (trustNetworkEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);
 		}
-		trustNetwork.setEntity(trustNetworkEntity);
+		setTrustNetworkEntity(trustNetworkEntity);
 		return trustNetwork;
 	}
 
 	@Override
-	public TrustNetwork getWithEagerFetch(int id) {
-		trustNetwork = get(id);
-		trustNetwork.fetchReferenceVariable();
+	public TrustNetwork getChild(int id) {
+		get(id);
+		fetchChild();
 		return trustNetwork;
 	}
 }
