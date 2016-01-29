@@ -38,6 +38,7 @@ import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
@@ -45,6 +46,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.ride.data.RideRequestDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
+import com.digitusrevolution.rideshare.ride.domain.TrustNetworkDO;
 import com.digitusrevolution.rideshare.ride.domain.core.comp.RideRequestGeoJSON;
 import com.digitusrevolution.rideshare.ride.dto.RideMatchInfo;
 import com.digitusrevolution.rideshare.ride.dto.RideRequestSearchResult;
@@ -183,13 +185,23 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		//Storing dateTime in UTC
 		rideRequest.setPickupTime(pickupTimeUTC);
 		rideRequest.setStatus(RideRequestStatus.Unfulfilled);
+		
+		//**IMP Problem - Trustnetwork gets created while creating the ride request but we don't have its id and without id it will 
+		//recreate the trust network while updating the ride request at later part of the this function as trust network id is the primary key
+		//for trust network entity. 
+		//Solution - Create trust network first, we will get the id and then we can set the value to null,
+		//so that it doesn't try to create while creating ride request and at that point of time ride request doesn't have relationship with created trustnetwork
+		//But at later stage while updating, we will set the ride request with the created trust network, so that it can create relationship
+		//Note - If we don't do this first and set the value to null, we will loose the original trust network value and we can't set this 
+		//while updating, so this has to be done before setting the value to null
+		TrustNetwork trustNetwork = rideRequest.getTrustNetwork();
+		TrustNetworkDO trustNetworkDO = new TrustNetworkDO();
+		int trustNetworkId = trustNetworkDO.create(trustNetwork);
+		TrustNetwork trustNetworkWithId = trustNetworkDO.get(trustNetworkId);
+		rideRequest.setTrustNetwork(null);
+
 		int id = create(rideRequest);
 		rideRequest.setId(id);
-		//***We have problem here, we need to get Trust Network ID or Set this to null, so that it doesn't create a new trust network
-		//Its important, reason is Trustnetwork get created while creating the ride request but we don't have its id and without id it will 
-		//recreate the trust network while updating the ride request at later part of the this function as trust network id is the primary key
-		//for trust network entity, so by resetting it to null value, we won't send the trust network for further creation
-		rideRequest.setTrustNetwork(null);
 
 		//No need to get update Ride request as return type as in java its pass by reference, so data would be updated in the original ride request
 		setRideRequestPointProperties(rideRequest);
@@ -199,6 +211,10 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		rideRequest.getPickupPoint().set_id(pickupPointId);
 		rideRequest.getDropPoint().set_id(dropPointId);
 		rideRequest.setId(id);
+		//Its important to set the trust network, otherwise relationship between ride and trust network would be lost
+		//as while creating we can't established the relationship as trust network was already created and it will throw error if we pass the same
+		//value while creation
+		rideRequest.setTrustNetwork(trustNetworkWithId);
 		update(rideRequest);
 		logger.debug("Ride Request has been created with id:" + id);
 		return id;
