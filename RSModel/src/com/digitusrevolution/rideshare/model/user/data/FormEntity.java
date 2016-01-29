@@ -20,12 +20,12 @@ public class FormEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
+	//This would be visible to all group members e.g. employee id, flat number etc
+	private String userUniqueIdentifierName;
 	@ElementCollection
 	@JoinTable(name="group_membership_form_question",joinColumns=@JoinColumn(name="form_id"))
 	private Collection<String> questions = new HashSet<String>();
 	private String remark;
-	private boolean emailVerification;
-	private String emailDomain;
 	
 	public int getId() {
 		return id;
@@ -33,32 +33,32 @@ public class FormEntity {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public Collection<String> getQuestions() {
-		return questions;
-	}
-	public void setQuestions(Collection<String> questions) {
-		this.questions = questions;
-	}
 	public String getRemark() {
 		return remark;
 	}
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
-	public boolean isEmailVerification() {
-		return emailVerification;
+	public String getUserUniqueIdentifierName() {
+		return userUniqueIdentifierName;
 	}
-	public void setEmailVerification(boolean emailVerification) {
-		this.emailVerification = emailVerification;
+	public void setUserUniqueIdentifierName(String userUniqueIdentifierName) {
+		this.userUniqueIdentifierName = userUniqueIdentifierName;
+	}
+	public Collection<String> getQuestions() {
+		return questions;
+	}
+	public void setQuestions(Collection<String> questions) {
+		this.questions = questions;
 	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (emailVerification ? 1231 : 1237);
 		result = prime * result + id;
 		result = prime * result + ((questions == null) ? 0 : questions.hashCode());
 		result = prime * result + ((remark == null) ? 0 : remark.hashCode());
+		result = prime * result + ((userUniqueIdentifierName == null) ? 0 : userUniqueIdentifierName.hashCode());
 		return result;
 	}
 	@Override
@@ -73,9 +73,6 @@ public class FormEntity {
 			return false;
 		}
 		FormEntity other = (FormEntity) obj;
-		if (emailVerification != other.emailVerification) {
-			return false;
-		}
 		if (id != other.id) {
 			return false;
 		}
@@ -93,13 +90,14 @@ public class FormEntity {
 		} else if (!remark.equals(other.remark)) {
 			return false;
 		}
+		if (userUniqueIdentifierName == null) {
+			if (other.userUniqueIdentifierName != null) {
+				return false;
+			}
+		} else if (!userUniqueIdentifierName.equals(other.userUniqueIdentifierName)) {
+			return false;
+		}
 		return true;
-	}
-	public String getEmailDomain() {
-		return emailDomain;
-	}
-	public void setEmailDomain(String emailDomain) {
-		this.emailDomain = emailDomain;
 	}
 	
 	

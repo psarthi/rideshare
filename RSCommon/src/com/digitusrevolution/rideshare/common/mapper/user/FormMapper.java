@@ -12,10 +12,9 @@ public class FormMapper implements Mapper<Form, FormEntity>{
 	public FormEntity getEntity(Form form, boolean fetchChild) {
 		FormEntity formEntity = new FormEntity();
 		formEntity.setId(form.getId());
+		formEntity.setUserUniqueIdentifierName(form.getUserUniqueIdentifierName());
 		formEntity.setQuestions(form.getQuestions());
 		formEntity.setRemark(form.getRemark());
-		formEntity.setEmailVerification(form.isEmailVerification());
-		formEntity.setEmailDomain(form.getEmailDomain());
 		return formEntity;
 	}
 
@@ -28,10 +27,9 @@ public class FormMapper implements Mapper<Form, FormEntity>{
 	public Form getDomainModel(FormEntity formEntity, boolean fetchChild) {
 		Form form = new Form();
 		form.setId(formEntity.getId());
+		form.setUserUniqueIdentifierName(formEntity.getUserUniqueIdentifierName());
 		form.setQuestions(formEntity.getQuestions());
 		form.setRemark(formEntity.getRemark());
-		form.setEmailVerification(formEntity.isEmailVerification());
-		form.setEmailDomain(formEntity.getEmailDomain());
 		return form;
 	}
 

@@ -1,8 +1,8 @@
 package com.digitusrevolution.rideshare.model.user.data;
 
 import java.time.ZonedDateTime;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -14,12 +14,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
-import com.digitusrevolution.rideshare.model.user.domain.EmailVerificationStatus;
 
 //Reason for creating entity and not using embedded as you can't have element collection inside embedded
 @Entity
@@ -29,21 +29,20 @@ public class MembershipRequestEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
+	private String userUniqueIdentifier;
 	@ElementCollection
 	@JoinTable(name="membership_request_answer",joinColumns=@JoinColumn(name="request_id"))
-	private Collection<String> answers = new HashSet<String>();
+	@MapKeyColumn(name="question")
+	@Column(name="answer")
+	private Map<String, String> questionAnswers = new HashMap<String, String>();
 	@OneToOne
 	private UserEntity user;
 	@Column
 	@Enumerated(EnumType.STRING)
 	private ApprovalStatus status;
-	@Column
-	@Enumerated(EnumType.STRING)
-	private EmailVerificationStatus emailVerificationStatus;
-	private String emailForVerification;
 	private ZonedDateTime createdDateTime;
 	private String adminRemark;
-	
+	private String userRemark;
 
 	public int getId() {
 		return id;
@@ -57,12 +56,6 @@ public class MembershipRequestEntity {
 	public void setUser(UserEntity user) {
 		this.user = user;
 	}
-	public Collection<String> getAnswers() {
-		return answers;
-	}
-	public void setAnswers(Collection<String> answers) {
-		this.answers = answers;
-	}
 	public ApprovalStatus getStatus() {
 		return status;
 	}
@@ -74,12 +67,6 @@ public class MembershipRequestEntity {
 	}
 	public void setCreatedDateTime(ZonedDateTime createdDateTime) {
 		this.createdDateTime = createdDateTime;
-	}
-	public EmailVerificationStatus getEmailVerificationStatus() {
-		return emailVerificationStatus;
-	}
-	public void setEmailVerificationStatus(EmailVerificationStatus emailVerificationStatus) {
-		this.emailVerificationStatus = emailVerificationStatus;
 	}
 	@Override
 	public int hashCode() {
@@ -113,16 +100,29 @@ public class MembershipRequestEntity {
 		}
 		return true;
 	}
-	public String getEmailForVerification() {
-		return emailForVerification;
-	}
-	public void setEmailForVerification(String emailForVerification) {
-		this.emailForVerification = emailForVerification;
-	}
 	public String getAdminRemark() {
 		return adminRemark;
 	}
 	public void setAdminRemark(String adminRemark) {
 		this.adminRemark = adminRemark;
+	}
+	
+	public String getUserUniqueIdentifier() {
+		return userUniqueIdentifier;
+	}
+	public void setUserUniqueIdentifier(String userUniqueIdentifier) {
+		this.userUniqueIdentifier = userUniqueIdentifier;
+	}
+	public Map<String, String> getQuestionAnswers() {
+		return questionAnswers;
+	}
+	public void setQuestionAnswers(Map<String, String> questionAnswers) {
+		this.questionAnswers = questionAnswers;
+	}
+	public String getUserRemark() {
+		return userRemark;
+	}
+	public void setUserRemark(String userRemark) {
+		this.userRemark = userRemark;
 	}
 }

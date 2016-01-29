@@ -14,12 +14,11 @@ public class MembershipRequestMapper implements Mapper<MembershipRequest, Member
 		MembershipRequestEntity membershipRequestEntity = new MembershipRequestEntity();
 		membershipRequestEntity.setId(membershipRequest.getId());
 		membershipRequestEntity.setCreatedDateTime(membershipRequest.getCreatedDateTime());
-		membershipRequestEntity.setAnswers(membershipRequest.getAnswers());
+		membershipRequestEntity.setUserUniqueIdentifier(membershipRequest.getUserUniqueIdentifier());
+		membershipRequestEntity.setQuestionAnswers(membershipRequest.getQuestionAnswers());
 		membershipRequestEntity.setStatus(membershipRequest.getStatus());
 		UserMapper userMapper = new UserMapper();
 		membershipRequestEntity.setUser(userMapper.getEntity(membershipRequest.getUser(), false));
-		membershipRequestEntity.setEmailForVerification(membershipRequest.getEmailForVerification());
-		membershipRequestEntity.setEmailVerificationStatus(membershipRequest.getEmailVerificationStatus());
 		membershipRequestEntity.setAdminRemark(membershipRequest.getAdminRemark());
 		return membershipRequestEntity;
 	}
@@ -34,12 +33,11 @@ public class MembershipRequestMapper implements Mapper<MembershipRequest, Member
 		MembershipRequest membershipRequest = new MembershipRequest();
 		membershipRequest.setId(membershipRequestEntity.getId());
 		membershipRequest.setCreatedDateTime(membershipRequestEntity.getCreatedDateTime());
-		membershipRequest.setAnswers(membershipRequestEntity.getAnswers());
+		membershipRequest.setUserUniqueIdentifier(membershipRequestEntity.getUserUniqueIdentifier());
+		membershipRequestEntity.setQuestionAnswers(membershipRequest.getQuestionAnswers());
 		membershipRequest.setStatus(membershipRequestEntity.getStatus());
 		UserMapper userMapper = new UserMapper();
 		membershipRequest.setUser(userMapper.getDomainModel(membershipRequestEntity.getUser(), false));
-		membershipRequest.setEmailForVerification(membershipRequestEntity.getEmailForVerification());
-		membershipRequest.setEmailVerificationStatus(membershipRequestEntity.getEmailVerificationStatus());
 		membershipRequest.setAdminRemark(membershipRequestEntity.getAdminRemark());
 		return membershipRequest;
 	}

@@ -1,8 +1,8 @@
 package com.digitusrevolution.rideshare.model.user.domain;
 
 import java.time.ZonedDateTime;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
@@ -10,24 +10,19 @@ public class MembershipRequest {
 
 	private int id;
 	private User user;
-	private Collection<String> answers = new HashSet<String>();
+	//This would be visible to all group members e.g. employee id, flat number etc
+	private String userUniqueIdentifier;
+	private Map<String, String> questionAnswers = new HashMap<String, String>();
 	private ApprovalStatus status;
-	private EmailVerificationStatus emailVerificationStatus;
-	private String emailForVerification;
 	private ZonedDateTime createdDateTime;
 	private String adminRemark;
+	private String userRemark;
 	
 	public User getUser() {
 		return user;
 	}
 	public void setUser(User user) {
 		this.user = user;
-	}
-	public Collection<String> getAnswers() {
-		return answers;
-	}
-	public void setAnswers(Collection<String> answers) {
-		this.answers = answers;
 	}
 	public ApprovalStatus getStatus() {
 		return status;
@@ -46,6 +41,24 @@ public class MembershipRequest {
 	}
 	public void setId(int id) {
 		this.id = id;
+	}
+	public String getUserUniqueIdentifier() {
+		return userUniqueIdentifier;
+	}
+	public void setUserUniqueIdentifier(String userUniqueIdentifier) {
+		this.userUniqueIdentifier = userUniqueIdentifier;
+	}
+	public Map<String, String> getQuestionAnswers() {
+		return questionAnswers;
+	}
+	public void setQuestionAnswers(Map<String, String> questionAnswers) {
+		this.questionAnswers = questionAnswers;
+	}
+	public String getUserRemark() {
+		return userRemark;
+	}
+	public void setUserRemark(String userRemark) {
+		this.userRemark = userRemark;
 	}
 	@Override
 	public int hashCode() {
@@ -78,18 +91,6 @@ public class MembershipRequest {
 			return false;
 		}
 		return true;
-	}
-	public EmailVerificationStatus getEmailVerificationStatus() {
-		return emailVerificationStatus;
-	}
-	public void setEmailVerificationStatus(EmailVerificationStatus emailVerificationStatus) {
-		this.emailVerificationStatus = emailVerificationStatus;
-	}
-	public String getEmailForVerification() {
-		return emailForVerification;
-	}
-	public void setEmailForVerification(String emailForVerification) {
-		this.emailForVerification = emailForVerification;
 	}
 	public String getAdminRemark() {
 		return adminRemark;

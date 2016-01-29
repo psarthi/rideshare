@@ -6,11 +6,11 @@ import java.util.HashSet;
 public class Form {
 
 	private int id;
+	//This would be visible to all group members e.g. employee id, flat number etc
+	//This should not be changed but if required then all members needs to update their identifier details
+	private String userUniqueIdentifierName;
 	private Collection<String> questions = new HashSet<String>();
 	private String remark;
-	private boolean emailVerification;
-	//This will store domain name, so that we can verify if the email belong to the same domain
-	private String emailDomain;
 	
 	public Collection<String> getQuestions() {
 		return questions;
@@ -24,26 +24,26 @@ public class Form {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
-	public boolean isEmailVerification() {
-		return emailVerification;
-	}
-	public void setEmailVerification(boolean emailVerification) {
-		this.emailVerification = emailVerification;
-	}
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
 	}
+	public String getUserUniqueIdentifierName() {
+		return userUniqueIdentifierName;
+	}
+	public void setUserUniqueIdentifierName(String userUniqueIdentifierName) {
+		this.userUniqueIdentifierName = userUniqueIdentifierName;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (emailVerification ? 1231 : 1237);
 		result = prime * result + id;
 		result = prime * result + ((questions == null) ? 0 : questions.hashCode());
 		result = prime * result + ((remark == null) ? 0 : remark.hashCode());
+		result = prime * result + ((userUniqueIdentifierName == null) ? 0 : userUniqueIdentifierName.hashCode());
 		return result;
 	}
 	@Override
@@ -58,9 +58,6 @@ public class Form {
 			return false;
 		}
 		Form other = (Form) obj;
-		if (emailVerification != other.emailVerification) {
-			return false;
-		}
 		if (id != other.id) {
 			return false;
 		}
@@ -78,15 +75,14 @@ public class Form {
 		} else if (!remark.equals(other.remark)) {
 			return false;
 		}
+		if (userUniqueIdentifierName == null) {
+			if (other.userUniqueIdentifierName != null) {
+				return false;
+			}
+		} else if (!userUniqueIdentifierName.equals(other.userUniqueIdentifierName)) {
+			return false;
+		}
 		return true;
 	}
-	public String getEmailDomain() {
-		return emailDomain;
-	}
-	public void setEmailDomain(String emailDomain) {
-		this.emailDomain = emailDomain;
-	}
-	
-	
 	
 }
