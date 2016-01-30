@@ -1,6 +1,5 @@
 package com.digitusrevolution.rideshare.user.data;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -13,11 +12,7 @@ import org.hibernate.criterion.Restrictions;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
-import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
-import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
-import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
-import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 
@@ -61,17 +56,6 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 			return userEntities.get(0);				
 		}	
 	}
-	
-	public Collection<Ride> getRidesOffered(int userId){
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Criteria criteria = session.createCriteria(entityClass);
-		UserEntity userEntity = (UserEntity) criteria.add(Restrictions.eq("id", userId)).uniqueResult();
-		RideMapper rideMapper = new RideMapper();
-		Collection<Ride> rides = new User().getRidesOffered(); 
-		rides = rideMapper.getDomainModels(rides, userEntity.getRidesOffered(), true);
-		return rides;
-	}
-
 }
 
 

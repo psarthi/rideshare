@@ -42,7 +42,7 @@ public class RideRequestEntity {
 	private VehicleCategoryEntity vehicleCategory;
 	@ManyToOne
 	private VehicleSubCategoryEntity vehicleSubCategory;
-	@OneToOne(cascade=CascadeType.ALL)
+	@OneToOne
 	private TrustNetworkEntity trustNetwork;
 	@Enumerated(EnumType.STRING)
 	private Sex sexPreference;

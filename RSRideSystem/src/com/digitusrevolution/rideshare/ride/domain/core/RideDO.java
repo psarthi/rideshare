@@ -232,16 +232,13 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 				//**IMP Problem - Trustnetwork gets created while creating the ride but we don't have its id and without id it will 
 				//recreate the trust network while updating the ride at later part of the this function as trust network id is the primary key
 				//for trust network entity. 
-				//Solution - Create trust network first, we will get the id and then we can set the value to null,
-				//so that it doesn't try to create while creating ride and at that point of time ride doesn't have relationship with created trustnetwork
-				//But at later stage while updating, we will set the ride with the created trust network, so that it can create relationship
-				//Note - If we don't do this first and set the value to null, we will loose the original trust network value and we can't set this 
-				//while updating, so this has to be done before setting the value to null
+				//Solution - Create trust network first and set that to ride. Remove cascade property from ride for trust network, so that ride creation 
+				//can happen properly, else it will throw error if it tries to recreated the same trustnetwork
 				TrustNetwork trustNetwork = ride.getTrustNetwork();
 				TrustNetworkDO trustNetworkDO = new TrustNetworkDO();
 				int trustNetworkId = trustNetworkDO.create(trustNetwork);
 				TrustNetwork trustNetworkWithId = trustNetworkDO.get(trustNetworkId);
-				ride.setTrustNetwork(null);
+				ride.setTrustNetwork(trustNetworkWithId);
 				
 				//Check if ride is recurring, then create multiple rides as per the recurring details
 				//**TBD - Recurring code needs to be written later
@@ -301,10 +298,6 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 				ridePointDAO.createBulk(ridePoints);
 				ride.getStartPoint().set_id(startPointId);
 				ride.getEndPoint().set_id(endPointId);
-				//Its important to set the trust network, otherwise relationship between ride and trust network would be lost
-				//as while creating we can't established the relationship as trust network was already created and it will throw error if we pass the same
-				//value while creation
-				ride.setTrustNetwork(trustNetworkWithId);
 				if (!ride.getRecur()){
 					update(ride);
 					logger.debug("Ride has been updated with id:"+ride.getId());					

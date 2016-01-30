@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.exception.EmailExistException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
+import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
@@ -47,7 +48,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		this.userEntity = userEntity;
 		user = userMapper.getDomainModel(userEntity,false);
 	}
-	
+
 	@Override
 	public int create(User user){
 		setUser(user);
@@ -64,14 +65,14 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		setUserEntity(userEntity);
 		return user;
 	}
-	
+
 	@Override
 	public User getChild(int id){		
 		get(id);
 		fetchChild();
 		return user;
 	}
-	
+
 	@Override
 	public List<User> getAll(){
 		List<User> users = new ArrayList<>();
@@ -82,7 +83,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		}
 		return users;
 	}
-	
+
 	@Override
 	public void update(User user){
 		if (user.getId()==0){
@@ -91,34 +92,34 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		setUser(user);
 		userDAO.update(userEntity);
 	}
-	
+
 	@Override
 	public void delete(int id){
 		user = get(id);
 		setUser(user);
 		userDAO.delete(userEntity);
 	}
-	
+
 	@Override
 	public void fetchChild(){
 		user = userMapper.getDomainModelChild(user, userEntity);
 	}
 
 
-	
+
 	public boolean isExist(String userEmail){
 		if (userDAO.getUserByEmail(userEmail)==null){
 			return false;			
 		}
 		return true;
 	}
-	
+
 	public Collection<Role> getRoles(int id){
 		getChild(id);
 		logger.debug("Role size: "+user.getRoles().size());
 		return user.getRoles();
 	}
-	
+
 	public void addVehicle(Vehicle vehicle){		
 		if (user.getVehicles().size()==0){
 			RoleDO roleDO = new RoleDO();
@@ -128,7 +129,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		user.getVehicles().add(vehicle);
 		update(user);
 	}
-	
+
 	public int registerUser(User user){
 		int id = 0;
 		boolean status = isExist(user.getEmail());
@@ -139,7 +140,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		}
 		return id;
 	}
-	
+
 	/*
 	 * Purpose - Add account to the user
 	 * 
@@ -151,9 +152,13 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		user.getAccounts().add(account);
 		update(user);		
 	}
-	
+
 	public Collection<Ride> getRidesOffered(int userId){
-		return userDAO.getRidesOffered(userId);
+		user = get(userId);
+		RideMapper rideMapper = new RideMapper(); 
+		Collection<Ride> rides = rideMapper.getDomainModels(user.getRidesOffered(), 
+				userEntity.getRidesOffered(), true);
+		return rides;
 	}
 }
 

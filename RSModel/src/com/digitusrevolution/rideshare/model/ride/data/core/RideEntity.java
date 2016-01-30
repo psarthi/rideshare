@@ -44,7 +44,7 @@ public class RideEntity {
 	private int luggageCapacityOffered;
 	@Enumerated(EnumType.STRING)
 	private Sex sexPreference;
-	@OneToOne(cascade=CascadeType.ALL)
+	@OneToOne
 	private TrustNetworkEntity trustNetwork;
 	private boolean recur;
 	@OneToOne(cascade=CascadeType.ALL)
