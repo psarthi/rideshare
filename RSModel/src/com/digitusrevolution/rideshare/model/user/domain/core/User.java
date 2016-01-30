@@ -293,5 +293,37 @@ public class User {
 		this.friendRequests = friendRequests;
 	}
 	
+	public FriendRequest getFriendRequest(int friendUserId){
+		Collection<FriendRequest> friendRequests = getFriendRequests();
+		for (FriendRequest friendRequest : friendRequests) {
+			if (friendRequest.getFriend().getId() == friendUserId){
+				return friendRequest;
+			}
+		}
+		//Returning null and not throwing exception, as let this be handled at business logic level
+		return null;
+	}
+	
 	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

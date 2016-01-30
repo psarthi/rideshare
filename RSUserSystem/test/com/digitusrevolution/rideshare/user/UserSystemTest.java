@@ -1,6 +1,8 @@
 package com.digitusrevolution.rideshare.user;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,6 +11,7 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.user.data.UserDAO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
@@ -51,8 +54,25 @@ public class UserSystemTest {
 	
 	public void test(){
 		UserDO userDO = new UserDO();
-		Collection<Ride> ridesOffered = userDO.getRidesOffered(1);
-		System.out.println(ridesOffered.size());
+		List<String> emailIds = new LinkedList<>();
+		emailIds.add("email-1");
+		emailIds.add("email-2");
+		emailIds.add("email-7");
+		emailIds.add("email-8");		
+
+		List<String> mobileNumbers = new LinkedList<>();
+		mobileNumbers.add("mobileNumber-1");
+		mobileNumbers.add("mobileNumber-3");
+		mobileNumbers.add("mobileNumber-5");
+		mobileNumbers.add("mobileNumber-9");
+		List<User> users = userDO.findAllPotentialFriendsBasedOnEmailOrMobile(1, emailIds, mobileNumbers);
+		System.out.println(users.size());		
+		userDO.sendFriendRequest(1, users);
+		
+		userDO.acceptFriendRequest(1, 4);
+		userDO.rejectFriendRequest(1, 4);
+		User user = userDO.getChild(1);
+		System.out.println(user.getFriends().size());
 		
 	}
 

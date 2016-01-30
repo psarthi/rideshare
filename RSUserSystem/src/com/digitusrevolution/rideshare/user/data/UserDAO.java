@@ -2,12 +2,8 @@ package com.digitusrevolution.rideshare.user.data;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
@@ -16,7 +12,6 @@ import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
 public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 
-	private static final Logger logger = LogManager.getLogger(GenericDAOImpl.class.getName());
 	private static final Class<UserEntity> entityClass = UserEntity.class;
 
 	public UserDAO() {
@@ -26,36 +21,31 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 	@SuppressWarnings("unchecked")
 	public UserEntity getUserByEmail(String email){	
 		Session session = HibernateUtil.getSessionFactory().openSession();
-		Transaction transation = null;
-		List<UserEntity> userEntities = null;
-		try {
-			transation = session.beginTransaction();
-
-			/*			Query query = session.getNamedQuery("UserEntity.byEmail")
+		//We can use either Query option or criteria, so below code is just for reference
+		/*	Query query = session.getNamedQuery("UserEntity.byEmail")
 								 .setParameter("email", email);
 			userEntities = (List<UserEntity>) query.list();
-			 */
-			Criteria criteria = session.createCriteria(entityClass)
-					.add(Restrictions.eq("email", email));	
-			userEntities = criteria.list();			
-			transation.commit();
-		} catch (HibernateException e) {
-			if (transation!=null){
-				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
-				throw e;
-			}
-		} finally {
-			if (session!=null){
-				session.close();
-			}
-		}		
-		if (userEntities.isEmpty()){
-			return null;
-		} else {
-			return userEntities.get(0);				
-		}	
+		 */
+		Criteria criteria = session.createCriteria(entityClass)
+				.add(Restrictions.eq("email", email));	
+		List<UserEntity> userEntities = criteria.list();			
+		return userEntities.get(0);				
 	}
+
+	/*
+	 * This will return all registered users matching either email id or mobile number excluding requested User
+	 * i.e. if user1 has requested to get all the registered users, then it will exclude user 1 from the list
+	 */
+	public List<UserEntity> findAllRegisteredUserBasedOnEmailOrMobile(int userId, List<String> emailIds, List<String> mobileNumbers){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass);
+		@SuppressWarnings("unchecked")
+		List<UserEntity> userEntities = criteria.add(Restrictions.or(Restrictions.in("email", emailIds),
+				Restrictions.in("mobileNumber", mobileNumbers)))
+		.add(Restrictions.ne("id", userId)).list();
+		return userEntities;
+	}
+
 }
 
 

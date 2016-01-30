@@ -1,11 +1,14 @@
 package com.digitusrevolution.rideshare.user.domain.core;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,9 +17,12 @@ import com.digitusrevolution.rideshare.common.exception.EmailExistException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
+import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
+import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
+import com.digitusrevolution.rideshare.model.user.domain.FriendRequest;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
@@ -153,6 +159,10 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		update(user);		
 	}
 
+	/*
+	 * Purpose - This function would only ride related data and not others which would be the case if you use getChild function
+	 * 
+	 */
 	public Collection<Ride> getRidesOffered(int userId){
 		user = get(userId);
 		RideMapper rideMapper = new RideMapper(); 
@@ -160,7 +170,149 @@ public class UserDO implements DomainObjectPKInteger<User>{
 				userEntity.getRidesOffered(), true);
 		return rides;
 	}
+
+
+	/*
+	 * Purpose - Return all potential new friends who have not submitted friend request and registered user in the system
+	 * 
+	 * High level logic -
+	 * 
+	 * - Get all the registered user based on email ids or mobile numbers
+	 * - Check if user is already a friend
+	 * - If not, check if he/she has submitted friend request
+	 * - If not, then add it to potential friends list
+	 * - Return all potential friends
+	 * 
+	 */
+	public List<User> findAllPotentialFriendsBasedOnEmailOrMobile(int userId, List<String> emailIds, List<String> mobileNumbers){
+		List<UserEntity> registeredUserEntities = userDAO.findAllRegisteredUserBasedOnEmailOrMobile(userId, emailIds, mobileNumbers);
+		Collection<User> registeredUsers = new LinkedList<>();
+		registeredUsers = userMapper.getDomainModels(registeredUsers, registeredUserEntities, false);
+		//We are only using once to fetch the user, so this will not get overwritten, otherwise we have to be careful when 
+		//using multiple fetch in the same for user itself, as it will overwrite previous ones while setting user/entity in get function
+		user = getChild(userId);
+		List<User> potentialFriends = new LinkedList<>();
+		for (User registeredUser : registeredUsers) {
+			if (!isUserFriend(user, registeredUser)){
+				if (!isFriendRequestSubmitted(user, registeredUser.getId())){
+					potentialFriends.add(registeredUser);
+				} else {
+					logger.debug("Friend request has already been submitted for id:"+registeredUser.getId());
+				}
+			} else {
+				logger.debug("User is already friend with id:"+registeredUser.getId());
+			}
+		}
+
+		return potentialFriends;
+	}
+
+	/*
+	 * Purpose - Send friend request to all selected users who are not friend or submitted friend request earlier
+	 * 
+	 * High level logic -
+	 * 
+	 * - Check if user is already friend
+	 * - Check if user has already submitting friend request
+	 * - If nothing is true, then add friend request to user with current time in UTC 
+	 *   and Approval status as pending
+	 * 
+	 */
+	public void sendFriendRequest(int userId, List<User> friends){
+		user = getChild(userId);
+		for (User friend : friends) {
+			ZonedDateTime dateTime = DateTimeUtil.getCurrentTimeInUTC();
+			FriendRequest friendRequest = new FriendRequest();
+			friendRequest.setCreatedDateTime(dateTime);
+			friendRequest.setFriend(friend);
+			friendRequest.setStatus(ApprovalStatus.Pending);
+			//No need to check if user is already friend as for every friend also, friend request was also submitted,
+			//so this will avoid another check  
+			if (!isFriendRequestSubmitted(user, friend.getId())){
+				user.getFriendRequests().add(friendRequest);				
+			} else {
+				logger.debug("Friend request has already been submitted for id:"+friend.getId());
+			}
+		}
+		//Update the details in DB
+		update(user);
+	}
+
+	public boolean isUserFriend(User user, User friend){
+		Collection<User> friends = user.getFriends();
+		for (User userFriend : friends) {
+			if (userFriend.getId() == friend.getId()){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isFriendRequestSubmitted(User user, int friendUserId){
+		FriendRequest friendRequest = user.getFriendRequest(friendUserId);
+		if (friendRequest!=null){
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/*
+	 * Purpose - Accept Friend request
+	 * 
+	 * High level logic -
+	 * 
+	 * - Check if its status is Pending or Rejected
+	 * - If yes, then only accept is possible
+	 * - Else throw exception
+	 * 
+	 */
+	public void acceptFriendRequest(int userId, int friendUserId){
+		user = getChild(userId);
+		FriendRequest friendRequest = user.getFriendRequest(friendUserId);
+		if (friendRequest.getStatus().equals(ApprovalStatus.Pending) || friendRequest.getStatus().equals(ApprovalStatus.Rejected)){
+			friendRequest.setStatus(ApprovalStatus.Approved);	
+			user.getFriends().add(friendRequest.getFriend());
+		} else {
+			throw new WebApplicationException("Friend request can't be approved as its not in valid state. Current status:"+friendRequest.getStatus()); 
+		}
+		//Update the details in DB
+		update(user);
+	}
+
+	/*
+	 * Purpose - Rejected friend request
+	 * 
+	 * High level logic -
+	 * 
+	 * - Check if its status is Pending, then only you can reject
+	 * - If yes, update the status as Rejected
+	 * 
+	 */
+	public void rejectFriendRequest(int userId, int friendUserId){
+		user = getChild(userId);
+		FriendRequest friendRequest = user.getFriendRequest(friendUserId);
+		if (friendRequest.getStatus().equals(ApprovalStatus.Pending)){
+			friendRequest.setStatus(ApprovalStatus.Rejected);
+			update(user);
+		} else {
+			throw new WebApplicationException("Friend request can't be rejected as its not in valid state. Current status:"+friendRequest.getStatus());
+		}
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

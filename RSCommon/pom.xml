@@ -49,7 +49,7 @@
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
 		</dependency>
-		<!-- Required for JSON support for Jersey-->
+		<!-- Required for JSON support for Jersey -->
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-common</artifactId>
@@ -161,6 +161,11 @@
 					<groupId>org.hibernate</groupId>
 					<artifactId>hibernate-core</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.glassfish.jersey.containers</groupId>
+					<artifactId>jersey-container-servlet</artifactId>
+				</exclusion>
+
 			</exclusions>
 		</dependency>
 		<!-- RideShare Components End -->
