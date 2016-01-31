@@ -14,7 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -27,8 +26,8 @@ import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
 
 @Entity
 @Table(name="group_detail")
-@NamedNativeQuery(name="GroupEntity.byUserIdAndGroupId",query="select * from group_detail as group_detail join membership_request "
-		+ "where group_detail.id=:groupId and membership_request.user_id=:userId")
+@NamedQuery(name="MembershipRequest.byUserIdAndGroupId", query="select request from GroupEntity as grp join grp.membershipRequests as request "
+				+ "where grp.id=:groupId and request.user.id=:userId")
 public class GroupEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

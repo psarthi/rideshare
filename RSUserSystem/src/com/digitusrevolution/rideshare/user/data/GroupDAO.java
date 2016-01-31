@@ -5,8 +5,8 @@ import org.hibernate.Session;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
-import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 
 public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 
@@ -16,11 +16,11 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 		super(entityClass);
 	}
 
-	public MembershipRequest getMembershipRequest(int userId, int groupId){
+	public MembershipRequestEntity getMembershipRequest(int userId, int groupId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Query query = session.getNamedQuery("GroupEntity.byUserIdAndGroupId")
-				.setParameter("groupId", groupId).setParameter("userId", userId);
-		GroupEntity groupEntity = (GroupEntity) query.uniqueResult();
-		return null;
+		Query query = session.getNamedQuery("MembershipRequest.byUserIdAndGroupId").setParameter("groupId", groupId)
+				.setParameter("userId", userId);
+		MembershipRequestEntity membershipRequestEntity = (MembershipRequestEntity) query.uniqueResult();
+		return membershipRequestEntity;
 	}
 }
