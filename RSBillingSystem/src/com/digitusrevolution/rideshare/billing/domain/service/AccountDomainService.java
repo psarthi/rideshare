@@ -26,7 +26,7 @@ public class AccountDomainService implements DomainService<Account>{
 
 			VirtualAccountDO accountDO = new VirtualAccountDO();
 			if (fetchChild){
-				account = accountDO.getChild(number);
+				account = accountDO.getAllData(number);
 			} else {
 				account = accountDO.get(number);			
 			}

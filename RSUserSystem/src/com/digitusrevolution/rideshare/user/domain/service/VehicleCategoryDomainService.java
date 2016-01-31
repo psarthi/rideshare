@@ -26,7 +26,7 @@ public class VehicleCategoryDomainService implements DomainService<VehicleCatego
 
 			VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();
 			if (fetchChild){
-				vehicleCategory = vehicleCategoryDO.getChild(id);
+				vehicleCategory = vehicleCategoryDO.getAllData(id);
 			} else {
 				vehicleCategory = vehicleCategoryDO.get(id);			
 			}

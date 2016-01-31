@@ -63,7 +63,7 @@ public class RoleDO implements DomainObjectPKString<Role>{
 	}
 
 	@Override
-	public Role getChild(String name) {
+	public Role getAllData(String name) {
 		get(name);
 		fetchChild();
 		return role;

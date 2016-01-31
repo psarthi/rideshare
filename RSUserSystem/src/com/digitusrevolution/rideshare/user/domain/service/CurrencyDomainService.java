@@ -26,7 +26,7 @@ public class CurrencyDomainService implements DomainService<Currency>{
 
 			CurrencyDO currencyDO = new CurrencyDO();
 			if (fetchChild){
-				currency = currencyDO.getChild(id);
+				currency = currencyDO.getAllData(id);
 			} else {
 				currency = currencyDO.get(id);			
 			}

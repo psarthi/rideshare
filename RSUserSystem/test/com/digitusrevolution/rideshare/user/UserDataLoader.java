@@ -206,7 +206,7 @@ public class UserDataLoader {
 		
 		for (int i=1;i<3;i++){
 			UserDO userDO = new UserDO();
-			User user = userDO.getChild(i);
+			User user = userDO.getAllData(i);
 			userDO.setUser(user);			
 			userDO.addVehicle(vehicle);
 		}	

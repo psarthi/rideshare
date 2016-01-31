@@ -95,7 +95,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	}
 
 	@Override
-	public Bill getChild(int number) {
+	public Bill getAllData(int number) {
 		get(number);
 		fetchChild();
 		return bill;
@@ -166,7 +166,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	}
 	
 	public void approveBill(int billNumber){
-		bill = getChild(billNumber);
+		bill = getAllData(billNumber);
 		if (bill.getStatus().equals(BillStatus.Pending) || bill.getStatus().equals(BillStatus.Rejected)){
 			bill.setStatus(BillStatus.Approved);
 			update(bill);
@@ -177,7 +177,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	}
 	
 	public void rejectBill(int billNumber){
-		bill = getChild(billNumber);
+		bill = getAllData(billNumber);
 		if (bill.getStatus().equals(BillStatus.Pending)){
 			bill.setStatus(BillStatus.Rejected);
 			update(bill);
@@ -191,7 +191,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	 * 
 	 */
 	public void makePayment(int billNumber, AccountType accountType){
-		bill = getChild(billNumber);
+		bill = getAllData(billNumber);
 		if (bill.getStatus().equals(BillStatus.Approved)){
 			float amount = bill.getAmount();
 			float serviceChargePercentage = bill.getServiceChargePercentage();

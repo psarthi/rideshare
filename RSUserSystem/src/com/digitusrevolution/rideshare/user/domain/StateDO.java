@@ -80,7 +80,7 @@ public class StateDO implements DomainObjectPKInteger<State>{
 	}
 
 	@Override
-	public State getChild(int id) {
+	public State getAllData(int id) {
 		get(id);
 		fetchChild();
 		return state;

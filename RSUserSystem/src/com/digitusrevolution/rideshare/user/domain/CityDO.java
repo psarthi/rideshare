@@ -62,7 +62,7 @@ public class CityDO implements DomainObjectPKInteger<City>{
 	}
 
 	@Override
-	public City getChild(int id) {
+	public City getAllData(int id) {
 		get(id);
 		fetchChild();
 		return city;

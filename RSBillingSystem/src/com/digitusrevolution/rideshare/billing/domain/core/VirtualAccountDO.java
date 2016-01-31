@@ -90,7 +90,7 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.dig
 	}
 
 	@Override
-	public Account getChild(int number) {
+	public Account getAllData(int number) {
 		get(number);
 		fetchChild();
 		return account;
@@ -108,7 +108,7 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.dig
 		//Its important to get child, else old transaction would get deleted as transactions is part of child
 		//And if you just get account without old transactions, then it will consider only new transaction as part of this account
 		//Since account owns the relationship of transaction, so you need to get all child before updating
-		account = getChild(accountNumber);
+		account = getAllData(accountNumber);
 		float balance = account.getBalance();
 		if (balance >= amount){
 			account.setBalance(balance - amount);
@@ -130,7 +130,7 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.dig
 		//Its important to get child, else old transaction would get deleted as transactions is part of child
 		//And if you just get account without old transactions, then it will consider only new transaction as part of this account
 		//Since account owns the relationship of transaction, so you need to get all child before updating
-		account = getChild(accountNumber);
+		account = getAllData(accountNumber);
 		float balance = account.getBalance();
 		account.setBalance(balance + amount);
 		Transaction transaction = new Transaction();

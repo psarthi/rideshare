@@ -49,7 +49,7 @@ public class CompanyService {
 
 			CompanyDO companyDO = new CompanyDO();
 			if (fetchChild){
-				company = companyDO.getChild(id);
+				company = companyDO.getAllData(id);
 			} else {
 				company = companyDO.get(id);			
 			}

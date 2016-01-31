@@ -95,7 +95,7 @@ public class TrustNetworkDO implements DomainObjectPKInteger<TrustNetwork>{
 	}
 
 	@Override
-	public TrustNetwork getChild(int id) {
+	public TrustNetwork getAllData(int id) {
 		get(id);
 		fetchChild();
 		return trustNetwork;

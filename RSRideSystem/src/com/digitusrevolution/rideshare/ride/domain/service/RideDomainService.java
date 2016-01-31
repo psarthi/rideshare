@@ -26,7 +26,7 @@ public class RideDomainService implements DomainService<Ride>{
 
 			RideDO rideDO = new RideDO();
 			if (fetchChild){
-				ride = rideDO.getChild(id);
+				ride = rideDO.getAllData(id);
 			} else {
 				ride = rideDO.get(id);			
 			}

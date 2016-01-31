@@ -28,7 +28,7 @@ public class UserDomainService implements DomainService<User>{
 	
 			UserDO userDO = new UserDO();
 			if (fetchChild){
-				user = userDO.getChild(id);
+				user = userDO.getAllData(id);
 			} else {
 				user = userDO.get(id);			
 			}

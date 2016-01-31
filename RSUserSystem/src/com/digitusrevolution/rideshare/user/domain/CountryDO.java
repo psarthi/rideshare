@@ -80,7 +80,7 @@ public class CountryDO implements DomainObjectPKString<Country>{
 	}
 
 	@Override
-	public Country getChild(String name) {
+	public Country getAllData(String name) {
 		get(name);
 		fetchChild();
 		return country;

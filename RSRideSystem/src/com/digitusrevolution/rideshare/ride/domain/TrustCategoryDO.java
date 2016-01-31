@@ -96,7 +96,7 @@ public class TrustCategoryDO implements DomainObjectPKString<TrustCategory>{
 	}
 
 	@Override
-	public TrustCategory getChild(String name) {
+	public TrustCategory getAllData(String name) {
 		get(name);
 		fetchChild();
 		return trustCategory;

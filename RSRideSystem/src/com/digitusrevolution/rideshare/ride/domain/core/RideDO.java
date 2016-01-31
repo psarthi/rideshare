@@ -169,7 +169,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	}
 
 	@Override
-	public Ride getChild(int id) {
+	public Ride getAllData(int id) {
 		get(id);
 		fetchChild();
 		return ride;

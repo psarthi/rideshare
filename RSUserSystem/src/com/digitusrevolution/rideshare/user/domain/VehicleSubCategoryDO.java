@@ -61,7 +61,7 @@ public class VehicleSubCategoryDO implements DomainObjectPKInteger<VehicleSubCat
 	}
 
 	@Override
-	public VehicleSubCategory getChild(int id) {
+	public VehicleSubCategory getAllData(int id) {
 		get(id);
 		fetchChild();
 		return vehicleSubCategory;

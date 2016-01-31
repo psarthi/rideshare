@@ -71,7 +71,7 @@ public class UserSystemTest {
 		
 		userDO.acceptFriendRequest(1, 4);
 		userDO.rejectFriendRequest(1, 4);
-		User user = userDO.getChild(1);
+		User user = userDO.getAllData(1);
 		System.out.println(user.getFriends().size());
 		
 	}

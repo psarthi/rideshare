@@ -80,7 +80,7 @@ public class RidePassengerDO implements DomainObjectPKInteger<RidePassenger>{
 	}
 
 	@Override
-	public RidePassenger getChild(int id) {
+	public RidePassenger getAllData(int id) {
 		get(id);
 		fetchChild();
 		return ridePassenger;

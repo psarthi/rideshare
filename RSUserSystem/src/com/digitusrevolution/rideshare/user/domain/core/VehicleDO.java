@@ -66,7 +66,7 @@ public class VehicleDO implements DomainObjectPKInteger<Vehicle>{
 	}
 
 	@Override
-	public Vehicle getChild(int id) {
+	public Vehicle getAllData(int id) {
 		get(id);
 		fetchChild();
 		return vehicle;

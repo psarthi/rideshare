@@ -85,7 +85,7 @@ public class CompanyDO implements DomainObjectPKInteger<Company>{
 	}
 
 	@Override
-	public Company getChild(int id) {
+	public Company getAllData(int id) {
 		get(id);
 		fetchChild();
 		return company;
@@ -103,7 +103,7 @@ public class CompanyDO implements DomainObjectPKInteger<Company>{
 	 */
 	public void addAccount(int companyId, Account account){
 		//Reason for getting child instead of just basic entity, as if we miss any fields owned by this entity, then that would be deleted while updating
-		Company company = getChild(companyId);
+		Company company = getAllData(companyId);
 		company.getAccounts().add(account);
 		update(company);
 	}

@@ -53,7 +53,7 @@ public class RideRequestGeoJSON {
 		//This will get ride pickup and drop points 
 		FeatureCollection featureCollection = rideDO.getRideMatchInfoGeoJSON(rideRequestSearchResult.getRideMatchInfos());
 		//This will get route along with start and end point which is common to all matching ride requests
-		List<Feature> rideGeoJsonFeatures = rideDO.getRideGeoJson(rideDO.getChild(rideId));
+		List<Feature> rideGeoJsonFeatures = rideDO.getRideGeoJson(rideDO.getAllData(rideId));
 		featureCollection.addAll(rideGeoJsonFeatures);
 		for (RideMatchInfo rideMatchInfo : rideRequestSearchResult.getRideMatchInfos()) {
 			//This will get ride request pickup and drop points 

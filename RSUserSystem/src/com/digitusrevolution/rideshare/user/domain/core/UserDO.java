@@ -73,7 +73,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	}
 
 	@Override
-	public User getChild(int id){		
+	public User getAllData(int id){		
 		get(id);
 		fetchChild();
 		return user;
@@ -121,7 +121,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	}
 
 	public Collection<Role> getRoles(int id){
-		getChild(id);
+		getAllData(id);
 		logger.debug("Role size: "+user.getRoles().size());
 		return user.getRoles();
 	}
@@ -152,15 +152,15 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	 * 
 	 */
 	public void addAccount(int userId, Account account){
-		//Always use getChild instead of get whenever you are trying to update, so that you don't miss any fields where relationship is owned by this entity
+		//Always use getAllData instead of get whenever you are trying to update, so that you don't miss any fields where relationship is owned by this entity
 		//Otherwise while updating, that field relationship would be deleted
-		User user = getChild(userId);
+		User user = getAllData(userId);
 		user.getAccounts().add(account);
 		update(user);		
 	}
 
 	/*
-	 * Purpose - This function would only ride related data and not others which would be the case if you use getChild function
+	 * Purpose - This function would only ride related data and not others which would be the case if you use getAllData function
 	 * 
 	 */
 	public Collection<Ride> getRidesOffered(int userId){
@@ -190,7 +190,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		registeredUsers = userMapper.getDomainModels(registeredUsers, registeredUserEntities, false);
 		//We are only using once to fetch the user, so this will not get overwritten, otherwise we have to be careful when 
 		//using multiple fetch in the same for user itself, as it will overwrite previous ones while setting user/entity in get function
-		user = getChild(userId);
+		user = getAllData(userId);
 		List<User> potentialFriends = new LinkedList<>();
 		for (User registeredUser : registeredUsers) {
 			if (!isUserFriend(user, registeredUser)){
@@ -219,7 +219,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	 * 
 	 */
 	public void sendFriendRequest(int userId, List<User> friends){
-		user = getChild(userId);
+		user = getAllData(userId);
 		for (User friend : friends) {
 			ZonedDateTime dateTime = DateTimeUtil.getCurrentTimeInUTC();
 			FriendRequest friendRequest = new FriendRequest();
@@ -268,7 +268,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	 * 
 	 */
 	public void acceptFriendRequest(int userId, int friendUserId){
-		user = getChild(userId);
+		user = getAllData(userId);
 		FriendRequest friendRequest = user.getFriendRequest(friendUserId);
 		if (friendRequest.getStatus().equals(ApprovalStatus.Pending) || friendRequest.getStatus().equals(ApprovalStatus.Rejected)){
 			friendRequest.setStatus(ApprovalStatus.Approved);	
@@ -290,7 +290,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	 * 
 	 */
 	public void rejectFriendRequest(int userId, int friendUserId){
-		user = getChild(userId);
+		user = getAllData(userId);
 		FriendRequest friendRequest = user.getFriendRequest(friendUserId);
 		if (friendRequest.getStatus().equals(ApprovalStatus.Pending)){
 			friendRequest.setStatus(ApprovalStatus.Rejected);

@@ -163,7 +163,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	}
 
 	@Override
-	public RideRequest getChild(int id) {
+	public RideRequest getAllData(int id) {
 		get(id);
 		fetchChild();
 		return rideRequest;
@@ -682,7 +682,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * 
 	 */
 	public void cancelRideRequest(int rideRequestId){
-		rideRequest = getChild(rideRequestId);
+		rideRequest = getAllData(rideRequestId);
 		RideRequestStatus rideRequestStatus = rideRequest.getStatus();
 		if (rideRequestStatus.equals(RideRequestStatus.Unfulfilled)){
 			rideRequest.setStatus(RideRequestStatus.Cancelled);
@@ -691,7 +691,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			//Reason for getting child of ride as ride Request has basic ride object which doesn't have passenger list
 			int rideId = rideRequest.getAcceptedRide().getId();
 			RideDO rideDO = new RideDO();
-			Ride ride = rideDO.getChild(rideId);
+			Ride ride = rideDO.getAllData(rideId);
 			RidePassenger ridePassenger = ride.getRidePassenger(rideRequest.getPassenger().getId());
 			if (ridePassenger.getStatus().equals(PassengerStatus.Confirmed)){
 				//This will cancel the ride request from confirmed ride

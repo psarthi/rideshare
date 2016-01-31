@@ -26,7 +26,7 @@ public class VehicleDomainService implements DomainService<Vehicle>{
 	
 			VehicleDO vehicleDO = new VehicleDO();
 			if (fetchChild){
-				vehicle = vehicleDO.getChild(id);
+				vehicle = vehicleDO.getAllData(id);
 			} else {
 				vehicle = vehicleDO.get(id);			
 			}

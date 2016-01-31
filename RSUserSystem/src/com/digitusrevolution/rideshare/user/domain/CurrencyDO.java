@@ -80,7 +80,7 @@ public class CurrencyDO implements DomainObjectPKInteger<Currency>{
 	}
 
 	@Override
-	public Currency getChild(int id) {
+	public Currency getAllData(int id) {
 		get(id);
 		fetchChild();
 		return currency;
