@@ -14,9 +14,11 @@ import org.apache.logging.log4j.Logger;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.user.MembershipRequestMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.GroupMapper;
+import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
+import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
@@ -115,6 +117,10 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		UserDO userDO = new UserDO();
 		User user = userDO.get(userId);
 		group.setOwner(user);
+		//Its important to add owner as group member as well
+		group.getMembers().add(user);
+		//Its important to add owner as group admin as well
+		group.getAdmins().add(user);
 		int id = create(group);
 		return id;
 	}
@@ -129,13 +135,14 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * - If its rejected, update the previous one with status as pending
 	 * 	 Note - For now, we will not maintain the transaction log of submission, resubmission dates etc.
 	 * - If membership request doesn't exist, then create new one
+	 * - Remove group invitation from user
 	 * 
 	 */
 	public void sendMembershipRequest(int groupId, MembershipRequest membershipRequest){
 		membershipRequest.setCreatedDateTime(DateTimeUtil.getCurrentTimeInUTC());
 		membershipRequest.setStatus(ApprovalStatus.Pending);
 		UserDO userDO = new UserDO();
-		User user = userDO.get(membershipRequest.getUser().getId());
+		User user = userDO.getAllData(membershipRequest.getUser().getId());
 		membershipRequest.setUser(user);
 		group = getAllData(groupId);
 		MembershipRequest submittedMembershipRequest = getMembershipRequest(groupId, membershipRequest.getUser().getId());
@@ -158,7 +165,10 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 			//Add new membership request to the list and update the group
 			//This will take care of association as well as creation of membership request
 			group.getMembershipRequests().add(membershipRequest);
-			update(group);			
+			update(group);
+			//Remove group invitation from the user
+			user.getGroupInvites().remove(group);
+			userDO.update(user);
 		}
 	}
 
@@ -275,23 +285,86 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		removeMember(groupId, userId);
 	}
 	
-	public void addAdmin(){
-
+	/*
+	 * Purpose - Add group admin who should be one of the member of the group
+	 * 
+	 * High level logic -
+	 * 
+	 * - Check if user is group member
+	 * - If yes, then check if user is already an admin (No need to check for owner, as owner is also added to group admins)
+	 * - if user is not admin and member of group, then add as admin
+	 * 
+	 */
+	public void addAdmin(int groupId, int memberUserId){ 	
+		User member = getMember(groupId, memberUserId);
+		if (member!=null){
+			group = getAllData(groupId);
+			if (!group.isMemberAdmin(memberUserId)){
+				group.getAdmins().add(member);
+				update(group);
+			} else {
+				throw new NotAcceptableException("User is already an admin. User id, Group id:"+memberUserId+","+groupId);
+			}
+		} else {
+			throw new NotAcceptableException("User is not a member of this group, So can't be added as admin. "
+					+ "User id, Group id:"+memberUserId+","+groupId);
+		}
+	}
+	
+	/*
+	 * Purpose - Return member with basic information
+	 * 
+	 */
+	public User getMember(int groupId, int memberUserId){
+		UserEntity memberEntity = groupDAO.getMember(groupId, memberUserId);
+		if (memberEntity!=null){
+			UserMapper userMapper = new UserMapper();
+			//No need to get complete user, so set the fetch value as false
+			User member = userMapper.getDomainModel(memberEntity, false);
+			return member;
+		}
+		//don't throw exception, let business logic handle this
+		return null;
 	}
 
-	public void transferOwnership(){
-
+	/*
+	 * Purpose - Send group membership invitation to multiple users
+	 * 
+	 * High level logic -
+	 * 
+	 * - Check for all users, if user is already a member
+	 * - Create a valid user list
+	 * - Add group to all valid user group invites collection 
+	 * 
+	 */
+	public void inviteUsers(int groupId, List<Integer> userIds){
+		List<Integer> validUserIds = new ArrayList<>();
+		for (Integer userId : userIds) {
+			User member = getMember(groupId, userId);
+			if (member==null){
+				validUserIds.add(userId);
+			} else {
+				logger.debug("User is already group member. Group id, User Id:"+groupId+","+userId);
+			}
+		}
+		group = get(groupId);
+		for (Integer userId : validUserIds) {
+			UserDO userDO = new UserDO();
+			User user = userDO.getAllData(userId);
+			user.getGroupInvites().add(group);
+			userDO.update(user);						
+		}
 	}
-
-	public void inviteUsers(){
+	
+	/*
+	 * 
+	 * 
+	 */
+	public void giveFeedback(int groupId, int memberUserId){
 
 	}
 
 	public void searchGroup(){
-
-	}
-	
-	public void giveFeedback(){
 
 	}
 

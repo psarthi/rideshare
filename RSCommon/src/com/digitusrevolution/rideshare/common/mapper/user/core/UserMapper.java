@@ -110,6 +110,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		GroupMapper groupMapper = new GroupMapper();
 		//Don't fetch child as user has group and group has user, so recursive loop
 		userEntity.setGroups(groupMapper.getEntities(userEntity.getGroups(), user.getGroups(), false));
+		userEntity.setGroupInvites(groupMapper.getEntities(userEntity.getGroupInvites(), user.getGroupInvites(), false));
 		
 		return userEntity;
 		
@@ -212,6 +213,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		GroupMapper groupMapper = new GroupMapper();
 		//Don't fetch child as user has group and group has user, so recursive loop
 		user.setGroups(groupMapper.getDomainModels(user.getGroups(), userEntity.getGroups(), false));
+		user.setGroupInvites(groupMapper.getDomainModels(user.getGroupInvites(), userEntity.getGroupInvites(), false));
 
 		return user;
 	}

@@ -45,8 +45,10 @@ public class User {
 
 	private Preference preference;
 	private Collection<UserFeedback> feedbacks = new LinkedList<UserFeedback>();
-	private Collection<FriendRequest> friendRequests = new HashSet<FriendRequest>();	
+	private Collection<FriendRequest> friendRequests = new HashSet<FriendRequest>();
 	private float profileRating;
+	
+	private Collection<Group> groupInvites = new HashSet<Group>();
 	
 	public int getId() {
 		return id;
@@ -303,6 +305,15 @@ public class User {
 		//Returning null and not throwing exception, as let this be handled at business logic level
 		return null;
 	}
+
+	public Collection<Group> getGroupInvites() {
+		return groupInvites;
+	}
+
+	public void setGroupInvites(Collection<Group> groupInvites) {
+		this.groupInvites = groupInvites;
+	}
+
 }
 
 

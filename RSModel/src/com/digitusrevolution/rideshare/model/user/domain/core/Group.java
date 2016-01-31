@@ -181,6 +181,16 @@ public class Group {
 	public void setFakeVotes(int fakeVotes) {
 		this.fakeVotes = fakeVotes;
 	}
+	
+	public boolean isMemberAdmin(int memberUserId){
+		Collection<User> admins = getAdmins();
+		for (User user : admins) {
+			if (user.getId()==memberUserId){
+				return true;
+			}
+		}
+		return false;
+	}
 }
 
 

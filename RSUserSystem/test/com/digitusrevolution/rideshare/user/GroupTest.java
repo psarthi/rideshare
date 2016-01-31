@@ -1,5 +1,8 @@
 package com.digitusrevolution.rideshare.user;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
@@ -53,6 +56,8 @@ public class GroupTest {
 	
 	private void test(){
 		
+		GroupDAO groupDAO = new GroupDAO();
+	//	groupDAO.getMember(1, 4);
 		
 		GroupDO groupDO = new GroupDO();
 		Group group = new Group();
@@ -79,7 +84,13 @@ public class GroupTest {
 //		groupDO.sendMembershipRequest(1, membershipRequest);
 //		groupDO.approveMembershipRequest(1, 4);
 //		groupDO.rejectMembershipRequest(1, 2, "remark");
-		groupDO.removeMember(1, 4);
+//		groupDO.removeMember(1, 4);
+//		groupDO.addAdmin(1, 3);
+		List<Integer> list = new ArrayList<>();
+		list.add(1);
+		list.add(2);
+		list.add(3);
+		groupDO.inviteUsers(1, list);
 		
 	}
 }

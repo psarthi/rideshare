@@ -100,6 +100,14 @@ public class UserEntity {
 	private Collection<FriendRequestEntity> friendRequests = new HashSet<FriendRequestEntity>();
 	private float profileRating;
 	
+	//IMP - Its important to have Many to Many relationship as for One to Many, Hibernate would enforce Unique key constraint
+	//on group_id which is right as well, that one user can have many groups but no group can't be part of two user
+	//but for many to many relationship, user can have many group and group can be part of many user
+	//This will not have unique constraint on group_id
+	@ManyToMany
+	@JoinTable(name="user_group_invite",joinColumns=@JoinColumn(name="user_id"), inverseJoinColumns=@JoinColumn(name="group_id"))
+	private Collection<GroupEntity> groupInvites = new HashSet<GroupEntity>();
+	
 	public int getId() {
 		return id;
 	}
@@ -338,5 +346,14 @@ public class UserEntity {
 	public void setFriendRequests(Collection<FriendRequestEntity> friendRequests) {
 		this.friendRequests = friendRequests;
 	}
+
+	public Collection<GroupEntity> getGroupInvites() {
+		return groupInvites;
+	}
+
+	public void setGroupInvites(Collection<GroupEntity> groupInvites) {
+		this.groupInvites = groupInvites;
+	}
+	
 
 }

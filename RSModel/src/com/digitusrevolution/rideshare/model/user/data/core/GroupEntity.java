@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -27,10 +28,16 @@ import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
 @Entity
 @Table(name="group_detail")
 //Its important to select request else without that, it will fetch two object, one if group entity and 2nd one is membership request
-//Don't use group keyword as its reserved in db 
+//Don't use group, member keyword as its reserved in db i.e. don't use any reserved keyword in hql 
 //Note - Join works only with entity and not element collection
-@NamedQuery(name="MembershipRequest.byUserIdAndGroupId", query="select request from GroupEntity as grp join grp.membershipRequests as request "
-				+ "where grp.id=:groupId and request.user.id=:userId")
+@NamedQueries({
+	@NamedQuery(name="MembershipRequest.byGroupIdAndUserId", 
+			query="select request from GroupEntity as grp join grp.membershipRequests as request "
+					+ "where grp.id=:groupId and request.user.id=:userId"),
+	@NamedQuery(name="Member.byGroupIdAndUserId", 
+	query="select mbr from GroupEntity as grp join grp.members as mbr "
+			+ "where grp.id=:groupId and mbr.id=:memberUserId")
+})
 public class GroupEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -60,7 +67,7 @@ public class GroupEntity {
 	private Collection<MembershipRequestEntity> membershipRequests = new HashSet<MembershipRequestEntity>();
 	private int genuineVotes;
 	private int fakeVotes;
-	
+
 	public int getId() {
 		return id;
 	}
@@ -185,5 +192,5 @@ public class GroupEntity {
 		}
 		return true;
 	}
-	
+
 }
