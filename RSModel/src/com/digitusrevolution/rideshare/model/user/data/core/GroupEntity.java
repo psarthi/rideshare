@@ -26,6 +26,9 @@ import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
 
 @Entity
 @Table(name="group_detail")
+//Its important to select request else without that, it will fetch two object, one if group entity and 2nd one is membership request
+//Don't use group keyword as its reserved in db 
+//Note - Join works only with entity and not element collection
 @NamedQuery(name="MembershipRequest.byUserIdAndGroupId", query="select request from GroupEntity as grp join grp.membershipRequests as request "
 				+ "where grp.id=:groupId and request.user.id=:userId")
 public class GroupEntity {

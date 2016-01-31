@@ -53,6 +53,7 @@ public class UserSystemTest {
 	}	
 	
 	public void test(){
+		UserDAO userDAO = new UserDAO();
 	}
 
 }

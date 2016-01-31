@@ -181,17 +181,6 @@ public class Group {
 	public void setFakeVotes(int fakeVotes) {
 		this.fakeVotes = fakeVotes;
 	}
-	
-	public MembershipRequest getMembershipRequest(int userId){
-		Collection<MembershipRequest> membershipRequests = getMembershipRequests();
-		for (MembershipRequest membershipRequest : membershipRequests) {
-			if (membershipRequest.getUser().getId()==userId){
-				return membershipRequest;
-			}
-		}
-		//Don't throw exception here, let business logic handle that
-		return null;
-	}
 }
 
 

@@ -53,29 +53,28 @@ public class GroupTest {
 	
 	private void test(){
 		
-		GroupDAO groupDAO = new GroupDAO();
-		groupDAO.getMembershipRequest(1, 1);
 		
 		GroupDO groupDO = new GroupDO();
-//		Group group = new Group();
-//		group.setName("Group-1");
-//		group.setUrl("url-1");
-//		
-//		MembershipForm form = new MembershipForm();
-//		form.getQuestions().add("Question-1");
-//		form.getQuestions().add("Question-2");
-//		form.getQuestions().add("Question-3");
-//		form.getQuestions().add("Question-4");
-//		form.setUserUniqueIdentifierName("Employee Id");
-//		group.setMembershipForm(form);
+		Group group = new Group();
+		group.setName("Group-1");
+		group.setUrl("url-1");
+		
+		MembershipForm form = new MembershipForm();
+		form.getQuestions().add("Question-1");
+		form.getQuestions().add("Question-2");
+		form.getQuestions().add("Question-3");
+		form.getQuestions().add("Question-4");
+		form.setUserUniqueIdentifierName("Employee Id");
+		group.setMembershipForm(form);
 //		groupDO.createGroup(group, 1);
 			
-//		MembershipRequest membershipRequest = new MembershipRequest();
-//		membershipRequest.getQuestionAnswers().put("Question-1", "Answer-1");
-//		membershipRequest.getQuestionAnswers().put("Question-2", "Answer-2");
-//		membershipRequest.getQuestionAnswers().put("Question-3", "Answer-3");
-//		membershipRequest.setUserUniqueIdentifier("Employee Id-1");
-//		groupDO.sendMembershipRequest(1, 1, membershipRequest);
+		MembershipRequest membershipRequest = new MembershipRequest();
+		membershipRequest.getQuestionAnswers().put("Question-1", "Answer-1");
+		membershipRequest.getQuestionAnswers().put("Question-2", "Answer-2");
+		membershipRequest.getQuestionAnswers().put("Question-3", "Answer-3");
+		membershipRequest.setUserUniqueIdentifier("Employee Id-1");
+//		groupDO.sendMembershipRequest(1, 2, membershipRequest);
+		groupDO.approveMembershipRequest(1, 1);
 		
 	}
 }

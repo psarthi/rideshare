@@ -33,6 +33,7 @@ public class MembershipRequestDO implements DomainObjectPKInteger<MembershipRequ
 	public MembershipRequestDO() {
 		membershipRequest = new MembershipRequest();
 		membershipRequestEntity = new MembershipRequestEntity();
+		membershipRequestMapper = new MembershipRequestMapper();
 		genericDAO = new GenericDAOImpl<>(MembershipRequestEntity.class);
 	}
 
