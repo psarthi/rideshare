@@ -3,7 +3,7 @@ package com.digitusrevolution.rideshare.model.user.domain;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class Form {
+public class MembershipForm {
 
 	private int id;
 	//This would be visible to all group members e.g. employee id, flat number etc
@@ -54,10 +54,10 @@ public class Form {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof Form)) {
+		if (!(obj instanceof MembershipForm)) {
 			return false;
 		}
-		Form other = (Form) obj;
+		MembershipForm other = (MembershipForm) obj;
 		if (id != other.id) {
 			return false;
 		}

@@ -4,12 +4,12 @@ import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
 import com.digitusrevolution.rideshare.model.user.data.FormEntity;
-import com.digitusrevolution.rideshare.model.user.domain.Form;
+import com.digitusrevolution.rideshare.model.user.domain.MembershipForm;
 
-public class FormMapper implements Mapper<Form, FormEntity>{
+public class FormMapper implements Mapper<MembershipForm, FormEntity>{
 
 	@Override
-	public FormEntity getEntity(Form form, boolean fetchChild) {
+	public FormEntity getEntity(MembershipForm form, boolean fetchChild) {
 		FormEntity formEntity = new FormEntity();
 		formEntity.setId(form.getId());
 		formEntity.setUserUniqueIdentifierName(form.getUserUniqueIdentifierName());
@@ -19,13 +19,13 @@ public class FormMapper implements Mapper<Form, FormEntity>{
 	}
 
 	@Override
-	public FormEntity getEntityChild(Form form, FormEntity formEntity) {
+	public FormEntity getEntityChild(MembershipForm form, FormEntity formEntity) {
 		return formEntity;
 	}
 
 	@Override
-	public Form getDomainModel(FormEntity formEntity, boolean fetchChild) {
-		Form form = new Form();
+	public MembershipForm getDomainModel(FormEntity formEntity, boolean fetchChild) {
+		MembershipForm form = new MembershipForm();
 		form.setId(formEntity.getId());
 		form.setUserUniqueIdentifierName(formEntity.getUserUniqueIdentifierName());
 		form.setQuestions(formEntity.getQuestions());
@@ -34,19 +34,19 @@ public class FormMapper implements Mapper<Form, FormEntity>{
 	}
 
 	@Override
-	public Form getDomainModelChild(Form form, FormEntity formEntity) {
+	public MembershipForm getDomainModelChild(MembershipForm form, FormEntity formEntity) {
 		return form;
 	}
 
 	@Override
-	public Collection<Form> getDomainModels(Collection<Form> forms, Collection<FormEntity> formEntities,
+	public Collection<MembershipForm> getDomainModels(Collection<MembershipForm> forms, Collection<FormEntity> formEntities,
 			boolean fetchChild) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<FormEntity> getEntities(Collection<FormEntity> formEntities, Collection<Form> forms,
+	public Collection<FormEntity> getEntities(Collection<FormEntity> formEntities, Collection<MembershipForm> forms,
 			boolean fetchChild) {
 		// TODO Auto-generated method stub
 		return null;

@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import com.digitusrevolution.rideshare.model.user.domain.Form;
+import com.digitusrevolution.rideshare.model.user.domain.MembershipForm;
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.GroupFeedback;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
@@ -20,7 +20,7 @@ public class Group {
 	private User owner;
 	private Collection<User> admins = new HashSet<User>();
 	private Collection<GroupFeedback> feedbacks = new LinkedList<GroupFeedback>();
-	private Form membershipForm;
+	private MembershipForm membershipForm;
 	private ZonedDateTime createdDateTime;
 	private String url;
 	private String information;
@@ -126,11 +126,11 @@ public class Group {
 		this.feedbacks = feedbacks;
 	}
 
-	public Form getMembershipForm() {
+	public MembershipForm getMembershipForm() {
 		return membershipForm;
 	}
 
-	public void setMembershipForm(Form membershipForm) {
+	public void setMembershipForm(MembershipForm membershipForm) {
 		this.membershipForm = membershipForm;
 	}
 
@@ -181,5 +181,55 @@ public class Group {
 	public void setFakeVotes(int fakeVotes) {
 		this.fakeVotes = fakeVotes;
 	}
-
+	
+	public MembershipRequest getMembershipRequest(int userId){
+		Collection<MembershipRequest> membershipRequests = getMembershipRequests();
+		for (MembershipRequest membershipRequest : membershipRequests) {
+			if (membershipRequest.getUser().getId()==userId){
+				return membershipRequest;
+			}
+		}
+		//Don't throw exception here, let business logic handle that
+		return null;
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

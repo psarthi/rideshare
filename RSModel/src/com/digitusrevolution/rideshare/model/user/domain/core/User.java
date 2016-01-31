@@ -303,8 +303,6 @@ public class User {
 		//Returning null and not throwing exception, as let this be handled at business logic level
 		return null;
 	}
-	
-	
 }
 
 

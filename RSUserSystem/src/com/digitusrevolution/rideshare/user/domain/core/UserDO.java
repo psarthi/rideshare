@@ -113,7 +113,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 
 
 
-	public boolean isExist(String userEmail){
+	public boolean isEmailExist(String userEmail){
 		if (userDAO.getUserByEmail(userEmail)==null){
 			return false;			
 		}
@@ -138,7 +138,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 
 	public int registerUser(User user){
 		int id = 0;
-		boolean status = isExist(user.getEmail());
+		boolean status = isEmailExist(user.getEmail());
 		if (status){
 			throw new EmailExistException("Email id already exist :"+user.getEmail());					
 		} else {
