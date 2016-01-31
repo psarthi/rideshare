@@ -119,22 +119,6 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		return id;
 	}
 
-	public void addAdmin(){
-
-	}
-
-	public void transferOwnership(){
-
-	}
-
-	public void inviteUsers(){
-
-	}
-
-	public void searchGroup(){
-
-	}
-
 	/*
 	 * Purpose - Submit membership request for a group
 	 * 
@@ -147,14 +131,14 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * - If membership request doesn't exist, then create new one
 	 * 
 	 */
-	public void sendMembershipRequest(int userId, int groupId, MembershipRequest membershipRequest){
+	public void sendMembershipRequest(int groupId, MembershipRequest membershipRequest){
 		membershipRequest.setCreatedDateTime(DateTimeUtil.getCurrentTimeInUTC());
 		membershipRequest.setStatus(ApprovalStatus.Pending);
 		UserDO userDO = new UserDO();
-		User user = userDO.get(userId);
+		User user = userDO.get(membershipRequest.getUser().getId());
 		membershipRequest.setUser(user);
-		group = get(groupId);
-		MembershipRequest submittedMembershipRequest = getMembershipRequest(userId, groupId);
+		group = getAllData(groupId);
+		MembershipRequest submittedMembershipRequest = getMembershipRequest(groupId, membershipRequest.getUser().getId());
 		//Check if request has been submitted earlier as well
 		if (submittedMembershipRequest!=null){
 			if (!submittedMembershipRequest.getStatus().equals(ApprovalStatus.Rejected)){
@@ -178,8 +162,12 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		}
 	}
 
-	public MembershipRequest getMembershipRequest(int userId, int groupId){
-		MembershipRequestEntity membershipRequestEntity = groupDAO.getMembershipRequest(userId, groupId);
+	/*
+	 * Purpose - Get complete membership request info and not just basic info
+	 * 
+	 */
+	public MembershipRequest getMembershipRequest(int groupId, int userId){
+		MembershipRequestEntity membershipRequestEntity = groupDAO.getMembershipRequest(groupId, userId);
 		if (membershipRequestEntity!=null){
 			MembershipRequestMapper membershipRequestMapper = new MembershipRequestMapper();
 			//Its important to send complete membership request as it may be used as per business need so fetch option should be true
@@ -202,17 +190,19 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * 
 	 */
 	public void approveMembershipRequest(int groupId, int userId){
-		MembershipRequest membershipRequest = getMembershipRequest(userId, groupId);
+		MembershipRequest membershipRequest = getMembershipRequest(groupId, userId);
 		group = getAllData(groupId);
 		if (membershipRequest!=null){
 			if (!membershipRequest.getStatus().equals(ApprovalStatus.Approved)){
-				//Reason for removing membership request as we want to update the status and for that either we can iterate 
-				//all request and then update the specific one, or easy option and faster option would be remove and update
-				group.getMembershipRequests().remove(membershipRequest);
-				membershipRequest.setStatus(ApprovalStatus.Approved);
-				group.getMembershipRequests().add(membershipRequest);
 				group.getMembers().add(membershipRequest.getUser());
 				update(group);
+				//Don't try to remove membership request from group and add back to update, as it will throw exception
+				//saying unique key violation, so easy option is to use membership do to update the same
+				//Ensure that this should be done post group update else, status would not change as group has Pending status
+				//for the same membership request
+				membershipRequest.setStatus(ApprovalStatus.Approved);
+				MembershipRequestDO membershipRequestDO = new MembershipRequestDO();
+				membershipRequestDO.update(membershipRequest);
 			} else {
 				throw new NotAcceptableException("Membership request can't be approved as its not in valid state."
 						+ "Its current status:"+membershipRequest.getStatus());
@@ -234,12 +224,18 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * 
 	 */
 	public void rejectMembershipRequest(int groupId, int userId, String remark){
-		MembershipRequest membershipRequest = getMembershipRequest(userId, groupId);
+		MembershipRequest membershipRequest = getMembershipRequest(groupId, userId);
 		if (membershipRequest!=null){
 			if (membershipRequest.getStatus().equals(ApprovalStatus.Pending)){
 				//Reason for concatinating is to keep track of old reason for rejection with date time
-				remark.concat("\r\n UTC Time:"+DateTimeUtil.getCurrentTimeInUTC().toString()+"--------\r\n");
-				membershipRequest.getAdminRemark().concat(remark);
+				String deliminiator = "\r\nUTC Time:"+DateTimeUtil.getCurrentTimeInUTC().toString()+"\r\n--------\r\n";
+				String updatedRemark;
+				if (membershipRequest.getAdminRemark()==null){
+					updatedRemark = deliminiator.concat(remark);
+				} else {
+					updatedRemark = membershipRequest.getAdminRemark().concat(deliminiator).concat(remark);					
+				}
+				membershipRequest.setAdminRemark(updatedRemark);
 				membershipRequest.setStatus(ApprovalStatus.Rejected);
 				MembershipRequestDO membershipRequestDO = new MembershipRequestDO();
 				membershipRequestDO.update(membershipRequest);
@@ -265,17 +261,40 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		group = getAllData(groupId);
 		UserDO userDO = new UserDO();
 		User member = userDO.get(memberUserId);
-		group.getMembers().remove(member);
-		update(group);
+		boolean removeStatus = group.getMembers().remove(member);
+		if (removeStatus){
+			update(group);	
+		} else {
+			throw new NotAcceptableException("Group with id:"+groupId+" doesn't not have any member with id:"+memberUserId);
+		}
+	}
+	
+	public void leaveGroup(int groupId, int userId){
+		//Reason for having seperate function is just for naming convenience
+		//and may be in future additional task may be added
+		removeMember(groupId, userId);
+	}
+	
+	public void addAdmin(){
+
 	}
 
+	public void transferOwnership(){
+
+	}
+
+	public void inviteUsers(){
+
+	}
+
+	public void searchGroup(){
+
+	}
+	
 	public void giveFeedback(){
 
 	}
 
-	public void leaveGroup(){
-
-	}
 }
 
 

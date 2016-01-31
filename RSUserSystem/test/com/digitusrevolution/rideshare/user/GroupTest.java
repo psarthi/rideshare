@@ -73,8 +73,13 @@ public class GroupTest {
 		membershipRequest.getQuestionAnswers().put("Question-2", "Answer-2");
 		membershipRequest.getQuestionAnswers().put("Question-3", "Answer-3");
 		membershipRequest.setUserUniqueIdentifier("Employee Id-1");
-//		groupDO.sendMembershipRequest(1, 2, membershipRequest);
-		groupDO.approveMembershipRequest(1, 1);
+		UserDO userDO = new UserDO();
+		User user = userDO.get(4);
+		membershipRequest.setUser(user);
+//		groupDO.sendMembershipRequest(1, membershipRequest);
+//		groupDO.approveMembershipRequest(1, 4);
+//		groupDO.rejectMembershipRequest(1, 2, "remark");
+		groupDO.removeMember(1, 4);
 		
 	}
 }

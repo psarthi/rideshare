@@ -34,7 +34,7 @@ public class MembershipRequestMapper implements Mapper<MembershipRequest, Member
 		membershipRequest.setId(membershipRequestEntity.getId());
 		membershipRequest.setCreatedDateTime(membershipRequestEntity.getCreatedDateTime());
 		membershipRequest.setUserUniqueIdentifier(membershipRequestEntity.getUserUniqueIdentifier());
-		membershipRequestEntity.setQuestionAnswers(membershipRequest.getQuestionAnswers());
+		membershipRequest.setQuestionAnswers(membershipRequestEntity.getQuestionAnswers());
 		membershipRequest.setStatus(membershipRequestEntity.getStatus());
 		UserMapper userMapper = new UserMapper();
 		membershipRequest.setUser(userMapper.getDomainModel(membershipRequestEntity.getUser(), false));

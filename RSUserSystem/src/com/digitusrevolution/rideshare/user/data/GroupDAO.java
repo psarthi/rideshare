@@ -16,7 +16,7 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 		super(entityClass);
 	}
 
-	public MembershipRequestEntity getMembershipRequest(int userId, int groupId){
+	public MembershipRequestEntity getMembershipRequest(int groupId, int userId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Query query = session.getNamedQuery("MembershipRequest.byUserIdAndGroupId").setParameter("groupId", groupId)
 				.setParameter("userId", userId);
