@@ -2,11 +2,13 @@ package com.digitusrevolution.rideshare.user.domain.core;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotAcceptableException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,6 +22,7 @@ import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
+import com.digitusrevolution.rideshare.model.user.domain.GroupFeedback;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
@@ -357,11 +360,41 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	}
 	
 	/*
+	 * Purpose - Give feedback for group and one user can have only one feedback which can be overwritten
 	 * 
+	 * High level logic -
+	 * 
+	 * - Check if user is a member of the group
+	 * - If yes, check if feedback exist for that user
+	 * - If yes, overwrite else add a new feedback
 	 * 
 	 */
-	public void giveFeedback(int groupId, int memberUserId){
-
+	public void giveFeedback(int groupId, int memberUserId, GroupFeedback feedback){
+		User member = getMember(groupId, memberUserId);
+		if (member!=null){
+			group=getAllData(groupId);
+			Collection<GroupFeedback> feedbacks = group.getFeedbacks();
+			boolean newFeedback = true;
+			//Reason for iterating through all feedbacks here instead of another function, so that we can update that feedback
+			//If we get feedback from another function, we loose the pointer and unable to update directly and we may have to 
+			//find tricky way to update that feedback
+			for (GroupFeedback groupFeedback : feedbacks) {
+				if (groupFeedback.getGivenByUser().getId()==memberUserId){
+					//Update the feedback
+					groupFeedback.setVote(feedback.getVote());
+					newFeedback = false;
+					break;
+				}
+			}
+			if (newFeedback){
+				//Add feedback
+				feedback.setGivenByUser(member);
+				group.getFeedbacks().add(feedback);
+			}
+			update(group);
+		}else {
+			throw new WebApplicationException("User can't vote for this group as you are not a member. Group id, User id:"+groupId+","+memberUserId);
+		}
 	}
 
 	public void searchGroup(){

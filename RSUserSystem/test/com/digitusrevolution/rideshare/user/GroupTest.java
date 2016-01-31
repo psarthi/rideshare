@@ -9,8 +9,10 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.model.user.domain.GroupFeedback;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipForm;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
+import com.digitusrevolution.rideshare.model.user.domain.Vote;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.user.data.GroupDAO;
@@ -90,7 +92,10 @@ public class GroupTest {
 		list.add(1);
 		list.add(2);
 		list.add(3);
-		groupDO.inviteUsers(1, list);
+		//groupDO.inviteUsers(1, list);
+		GroupFeedback feedback = new GroupFeedback();
+		feedback.setVote(Vote.Fake);
+		groupDO.giveFeedback(1, 3, feedback);
 		
 	}
 }
