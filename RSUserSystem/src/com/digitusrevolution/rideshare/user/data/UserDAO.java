@@ -20,7 +20,7 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 
 	@SuppressWarnings("unchecked")
 	public UserEntity getUserByEmail(String email){	
-		Session session = HibernateUtil.getSessionFactory().openSession();
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		//We can use either Query option or criteria, so below code is just for reference
 		/*	Query query = session.getNamedQuery("UserEntity.byEmail")
 								 .setParameter("email", email);

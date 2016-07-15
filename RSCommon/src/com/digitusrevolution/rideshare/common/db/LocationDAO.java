@@ -13,6 +13,11 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
+/*
+ * 
+ * This class is for testing purpose only
+ * 
+ */
 public class LocationDAO{
 	
 	private MongoDatabase db = MongoDBUtil.getDatabase();

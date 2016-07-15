@@ -155,6 +155,8 @@ public class RouteDO{
 				logger.trace("time difference:"+(timeBasedOnOverallSpeed-time));
 				//**End
 				List<RideBasicInfo> updatedRidesBasicInfo = new ArrayList<>();
+				//RidesBasicInfo may contain one or many items based on if its a recurring or non recurring rides
+				//In case of multiple items, it will create multiple ridesbasicInfo with updated time and add all of them in the new point
 				for (RideBasicInfo rideBasicInfo : ridesBasicInfo) {
 					ZonedDateTime lastPointDateTime = rideBasicInfo.getDateTime();
 					ZonedDateTime thisPointDateTime = lastPointDateTime.plusSeconds((long) time);

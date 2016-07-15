@@ -2,6 +2,10 @@ package com.digitusrevolution.rideshare.model.common;
 
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 
+/*
+ * This class is for testing purpose only
+ * 
+ */
 public class Location {
 	
 	private String _id;

@@ -36,11 +36,22 @@ class MathUtil {
 	};
 	
 	/**
-	 * A ‘rhumb line’ (or loxodrome) is a path of constant bearing, which crosses all meridians at the same angle.
-	 * see http://www.movable-type.co.uk/scripts/latlong.html
-	 * @param brng
-	 * @param dist
-	 * @return
+	 * 
+	 * Given a start point, initial bearing, and distance, this will calculate the destination point
+	 * 
+	 * Destination
+	 * 
+	 * Given a start point and a distance d along constant bearing θ, this will calculate the destination point. 
+	 * If you maintain a constant bearing along a rhumb line, you will gradually spiral in towards one of the poles.
+	 *
+	 *	Formula:	δ = d/R	(angular distance)
+	 *	Δψ = ln( tan(π/4 + φ2/2) / tan(π/4 + φ1/2) )	(‘projected’ latitude difference)
+	 *	q = Δφ/Δψ (or cos φ for E-W line)	 
+	 *	Δλ = δ ⋅ sin θ / q	 
+	 *	φ2 = φ1 + δ ⋅ cos θ	 
+	 *	λ2 = λ1 + Δλ	 
+	 *	where	φ is latitude, λ is longitude, Δλ is taking shortest route (<180°), ln is natural log, R is the earth’s radius
+	 * 
 	 */
 	public static LatLng rhumbDestinationPoint(LatLng startPoint, double brng, double dist) {
 		double d = dist/EARTH_RADIUS;  // d = angular distance covered on earth’s surface
@@ -65,11 +76,15 @@ class MathUtil {
 	};
 
 	/**
-	 * Given a start point and a distance d along constant bearing θ, this will calculate the destination point. 
-	 * If you maintain a constant bearing along a rhumb line, you will gradually spiral in towards one of the poles.
-	 * see http://www.movable-type.co.uk/scripts/latlong.html
-	 * @param dest
-	 * @return
+	 * 
+	 * This will get Bearing from Start to end point using Rhumb line concept
+	 *
+	 * A rhumb line is a straight line on a Mercator projection, with an angle on the projection equal to the compass bearing.
+	 *
+	 * Formula:	Δψ = ln( tan(π/4 + φ2/2) / tan(π/4 + φ1/2) )	(‘projected’ latitude difference)
+	 * θ = atan2(Δλ, Δψ)	
+	 * where	φ is latitude, λ is longitude, Δλ is taking shortest route (<180°), R is the earth’s radius, ln is natural log
+	 *
 	 */
 	public static double rhumbBearingTo(LatLng start, LatLng dest) {
 		double dLon = MathUtil.toRad(dest.lng() - start.lng());

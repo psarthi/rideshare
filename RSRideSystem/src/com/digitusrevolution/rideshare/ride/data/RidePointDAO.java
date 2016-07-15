@@ -141,6 +141,8 @@ public class RidePointDAO{
 	 * - Unwind all the matched points, so that we can get exact matched ride instead of all recurring rides which is stored for each point
 	 * - Run the query again to get all matching ride points based on Just time
 	 * - Group all the matching ride points by Ride ID and get the first one as its a sorted list and first one is the closest from the given point
+	 * 	 This is primarily applicable to those cases where you have multiple ride points matched within pickup/drop zone and you need to find out 
+	 *   the nearest one
 	 * - Convert the result into the map of Ride id, ridepoint with calculated distance as well
 	 * 
 	 * Key Note - 
@@ -185,20 +187,23 @@ public class RidePointDAO{
 				.append("near", new Document(Document.parse(pointJson)))
 				.append("distanceField", "distance"));
 
-		//This will group by ride ids, and get the first point which is at the shortest distance
-		//Result from geoNear would be sorted and that's why first point is the nearest
-		Document group = new Document("$group", new Document("_id","$rides.id")
-				.append("rideSearchPoint", new Document("$first", "$$CURRENT")));
-
-		//Nor required, its here for just for reference
-		//Document sort = new Document("$sort", new Document("ridepoint.distance", 1));
-
 		//This will create individual ride points by ride id
 		//Unwind command, create multiple document for each array item i.e. array item would be different but rest of the property would be same
 		Document unwind = new Document("$unwind", "$rides");
 
 		//This will filter all the ride points by date and time again post the unwind command
 		Document match = new Document("$match",query);
+		
+		//This will group by ride ids, and get the first point which is at the shortest distance
+		//Result from geoNear would be sorted and that's why first point is the nearest
+		//This is applicable for those cases where you have many matching ride points of the same ride within pickup/drop zone
+		//so you need the nearest one as ride pickup point
+		Document group = new Document("$group", new Document("_id","$rides.id")
+				.append("rideSearchPoint", new Document("$first", "$$CURRENT")));
+
+		//Nor required, its here for just for reference
+		//Document sort = new Document("$sort", new Document("ridepoint.distance", 1));
+
 
 		logger.trace(query.toJson());
 		logger.trace(geoNear.toJson());
