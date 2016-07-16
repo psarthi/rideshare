@@ -49,6 +49,22 @@ public class RideRequestGeoJSON {
 	 */
 	public FeatureCollection getMatchingRideRequests(int rideId,double lastSearchDistance, int lastResultIndex){
 		RideRequestSearchResult rideRequestSearchResult = rideRequestDO.searchRideRequests(rideId, lastSearchDistance, lastResultIndex);
+		FeatureCollection featureCollection = getMatchingRideRequestsGeoJson(rideId, rideRequestSearchResult);
+		return featureCollection;
+	}
+
+	/*
+	 * Purpose - Get GeoJSON for Matching Ride Requests
+	 * 
+	 * High level logic -
+	 * 
+	 * - Get GeoJson for all matching Ride Pickup and Drop points
+	 * - Get GeoJson for Ride (Includes Start Point, End Point and Route)
+	 * - Get GeoJson for all matched ride requests (Include Pickup and Drop points)
+	 * 
+	 */
+	private FeatureCollection getMatchingRideRequestsGeoJson(int rideId,
+			RideRequestSearchResult rideRequestSearchResult) {
 		RideDO rideDO = new RideDO();
 		//This will get ride pickup and drop points 
 		FeatureCollection featureCollection = rideDO.getMatchedTripInfoGeoJSON(rideRequestSearchResult.getMatchedTripInfos());

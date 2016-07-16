@@ -51,6 +51,21 @@ public class RideGeoJSON {
 	 */
 	public FeatureCollection getMatchingRides(int rideRequestId){
 		List<MatchedTripInfo> matchedTripInfos = rideDO.searchRides(rideRequestId);
+		FeatureCollection featureCollection = getMatchingRidesGeoJson(rideRequestId, matchedTripInfos);
+		return featureCollection;
+	}
+
+	/*
+	 * Purpose - Get GeoJSON for Matching Rides
+	 * 
+	 * High level logic -
+	 * 
+	 * - Get GeoJson for all matching Ride Pickup and Drop points
+	 * - Get GeoJson for Ride Request points (Include Pickup and Drop points)
+	 * - Get GeoJson for all matched rides (Includes Start Point, End Point and Route)
+	 * 
+	 */
+	private FeatureCollection getMatchingRidesGeoJson(int rideRequestId, List<MatchedTripInfo> matchedTripInfos) {
 		//This will get ride related geoJson for each matching rides
 		FeatureCollection featureCollection = getMatchedTripInfoGeoJSON(matchedTripInfos);
 		//This will get ride request related geoJson (Note - Its common for all matching rides) 
