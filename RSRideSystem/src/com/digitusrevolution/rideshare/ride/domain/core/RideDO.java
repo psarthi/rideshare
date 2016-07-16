@@ -45,7 +45,7 @@ import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 import com.digitusrevolution.rideshare.ride.domain.TrustNetworkDO;
 import com.digitusrevolution.rideshare.ride.domain.core.comp.RideAction;
 import com.digitusrevolution.rideshare.ride.domain.core.comp.RideGeoJSON;
-import com.digitusrevolution.rideshare.ride.dto.RideMatchInfo;
+import com.digitusrevolution.rideshare.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.ride.dto.RidePointDTO;
 import com.digitusrevolution.rideshare.ride.dto.google.GoogleDirection;
 
@@ -364,7 +364,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	 * 
 	 * 
 	 */
-	public List<RideMatchInfo> searchRides(int rideRequestId){		
+	public List<MatchedTripInfo> searchRides(int rideRequestId){		
 
 		logger.debug("[Searching Rides for Ride Request Id]:"+ rideRequestId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
@@ -381,7 +381,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		logger.debug("[Valid Drop Rides: Based on Matching Pickup and Drop Point]:"+dropRidePoints.keySet());
 
 		Iterator<Integer> iterator = pickupRidePoints.keySet().iterator();
-		List<RideMatchInfo> rideMatchInfos = new ArrayList<>();
+		List<MatchedTripInfo> matchedTripInfos = new ArrayList<>();
 
 
 		while (iterator.hasNext()) {			
@@ -391,8 +391,8 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 			} else {
 				RidePointDTO pickupRidePointDTO = pickupRidePoints.get(rideId);
 				RidePointDTO dropRidePointDTO =  dropRidePoints.get(rideId);
-				RideMatchInfo rideMatchInfo = getRideMatchInfo(rideRequest, pickupRidePointDTO, dropRidePointDTO, rideId);
-				rideMatchInfos.add(rideMatchInfo);
+				MatchedTripInfo matchedTripInfo = getMatchedTripInfo(rideRequest, pickupRidePointDTO, dropRidePointDTO, rideId);
+				matchedTripInfos.add(matchedTripInfo);
 			}
 		}
 
@@ -410,24 +410,24 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		logger.debug("[Valid Pickup Rides: Based on Sequence of Pickup and Drop Points]:"+pickupRidePoints.keySet());
 		logger.debug("[Valid Drop Rides: Based on Sequence of Pickup and Drop Points]:"+dropRidePoints.keySet());
 
-		logger.debug("Final RideMatch List:" + rideMatchInfos);
+		logger.debug("Final Matched Trip:" + matchedTripInfos);
 
-		return rideMatchInfos;
+		return matchedTripInfos;
 	}
 
 	/*
 	 * Purpose - This function creates a DTO for passing the information back to the requester
 	 */
-	private RideMatchInfo getRideMatchInfo(RideRequest rideRequest, RidePointDTO pickupRidePointDTO, RidePointDTO dropRidePointDTO, int rideId) {
-		RideMatchInfo rideMatchInfo = new RideMatchInfo();
-		rideMatchInfo.setRideId(rideId);
-		rideMatchInfo.setRidePickupPoint(pickupRidePointDTO.getRidePoint());
-		rideMatchInfo.setRideDropPoint(dropRidePointDTO.getRidePoint());
-		rideMatchInfo.setRideRequestId(rideRequest.getId());
-		rideMatchInfo.setPickupPointDistance(pickupRidePointDTO.getDistance());
-		rideMatchInfo.setDropPointDistance(dropRidePointDTO.getDistance());
-		rideMatchInfo.setRideRequestTravelDistance(rideRequest.getTravelDistance());
-		return rideMatchInfo;
+	private MatchedTripInfo getMatchedTripInfo(RideRequest rideRequest, RidePointDTO pickupRidePointDTO, RidePointDTO dropRidePointDTO, int rideId) {
+		MatchedTripInfo matchedTripInfo = new MatchedTripInfo();
+		matchedTripInfo.setRideId(rideId);
+		matchedTripInfo.setRidePickupPoint(pickupRidePointDTO.getRidePoint());
+		matchedTripInfo.setRideDropPoint(dropRidePointDTO.getRidePoint());
+		matchedTripInfo.setRideRequestId(rideRequest.getId());
+		matchedTripInfo.setPickupPointDistance(pickupRidePointDTO.getDistance());
+		matchedTripInfo.setDropPointDistance(dropRidePointDTO.getDistance());
+		matchedTripInfo.setRideRequestTravelDistance(rideRequest.getTravelDistance());
+		return matchedTripInfo;
 	}	
 
 	/*
@@ -468,9 +468,9 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return rideGeoJSON.getRideGeoJson(ride);
 	}
 
-	public FeatureCollection getRideMatchInfoGeoJSON(List<RideMatchInfo> rideMatchInfos) {
+	public FeatureCollection getMatchedTripInfoGeoJSON(List<MatchedTripInfo> matchedTripInfos) {
 		RideGeoJSON rideGeoJSON = new RideGeoJSON(this);
-		return rideGeoJSON.getRideMatchInfoGeoJSON(rideMatchInfos);
+		return rideGeoJSON.getMatchedTripInfoGeoJSON(matchedTripInfos);
 
 	}
 	

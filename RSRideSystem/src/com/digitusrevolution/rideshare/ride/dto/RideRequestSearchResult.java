@@ -5,17 +5,11 @@ import org.geojson.MultiPolygon;
 
 public class RideRequestSearchResult {
 	
-	private List<RideMatchInfo> rideMatchInfos;
+	private List<MatchedTripInfo> matchedTripInfos;
 	private double searchDistance;
 	private int resultLastIndex;
 	private MultiPolygon multiPolygon;  
 	
-	public List<RideMatchInfo> getRideMatchInfos() {
-		return rideMatchInfos;
-	}
-	public void setRideMatchInfos(List<RideMatchInfo> rideMatchInfos) {
-		this.rideMatchInfos = rideMatchInfos;
-	}
 	public double getSearchDistance() {
 		return searchDistance;
 	}
@@ -34,7 +28,11 @@ public class RideRequestSearchResult {
 	public void setMultiPolygon(MultiPolygon multiPolygon) {
 		this.multiPolygon = multiPolygon;
 	}
+	public List<MatchedTripInfo> getMatchedTripInfos() {
+		return matchedTripInfos;
+	}
+	public void setMatchedTripInfos(List<MatchedTripInfo> matchedTripInfos) {
+		this.matchedTripInfos = matchedTripInfos;
+	}
 	
-	
-
 }

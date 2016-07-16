@@ -19,7 +19,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
-import com.digitusrevolution.rideshare.ride.dto.RideMatchInfo;
+import com.digitusrevolution.rideshare.ride.dto.MatchedTripInfo;
 
 public class RideGeoJSON {
 	
@@ -50,16 +50,16 @@ public class RideGeoJSON {
 	 * This function internally calls search ride and convert the data into GeoJson format 
 	 */
 	public FeatureCollection getMatchingRides(int rideRequestId){
-		List<RideMatchInfo> rideMatchInfos = rideDO.searchRides(rideRequestId);
+		List<MatchedTripInfo> matchedTripInfos = rideDO.searchRides(rideRequestId);
 		//This will get ride related geoJson for each matching rides
-		FeatureCollection featureCollection = getRideMatchInfoGeoJSON(rideMatchInfos);
+		FeatureCollection featureCollection = getMatchedTripInfoGeoJSON(matchedTripInfos);
 		//This will get ride request related geoJson (Note - Its common for all matching rides) 
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		List<Feature> rideRequestGeoJSONFeatures = rideRequestDO.getRideRequestGeoJSON(rideRequestId);
 		featureCollection.addAll(rideRequestGeoJSONFeatures);
 		//This will get all route along with start and end point for all matching rides
-		for (RideMatchInfo rideMatchInfo : rideMatchInfos) {
-			Ride ride = rideDO.getAllData(rideMatchInfo.getRideId());
+		for (MatchedTripInfo matchedTripInfo : matchedTripInfos) {
+			Ride ride = rideDO.getAllData(matchedTripInfo.getRideId());
 			List<Feature> rideGeoJsonFeatures = getRideGeoJson(ride);
 			featureCollection.addAll(rideGeoJsonFeatures);
 		}
@@ -89,17 +89,17 @@ public class RideGeoJSON {
 	 * as it may become duplicates for searchRides and SearchRideRequest, so its the caller 
 	 * responsibility to add geoJson for rides and ride requests
 	 */
-	public FeatureCollection getRideMatchInfoGeoJSON(List<RideMatchInfo> rideMatchInfos) {
+	public FeatureCollection getMatchedTripInfoGeoJSON(List<MatchedTripInfo> matchedTripInfos) {
 		FeatureCollection featureCollection = new FeatureCollection();
-		for (RideMatchInfo rideMatchInfo : rideMatchInfos) {
-			Point ridePickupPoint = rideMatchInfo.getRidePickupPoint().getPoint();
-			Map<String, Object> ridePickupPointProperties = getRideMatchInfoProperties(rideMatchInfo,"ridepickuppoint");
+		for (MatchedTripInfo matchedTripInfo : matchedTripInfos) {
+			Point ridePickupPoint = matchedTripInfo.getRidePickupPoint().getPoint();
+			Map<String, Object> ridePickupPointProperties = getMatchedTripInfoProperties(matchedTripInfo,"ridepickuppoint");
 			org.geojson.Point geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(ridePickupPoint);
 			Feature feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, ridePickupPointProperties);
 			featureCollection.add(feature);
 
-			Point rideDropPoint = rideMatchInfo.getRideDropPoint().getPoint();
-			Map<String, Object> rideDropPointProperties = getRideMatchInfoProperties(rideMatchInfo,"ridedroppoint");
+			Point rideDropPoint = matchedTripInfo.getRideDropPoint().getPoint();
+			Map<String, Object> rideDropPointProperties = getMatchedTripInfoProperties(matchedTripInfo,"ridedroppoint");
 			geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(rideDropPoint);
 			feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, rideDropPointProperties);
 			featureCollection.add(feature);
@@ -111,21 +111,21 @@ public class RideGeoJSON {
 	 * Purpose - This will get Properties for Ride Pickup and Drop Point
 	 * 
 	 */
-	private Map<String, Object> getRideMatchInfoProperties(RideMatchInfo rideMatchInfo, String pointType) {
+	private Map<String, Object> getMatchedTripInfoProperties(MatchedTripInfo matchedTripInfo, String pointType) {
 		Map<String, Object> ridePickupPointProperties = new HashMap<>();
 		ridePickupPointProperties.put("type", pointType);
-		ridePickupPointProperties.put("RideId", rideMatchInfo.getRideId());
-		ridePickupPointProperties.put("RideRequestId", rideMatchInfo.getRideRequestId());
+		ridePickupPointProperties.put("RideId", matchedTripInfo.getRideId());
+		ridePickupPointProperties.put("RideRequestId", matchedTripInfo.getRideRequestId());
 		if (pointType.equals("ridepickuppoint")){
-			ridePickupPointProperties.put("Distance", rideMatchInfo.getPickupPointDistance());
-			ridePickupPointProperties.put("Sequence", rideMatchInfo.getRidePickupPoint().getSequence());
-			ridePickupPointProperties.put("DateTimeUTC", rideMatchInfo.getRidePickupPoint().getRidesBasicInfo().get(0).getDateTime());
+			ridePickupPointProperties.put("Distance", matchedTripInfo.getPickupPointDistance());
+			ridePickupPointProperties.put("Sequence", matchedTripInfo.getRidePickupPoint().getSequence());
+			ridePickupPointProperties.put("DateTimeUTC", matchedTripInfo.getRidePickupPoint().getRidesBasicInfo().get(0).getDateTime());
 		} else {
-			ridePickupPointProperties.put("Distance", rideMatchInfo.getDropPointDistance());
-			ridePickupPointProperties.put("Sequence", rideMatchInfo.getRideDropPoint().getSequence());
-			ridePickupPointProperties.put("DateTimeUTC", rideMatchInfo.getRideDropPoint().getRidesBasicInfo().get(0).getDateTime());
+			ridePickupPointProperties.put("Distance", matchedTripInfo.getDropPointDistance());
+			ridePickupPointProperties.put("Sequence", matchedTripInfo.getRideDropPoint().getSequence());
+			ridePickupPointProperties.put("DateTimeUTC", matchedTripInfo.getRideDropPoint().getRidesBasicInfo().get(0).getDateTime());
 		}
-		ridePickupPointProperties.put("RideRequestTravelDistance", rideMatchInfo.getRideRequestTravelDistance());
+		ridePickupPointProperties.put("RideRequestTravelDistance", matchedTripInfo.getRideRequestTravelDistance());
 		return ridePickupPointProperties;
 	}
 

@@ -16,7 +16,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
-import com.digitusrevolution.rideshare.ride.dto.RideMatchInfo;
+import com.digitusrevolution.rideshare.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.ride.dto.RideRequestSearchResult;
 
 public class RideRequestGeoJSON {
@@ -51,13 +51,13 @@ public class RideRequestGeoJSON {
 		RideRequestSearchResult rideRequestSearchResult = rideRequestDO.searchRideRequests(rideId, lastSearchDistance, lastResultIndex);
 		RideDO rideDO = new RideDO();
 		//This will get ride pickup and drop points 
-		FeatureCollection featureCollection = rideDO.getRideMatchInfoGeoJSON(rideRequestSearchResult.getRideMatchInfos());
+		FeatureCollection featureCollection = rideDO.getMatchedTripInfoGeoJSON(rideRequestSearchResult.getMatchedTripInfos());
 		//This will get route along with start and end point which is common to all matching ride requests
 		List<Feature> rideGeoJsonFeatures = rideDO.getRideGeoJson(rideDO.getAllData(rideId));
 		featureCollection.addAll(rideGeoJsonFeatures);
-		for (RideMatchInfo rideMatchInfo : rideRequestSearchResult.getRideMatchInfos()) {
+		for (MatchedTripInfo matchedTripInfo : rideRequestSearchResult.getMatchedTripInfos()) {
 			//This will get ride request pickup and drop points 
-			List<Feature> rideRequestGeoJSONFeatures = getRideRequestGeoJSON(rideMatchInfo.getRideRequestId());
+			List<Feature> rideRequestGeoJSONFeatures = getRideRequestGeoJSON(matchedTripInfo.getRideRequestId());
 			featureCollection.addAll(rideRequestGeoJSONFeatures);
 		}
 		//This will get polygon around route
@@ -79,6 +79,7 @@ public class RideRequestGeoJSON {
 
 	/*
 	 * Purpose - This will get features for ride request pickup and drop point
+	 * 
 	 */
 	public List<Feature> getRideRequestGeoJSON(int rideRequestId) {
 		RideRequestDO rideRequestDO = new RideRequestDO();

@@ -3,7 +3,7 @@ package com.digitusrevolution.rideshare.ride.dto;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 
-public class RideMatchInfo {
+public class MatchedTripInfo {
 
 	private int rideId;
 	private int rideRequestId;
@@ -57,7 +57,7 @@ public class RideMatchInfo {
 	}
 	@Override
 	public String toString() {
-		JSONUtil<RideMatchInfo> jsonUtil = new JSONUtil<>(RideMatchInfo.class);
+		JSONUtil<MatchedTripInfo> jsonUtil = new JSONUtil<>(MatchedTripInfo.class);
 		return jsonUtil.getJson(this);
 	}
 }
