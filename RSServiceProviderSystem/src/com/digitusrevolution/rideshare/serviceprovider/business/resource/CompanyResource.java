@@ -11,8 +11,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
+import com.digitusrevolution.rideshare.model.serviceprovider.dto.CompanyAccount;
 import com.digitusrevolution.rideshare.serviceprovider.business.CompanyService;
-import com.digitusrevolution.rideshare.serviceprovider.dto.CompanyAccount;
 
 @Path("/serviceprovider")
 @Produces(MediaType.APPLICATION_JSON)

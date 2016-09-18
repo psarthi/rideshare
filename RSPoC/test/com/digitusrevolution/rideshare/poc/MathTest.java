@@ -12,10 +12,10 @@ import com.digitusrevolution.rideshare.common.math.google.PolyUtil;
 import com.digitusrevolution.rideshare.common.math.google.SphericalUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
+import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
+import com.digitusrevolution.rideshare.model.ride.dto.google.Step;
 import com.digitusrevolution.rideshare.poc.core.SphericalGeometry;
 import com.digitusrevolution.rideshare.ride.domain.PointDO;
-import com.digitusrevolution.rideshare.ride.dto.google.GoogleDirection;
-import com.digitusrevolution.rideshare.ride.dto.google.Step;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MathTest {

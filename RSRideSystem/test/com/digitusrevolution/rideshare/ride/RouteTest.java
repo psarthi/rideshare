@@ -10,9 +10,9 @@ import java.util.List;
 
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
+import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
 import com.digitusrevolution.rideshare.ride.domain.PointDO;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
-import com.digitusrevolution.rideshare.ride.dto.google.GoogleDirection;
 
 public class RouteTest {
 	

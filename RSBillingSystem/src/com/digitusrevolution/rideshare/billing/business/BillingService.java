@@ -7,8 +7,8 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.billing.domain.core.BillDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
-import com.digitusrevolution.rideshare.model.dto.BillDTO;
-import com.digitusrevolution.rideshare.model.dto.RideDTO;
+import com.digitusrevolution.rideshare.model.billing.dto.BillDTO;
+import com.digitusrevolution.rideshare.model.billing.dto.RideDTO;
 
 public class BillingService {
 	

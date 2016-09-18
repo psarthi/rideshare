@@ -14,10 +14,10 @@ import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
+import com.digitusrevolution.rideshare.model.ride.dto.RideRequestSearchResult;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
-import com.digitusrevolution.rideshare.ride.dto.MatchedTripInfo;
-import com.digitusrevolution.rideshare.ride.dto.RideRequestSearchResult;
 
 public class RideRequestGeoJSON {
 	

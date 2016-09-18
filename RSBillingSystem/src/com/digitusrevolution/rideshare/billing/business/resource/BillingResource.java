@@ -10,8 +10,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.billing.business.BillingService;
-import com.digitusrevolution.rideshare.model.dto.BillDTO;
-import com.digitusrevolution.rideshare.model.dto.RideDTO;
+import com.digitusrevolution.rideshare.model.billing.dto.BillDTO;
+import com.digitusrevolution.rideshare.model.billing.dto.RideDTO;
 
 @Path("/billing")
 @Produces(MediaType.APPLICATION_JSON)

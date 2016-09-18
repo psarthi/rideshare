@@ -5,7 +5,7 @@ import javax.ws.rs.InternalServerErrorException;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
-import com.digitusrevolution.rideshare.ride.dto.google.GoogleGeocode;
+import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleGeocode;
 
 
 public class PointDO{

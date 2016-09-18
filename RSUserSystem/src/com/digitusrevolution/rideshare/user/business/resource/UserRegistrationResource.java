@@ -8,8 +8,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.dto.UserAccount;
 import com.digitusrevolution.rideshare.user.business.UserRegistrationService;
-import com.digitusrevolution.rideshare.user.dto.UserAccount;
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)

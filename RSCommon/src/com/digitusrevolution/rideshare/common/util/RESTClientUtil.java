@@ -9,7 +9,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
-import com.digitusrevolution.rideshare.model.dto.RideDTO;
+import com.digitusrevolution.rideshare.model.billing.dto.RideDTO;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.model.user.domain.Role;

@@ -44,12 +44,12 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
+import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
+import com.digitusrevolution.rideshare.model.ride.dto.RideRequestSearchResult;
 import com.digitusrevolution.rideshare.ride.data.RideRequestDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
 import com.digitusrevolution.rideshare.ride.domain.TrustNetworkDO;
 import com.digitusrevolution.rideshare.ride.domain.core.comp.RideRequestGeoJSON;
-import com.digitusrevolution.rideshare.ride.dto.MatchedTripInfo;
-import com.digitusrevolution.rideshare.ride.dto.RideRequestSearchResult;
 
 
 public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{

@@ -7,8 +7,8 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
+import com.digitusrevolution.rideshare.model.serviceprovider.dto.CompanyAccount;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.CompanyDO;
-import com.digitusrevolution.rideshare.serviceprovider.dto.CompanyAccount;
 
 
 public class CompanyService {

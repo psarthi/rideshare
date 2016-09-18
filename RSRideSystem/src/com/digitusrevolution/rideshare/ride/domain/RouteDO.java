@@ -20,10 +20,10 @@ import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
-import com.digitusrevolution.rideshare.ride.dto.google.GoogleDirection;
-import com.digitusrevolution.rideshare.ride.dto.google.GoogleDistance;
-import com.digitusrevolution.rideshare.ride.dto.google.Leg;
-import com.digitusrevolution.rideshare.ride.dto.google.Step;
+import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
+import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDistance;
+import com.digitusrevolution.rideshare.model.ride.dto.google.Leg;
+import com.digitusrevolution.rideshare.model.ride.dto.google.Step;
 
 public class RouteDO{
 

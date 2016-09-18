@@ -23,7 +23,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
-import com.digitusrevolution.rideshare.ride.dto.RideRequestSearchPoint;
+import com.digitusrevolution.rideshare.model.ride.dto.RideRequestSearchPoint;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;

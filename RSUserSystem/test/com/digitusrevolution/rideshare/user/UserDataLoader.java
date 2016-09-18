@@ -25,6 +25,7 @@ import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
+import com.digitusrevolution.rideshare.model.user.dto.UserAccount;
 import com.digitusrevolution.rideshare.user.business.UserRegistrationService;
 import com.digitusrevolution.rideshare.user.domain.CityDO;
 import com.digitusrevolution.rideshare.user.domain.CountryDO;
@@ -33,7 +34,6 @@ import com.digitusrevolution.rideshare.user.domain.StateDO;
 import com.digitusrevolution.rideshare.user.domain.VehicleCategoryDO;
 import com.digitusrevolution.rideshare.user.domain.VehicleSubCategoryDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
-import com.digitusrevolution.rideshare.user.dto.UserAccount;
 
 @Path("/domain/loaddata/user")
 public class UserDataLoader {

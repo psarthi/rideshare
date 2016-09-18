@@ -35,6 +35,9 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
+import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
+import com.digitusrevolution.rideshare.model.ride.dto.RidePointDTO;
+import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
@@ -45,9 +48,6 @@ import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 import com.digitusrevolution.rideshare.ride.domain.TrustNetworkDO;
 import com.digitusrevolution.rideshare.ride.domain.core.comp.RideAction;
 import com.digitusrevolution.rideshare.ride.domain.core.comp.RideGeoJSON;
-import com.digitusrevolution.rideshare.ride.dto.MatchedTripInfo;
-import com.digitusrevolution.rideshare.ride.dto.RidePointDTO;
-import com.digitusrevolution.rideshare.ride.dto.google.GoogleDirection;
 
 public class RideDO implements DomainObjectPKInteger<Ride>{
 

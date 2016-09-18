@@ -7,8 +7,8 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.dto.UserAccount;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
-import com.digitusrevolution.rideshare.user.dto.UserAccount;
 
 public class UserRegistrationService {
 	

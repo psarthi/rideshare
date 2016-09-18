@@ -165,7 +165,10 @@
 					<groupId>org.glassfish.jersey.containers</groupId>
 					<artifactId>jersey-container-servlet</artifactId>
 				</exclusion>
-
+				<exclusion>
+					<groupId>de.grundid.opendatalab</groupId>
+					<artifactId>geojson-jackson</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<!-- RideShare Components End -->
