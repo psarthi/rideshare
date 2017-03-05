@@ -12,5 +12,6 @@
         </dependent-module>
         <property name="java-output-path" value="/RSUserSystem/target/classes"/>
         <property name="context-root" value="RSUserSystem"/>
+        <property name="component.exclusion.patterns"/>
     </wb-module>
 </project-modules>

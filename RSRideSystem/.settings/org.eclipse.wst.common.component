@@ -12,5 +12,6 @@
         </dependent-module>
         <property name="context-root" value="RSRideSystem"/>
         <property name="java-output-path" value="/RSRideSystem/bin"/>
+        <property name="component.exclusion.patterns"/>
     </wb-module>
 </project-modules>

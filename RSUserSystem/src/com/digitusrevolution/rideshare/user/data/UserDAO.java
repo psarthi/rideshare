@@ -28,8 +28,12 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 		 */
 		Criteria criteria = session.createCriteria(entityClass)
 				.add(Restrictions.eq("email", email));	
-		List<UserEntity> userEntities = criteria.list();			
-		return userEntities.get(0);				
+		List<UserEntity> userEntities = criteria.list();
+		if (userEntities.isEmpty()){
+			return null;
+		} else {
+			return userEntities.get(0);				
+		}	
 	}
 
 	/*

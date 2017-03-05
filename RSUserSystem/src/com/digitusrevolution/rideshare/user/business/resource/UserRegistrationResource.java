@@ -7,8 +7,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.UserAccount;
+import com.digitusrevolution.rideshare.model.user.dto.UserRegistrationDetailDTO;
 import com.digitusrevolution.rideshare.user.business.UserRegistrationService;
 
 @Path("/users")
@@ -17,10 +17,10 @@ import com.digitusrevolution.rideshare.user.business.UserRegistrationService;
 public class UserRegistrationResource {
 
 	@POST
-	public Response registerUser(User user){
+	public Response registerUser(UserRegistrationDetailDTO userRegistrationDetailDTO){
 
 		UserRegistrationService userRegistrationService = new UserRegistrationService();
-		int id = userRegistrationService.registerUser(user);
+		int id = userRegistrationService.registerUser(userRegistrationDetailDTO);
 		return Response.ok().entity(Integer.toString(id)).build();
 	}
 	

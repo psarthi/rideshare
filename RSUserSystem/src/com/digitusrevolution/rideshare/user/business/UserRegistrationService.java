@@ -8,13 +8,14 @@ import org.hibernate.Transaction;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.UserAccount;
+import com.digitusrevolution.rideshare.model.user.dto.UserRegistrationDetailDTO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
 public class UserRegistrationService {
 	
 	private static final Logger logger = LogManager.getLogger(UserRegistrationService.class.getName());
 	
-	public int registerUser(User user){
+	public int registerUser(UserRegistrationDetailDTO userRegistrationDetailDTO){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
@@ -23,6 +24,7 @@ public class UserRegistrationService {
 			transation = session.beginTransaction();
 			
 			UserDO userDO = new UserDO();
+			User user = getUser(userRegistrationDetailDTO);			
 			id = userDO.registerUser(user);
 			
 			transation.commit();
@@ -41,6 +43,21 @@ public class UserRegistrationService {
 		}	
 		
 		return id;
+	}
+
+	private User getUser(UserRegistrationDetailDTO userRegistrationDetailDTO) {
+		User user = new User();
+		user.setFirstName(userRegistrationDetailDTO.getFirstName());
+		user.setLastName(userRegistrationDetailDTO.getLastName());
+		user.setSex(userRegistrationDetailDTO.getSex());
+		user.setMobileNumber(userRegistrationDetailDTO.getMobileNumber());
+		user.setEmail(userRegistrationDetailDTO.getEmail());
+		user.setPassword(userRegistrationDetailDTO.getPassword());
+		user.setCity(userRegistrationDetailDTO.getCity());
+		user.setState(userRegistrationDetailDTO.getState());
+		user.setCountry(userRegistrationDetailDTO.getCountry());
+		user.setPhoto(userRegistrationDetailDTO.getPhoto());
+		return user;
 	}
 	
 	public void addAccount(UserAccount userAccount){

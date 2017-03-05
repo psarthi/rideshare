@@ -22,12 +22,14 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
+import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.FriendRequest;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.data.UserDAO;
+import com.digitusrevolution.rideshare.user.domain.CountryDO;
 import com.digitusrevolution.rideshare.user.domain.RoleDO;
 
 public class UserDO implements DomainObjectPKInteger<User>{
@@ -142,6 +144,9 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		if (status){
 			throw new EmailExistException("Email id already exist :"+user.getEmail());					
 		} else {
+			CountryDO countryDO = new CountryDO();
+			Country country = countryDO.get(user.getCountry().getName());
+			user.setCountry(country);
 			id = create(user);
 		}
 		return id;
