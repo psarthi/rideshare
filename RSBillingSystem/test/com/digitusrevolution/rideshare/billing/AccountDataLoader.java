@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import com.digitusrevolution.rideshare.billing.business.AccountService;
+import com.digitusrevolution.rideshare.billing.business.AccountBusinessService;
 import com.digitusrevolution.rideshare.billing.domain.core.VirtualAccountDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
@@ -22,7 +22,7 @@ public class AccountDataLoader {
 	@GET
 	public static void main(String[] args) {
 		
-		AccountService accountService = new AccountService();
+		AccountBusinessService accountService = new AccountBusinessService();
 		Account account = new Account();
 		account.setBalance(0);
 		account.setType(AccountType.Virtual);

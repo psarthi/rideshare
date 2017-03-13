@@ -16,6 +16,8 @@ import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategoryName;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
+import com.digitusrevolution.rideshare.model.ride.dto.RideOfferDTO;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
@@ -23,9 +25,9 @@ import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 import com.digitusrevolution.rideshare.ride.domain.TrustCategoryDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 
-public class RideOfferManagementService {
+public class RideOfferBusinessService {
 	
-	private static final Logger logger = LogManager.getLogger(RideOfferManagementService.class.getName());
+	private static final Logger logger = LogManager.getLogger(RideOfferBusinessService.class.getName());
 	
 	/*
 	 * Purpose - Create a ride in the system
@@ -39,13 +41,16 @@ public class RideOfferManagementService {
 	 * 
 	 * 
 	 */
-	public List<Integer> offerRide(Ride ride){
+	public List<Integer> offerRide(RideOfferDTO rideOfferDTO){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
 		List<Integer> rideIds = null;
 		try {
 			transation = session.beginTransaction();
+			
+			Ride ride = rideOfferDTO.getRide();
+			GoogleDirection googleDirection = rideOfferDTO.getGoogleDirection();
 			
 			//Start - Temp. Code to work with Web frontend, it will be removed and direction needs to be passed as a parameter to this call
 			ZonedDateTime startTimeUTC = ride.getStartTime().withZoneSameInstant(ZoneOffset.UTC);
@@ -71,6 +76,7 @@ public class RideOfferManagementService {
 			//End
 			
 			RideDO rideDO = new RideDO();
+			//Replace direction with googleDirection when you get that from front end.
 			rideIds = rideDO.offerRide(ride,direction);
 
 			transation.commit();

@@ -10,42 +10,42 @@ import javax.ws.rs.core.Response;
 
 import org.geojson.FeatureCollection;
 
-import com.digitusrevolution.rideshare.ride.business.RideSystemService;
+import com.digitusrevolution.rideshare.ride.business.RideSystemBusinessService;
 
 @Path("/ridesystem")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class RideSystemResource {
+public class RideSystemBusinessResource {
 
 	@GET
 	@Path("/rides/allpoints")
 	public Response getAllRidePoints(){
-		RideSystemService rideSystemService = new RideSystemService();
-		FeatureCollection featureCollection = rideSystemService.getAllRidePoints();
+		RideSystemBusinessService rideSystemBusinessService = new RideSystemBusinessService();
+		FeatureCollection featureCollection = rideSystemBusinessService.getAllRidePoints();
 		return Response.ok(featureCollection).build();
 	}
 
 	@GET
 	@Path("/ride/route/{rideId}")
 	public Response getRidePoints(@PathParam("rideId") int rideId){
-		RideSystemService rideSystemService = new RideSystemService();
-		FeatureCollection featureCollection = rideSystemService.getRidePoints(rideId);
+		RideSystemBusinessService rideSystemBusinessService = new RideSystemBusinessService();
+		FeatureCollection featureCollection = rideSystemBusinessService.getRidePoints(rideId);
 		return Response.ok(featureCollection).build();
 	}
 
 	@GET
 	@Path("/riderequests/allpoints")
 	public Response getAllRideRequestPoints(){
-		RideSystemService rideSystemService = new RideSystemService();
-		FeatureCollection featureCollection = rideSystemService.getAllRideRequestPoints();
+		RideSystemBusinessService rideSystemBusinessService = new RideSystemBusinessService();
+		FeatureCollection featureCollection = rideSystemBusinessService.getAllRideRequestPoints();
 		return Response.ok(featureCollection).build();
 	}
 	
 	@GET
 	@Path("/riderequests/{rideRequestId}")
 	public Response getRideRequestPoints(@PathParam("rideRequestId") int rideRequestId) {
-		RideSystemService rideSystemService = new RideSystemService();
-		FeatureCollection featureCollection = rideSystemService.getRideRequestPoints(rideRequestId);
+		RideSystemBusinessService rideSystemBusinessService = new RideSystemBusinessService();
+		FeatureCollection featureCollection = rideSystemBusinessService.getRideRequestPoints(rideRequestId);
 		return Response.ok(featureCollection).build();
 	}
 	

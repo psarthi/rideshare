@@ -12,27 +12,27 @@ import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.CompanyAccount;
-import com.digitusrevolution.rideshare.serviceprovider.business.CompanyService;
+import com.digitusrevolution.rideshare.serviceprovider.business.CompanyBusinessService;
 
 @Path("/serviceprovider")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class CompanyResource {
+public class CompanyBusinessResource {
 	
 	@POST
 	@Path("/{id}/accounts")
 	public Response addAccount(CompanyAccount companyAccount){
 
-		CompanyService companyService = new CompanyService();
-		companyService.addAccount(companyAccount);
+		CompanyBusinessService companyBusinessService = new CompanyBusinessService();
+		companyBusinessService.addAccount(companyAccount);
 		return Response.ok().build();
 	}
 
 	@GET
 	@Path("/{id}")
 	public Response get(@PathParam("id") int id, @QueryParam("fetchChild") String fetchChild) {
-		CompanyService companyService = new CompanyService();
-		Company company = companyService.get(id, Boolean.valueOf(fetchChild));
+		CompanyBusinessService companyBusinessService = new CompanyBusinessService();
+		Company company = companyBusinessService.get(id, Boolean.valueOf(fetchChild));
 		return Response.ok(company).build();
 	}
 

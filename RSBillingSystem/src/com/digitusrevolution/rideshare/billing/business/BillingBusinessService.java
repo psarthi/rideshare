@@ -1,29 +1,29 @@
-package com.digitusrevolution.rideshare.ride.business;
+package com.digitusrevolution.rideshare.billing.business;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.geojson.FeatureCollection;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import com.digitusrevolution.rideshare.billing.domain.core.BillDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
-import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
-import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
+import com.digitusrevolution.rideshare.model.billing.dto.BillDTO;
+import com.digitusrevolution.rideshare.model.billing.dto.RideDTO;
 
-public class RideSystemService {
-
-	private static final Logger logger = LogManager.getLogger(RideSystemService.class.getName());
-
-	public FeatureCollection getAllRidePoints(){
+public class BillingBusinessService {
+	
+	private static final Logger logger = LogManager.getLogger(BillingBusinessService.class.getName());
+	
+	public int generateBill(RideDTO rideDTO){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
-		FeatureCollection featureCollection = new FeatureCollection();
+		int number = 0;
 		try {
 			transation = session.beginTransaction();
 
-			RideDO rideDO = new RideDO();
-			featureCollection = rideDO.getAllRidePoints();			
-
+			BillDO billDO = new BillDO();	
+			number = billDO.generateBill(rideDTO.getRide(), rideDTO.getRideRequest());
+			
 			transation.commit();
 		} catch (RuntimeException e) {
 			if (transation!=null){
@@ -38,19 +38,18 @@ public class RideSystemService {
 				session.close();				
 			}
 		}
-		return featureCollection;	
+		return number;	
 	}
-
-	public FeatureCollection getRidePoints(int rideId){
+	
+	public void approveBill(int billNumber){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
-		FeatureCollection featureCollection = new FeatureCollection();
 		try {
 			transation = session.beginTransaction();
 
-			RideDO rideDO = new RideDO();
-			featureCollection = rideDO.getRidePoints(rideId);			
-
+			BillDO billDO = new BillDO();	
+			billDO.approveBill(billNumber);
+			
 			transation.commit();
 		} catch (RuntimeException e) {
 			if (transation!=null){
@@ -65,19 +64,17 @@ public class RideSystemService {
 				session.close();				
 			}
 		}
-		return featureCollection;	
 	}
-
-	public FeatureCollection getAllRideRequestPoints(){
+	
+	public void rejectBill(int billNumber){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
-		FeatureCollection featureCollection = new FeatureCollection();
 		try {
 			transation = session.beginTransaction();
 
-			RideRequestDO rideRequestDO = new RideRequestDO();
-			featureCollection = rideRequestDO.getAllRideRequestPoints();			
-
+			BillDO billDO = new BillDO();	
+			billDO.rejectBill(billNumber);
+			
 			transation.commit();
 		} catch (RuntimeException e) {
 			if (transation!=null){
@@ -92,20 +89,17 @@ public class RideSystemService {
 				session.close();				
 			}
 		}
-		return featureCollection;	
-
 	}
 
-	public FeatureCollection getRideRequestPoints(int rideRequestId) {
+	public void makePayment(BillDTO billDTO){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
-		FeatureCollection featureCollection = new FeatureCollection();
 		try {
 			transation = session.beginTransaction();
 
-			RideRequestDO rideRequestDO = new RideRequestDO();
-			featureCollection = rideRequestDO.getRideRequestPoints(rideRequestId);			
-
+			BillDO billDO = new BillDO();	
+			billDO.makePayment(billDTO.getBillNumber(), billDTO.getAccountType());
+			
 			transation.commit();
 		} catch (RuntimeException e) {
 			if (transation!=null){
@@ -120,12 +114,42 @@ public class RideSystemService {
 				session.close();				
 			}
 		}
-		return featureCollection;	
 	}
-
-	//TBD - It will be based on front end and notification mechanism
-	public void notifyDrivers(){		
-		
-	}
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

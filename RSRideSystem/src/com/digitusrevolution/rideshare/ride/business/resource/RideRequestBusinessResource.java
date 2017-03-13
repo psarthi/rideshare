@@ -12,20 +12,20 @@ import javax.ws.rs.core.Response;
 import org.geojson.FeatureCollection;
 
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
-import com.digitusrevolution.rideshare.ride.business.RideRequestManagementService;
-import com.digitusrevolution.rideshare.ride.business.RideSystemService;
+import com.digitusrevolution.rideshare.ride.business.RideRequestBusinessService;
+import com.digitusrevolution.rideshare.ride.business.RideSystemBusinessService;
 
 @Path("/riderequests")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class RideRequestManagementResource {
+public class RideRequestBusinessResource {
 	
 	@POST
 	public Response requestRide(RideRequest rideRequest){
 		
-		RideRequestManagementService rideRequestManagementService = new RideRequestManagementService();
-		int id = rideRequestManagementService.requestRide(rideRequest);
-		RideSystemService rideSystemService = new RideSystemService();
+		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
+		int id = rideRequestBusinessService.requestRide(rideRequest);
+		RideSystemBusinessService rideSystemService = new RideSystemBusinessService();
 		FeatureCollection featureCollection = rideSystemService.getRideRequestPoints(id);
 		return Response.ok().entity(featureCollection).build();
 		
@@ -36,8 +36,8 @@ public class RideRequestManagementResource {
 	public Response getMatchingRideRequests(@PathParam("rideId") int rideId, @PathParam("lastSearchDistance")  double lastSearchDistance, 
 											@PathParam("lastResultIndex") int lastResultIndex){
 	
-		RideRequestManagementService rideRequestManagementService = new RideRequestManagementService();
-		FeatureCollection featureCollection = rideRequestManagementService.getMatchingRideRequests(rideId, lastSearchDistance, lastResultIndex);
+		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
+		FeatureCollection featureCollection = rideRequestBusinessService.getMatchingRideRequests(rideId, lastSearchDistance, lastResultIndex);
 		return Response.ok().entity(featureCollection).build();
 
 	}

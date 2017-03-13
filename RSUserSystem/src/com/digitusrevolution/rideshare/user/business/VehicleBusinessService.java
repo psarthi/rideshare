@@ -10,9 +10,9 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
-public class VehicleRegistrationService {
+public class VehicleBusinessService {
 	
-	private static final Logger logger = LogManager.getLogger(VehicleRegistrationService.class.getName());
+	private static final Logger logger = LogManager.getLogger(VehicleBusinessService.class.getName());
 	
 	public void addVehicle(int userId, Vehicle vehicle){	
 		

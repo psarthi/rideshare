@@ -53,7 +53,10 @@ public class UserSystemTest {
 	}	
 	
 	public void test(){
-		UserDAO userDAO = new UserDAO();
+		UserDO userDO = new UserDO();
+		User user2 = userDO.get(1);
+		User user3 = userDO.getAllData(1);
+		System.out.println("End");
 	}
 
 }

@@ -23,9 +23,9 @@ import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 import com.digitusrevolution.rideshare.ride.domain.TrustCategoryDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
 
-public class RideRequestManagementService {
+public class RideRequestBusinessService {
 	
-	private static final Logger logger = LogManager.getLogger(RideRequestManagementService.class.getName());
+	private static final Logger logger = LogManager.getLogger(RideRequestBusinessService.class.getName());
 	
 	public int requestRide(RideRequest rideRequest){
 		
@@ -85,15 +85,6 @@ public class RideRequestManagementService {
 		return id;
 	}
 	
-	
-	public void respondToRideRequest(){
-		
-	}
-	
-	//TBD - It will be based on front end and notification mechanism
-	public void notifyPassenger(){
-		
-	}
 	
 	public FeatureCollection getMatchingRideRequests(int rideId,double lastSearchDistance, int lastResultIndex){
 		

@@ -7,19 +7,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.digitusrevolution.rideshare.billing.business.AccountService;
+import com.digitusrevolution.rideshare.billing.business.AccountBusinessService;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 
 @Path("/accounts")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class AccountResource {
+public class AccountBusinessResource {
 
 	@POST
 	public Response create(Account account){
 		
-		AccountService accountService = new AccountService();
-		int number = accountService.create(account);
+		AccountBusinessService accountBusinessService = new AccountBusinessService();
+		int number = accountBusinessService.create(account);
 		return Response.ok(Integer.toString(number)).build();
 	}
 }

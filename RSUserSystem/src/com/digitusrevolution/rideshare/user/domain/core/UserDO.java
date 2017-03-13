@@ -15,11 +15,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.exception.EmailExistException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
-import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
-import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
@@ -115,7 +113,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 
 
 
-	public boolean isEmailExist(String userEmail){
+	private boolean isEmailExist(String userEmail){
 		if (userDAO.getUserByEmail(userEmail)==null){
 			return false;			
 		}
@@ -163,19 +161,6 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		user.getAccounts().add(account);
 		update(user);		
 	}
-
-	/*
-	 * Purpose - This function would only ride related data and not others which would be the case if you use getAllData function
-	 * 
-	 */
-	public Collection<Ride> getRidesOffered(int userId){
-		user = get(userId);
-		RideMapper rideMapper = new RideMapper(); 
-		Collection<Ride> rides = rideMapper.getDomainModels(user.getRidesOffered(), 
-				userEntity.getRidesOffered(), true);
-		return rides;
-	}
-
 
 	/*
 	 * Purpose - Return all potential new friends who have not submitted friend request and registered user in the system
@@ -243,7 +228,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		update(user);
 	}
 
-	public boolean isUserFriend(User user, User friend){
+	private boolean isUserFriend(User user, User friend){
 		Collection<User> friends = user.getFriends();
 		for (User userFriend : friends) {
 			if (userFriend.getId() == friend.getId()){

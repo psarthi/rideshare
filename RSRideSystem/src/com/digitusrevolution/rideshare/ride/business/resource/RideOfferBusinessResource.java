@@ -14,23 +14,24 @@ import javax.ws.rs.core.Response;
 import org.geojson.FeatureCollection;
 
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
-import com.digitusrevolution.rideshare.ride.business.RideOfferManagementService;
-import com.digitusrevolution.rideshare.ride.business.RideSystemService;
+import com.digitusrevolution.rideshare.model.ride.dto.RideOfferDTO;
+import com.digitusrevolution.rideshare.ride.business.RideOfferBusinessService;
+import com.digitusrevolution.rideshare.ride.business.RideSystemBusinessService;
 
 @Path("/rides")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class RideOfferManagementResource {
+public class RideOfferBusinessResource {
 	
 	@POST
-	public Response offerRide(Ride ride){
+	public Response offerRide(RideOfferDTO rideOfferDTO){
 	
-		RideOfferManagementService rideOfferManagementService = new RideOfferManagementService();
-		List<Integer> rideIds = rideOfferManagementService.offerRide(ride);
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		List<Integer> rideIds = rideOfferBusinessService.offerRide(rideOfferDTO);
 		FeatureCollection featureCollection = new FeatureCollection();
 		for (Integer id : rideIds) {
-			RideSystemService rideSystemService = new  RideSystemService();
-			FeatureCollection rideFeatureCollection = rideSystemService.getRidePoints(id);
+			RideSystemBusinessService rideSystemBusinessService = new  RideSystemBusinessService();
+			FeatureCollection rideFeatureCollection = rideSystemBusinessService.getRidePoints(id);
 			featureCollection.addAll(rideFeatureCollection.getFeatures());
 		}
 		return Response.ok().entity(featureCollection).build();
@@ -39,32 +40,32 @@ public class RideOfferManagementResource {
 	@GET
 	@Path("/upcoming/{driverId}")
 	public Response getUpcomingRides(@PathParam("driverId") int driverId){
-		RideOfferManagementService rideOfferManagementService = new RideOfferManagementService();
-		List<Ride> upcomingRides = rideOfferManagementService.getUpcomingRides(driverId);
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		List<Ride> upcomingRides = rideOfferBusinessService.getUpcomingRides(driverId);
 		return Response.ok().entity(upcomingRides).build();
 	}
 	
 	@GET
 	@Path("/search/{rideRequestId}")
 	public Response getMatchingRides(@PathParam("rideRequestId") int rideRequestId){
-		RideOfferManagementService rideOfferManagementService = new RideOfferManagementService();
-		FeatureCollection featureCollection = rideOfferManagementService.getMatchingRides(rideRequestId);
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		FeatureCollection featureCollection = rideOfferBusinessService.getMatchingRides(rideRequestId);
 		return Response.ok(featureCollection).build();		
 	}
-	
+		
 	@GET
 	@Path("/accept/{rideId}/{rideRequestId}")
 	public Response acceptRideRequest(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
-		RideOfferManagementService rideOfferManagementService = new RideOfferManagementService();
-		rideOfferManagementService.acceptRideRequest(rideId, rideRequestId);
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		rideOfferBusinessService.acceptRideRequest(rideId, rideRequestId);
 		return Response.ok().build();				
 	}
 
 	@GET
 	@Path("/reject/{rideId}/{rideRequestId}")
 	public Response rejectRideRequest(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
-		RideOfferManagementService rideOfferManagementService = new RideOfferManagementService();
-		rideOfferManagementService.rejectRideRequest(rideId, rideRequestId);
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		rideOfferBusinessService.rejectRideRequest(rideId, rideRequestId);
 		return Response.ok().build();				
 	}
 

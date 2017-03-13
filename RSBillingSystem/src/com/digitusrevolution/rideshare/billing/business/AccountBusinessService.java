@@ -9,9 +9,9 @@ import com.digitusrevolution.rideshare.billing.domain.core.VirtualAccountDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 
-public class AccountService {
+public class AccountBusinessService {
 	
-	private static final Logger logger = LogManager.getLogger(AccountService.class.getName());
+	private static final Logger logger = LogManager.getLogger(AccountBusinessService.class.getName());
 
 	public int create(Account account) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();

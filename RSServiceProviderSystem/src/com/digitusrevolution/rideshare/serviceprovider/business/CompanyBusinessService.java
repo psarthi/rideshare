@@ -11,9 +11,9 @@ import com.digitusrevolution.rideshare.model.serviceprovider.dto.CompanyAccount;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.CompanyDO;
 
 
-public class CompanyService {
+public class CompanyBusinessService {
 
-	private static final Logger logger = LogManager.getLogger(CompanyService.class.getName());
+	private static final Logger logger = LogManager.getLogger(CompanyBusinessService.class.getName());
 	
 	public void addAccount(CompanyAccount companyAccount){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();

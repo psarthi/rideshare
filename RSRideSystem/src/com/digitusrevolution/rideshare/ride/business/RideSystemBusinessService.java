@@ -1,29 +1,29 @@
-package com.digitusrevolution.rideshare.billing.business;
+package com.digitusrevolution.rideshare.ride.business;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.geojson.FeatureCollection;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import com.digitusrevolution.rideshare.billing.domain.core.BillDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
-import com.digitusrevolution.rideshare.model.billing.dto.BillDTO;
-import com.digitusrevolution.rideshare.model.billing.dto.RideDTO;
+import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
+import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
 
-public class BillingService {
-	
-	private static final Logger logger = LogManager.getLogger(BillingService.class.getName());
-	
-	public int generateBill(RideDTO rideDTO){
+public class RideSystemBusinessService {
+
+	private static final Logger logger = LogManager.getLogger(RideSystemBusinessService.class.getName());
+
+	public FeatureCollection getAllRidePoints(){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
-		int number = 0;
+		FeatureCollection featureCollection = new FeatureCollection();
 		try {
 			transation = session.beginTransaction();
 
-			BillDO billDO = new BillDO();	
-			number = billDO.generateBill(rideDTO.getRide(), rideDTO.getRideRequest());
-			
+			RideDO rideDO = new RideDO();
+			featureCollection = rideDO.getAllRidePoints();			
+
 			transation.commit();
 		} catch (RuntimeException e) {
 			if (transation!=null){
@@ -38,68 +38,19 @@ public class BillingService {
 				session.close();				
 			}
 		}
-		return number;	
-	}
-	
-	public void approveBill(int billNumber){
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
-		try {
-			transation = session.beginTransaction();
-
-			BillDO billDO = new BillDO();	
-			billDO.approveBill(billNumber);
-			
-			transation.commit();
-		} catch (RuntimeException e) {
-			if (transation!=null){
-				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
-				throw e;
-			}
-		}
-		finally {
-			if (session.isOpen()){
-				logger.info("Closing Session");
-				session.close();				
-			}
-		}
-	}
-	
-	public void rejectBill(int billNumber){
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
-		try {
-			transation = session.beginTransaction();
-
-			BillDO billDO = new BillDO();	
-			billDO.rejectBill(billNumber);
-			
-			transation.commit();
-		} catch (RuntimeException e) {
-			if (transation!=null){
-				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
-				throw e;
-			}
-		}
-		finally {
-			if (session.isOpen()){
-				logger.info("Closing Session");
-				session.close();				
-			}
-		}
+		return featureCollection;	
 	}
 
-	public void makePayment(BillDTO billDTO){
+	public FeatureCollection getRidePoints(int rideId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transation = null;	
+		FeatureCollection featureCollection = new FeatureCollection();
 		try {
 			transation = session.beginTransaction();
 
-			BillDO billDO = new BillDO();	
-			billDO.makePayment(billDTO.getBillNumber(), billDTO.getAccountType());
-			
+			RideDO rideDO = new RideDO();
+			featureCollection = rideDO.getRidePoints(rideId);			
+
 			transation.commit();
 		} catch (RuntimeException e) {
 			if (transation!=null){
@@ -114,42 +65,61 @@ public class BillingService {
 				session.close();				
 			}
 		}
+		return featureCollection;	
+	}
+
+	public FeatureCollection getAllRideRequestPoints(){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transation = null;	
+		FeatureCollection featureCollection = new FeatureCollection();
+		try {
+			transation = session.beginTransaction();
+
+			RideRequestDO rideRequestDO = new RideRequestDO();
+			featureCollection = rideRequestDO.getAllRideRequestPoints();			
+
+			transation.commit();
+		} catch (RuntimeException e) {
+			if (transation!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transation.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return featureCollection;	
+
+	}
+
+	public FeatureCollection getRideRequestPoints(int rideRequestId) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transation = null;	
+		FeatureCollection featureCollection = new FeatureCollection();
+		try {
+			transation = session.beginTransaction();
+
+			RideRequestDO rideRequestDO = new RideRequestDO();
+			featureCollection = rideRequestDO.getRideRequestPoints(rideRequestId);			
+
+			transation.commit();
+		} catch (RuntimeException e) {
+			if (transation!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transation.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return featureCollection;	
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
