@@ -10,6 +10,7 @@ var getAllRidesURL = "http://localhost:8080/RSRideSystem/api/ridesystem/rides/al
 var getAllRideRequestURL = "http://localhost:8080/RSRideSystem/api/ridesystem/riderequests/allpoints";
 var searchRidesURL = "http://localhost:8080/RSRideSystem/api/rides/search/{rideRequestId}";
 var searchRideRequestsURL = "http://localhost:8080/RSRideSystem/api/riderequests/search/{rideId}/0/0";
+var rideOfferDTO = { ride:'', googleDirection:null};
 
 /*
  * This function is for reference purpose
@@ -97,13 +98,14 @@ $("#rideOffer").click(function(){
 		ride.startPoint.point.coordinates[1] = startLatLng[0];
 		ride.endPoint.point.coordinates[0] = endLatLng[1];
 		ride.endPoint.point.coordinates[1] = endLatLng[0];
+		rideOfferDTO.ride = ride;
 		console.log(ride);
 		console.log(JSON.stringify(ride));
 
 		$.ajax({
 			url: postRideURL,
 			type: 'POST',
-			data: JSON.stringify(ride),
+			data: JSON.stringify(rideOfferDTO),
 			contentType: 'application/json; charset=utf-8',
 			dataType: 'json'
 		})
