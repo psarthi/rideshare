@@ -16,7 +16,14 @@ import com.digitusrevolution.rideshare.user.business.VehicleBusinessService;
 @Consumes(MediaType.APPLICATION_JSON)
 public class VehicleBusinessResource {
 
-
+	/**
+	 * 
+	 * This function should be accessed via UserBusinessResource and not directly as this require userId along with Vehicle
+	 * 
+	 * @param userId Id of the user
+	 * @param vehicle Vehicle to be added
+	 * @return status OK
+	 */
 	@POST
 	public Response addVehicle(@PathParam("id") int userId, Vehicle vehicle){
 

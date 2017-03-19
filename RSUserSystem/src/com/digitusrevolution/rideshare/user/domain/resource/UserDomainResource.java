@@ -45,6 +45,11 @@ public class UserDomainResource implements DomainResource<User>{
 		return Response.ok(entity).build();
 	}
 
+	/**
+	 * 
+	 * @param id Id of the user
+	 * @return collection of roles
+	 */
 	@GET
 	@Path("/{id}/roles")
 	public Response getRoles(@PathParam("id") int id){
@@ -54,6 +59,12 @@ public class UserDomainResource implements DomainResource<User>{
 		return Response.ok(entity).build();
 	}
 	
+	/**
+	 * This will get VehcileDomainResource Object which can be accessed via UserDomainResource 
+	 * and your path for all VehcileDomainResources should have prefix of this function path
+	 * 
+	 * @return VehicleDomainResource object
+	 */
 	@Path("/{id}/vehicles")
 	public VehicleDomainResource getVehicleDomainResource(){
 		return new VehicleDomainResource();

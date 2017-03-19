@@ -1,0 +1,8 @@
+com.digitusrevolution.rideshare.billing.business.resource
+com.digitusrevolution.rideshare.billing.domain.resource
+com.digitusrevolution.rideshare.common.inf
+com.digitusrevolution.rideshare.ride.business.resource
+com.digitusrevolution.rideshare.ride.domain.resource
+com.digitusrevolution.rideshare.serviceprovider.business.resource
+com.digitusrevolution.rideshare.user.business.resource
+com.digitusrevolution.rideshare.user.domain.resource

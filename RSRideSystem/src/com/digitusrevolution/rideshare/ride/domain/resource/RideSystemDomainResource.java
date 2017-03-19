@@ -16,12 +16,23 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 @Consumes(MediaType.APPLICATION_JSON)
 public class RideSystemDomainResource {
 
+	/**
+	 * 
+	 * This function is just a dummy post
+	 * 
+	 * @param json Any Json
+	 * @return same input json
+	 */
 	@POST
 	@Path("/dummypost")
 	public Response post(String json){	
 		return Response.ok().entity(json).build();
 	}
 	
+	/**
+	 * 
+	 * @return Ride domain model
+	 */
 	@GET
 	@Path("/model/ride")
 	public Response getRide(){
@@ -29,6 +40,10 @@ public class RideSystemDomainResource {
 		return Response.ok().entity(ride).build();
 	}
 	
+	/**
+	 * 
+	 * @return Ride Request domain model
+	 */
 	@GET
 	@Path("/model/riderequest")
 	public Response getRideRequest(){

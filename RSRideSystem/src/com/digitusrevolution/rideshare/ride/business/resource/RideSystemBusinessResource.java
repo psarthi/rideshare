@@ -17,6 +17,10 @@ import com.digitusrevolution.rideshare.ride.business.RideSystemBusinessService;
 @Consumes(MediaType.APPLICATION_JSON)
 public class RideSystemBusinessResource {
 
+	/**
+	 * 
+	 * @return FeatureCollection containing all rides of the system
+	 */
 	@GET
 	@Path("/rides/allpoints")
 	public Response getAllRidePoints(){
@@ -25,6 +29,11 @@ public class RideSystemBusinessResource {
 		return Response.ok(featureCollection).build();
 	}
 
+	/**
+	 * 
+	 * @param rideId Ride Id
+	 * @return FeatureCollection containing specific ride information
+	 */
 	@GET
 	@Path("/ride/route/{rideId}")
 	public Response getRidePoints(@PathParam("rideId") int rideId){
@@ -33,6 +42,10 @@ public class RideSystemBusinessResource {
 		return Response.ok(featureCollection).build();
 	}
 
+	/**
+	 * 
+	 * @return FeatureCollection containing all ride requests of the system
+	 */
 	@GET
 	@Path("/riderequests/allpoints")
 	public Response getAllRideRequestPoints(){
@@ -41,6 +54,11 @@ public class RideSystemBusinessResource {
 		return Response.ok(featureCollection).build();
 	}
 	
+	/**
+	 * 
+	 * @param rideRequestId Ride Request Id
+	 * @return FeatureCollection containing specific ride request information
+	 */
 	@GET
 	@Path("/riderequests/{rideRequestId}")
 	public Response getRideRequestPoints(@PathParam("rideRequestId") int rideRequestId) {

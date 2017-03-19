@@ -20,6 +20,11 @@ import com.digitusrevolution.rideshare.ride.business.RideSystemBusinessService;
 @Consumes(MediaType.APPLICATION_JSON)
 public class RideRequestBusinessResource {
 	
+	/**
+	 * 
+	 * @param rideRequest Ride Request domain model
+	 * @return FeatureCollection containing requested ride information
+	 */
 	@POST
 	public Response requestRide(RideRequest rideRequest){
 		
@@ -31,6 +36,15 @@ public class RideRequestBusinessResource {
 		
 	}
 	
+	/**
+	 * 
+	 * @param rideId Ride Id for which we need to search ride requests 
+	 * @param lastSearchDistance Last Search distance which is the distance of polygon from the route, For the first time request it should be 0
+	 *  					  and subsequently this should be the value returned by previous result set, so that we don't start the search from scratch 
+	 * @param lastResultIndex Last result index value, for the first time request it would be 0 and for subsequent request it should be actual value 
+	 * 					   returned by previous result. This is used for pagination and providing incremental results instead of all at one go
+	 * @return FeatureCollection containing matched ride requests
+	 */
 	@GET
 	@Path("/search/{rideId}/{lastSearchDistance}/{lastResultIndex}")
 	public Response getMatchingRideRequests(@PathParam("rideId") int rideId, @PathParam("lastSearchDistance")  double lastSearchDistance, 

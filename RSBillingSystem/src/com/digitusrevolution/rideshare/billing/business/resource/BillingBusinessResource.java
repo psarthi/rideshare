@@ -18,6 +18,11 @@ import com.digitusrevolution.rideshare.model.billing.dto.RideDTO;
 @Consumes(MediaType.APPLICATION_JSON)
 public class BillingBusinessResource {
 	
+	/**
+	 * 
+	 * @param rideDTO This contains Ride and Ride Request domain model
+	 * @return billNumber
+	 */
 	@POST
 	@Path("/generatebill")
 	public Response generateBill(RideDTO rideDTO){
@@ -26,7 +31,12 @@ public class BillingBusinessResource {
 		return Response.ok(Integer.toString(number)).build();
 	}
 	
-	@GET
+	/**
+	 * 
+	 * @param billNumber Bill Number of a Ride
+	 * @return status OK
+	 */
+	@POST
 	@Path("/{number}/approve")
 	public Response approveBill(@PathParam("number") int billNumber){
 		BillingBusinessService billingBusinessService = new BillingBusinessService();
@@ -34,7 +44,12 @@ public class BillingBusinessResource {
 		return Response.ok().build();
 	}
 	
-	@GET
+	/**
+	 * 
+	 * @param billNumber Bill Number of a Ride
+	 * @return status OK
+	 */
+	@POST
 	@Path("/{number}/reject")
 	public Response rejectBill(@PathParam("number") int billNumber){
 		BillingBusinessService billingBusinessService = new BillingBusinessService();
@@ -42,6 +57,11 @@ public class BillingBusinessResource {
 		return Response.ok().build();
 	}
 	
+	/**
+	 * 
+	 * @param billDTO DTO containing bill number with account which is primarily Passenger Account
+	 * @return status OK
+	 */
 	@POST
 	@Path("/pay")
 	public Response makePayment(BillDTO billDTO){

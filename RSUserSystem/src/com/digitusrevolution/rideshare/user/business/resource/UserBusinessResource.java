@@ -23,6 +23,11 @@ import com.digitusrevolution.rideshare.user.business.UserBusinessService;
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserBusinessResource {
 
+	/**
+	 * 
+	 * @param userDTO subset of User domain model
+	 * @return userId
+	 */
 	@POST
 	public Response registerUser(UserDTO userDTO){
 
@@ -30,12 +35,24 @@ public class UserBusinessResource {
 		int id = userBusinessService.registerUser(userDTO);
 		return Response.ok().entity(Integer.toString(id)).build();
 	}
-	
+
+	/**
+	 * This will get VehcileBusinessResource Object which can be accessed via UserBusinessResource 
+	 * and your path for all VehicleBusinessResources should have prefix of this function path
+	 *  
+	 * @return VehicleBusinessResource Object
+	 */
 	@Path("/{id}/vehicles")
 	public VehicleBusinessResource getVehicleBusinessResource(){
 		return new VehicleBusinessResource();
 	}
-	
+
+	/**
+	 * 
+	 * @param userId Id of the user
+	 * @param account account to be added
+	 * @return Status OK
+	 */
 	@POST
 	@Path("/{id}/accounts")
 	public Response addAccount(@PathParam("id") int userId, Account account){
@@ -45,6 +62,13 @@ public class UserBusinessResource {
 		return Response.ok().build();
 	}
 	
+	/**
+	 * 
+	 * @param userId Id of the user
+	 * @param emailIds List of email ID's which needs to be searched for
+	 * @param mobileNumbers List of mobile Numbers which needs to be searched for
+	 * @return List of User Domain models
+	 */
 	@GET
 	@Path("/{id}/potentialFriends")
 	public Response findAllPotentialFriendsBasedOnEmailOrMobile(@PathParam("id") int userId, 
@@ -58,6 +82,12 @@ public class UserBusinessResource {
 		return Response.ok(entity).build();
 	}
 
+	/**
+	 * 
+	 * @param userId Id of the user
+	 * @param friends List of Users whom friend requests needs to be sent
+	 * @return status OK
+	 */
 	@POST
 	@Path("/{id}/friendRequest")
 	public Response sendFriendRequest(@PathParam("id") int userId, List<User> friends){
@@ -66,6 +96,12 @@ public class UserBusinessResource {
 		return Response.ok().build();
 	}
 	
+	/**
+	 * 
+	 * @param userId Id of the user
+	 * @param friendUserId Id of the friend
+	 * @return status OK
+	 */
 	@POST
 	@Path("/{id}/acceptFriendRequest/{friendUserId}")
 	public Response acceptFriendRequest(@PathParam("id") int userId, @PathParam("friendUserId") int friendUserId){
@@ -74,6 +110,12 @@ public class UserBusinessResource {
 		return Response.ok().build();		
 	}
 	
+	/**
+	 * 
+	 * @param userId Id of the user
+	 * @param friendUserId Id of the friend
+	 * @return status OK
+	 */
 	@POST
 	@Path("/{id}/rejectFriendRequest/{friendUserId}")
 	public Response rejectFriendRequest(@PathParam("id") int userId, @PathParam("friendUserId") int friendUserId){

@@ -15,6 +15,11 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 @Consumes(MediaType.APPLICATION_JSON)
 public class AccountBusinessResource {
 
+	/**
+	 * 
+	 * @param account User Account
+	 * @return accountNumber
+	 */
 	@POST
 	public Response create(Account account){
 		

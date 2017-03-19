@@ -23,6 +23,11 @@ import com.digitusrevolution.rideshare.ride.business.RideSystemBusinessService;
 @Consumes(MediaType.APPLICATION_JSON)
 public class RideOfferBusinessResource {
 	
+	/**
+	 * 
+	 * @param rideOfferDTO Ride domain model with additional information e.g. google Direction
+	 * @return FeatureCollection containing offered ride information
+	 */
 	@POST
 	public Response offerRide(RideOfferDTO rideOfferDTO){
 	
@@ -37,6 +42,11 @@ public class RideOfferBusinessResource {
 		return Response.ok().entity(featureCollection).build();
 	}
 	
+	/**
+	 * 
+	 * @param driverId Id of the driver
+	 * @return list of rides
+	 */
 	@GET
 	@Path("/upcoming/{driverId}")
 	public Response getUpcomingRides(@PathParam("driverId") int driverId){
@@ -45,6 +55,11 @@ public class RideOfferBusinessResource {
 		return Response.ok().entity(upcomingRides).build();
 	}
 	
+	/**
+	 * 
+	 * @param rideRequestId Ride Request Id
+	 * @return FeatureCollection containing matched rides information
+	 */
 	@GET
 	@Path("/search/{rideRequestId}")
 	public Response getMatchingRides(@PathParam("rideRequestId") int rideRequestId){
@@ -52,8 +67,14 @@ public class RideOfferBusinessResource {
 		FeatureCollection featureCollection = rideOfferBusinessService.getMatchingRides(rideRequestId);
 		return Response.ok(featureCollection).build();		
 	}
-		
-	@GET
+	
+	/**
+	 * 
+	 * @param rideId Ride Id
+	 * @param rideRequestId Ride Request Id
+	 * @return status OK
+	 */
+	@POST
 	@Path("/accept/{rideId}/{rideRequestId}")
 	public Response acceptRideRequest(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
@@ -61,7 +82,13 @@ public class RideOfferBusinessResource {
 		return Response.ok().build();				
 	}
 
-	@GET
+	/**
+	 * 
+	 * @param rideId Ride Id
+	 * @param rideRequestId Ride Request Id
+	 * @return status OK
+	 */
+	@POST
 	@Path("/reject/{rideId}/{rideRequestId}")
 	public Response rejectRideRequest(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();

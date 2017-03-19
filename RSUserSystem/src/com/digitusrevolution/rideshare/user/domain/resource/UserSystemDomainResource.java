@@ -14,6 +14,10 @@ import com.digitusrevolution.rideshare.model.user.dto.UserDTO;
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserSystemDomainResource {
 
+	/**
+	 * 
+	 * @return it will return userDTO model
+	 */
 	@GET
 	@Path("/model")
 	public Response getModel(){
