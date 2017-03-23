@@ -19,10 +19,10 @@ public class VehicleCategoryDomainService implements DomainService<VehicleCatego
 	@Override
 	public VehicleCategory get(int id, boolean fetchChild) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		VehicleCategory vehicleCategory = null;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();
 			if (fetchChild){
@@ -31,11 +31,11 @@ public class VehicleCategoryDomainService implements DomainService<VehicleCatego
 				vehicleCategory = vehicleCategoryDO.get(id);			
 			}
 
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -51,19 +51,19 @@ public class VehicleCategoryDomainService implements DomainService<VehicleCatego
 	@Override
 	public List<VehicleCategory> getAll() {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		List<VehicleCategory> vehicleCategories = null;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();
 			vehicleCategories = vehicleCategoryDO.getAll();
 
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}

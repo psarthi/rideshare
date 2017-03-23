@@ -44,10 +44,10 @@ public class RideOfferBusinessService {
 	public List<Integer> offerRide(RideOfferDTO rideOfferDTO){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		List<Integer> rideIds = null;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 			
 			Ride ride = rideOfferDTO.getRide();
 			GoogleDirection googleDirection = rideOfferDTO.getGoogleDirection();
@@ -79,11 +79,11 @@ public class RideOfferBusinessService {
 			//Replace direction with googleDirection when you get that from front end.
 			rideIds = rideDO.offerRide(ride,direction);
 
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -100,19 +100,19 @@ public class RideOfferBusinessService {
 	public List<Ride> getUpcomingRides(int driverId){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		List<Ride> upcomingRides = null;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 		
 			RideDO rideDO = new RideDO();
 			upcomingRides = rideDO.getUpcomingRides(driverId);
 
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -128,19 +128,19 @@ public class RideOfferBusinessService {
 	
 	public FeatureCollection getMatchingRides(int rideRequestId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		FeatureCollection featureCollection = new FeatureCollection();
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			RideDO rideDO = new RideDO();
 			featureCollection = rideDO.getMatchingRides(rideRequestId);			
 
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -155,18 +155,18 @@ public class RideOfferBusinessService {
 	
 	public void acceptRideRequest(int rideId, int rideRequestId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			RideDO rideDO = new RideDO();
 			rideDO.acceptRideRequest(rideId, rideRequestId);;			
 
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -180,18 +180,18 @@ public class RideOfferBusinessService {
 	
 	public void rejectRideRequest(int rideId, int rideRequestId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			RideDO rideDO = new RideDO();
 			rideDO.rejectRideRequest(rideId, rideRequestId);			
 
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}

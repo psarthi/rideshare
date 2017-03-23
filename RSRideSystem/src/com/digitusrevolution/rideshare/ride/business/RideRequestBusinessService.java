@@ -30,10 +30,10 @@ public class RideRequestBusinessService {
 	public int requestRide(RideRequest rideRequest){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		int id =0;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 			
 			//Start - Temp. Code to work with Web frontend. This data should be populated in request 
 			User passenger = RESTClientUtil.getUser(2);
@@ -67,11 +67,11 @@ public class RideRequestBusinessService {
 			RideRequestDO rideRequestDO = new RideRequestDO();
 			id = rideRequestDO.requestRide(rideRequest);
 
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -89,19 +89,19 @@ public class RideRequestBusinessService {
 	public FeatureCollection getMatchingRideRequests(int rideId,double lastSearchDistance, int lastResultIndex){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		FeatureCollection featureCollection = null;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 			
 			RideRequestDO rideRequestDO = new RideRequestDO();
 			featureCollection = rideRequestDO.getMatchingRideRequests(rideId, lastSearchDistance, lastResultIndex);
 
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}

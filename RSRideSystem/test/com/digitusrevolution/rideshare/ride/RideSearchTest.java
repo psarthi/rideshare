@@ -28,22 +28,22 @@ public class RideSearchTest {
 	public static void main(String[] args) {
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 			
 			RideSearchTest rideSearchTest = new RideSearchTest();
 			rideSearchTest.searchRide();
-			transation.commit();
+			transaction.commit();
 
 			/*
 			 * Reason for catching RuntimeException and not HibernateException as all exceptions thrown by Hibernate
 			 * is not of type HibernateException such as NotFoundException
 			 */
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}

@@ -21,10 +21,10 @@ public class UserDomainService implements DomainService<User>{
 	@Override
 	public User get(int id, boolean fetchChild){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		User user = null;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 	
 			UserDO userDO = new UserDO();
 			if (fetchChild){
@@ -33,11 +33,11 @@ public class UserDomainService implements DomainService<User>{
 				user = userDO.get(id);			
 			}
 			
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -53,19 +53,19 @@ public class UserDomainService implements DomainService<User>{
 	@Override
 	public List<User> getAll(){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		List<User> users = null;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			UserDO userDO = new UserDO();
 			users = userDO.getAll();
 
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -81,19 +81,19 @@ public class UserDomainService implements DomainService<User>{
 
 	public Collection<Role> getRoles(int id){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		Collection<Role> roles = null;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 	
 			UserDO userDO = new UserDO();
 			roles = userDO.getRoles(id);
 
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}

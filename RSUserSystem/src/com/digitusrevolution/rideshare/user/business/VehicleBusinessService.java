@@ -17,21 +17,21 @@ public class VehicleBusinessService {
 	public void addVehicle(int userId, Vehicle vehicle){	
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 
 		try {			
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			UserDO userDO = new UserDO();
 			User user = userDO.get(userId);
 			userDO.setUser(user);
 			userDO.addVehicle(vehicle);
 			
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}

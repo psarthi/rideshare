@@ -19,10 +19,10 @@ public class AccountDomainService implements DomainService<Account>{
 	@Override
 	public Account get(int number, boolean fetchChild) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		Account account = null;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			VirtualAccountDO accountDO = new VirtualAccountDO();
 			if (fetchChild){
@@ -31,11 +31,11 @@ public class AccountDomainService implements DomainService<Account>{
 				account = accountDO.get(number);			
 			}
 
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -51,19 +51,19 @@ public class AccountDomainService implements DomainService<Account>{
 	@Override
 	public List<Account> getAll() {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		List<Account> accounts = null;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			VirtualAccountDO accountDO = new VirtualAccountDO();	
 			accounts = accountDO.getAll();
 			
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}

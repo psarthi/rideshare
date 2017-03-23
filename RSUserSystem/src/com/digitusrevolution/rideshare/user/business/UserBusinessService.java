@@ -20,20 +20,20 @@ public class UserBusinessService {
 	public int registerUser(UserDTO userDTO){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		int id = 0;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 			
 			UserDO userDO = new UserDO();
 			User user = getUser(userDTO);			
 			id = userDO.registerUser(user);
 			
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -64,18 +64,18 @@ public class UserBusinessService {
 	
 	public void addAccount(int userId, Account account){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 			
 			UserDO userDO = new UserDO();
 			userDO.addAccount(userId, account);
 			
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -89,19 +89,19 @@ public class UserBusinessService {
 	
 	public List<User> findAllPotentialFriendsBasedOnEmailOrMobile(int userId, List<String> emailIds, List<String> mobileNumbers){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		List<User> users = null;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 			
 			UserDO userDO = new UserDO();
 			users = userDO.findAllPotentialFriendsBasedOnEmailOrMobile(userId, emailIds, mobileNumbers);
 			
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -117,18 +117,18 @@ public class UserBusinessService {
 	
 	public void sendFriendRequest(int userId, List<User> friends){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 			
 			UserDO userDO = new UserDO();
 			userDO.sendFriendRequest(userId, friends);
 			
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -142,18 +142,18 @@ public class UserBusinessService {
 	
 	public void acceptFriendRequest(int userId, int friendUserId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 			
 			UserDO userDO = new UserDO();
 			userDO.acceptFriendRequest(userId, friendUserId);
 			
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -167,18 +167,18 @@ public class UserBusinessService {
 	
 	public void rejectFriendRequest(int userId, int friendUserId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 			
 			UserDO userDO = new UserDO();
 			userDO.rejectFriendRequest(userId, friendUserId);
 			
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}

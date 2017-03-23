@@ -38,20 +38,20 @@ public class AccountDataLoader {
 	
 	public void creditMoney(){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			VirtualAccountDO accountDO = new VirtualAccountDO();
 			for(int i=1;i<7;i++){
 				accountDO.credit(i, 1000, "Initial Credit");
 			}
 			
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}

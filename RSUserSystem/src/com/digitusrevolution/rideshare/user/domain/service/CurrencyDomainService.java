@@ -19,10 +19,10 @@ public class CurrencyDomainService implements DomainService<Currency>{
 	@Override
 	public Currency get(int id, boolean fetchChild) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		Currency currency = null;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			CurrencyDO currencyDO = new CurrencyDO();
 			if (fetchChild){
@@ -31,11 +31,11 @@ public class CurrencyDomainService implements DomainService<Currency>{
 				currency = currencyDO.get(id);			
 			}
 
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -51,19 +51,19 @@ public class CurrencyDomainService implements DomainService<Currency>{
 	@Override
 	public List<Currency> getAll() {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		List<Currency> currencies = null;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			CurrencyDO currencyDO = new CurrencyDO();
 			currencies = currencyDO.getAll();
 
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}

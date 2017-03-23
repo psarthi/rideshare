@@ -16,19 +16,19 @@ public class BillingBusinessService {
 	
 	public int generateBill(RideDTO rideDTO){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		int number = 0;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			BillDO billDO = new BillDO();	
 			number = billDO.generateBill(rideDTO.getRide(), rideDTO.getRideRequest());
 			
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -43,18 +43,18 @@ public class BillingBusinessService {
 	
 	public void approveBill(int billNumber){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			BillDO billDO = new BillDO();	
 			billDO.approveBill(billNumber);
 			
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -68,18 +68,18 @@ public class BillingBusinessService {
 	
 	public void rejectBill(int billNumber){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			BillDO billDO = new BillDO();	
 			billDO.rejectBill(billNumber);
 			
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -93,18 +93,18 @@ public class BillingBusinessService {
 
 	public void makePayment(BillDTO billDTO){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			BillDO billDO = new BillDO();	
 			billDO.makePayment(billDTO.getBillNumber(), billDTO.getAccountType());
 			
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}

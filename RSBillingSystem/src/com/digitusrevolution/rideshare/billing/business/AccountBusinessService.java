@@ -15,19 +15,19 @@ public class AccountBusinessService {
 
 	public int create(Account account) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		int number = 0;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			VirtualAccountDO accountDO = new VirtualAccountDO();	
 			number = accountDO.create(account);
 			
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}

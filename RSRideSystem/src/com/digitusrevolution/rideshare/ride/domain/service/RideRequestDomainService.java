@@ -19,10 +19,10 @@ public class RideRequestDomainService implements DomainService<RideRequest>{
 	@Override
 	public RideRequest get(int id, boolean fetchChild) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		RideRequest rideRequest = null;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			RideRequestDO rideRequestDO = new RideRequestDO();
 			if (fetchChild){
@@ -31,11 +31,11 @@ public class RideRequestDomainService implements DomainService<RideRequest>{
 				rideRequest = rideRequestDO.get(id);			
 			}
 
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -51,19 +51,19 @@ public class RideRequestDomainService implements DomainService<RideRequest>{
 	@Override
 	public List<RideRequest> getAll() {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		List<RideRequest> rideRequests = null;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			RideRequestDO rideRequestDO = new RideRequestDO();
 			rideRequests = rideRequestDO.getAll();			
 
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}

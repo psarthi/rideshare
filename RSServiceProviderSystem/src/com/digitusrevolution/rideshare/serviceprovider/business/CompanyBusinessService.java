@@ -17,18 +17,18 @@ public class CompanyBusinessService {
 	
 	public void addAccount(CompanyAccount companyAccount){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 			
 			CompanyDO companyDO = new CompanyDO();
 			companyDO.addAccount(companyAccount.getCompanyId(), companyAccount.getAccount());
 			
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
@@ -42,10 +42,10 @@ public class CompanyBusinessService {
 	
 	public Company get(int id, boolean fetchChild) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transation = null;	
+		Transaction transaction = null;	
 		Company company = null;
 		try {
-			transation = session.beginTransaction();
+			transaction = session.beginTransaction();
 
 			CompanyDO companyDO = new CompanyDO();
 			if (fetchChild){
@@ -54,11 +54,11 @@ public class CompanyBusinessService {
 				company = companyDO.get(id);			
 			}
 
-			transation.commit();
+			transaction.commit();
 		} catch (RuntimeException e) {
-			if (transation!=null){
+			if (transaction!=null){
 				logger.error("Transaction Failed, Rolling Back");
-				transation.rollback();
+				transaction.rollback();
 				throw e;
 			}
 		}
