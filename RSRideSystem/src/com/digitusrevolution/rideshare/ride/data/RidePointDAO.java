@@ -17,7 +17,7 @@ import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
-import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
+import com.digitusrevolution.rideshare.model.ride.domain.RidePointProperty;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.dto.RidePointDTO;
@@ -77,8 +77,8 @@ public class RidePointDAO{
 	}
 
 	private RidePoint getSpecificRidePoint(RidePoint ridePoint, int rideId){
-		List<RideBasicInfo> ridesBasicInfo = ridePoint.getRidesBasicInfo();
-		Iterator<RideBasicInfo> iterator = ridesBasicInfo.iterator();
+		List<RidePointProperty> ridePointProperties = ridePoint.getRidePointProperties();
+		Iterator<RidePointProperty> iterator = ridePointProperties.iterator();
 		while(iterator.hasNext()){
 			int id = iterator.next().getId();
 			if (id != rideId){
@@ -184,7 +184,7 @@ public class RidePointDAO{
 				.append("maxDistance", rideRequestPoint.getDistanceVariation())
 				.append("minDistance", minDistance)
 				.append("query", query)
-				.append("near", new Document(Document.parse(pointJson)))
+				.append("near", Document.parse(pointJson))
 				.append("distanceField", "distance"));
 
 		//This will create individual ride points by ride id
@@ -273,8 +273,8 @@ public class RidePointDAO{
 		RidePoint ridePoint = new RidePoint();
 		ridePoint.set_id(rideSearchPoint.get_id());
 		ridePoint.setPoint(rideSearchPoint.getPoint());
-		RideBasicInfo ridesBasicInfo = rideSearchPoint.getRideBasicInfo();
-		ridePoint.getRidesBasicInfo().add(ridesBasicInfo);
+		RidePointProperty ridePointProperty = rideSearchPoint.getRidePointProperty();
+		ridePoint.getRidePointProperties().add(ridePointProperty);
 		ridePoint.setSequence(rideSearchPoint.getSequence());
 		return ridePoint;
 	}

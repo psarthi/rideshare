@@ -12,7 +12,7 @@ public class RidePoint{
 	//Don't change this to HashMap as serialization / deserialization to JSON would be a problem as 
 	//Jackson by default understand only basic datatypes as key and not custom object
 	@JsonProperty("rides")
-	private List<RideBasicInfo> ridesBasicInfo = new ArrayList<RideBasicInfo>();
+	private List<RidePointProperty> ridePointProperties = new ArrayList<RidePointProperty>();
 	private Point point = new Point();
 	private int sequence;
 	
@@ -34,17 +34,17 @@ public class RidePoint{
 	public void setSequence(int sequence) {
 		this.sequence = sequence;
 	}		
-	public List<RideBasicInfo> getRidesBasicInfo() {
-		return ridesBasicInfo;
+	public List<RidePointProperty> getRidePointProperties() {
+		return ridePointProperties;
 	}
-	public void setRidesBasicInfo(List<RideBasicInfo> ridesBasicInfo) {
-		this.ridesBasicInfo = ridesBasicInfo;
+	public void setRidePointProperties(List<RidePointProperty> ridePointProperties) {
+		this.ridePointProperties = ridePointProperties;
 	}
 	@Override
 	public String toString(){
 		String rides = "";
-		for (RideBasicInfo rideBasicInfo : this.ridesBasicInfo) {
-			rides += rideBasicInfo.toString() +":";
+		for (RidePointProperty ridePointProperty : this.ridePointProperties) {
+			rides += ridePointProperty.toString() +":";
 		}
 		return "[_id:sequence:point:rides]:"+get_id()+":"+getSequence()+":"+getPoint().toString()+":"+rides;
 	}
@@ -53,7 +53,7 @@ public class RidePoint{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((ridesBasicInfo == null) ? 0 : ridesBasicInfo.hashCode());
+		result = prime * result + ((ridePointProperties == null) ? 0 : ridePointProperties.hashCode());
 		return result;
 	}
 	@Override
@@ -68,11 +68,11 @@ public class RidePoint{
 			return false;
 		}
 		RidePoint other = (RidePoint) obj;
-		if (ridesBasicInfo == null) {
-			if (other.ridesBasicInfo != null) {
+		if (ridePointProperties == null) {
+			if (other.ridePointProperties != null) {
 				return false;
 			}
-		} else if (!ridesBasicInfo.equals(other.ridesBasicInfo)) {
+		} else if (!ridePointProperties.equals(other.ridePointProperties)) {
 			return false;
 		}
 		return true;

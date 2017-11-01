@@ -1,7 +1,7 @@
 package com.digitusrevolution.rideshare.model.ride.dto;
 
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
-import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
+import com.digitusrevolution.rideshare.model.ride.domain.RidePointProperty;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
@@ -10,7 +10,7 @@ public class RideSearchPoint{
 	private String _id;
 	//This is to match the name with ridepoint object
 	@JsonProperty("rides")
-	private RideBasicInfo rideBasicInfo;
+	private RidePointProperty ridePointProperty;
 	private Point point = new Point();
 	private int sequence;
 	private double distance;
@@ -39,13 +39,12 @@ public class RideSearchPoint{
 	public void setSequence(int sequence) {
 		this.sequence = sequence;
 	}
-	public RideBasicInfo getRideBasicInfo() {
-		return rideBasicInfo;
+	public RidePointProperty getRidePointProperty() {
+		return ridePointProperty;
 	}
-	public void setRideBasicInfo(RideBasicInfo rideBasicInfo) {
-		this.rideBasicInfo = rideBasicInfo;
-	}
-	
+	public void setRidePointProperty(RidePointProperty ridePointProperty) {
+		this.ridePointProperty = ridePointProperty;
+	}	
 /*	@Override
 	public String toString() {
 		JSONUtil<RideSearchPoint> jsonUtil = new JSONUtil<>(RideSearchPoint.class);

@@ -27,7 +27,7 @@ import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
-import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
+import com.digitusrevolution.rideshare.model.ride.domain.RidePointProperty;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
@@ -264,25 +264,25 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 				}
 
 				RouteDO routeDO = new RouteDO();
-				List<RideBasicInfo> ridesBasicInfo = new ArrayList<>();
+				List<RidePointProperty> ridePointProperties = new ArrayList<>();
 				//In case its a recurring ride, then create multiple rides and add all of them below
 				//**TBD - Recurring scenarios has to be written later
 				if(ride.getRecur()){
 					//For testing purpose, needs to be written properly
 					for (int i = 0; i<recurringDays; i++){
-						RideBasicInfo rideBasicInfo = new RideBasicInfo();
-						rideBasicInfo.setId(rideIds.get(i));
-						rideBasicInfo.setDateTime(startTimeUTC.plusDays(i));
-						ridesBasicInfo.add(rideBasicInfo);
+						RidePointProperty ridePointProperty = new RidePointProperty();
+						ridePointProperty.setId(rideIds.get(i));
+						ridePointProperty.setDateTime(startTimeUTC.plusDays(i));
+						ridePointProperties.add(ridePointProperty);
 					}					
 				}			
 				if(!ride.getRecur()){
-					RideBasicInfo rideBasicInfo = new RideBasicInfo();
-					rideBasicInfo.setId(id);
-					rideBasicInfo.setDateTime(startTimeUTC);
-					ridesBasicInfo.add(rideBasicInfo);					
+					RidePointProperty ridePointProperty = new RidePointProperty();
+					ridePointProperty.setId(id);
+					ridePointProperty.setDateTime(startTimeUTC);
+					ridePointProperties.add(ridePointProperty);					
 				}
-				Route route = routeDO.getRoute(direction, ridesBasicInfo);
+				Route route = routeDO.getRoute(direction, ridePointProperties);
 				Collection<RidePoint> ridePoints = route.getRidePoints();
 				//Insert primary key here itself, so that we can update the start and end location in the ride table
 				String startPointId;
@@ -294,7 +294,8 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 					//This is done here to avoid reiterating the loop again just to get this id
 					endPointId = _id.toString();
 				}
-				startPointId = ridePoints.iterator().next().get_id();
+				//This is important as using iterator().next doesn't guarantee the sequence
+				startPointId = ridePoints.stream().findFirst().get().get_id();
 				ridePointDAO.createBulk(ridePoints);
 				ride.getStartPoint().set_id(startPointId);
 				ride.getEndPoint().set_id(endPointId);

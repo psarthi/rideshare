@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>5.1.9.Final</version>
+			<version>5.1.10.Final</version>
 		</dependency>
 		<!-- Hibernate End -->
 		<!-- Jersey Core Start (Required for WS exceptions)-->

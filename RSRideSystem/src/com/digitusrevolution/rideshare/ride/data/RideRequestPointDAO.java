@@ -120,7 +120,7 @@ public class RideRequestPointDAO{
 				.append("limit", PropertyReader.getInstance().getProperty("RIDE_REQUEST_POINT_SEARCH_RESULT_LIMIT"))
 				.append("maxDistance", maxDistance)
 				.append("minDistance", minDistance)
-				.append("near", new Document(Document.parse(pointJson)))
+				.append("near", Document.parse(pointJson))
 				.append("distanceField", "distance"));
 
 		logger.trace(geoNear.toJson());
@@ -137,7 +137,7 @@ public class RideRequestPointDAO{
 				logger.trace("document:"+document.toJson());
 				RideRequestSearchPoint rideRequestSearchPoint = jsonUtilRideRequestSearchPoint.getModel(document.toJson());
 				long timeVariation = DateTimeUtil.getSeconds(rideRequestSearchPoint.getTimeVariation());
-				long rideDateTime = ridePoint.getRidesBasicInfo().get(0).getDateTime().toEpochSecond();
+				long rideDateTime = ridePoint.getRidePointProperties().get(0).getDateTime().toEpochSecond();
 				boolean dateTimeCondition = (rideDateTime >= rideRequestSearchPoint.getDateTime().minusSeconds(timeVariation).toEpochSecond() && 
 						rideDateTime <= rideRequestSearchPoint.getDateTime().plusSeconds(timeVariation).toEpochSecond());
 				boolean distanceCondition = (rideRequestSearchPoint.getDistance() <= rideRequestSearchPoint.getDistanceVariation());
@@ -179,10 +179,10 @@ public class RideRequestPointDAO{
 		String jsonMultipPolygon = jsonUtilMultiPolygon.getJson(multiPolygon);
 		long maxTimeVariation = Long.parseLong(PropertyReader.getInstance().getProperty("MAX_PICKUP_TIME_VARIATION"));
 		long dropTimeBuffer = Long.parseLong(PropertyReader.getInstance().getProperty("DROP_TIME_BUFFER"));
-		ZonedDateTime endTime = ride.getEndPoint().getRidesBasicInfo().get(0).getDateTime();
+		ZonedDateTime endTime = ride.getEndPoint().getRidePointProperties().get(0).getDateTime();
 
 		//This will get ride request point inside the polygons
-		Document geoWithinQuery = new Document("point", new Document("$geoWithin", new Document("$geometry", new Document(Document.parse(jsonMultipPolygon)))));
+		Document geoWithinQuery = new Document("point", new Document("$geoWithin", new Document("$geometry", Document.parse(jsonMultipPolygon))));
 		//This will filter ride request point based on ride start and end time by adding max pickup variation and drop buffer as well
 		//for e.g. If a ride is starting at 8 AM and ending at 9 AM, so with max variation added (2 Hrs) and (30Mins drop buffer to cover up route variation) 
 		//valid ride request points would be >=6 AM and <=11:30AM, so if someone has requested for pickup at 5:30 AM, so max pickup time would be 7:30AM

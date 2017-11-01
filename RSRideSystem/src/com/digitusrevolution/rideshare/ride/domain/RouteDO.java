@@ -17,7 +17,7 @@ import com.digitusrevolution.rideshare.common.util.MathUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
-import com.digitusrevolution.rideshare.model.ride.domain.RideBasicInfo;
+import com.digitusrevolution.rideshare.model.ride.domain.RidePointProperty;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
@@ -88,7 +88,7 @@ public class RouteDO{
 	 * - Ensure each point maintains a sequence number
 	 * 
 	 */
-	public Route getRoute(GoogleDirection direction, List<RideBasicInfo> ridesBasicInfo){		
+	public Route getRoute(GoogleDirection direction, List<RidePointProperty> ridePointProperties){		
 
 		Leg leg = direction.getRoutes().get(0).getLegs().get(0);
 		List<Step> steps = leg.getSteps();
@@ -107,7 +107,7 @@ public class RouteDO{
 		int skip = 0;
 		double minDistancePercentage = Double.parseDouble(PropertyReader.getInstance().getProperty("MIN_DISTANCE_BETWEEN_ROUTE_POINTS_PERCENT_OF_OVERALL_DISTANCE"));
 		double minDistance = totalDistance * minDistancePercentage;
-		logger.debug("Ride Start Time:"+ridesBasicInfo.get(0).getDateTime());
+		logger.debug("Ride Start Time:"+ridePointProperties.get(0).getDateTime());
 		for (Step step : steps) {	
 			double stepDistance = step.getDistance().getValue();
 			double stepTime = step.getDuration().getValue();
@@ -154,24 +154,27 @@ public class RouteDO{
 				logger.trace("timeBasedOnOverallSpeed:"+timeBasedOnOverallSpeed+":timeBasedOnStepSpeed:"+time+":Diff:"+(timeBasedOnOverallSpeed-time));
 				logger.trace("time difference:"+(timeBasedOnOverallSpeed-time));
 				//**End
-				List<RideBasicInfo> updatedRidesBasicInfo = new ArrayList<>();
-				//RidesBasicInfo may contain one or many items based on if its a recurring or non recurring rides
-				//In case of multiple items, it will create multiple ridesbasicInfo with updated time and add all of them in the new point
-				for (RideBasicInfo rideBasicInfo : ridesBasicInfo) {
-					ZonedDateTime lastPointDateTime = rideBasicInfo.getDateTime();
+				List<RidePointProperty> updatedRidePointProperties = new ArrayList<>();
+				//RidePointProperties may contain one or many items based on if its a recurring or non recurring rides
+				//In case of multiple items, it will create multiple ridePointProperty with updated time and add all of them in the new point
+				for (RidePointProperty ridePointProperty : ridePointProperties) {
+					//First time, this would get the start time of the ride and in upcoming ride point addition, it will get the last point date time
+					ZonedDateTime lastPointDateTime = ridePointProperty.getDateTime();
 					ZonedDateTime thisPointDateTime = lastPointDateTime.plusSeconds((long) time);
-					rideBasicInfo.setDateTime(thisPointDateTime);
-					RideBasicInfo updatedRideBasicInfo = new RideBasicInfo();
-					updatedRideBasicInfo.setId(rideBasicInfo.getId());
-					updatedRideBasicInfo.setDateTime(rideBasicInfo.getDateTime());
-					updatedRidesBasicInfo.add(updatedRideBasicInfo);
+					//Imp - This would update the datetime of ridePointProperties original list which will be used while adding next ride point. 
+					//This would help to get last point date and time which is getting used above
+					ridePointProperty.setDateTime(thisPointDateTime);
+					RidePointProperty updatedRidePointProperty = new RidePointProperty();
+					updatedRidePointProperty.setId(ridePointProperty.getId());
+					updatedRidePointProperty.setDateTime(ridePointProperty.getDateTime());
+					updatedRidePointProperties.add(updatedRidePointProperty);
 				}
 				RidePoint ridePoint = new RidePoint();
 				ridePoint.getPoint().setLatitude(latLngs.get(i).latitude);
 				ridePoint.getPoint().setLongitude(latLngs.get(i).longitude);
 				ridePoint.setSequence(seq);
-				ridePoint.setRidesBasicInfo(updatedRidesBasicInfo);
-				logger.trace("RidePoint added [point,time]:"+ridePoint.getPoint().toString()+","+ridePoint.getRidesBasicInfo().get(0).getDateTime());
+				ridePoint.setRidePointProperties(updatedRidePointProperties);
+				logger.trace("RidePoint added [point,time]:"+ridePoint.getPoint().toString()+","+ridePoint.getRidePointProperties().get(0).getDateTime());
 				route.getRidePoints().add(ridePoint);
 				from = to;
 				seq++;
@@ -182,7 +185,7 @@ public class RouteDO{
 			}			
 		}
 		
-		logger.debug("Ride Finish Time:"+ridesBasicInfo.get(0).getDateTime());
+		logger.debug("Ride Finish Time:"+ridePointProperties.get(0).getDateTime());
 		//**Start - This is just for analysis purpose, below code is not relevant to the logic
 		for (RidePoint ridePoint : route.getRidePoints()) {
 			logger.trace(ridePoint.toString());

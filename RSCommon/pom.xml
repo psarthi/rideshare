@@ -39,6 +39,20 @@
 	</dependencyManagement>
 	<!-- Jersey DependencyManagement Configuration End -->
 	<dependencies>
+		<!-- Jackson Core Modules which include Core, Annotations and Databind. Databind would include other two module as well, so mentioned only that. Start -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<!-- Jackson Core Modules End -->
+		<!-- Jackson required for DateTime JSON support Start -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<!-- Jackson required for DateTime JSON support End -->
 		<!-- Jersey Start (Dependent on version & DependencyManagement configuration) -->
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
@@ -51,35 +65,10 @@
 		</dependency>
 		<!-- Required for JSON support for Jersey -->
 		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-common</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.ext</groupId>
-			<artifactId>jersey-entity-filtering</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.jaxrs</groupId>
-			<artifactId>jackson-jaxrs-base</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.jaxrs</groupId>
-			<artifactId>jackson-jaxrs-json-provider</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<!-- Jersey End -->
-		<!-- Jackson required for DateTime JSON support Start -->
-		<dependency>
-			<groupId>com.fasterxml.jackson.datatype</groupId>
-			<artifactId>jackson-datatype-jsr310</artifactId>
-			<version>${jackson.version}</version>
-			<exclusions>
+		    <groupId>org.glassfish.jersey.media</groupId>
+		    <artifactId>jersey-media-json-jackson</artifactId>
+		    <!-- Reason for specific exclusion is to make it explicit that Jackson bundled jars which may be old version should not be used and instead use common one available for project -->
+		   	<exclusions>
 				<exclusion>
 					<groupId>com.fasterxml.jackson.core</groupId>
 					<artifactId>jackson-core</artifactId>
@@ -88,14 +77,19 @@
 					<groupId>com.fasterxml.jackson.core</groupId>
 					<artifactId>jackson-databind</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-annotations</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- Jackson required for DateTime JSON support End -->
+		<!-- Jersey End -->
 		<!-- GeoJSON Java Library Start -->
 		<dependency>
 			<groupId>de.grundid.opendatalab</groupId>
 			<artifactId>geojson-jackson</artifactId>
 			<version>1.8</version>
+		    <!-- Reason for specific exclusion is to make it explicit that Jackson bundled jars should not be used and instead use common one available for project -->
 			<exclusions>
 				<exclusion>
 					<groupId>com.fasterxml.jackson.core</groupId>
@@ -112,7 +106,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>5.1.9.Final</version>
+			<version>5.1.10.Final</version>
 		</dependency>
 		<!-- Hibernate End -->
 		<!-- MySQL Driver Start -->
@@ -152,10 +146,11 @@
 			<groupId>com.digitusrevolution.rideshare</groupId>
 			<artifactId>RSModel</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+			<!-- Reason for specific exclusion is to make it explicit that no jars should be downloaded further as its already available to this module-->
 			<exclusions>
 				<exclusion>
-					<groupId>org.glassfish.jersey.media</groupId>
-					<artifactId>jersey-media-json-jackson</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-databind</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>org.hibernate</groupId>

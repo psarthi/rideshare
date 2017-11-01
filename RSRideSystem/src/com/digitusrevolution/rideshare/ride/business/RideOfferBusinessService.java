@@ -37,7 +37,7 @@ public class RideOfferBusinessService {
 	 * 
 	 * Note -
 	 * 
-	 * Providing route options is responsibility of front end and while calling the service, it should not send the exact route and not multiple routes
+	 * Providing route options is responsibility of front end and while calling the service, it should send the exact route and not multiple routes
 	 * 
 	 * 
 	 */

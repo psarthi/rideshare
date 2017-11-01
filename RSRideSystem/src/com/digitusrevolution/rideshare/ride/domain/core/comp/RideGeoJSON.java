@@ -134,11 +134,11 @@ public class RideGeoJSON {
 		if (pointType.equals("ridepickuppoint")){
 			ridePickupPointProperties.put("Distance", matchedTripInfo.getPickupPointDistance());
 			ridePickupPointProperties.put("Sequence", matchedTripInfo.getRidePickupPoint().getSequence());
-			ridePickupPointProperties.put("DateTimeUTC", matchedTripInfo.getRidePickupPoint().getRidesBasicInfo().get(0).getDateTime());
+			ridePickupPointProperties.put("DateTimeUTC", matchedTripInfo.getRidePickupPoint().getRidePointProperties().get(0).getDateTime());
 		} else {
 			ridePickupPointProperties.put("Distance", matchedTripInfo.getDropPointDistance());
 			ridePickupPointProperties.put("Sequence", matchedTripInfo.getRideDropPoint().getSequence());
-			ridePickupPointProperties.put("DateTimeUTC", matchedTripInfo.getRideDropPoint().getRidesBasicInfo().get(0).getDateTime());
+			ridePickupPointProperties.put("DateTimeUTC", matchedTripInfo.getRideDropPoint().getRidePointProperties().get(0).getDateTime());
 		}
 		ridePickupPointProperties.put("RideRequestTravelDistance", matchedTripInfo.getRideRequestTravelDistance());
 		return ridePickupPointProperties;
@@ -172,8 +172,8 @@ public class RideGeoJSON {
 		org.geojson.Point geoJsonPoint;
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("type", pointType);
-		properties.put("RideId", ridePoint.getRidesBasicInfo().get(0).getId());
-		properties.put("DateTimeUTC", ridePoint.getRidesBasicInfo().get(0).getDateTime());
+		properties.put("RideId", ridePoint.getRidePointProperties().get(0).getId());
+		properties.put("DateTimeUTC", ridePoint.getRidePointProperties().get(0).getDateTime());
 		geoJsonPoint = GeoJSONUtil.getGeoJsonPointFromPoint(ridePoint.getPoint());
 		feature = GeoJSONUtil.getFeatureFromGeometry(geoJsonPoint, properties);
 		return feature;

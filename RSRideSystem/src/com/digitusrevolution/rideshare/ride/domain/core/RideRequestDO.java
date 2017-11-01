@@ -410,6 +410,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 				}
 
 				validMatchedTripInfos = processAndGetValidRideRequests(ride, ridePoints, rideRequestsMap);
+				rideRequestResultValidCount = validMatchedTripInfos.size();
 			} //**** Get valid ride request with nearest ride pickup and drop points - End
 
 		}//End of loop for (rideRequestResultValidCount < expectedResultCount)
@@ -433,8 +434,6 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		//This will hold the final valid ride requests
 		List<MatchedTripInfo> matchedTripInfoFinalResultSet = new LinkedList<>();
 
-		int rideRequestResultValidCount;
-
 		//This will get ridepoint which is having shortest distance from pickup and drop point of each ride requests
 		//Final result would be stored into MatchedTripInfo Map
 
@@ -449,8 +448,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 
 		//*** Add valid points to the final result set
 		matchedTripInfoFinalResultSet.addAll(matchedTripInfoMap.values());
-		rideRequestResultValidCount = matchedTripInfoFinalResultSet.size();
-		logger.trace("Ride Request Final Result Count:"+rideRequestResultValidCount);
+		logger.trace("Ride Request Final Result Count:"+matchedTripInfoFinalResultSet.size());
 		int index =0;
 		for (MatchedTripInfo matchedTripInfo : matchedTripInfoFinalResultSet) {
 			logger.debug("Final Ride Request ["+index+"]:"+matchedTripInfo.getRideRequestId());

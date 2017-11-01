@@ -2,7 +2,7 @@ package com.digitusrevolution.rideshare.model.ride.domain;
 
 import java.time.ZonedDateTime;
 
-public class RideBasicInfo {
+public class RidePointProperty {
 	private int id;
 	private ZonedDateTime dateTime;
 
@@ -39,10 +39,10 @@ public class RideBasicInfo {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof RideBasicInfo)) {
+		if (!(obj instanceof RidePointProperty)) {
 			return false;
 		}
-		RideBasicInfo other = (RideBasicInfo) obj;
+		RidePointProperty other = (RidePointProperty) obj;
 		if (dateTime == null) {
 			if (other.dateTime != null) {
 				return false;

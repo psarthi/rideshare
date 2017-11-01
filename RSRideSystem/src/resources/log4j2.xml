@@ -15,7 +15,7 @@
 			<AppenderRef ref="Console" />
 		</Logger>
 		<Logger name="com.digitusrevolution.rideshare.ride.domain"
-			level="debug" additivity="false">
+			level="trace" additivity="false">
 			<AppenderRef ref="Console" />
 		</Logger>
 		<Logger

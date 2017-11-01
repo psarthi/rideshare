@@ -162,6 +162,9 @@ public class RouteBoxer {
 		}
 
 		// Add lines from the center out to the south (i.e. going downwards)
+		// Important point to note here is insertion point which is at ZERO index so that we get all elements in the sequential order from bottom to top.
+		// Inserting at ZERO index would push one element to the right and insert the latest element at ZERO 
+		// so at the last, bottom most element would be at ZERO index and rest all of them would be from bottom to top
 		for (int i = 1; this.latGrid_.get(1) > routeBounds.getSouthWest().lat(); i++) {
 			this.latGrid_.add(0, MathUtil.rhumbDestinationPoint(routeBoundsCenter, 180, range * i).lat());
 		}
@@ -177,6 +180,9 @@ public class RouteBoxer {
 		}
 
 		// Add lines from the center out to the west (i.e. going left)
+		// Important point to note here is insertion point which is at ZERO index so that we get all elements in the sequential order from left to right.
+		// Inserting at ZERO index would push one element to the right and insert the latest element at ZERO 
+		// so at the last, left most element would be at ZERO index and rest all of them would be from left to right
 		for (int i = 1; this.lngGrid_.get(1) > routeBounds.getSouthWest().lng(); i++) {
 			this.lngGrid_.add(0,MathUtil.rhumbDestinationPoint(routeBoundsCenter, 270, range * i).lng());
 		}
@@ -247,6 +253,9 @@ public class RouteBoxer {
 		int x,y;
 		for (x = 0; this.lngGrid_.get(x) < latlng.lng(); x++) {}
 		for (y = 0; this.latGrid_.get(y) < latlng.lat(); y++) {}
+		//Reason for decrementing by 1 as value of x and y would be incremented by 1 on the exit of loop. 
+		//First in case of for loop, value is initialized, then condition is checked, then statement within the loop gets executed, 
+		//then counter is incremented, again condition is matched and this would continue till condition is valid.
 		int[] cellCoordinate = {(x - 1), (y - 1)};
 		logger.exit();
 		return cellCoordinate;
