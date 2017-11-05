@@ -13,7 +13,9 @@ import javax.ws.rs.WebApplicationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.digitusrevolution.rideshare.common.auth.JWTService;
 import com.digitusrevolution.rideshare.common.exception.EmailExistException;
+import com.digitusrevolution.rideshare.common.exception.LoginFailedException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
@@ -288,6 +290,29 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		} else {
 			throw new WebApplicationException("Friend request can't be rejected as its not in valid state. Current status:"+friendRequest.getStatus());
 		}
+	}
+	
+	public User getUserByEmail(String userEmail) {
+		userEntity = userDAO.getUserByEmail(userEmail);
+		if (userEntity==null) {
+			throw new NotFoundException("No User found with email: "+userEmail);
+		}
+		setUserEntity(userEntity);
+		return user;
+	}
+	
+	public String login(String email, String password) {
+		user = getUserByEmail(email);
+		if (user.getPassword().equals(password)) {
+			return JWTService.getInstance().getToken(user.getId());		
+		} else {
+			throw new LoginFailedException("Login Failed");
+		}
+	}
+	
+	public String googleLogin(String email) {
+		user = getUserByEmail(email);
+		return JWTService.getInstance().getToken(user.getId());		
 	}
 }
 

@@ -15,6 +15,8 @@ import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.dto.GoogleLoginDTO;
+import com.digitusrevolution.rideshare.model.user.dto.LoginDTO;
 import com.digitusrevolution.rideshare.model.user.dto.UserDTO;
 import com.digitusrevolution.rideshare.user.business.UserBusinessService;
 
@@ -122,6 +124,33 @@ public class UserBusinessResource {
 		UserBusinessService userBusinessService = new UserBusinessService();
 		userBusinessService.rejectFriendRequest(userId, friendUserId);
 		return Response.ok().build();
+	}
+
+	/**
+	 * 
+	 * @param email Id of the user 
+	 * @param password of the user
+	 * @return status OK with Login token
+	 */
+	@POST
+	@Path("/login")
+	public Response login(LoginDTO loginDTO){
+		UserBusinessService userBusinessService = new UserBusinessService();
+		String token = userBusinessService.login(loginDTO);
+		return Response.ok().header("Authorization", "Bearer "+token).build();
+	}
+	
+	/**
+	 * 
+	 * @param email Id of the user
+	 * @return status OK with Login token
+	 */
+	@POST
+	@Path("/googleLogin")
+	public Response googleLogin(GoogleLoginDTO googleLoginDTO){
+		UserBusinessService userBusinessService = new UserBusinessService();
+		String token = userBusinessService.googleLogin(googleLoginDTO);
+		return Response.ok().header("Authorization", "Bearer "+token).build();
 	}
 
 }

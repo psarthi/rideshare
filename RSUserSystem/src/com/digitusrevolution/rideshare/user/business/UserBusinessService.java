@@ -10,6 +10,8 @@ import org.hibernate.Transaction;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.dto.GoogleLoginDTO;
+import com.digitusrevolution.rideshare.model.user.dto.LoginDTO;
 import com.digitusrevolution.rideshare.model.user.dto.UserDTO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
@@ -189,6 +191,60 @@ public class UserBusinessService {
 			}
 		}			
 
+	}
+	
+	public String login(LoginDTO loginDTO) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		String token = null;
+		try {
+			transaction = session.beginTransaction();
+			
+			UserDO userDO = new UserDO();
+			token = userDO.login(loginDTO.getEmail(), loginDTO.getPassword());
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}			
+		return token;
+	}
+	
+	public String googleLogin(GoogleLoginDTO googleLoginDTO) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		String token = null;
+		try {
+			transaction = session.beginTransaction();
+			
+			UserDO userDO = new UserDO();
+			token = userDO.googleLogin(googleLoginDTO.getEmail());
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}			
+		return token;
 	}
 
 }
