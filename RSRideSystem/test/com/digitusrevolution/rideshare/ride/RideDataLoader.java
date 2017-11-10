@@ -1,5 +1,7 @@
 package com.digitusrevolution.rideshare.ride;
 
+import java.time.ZonedDateTime;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -12,6 +14,7 @@ import org.hibernate.Transaction;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategoryName;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.ride.domain.TrustCategoryDO;
 
 
@@ -60,6 +63,5 @@ public class RideDataLoader {
 
 			TrustCategoryDO trustCategoryDO = new TrustCategoryDO();
 			trustCategoryDO.create(trustCategory);			
-		}
-		
+		}		
 }

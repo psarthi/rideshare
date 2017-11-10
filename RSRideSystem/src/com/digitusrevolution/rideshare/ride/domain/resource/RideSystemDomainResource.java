@@ -1,5 +1,9 @@
 package com.digitusrevolution.rideshare.ride.domain.resource;
 
+import java.awt.image.SampleModel;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -10,6 +14,8 @@ import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.ride.SampleDateModel;
+import com.digitusrevolution.rideshare.ride.SampleLocalTimeModel;
 
 @Path("/domain/ridesystem")
 @Produces(MediaType.APPLICATION_JSON)
@@ -50,5 +56,21 @@ public class RideSystemDomainResource {
 		RideRequest rideRequest = new RideRequest();
 		return Response.ok().entity(rideRequest).build();
 	}
+	
+	@GET
+	@Path("/testget")
+	public Response test(){
+		SampleLocalTimeModel model = new SampleLocalTimeModel();
+		model.setTime(LocalTime.of(0, 30));
+		return Response.ok().entity(model).build();
+	}
+
+	@POST
+	@Path("/testpost")
+	public Response testDate(SampleLocalTimeModel model){
+		return Response.ok().entity(model).build();
+	}
+
+
 
 }

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jardesc>
+    <jar path="/Users/psarthi/Partha/workspace/build/model_v0.1/RSModel-0.0.1-SNAPSHOT.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/RSModel/AndroidCustomExportJar.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.serviceprovider"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.user.domain.core"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.billing.data"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.ride.dto"/>
+        <folder path="/RSModel/target"/>
+        <folder path="/RSModel/src/META-INF"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.serviceprovider.domain.core"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.user"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.ride"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.billing.domain.core"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.ride.domain"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.billing"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.ride.domain.core"/>
+        <file path="/RSModel/src/.DS_Store"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.serviceprovider.domain"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.user.dto"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.billing.dto"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.common"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.serviceprovider.data"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.serviceprovider.dto"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.billing.domain"/>
+        <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.user.domain"/>
+    </selectedElements>
+</jardesc>

@@ -27,30 +27,25 @@
 	</build>
 	<dependencies>
 		<!-- Jackson Core Modules Start (Required for JSON annotations)-->
-		<dependency>
+	 	<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>2.9.0</version>
 		</dependency>
-		<!-- Jackson Core Modules End -->
-		<!-- Hibernate Start -->
+	 	<!-- Jackson Core Modules End -->
+		<!-- Hibernate Start (Required for Hibernate annotation in Entity classes)-->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>5.1.10.Final</version>
 		</dependency>
 		<!-- Hibernate End -->
-		<!-- Jersey Core Start (Required for WS exceptions)-->
-		<dependency>
-			<groupId>org.glassfish.jersey.containers</groupId>
-			<artifactId>jersey-container-servlet</artifactId>
-			<version>2.25.1</version>
-		</dependency>
-		<!-- Jersey Core End-->
+		<!-- GeoJson Start (Required for specific classes e.g. Multipolygon in RideRequestSearch. -->
 		<dependency>
 			<groupId>de.grundid.opendatalab</groupId>
 			<artifactId>geojson-jackson</artifactId>
 			<version>1.8</version>
 		</dependency>
-	</dependencies>
+		<!-- GeoJson End -->
+ 	</dependencies>
 </project>
