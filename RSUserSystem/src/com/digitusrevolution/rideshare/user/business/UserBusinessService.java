@@ -32,7 +32,7 @@ public class UserBusinessService {
 			
 			UserDO userDO = new UserDO();
 			User user = getUser(userDTO);			
-			id = userDO.registerUser(user);
+			id = userDO.registerUser(user, userDTO.getOtp());							
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -196,7 +196,7 @@ public class UserBusinessService {
 
 	}
 	
-	public UserBasicInformationDTO signIn(SignInDTO loginDTO) {
+	public UserBasicInformationDTO signIn(SignInDTO signInDTO) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		UserBasicInformationDTO userBasicInformationDTO = null;
@@ -204,7 +204,7 @@ public class UserBusinessService {
 			transaction = session.beginTransaction();
 			
 			UserDO userDO = new UserDO();
-			userBasicInformationDTO = userDO.signIn(loginDTO.getEmail(), loginDTO.getPassword());
+			userBasicInformationDTO = userDO.signIn(signInDTO.getEmail(), signInDTO.getPassword());
 			
 			transaction.commit();
 		} catch (RuntimeException e) {

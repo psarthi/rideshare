@@ -1,10 +1,10 @@
 package com.digitusrevolution.rideshare.common.exception;
 
-public class LoginFailedException extends RuntimeException{
+public class SignInFailedException extends RuntimeException{
 
 	private static final long serialVersionUID = 1L;
 	
-	public LoginFailedException(String message) {
+	public SignInFailedException(String message) {
 		super(message);
 	}
 	

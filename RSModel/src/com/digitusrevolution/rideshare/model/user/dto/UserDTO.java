@@ -18,6 +18,7 @@ public class UserDTO {
 	private State state;
 	private Country country;
 	private Photo photo;
+	private String otp;
 	
 	public String getFirstName() {
 		return firstName;
@@ -78,6 +79,12 @@ public class UserDTO {
 	}
 	public void setPhoto(Photo photo) {
 		this.photo = photo;
+	}
+	public String getOtp() {
+		return otp;
+	}
+	public void setOtp(String otp) {
+		this.otp = otp;
 	}
 
 }

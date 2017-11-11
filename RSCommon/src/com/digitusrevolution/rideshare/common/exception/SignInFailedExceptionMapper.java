@@ -8,10 +8,10 @@ import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.common.ErrorMessage;
 
 @Provider
-public class LoginFailedExceptionMapper implements ExceptionMapper<LoginFailedException>{
+public class SignInFailedExceptionMapper implements ExceptionMapper<SignInFailedException>{
 
 	@Override
-	public Response toResponse(LoginFailedException exception) {
+	public Response toResponse(SignInFailedException exception) {
 		String errorType = "LOGIN_FAILED";
 		int errorCode = Integer.parseInt(PropertyReader.getInstance().getProperty(errorType));
 		ErrorMessage errorMessage = new ErrorMessage(errorCode, errorType, exception.getMessage());

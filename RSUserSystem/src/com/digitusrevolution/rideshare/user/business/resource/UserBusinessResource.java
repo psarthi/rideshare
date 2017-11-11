@@ -29,14 +29,21 @@ public class UserBusinessResource {
 	/**
 	 * 
 	 * @param userDTO subset of User domain model
-	 * @return userId
+	 * @return UserBasicInformation with token
 	 */
 	@POST
 	public Response registerUser(UserDTO userDTO){
-
+		
 		UserBusinessService userBusinessService = new UserBusinessService();
-		int id = userBusinessService.registerUser(userDTO);
-		return Response.ok().entity(Integer.toString(id)).build();
+		userBusinessService.registerUser(userDTO);
+		//This is very important - Below code can't be placed in registerUser function in business service class as until n unless transaction is committed, 
+		//user information is not available from RideSystem which is trying to fetch upcoming ride related information on REST call. So by putting the statement below
+		//we are ensure first above transaction is completed and new transaction would be initiated for sign in
+		SignInDTO signInDTO = new SignInDTO();
+		signInDTO.setEmail(userDTO.getEmail());
+		signInDTO.setPassword(userDTO.getPassword());
+		UserBasicInformationDTO userBasicInformationDTO = userBusinessService.signIn(signInDTO);
+		return Response.ok().entity(userBasicInformationDTO).build();
 	}
 
 	/**

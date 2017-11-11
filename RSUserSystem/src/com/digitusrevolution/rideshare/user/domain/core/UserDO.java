@@ -12,18 +12,16 @@ import javax.ws.rs.WebApplicationException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.engine.jdbc.connections.internal.UserSuppliedConnectionProviderImpl;
 
 import com.digitusrevolution.rideshare.common.auth.AuthService;
 import com.digitusrevolution.rideshare.common.exception.EmailExistException;
-import com.digitusrevolution.rideshare.common.exception.LoginFailedException;
+import com.digitusrevolution.rideshare.common.exception.OTPFailedException;
+import com.digitusrevolution.rideshare.common.exception.SignInFailedException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
-import com.digitusrevolution.rideshare.model.billing.dto.RideDTO;
-import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
@@ -35,6 +33,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.model.user.dto.UserBasicInformationDTO;
 import com.digitusrevolution.rideshare.user.data.UserDAO;
 import com.digitusrevolution.rideshare.user.domain.CountryDO;
+import com.digitusrevolution.rideshare.user.domain.OTPDO;
 import com.digitusrevolution.rideshare.user.domain.RoleDO;
 
 public class UserDO implements DomainObjectPKInteger<User>{
@@ -143,12 +142,18 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		update(user);
 	}
 
-	public int registerUser(User user){
+	public int registerUser(User user, String otp){
 		int id = 0;
-		boolean status = isEmailExist(user.getEmail());
-		if (status){
+		OTPDO otpdo = new OTPDO();
+		boolean otpValidationStatus = otpdo.validateOTP(user.getMobileNumber(), otp); 
+		boolean emailStatus = isEmailExist(user.getEmail());
+		if (!otpValidationStatus){
+			throw new OTPFailedException("OTP Validation Failed");					
+		}
+		if (emailStatus){
 			throw new EmailExistException("Email id already exist :"+user.getEmail());					
-		} else {
+		} 
+		else {
 			CountryDO countryDO = new CountryDO();
 			Country country = countryDO.get(user.getCountry().getName());
 			user.setCountry(country);
@@ -311,7 +316,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		if (user.getPassword().equals(password)) {
 			return getUserBasicInformationDTO(user);
 		} else {
-			throw new LoginFailedException("Login Failed");
+			throw new SignInFailedException("Login Failed");
 		}
 	}
 
