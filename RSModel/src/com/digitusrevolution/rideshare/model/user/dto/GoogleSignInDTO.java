@@ -1,6 +1,6 @@
 package com.digitusrevolution.rideshare.model.user.dto;
 
-public class GoogleLoginDTO {
+public class GoogleSignInDTO {
 
 	private String email;
 

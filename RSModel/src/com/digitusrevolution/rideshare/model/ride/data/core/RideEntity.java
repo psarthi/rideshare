@@ -19,6 +19,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
 import com.digitusrevolution.rideshare.model.ride.data.RecurringDetailEntity;

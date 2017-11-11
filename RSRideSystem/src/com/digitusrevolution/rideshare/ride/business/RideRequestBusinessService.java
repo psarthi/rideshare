@@ -15,12 +15,14 @@ import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategoryName;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDistance;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 import com.digitusrevolution.rideshare.ride.domain.TrustCategoryDO;
+import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
 
 public class RideRequestBusinessService {
@@ -116,4 +118,32 @@ public class RideRequestBusinessService {
 		
 	}
 	
+	public RideRequest getUpcomingRideRequest(int passengerId){
+		
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		RideRequest upcomingRideRequest = null;
+		try {
+			transaction = session.beginTransaction();
+		
+			RideRequestDO rideRequestDO = new RideRequestDO();
+			upcomingRideRequest = rideRequestDO.getUpcomingRideRequest(passengerId);
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		
+		return upcomingRideRequest;
+	}
 }

@@ -48,12 +48,26 @@ public class RideOfferBusinessResource {
 	 * @return list of rides
 	 */
 	@GET
-	@Path("/upcoming/{driverId}")
-	public Response getUpcomingRides(@PathParam("driverId") int driverId){
+	@Path("/allupcoming/{driverId}")
+	public Response getAllUpcomingRides(@PathParam("driverId") int driverId){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		List<Ride> upcomingRides = rideOfferBusinessService.getUpcomingRides(driverId);
+		List<Ride> upcomingRides = rideOfferBusinessService.getAllUpcomingRides(driverId);
 		return Response.ok().entity(upcomingRides).build();
 	}
+
+	/**
+	 * 
+	 * @param driverId Id of the driver
+	 * @return immediate upcoming ride
+	 */
+	@GET
+	@Path("/upcoming/{driverId}")
+	public Response getUpcomingRide(@PathParam("driverId") int driverId){
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		Ride upcomingRide = rideOfferBusinessService.getUpcomingRide(driverId);
+		return Response.ok().entity(upcomingRide).build();
+	}
+
 	
 	/**
 	 * 

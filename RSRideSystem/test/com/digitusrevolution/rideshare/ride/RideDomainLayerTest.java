@@ -50,7 +50,7 @@ public class RideDomainLayerTest {
 			transaction = session.beginTransaction();
 
 			RideDomainLayerTest domainLayerTest = new RideDomainLayerTest();
-//			domainLayerTest.test();
+			domainLayerTest.test();
 			transaction.commit();
 
 			/*
@@ -73,11 +73,18 @@ public class RideDomainLayerTest {
 	}
 
 	public void test(){
-		
-		RideRequestDO rideRequestDO = new RideRequestDO();
-		rideRequestDO.cancelRideRequest(2);
-		
+	
 		RideDO rideDO = new RideDO();
+		Ride currentRide = rideDO.getUpcomingRide(1);
+		System.out.println("Current Ride Id is:"+currentRide.getId());
+		System.out.println("Current Ride time is:"+currentRide.getStartTime());
+		
+//		rideDO.getUpcomingRides(1);
+		
+//		RideRequestDO rideRequestDO = new RideRequestDO();
+//		rideRequestDO.cancelRideRequest(2);
+		
+	//	RideDO rideDO = new RideDO();
 	//	rideDO.acceptRideRequest(2, 2);
 	//	rideDO.cancelRideRequest(1,1);
 	//	rideDO.startRide(1);

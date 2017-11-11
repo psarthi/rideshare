@@ -10,8 +10,8 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.digitusrevolution.rideshare.common.auth.JWTService;
-import com.digitusrevolution.rideshare.common.inf.AuthService;
+import com.digitusrevolution.rideshare.common.auth.AuthService;
+import com.digitusrevolution.rideshare.common.inf.AuthServiceInf;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -29,7 +29,7 @@ public class JWTTest {
 	//	String generateKey = JWTService.generateKey();		
 	//	Key key = JWTService.getKey();
 		
-		AuthService authService = JWTService.getInstance();
+		AuthServiceInf authService = AuthService.getInstance();
 		
 		String token = authService.getToken(1);
 		boolean status = authService.verifyToken(token);

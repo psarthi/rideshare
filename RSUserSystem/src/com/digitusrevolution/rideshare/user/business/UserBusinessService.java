@@ -6,13 +6,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.hql.internal.ast.tree.BooleanLiteralNode;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.model.user.dto.GoogleLoginDTO;
-import com.digitusrevolution.rideshare.model.user.dto.LoginDTO;
+import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInDTO;
+import com.digitusrevolution.rideshare.model.user.dto.SignInDTO;
+import com.digitusrevolution.rideshare.model.user.dto.UserBasicInformationDTO;
 import com.digitusrevolution.rideshare.model.user.dto.UserDTO;
+import com.digitusrevolution.rideshare.user.domain.OTPDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
 public class UserBusinessService {
@@ -193,15 +196,15 @@ public class UserBusinessService {
 
 	}
 	
-	public String login(LoginDTO loginDTO) {
+	public UserBasicInformationDTO signIn(SignInDTO loginDTO) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		String token = null;
+		UserBasicInformationDTO userBasicInformationDTO = null;
 		try {
 			transaction = session.beginTransaction();
 			
 			UserDO userDO = new UserDO();
-			token = userDO.login(loginDTO.getEmail(), loginDTO.getPassword());
+			userBasicInformationDTO = userDO.signIn(loginDTO.getEmail(), loginDTO.getPassword());
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -217,18 +220,18 @@ public class UserBusinessService {
 				session.close();				
 			}
 		}			
-		return token;
+		return userBasicInformationDTO;
 	}
 	
-	public String googleLogin(GoogleLoginDTO googleLoginDTO) {
+	public UserBasicInformationDTO googleSignIn(GoogleSignInDTO googleLoginDTO) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		String token = null;
+		UserBasicInformationDTO userBasicInformationDTO = null;
 		try {
 			transaction = session.beginTransaction();
 			
 			UserDO userDO = new UserDO();
-			token = userDO.googleLogin(googleLoginDTO.getEmail());
+			userBasicInformationDTO = userDO.googleSignIn(googleLoginDTO.getEmail());
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -244,7 +247,88 @@ public class UserBusinessService {
 				session.close();				
 			}
 		}			
-		return token;
+		return userBasicInformationDTO;
+	}
+	
+	public boolean checkUserExist(String userEmail){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		boolean status = false;
+		try {
+			transaction = session.beginTransaction();
+			
+			UserDO userDO = new UserDO();
+			status = userDO.isEmailExist(userEmail);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}			
+		return status;
+	}
+	
+	public String getOTP(String mobileNumber){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		String OTP = null;
+		try {
+			transaction = session.beginTransaction();
+			
+			OTPDO otpDO = new OTPDO();
+			OTP = otpDO.getOTP(mobileNumber);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}			
+		return OTP;
+	}
+	
+	public boolean validateOTP(String mobileNumber, String otp){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		boolean status = false;
+		try {
+			transaction = session.beginTransaction();
+			
+			OTPDO otpDO = new OTPDO();
+			status = otpDO.validateOTP(mobileNumber, otp);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}			
+		return status;
 	}
 
 }

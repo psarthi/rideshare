@@ -15,8 +15,9 @@ import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.model.user.dto.GoogleLoginDTO;
-import com.digitusrevolution.rideshare.model.user.dto.LoginDTO;
+import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInDTO;
+import com.digitusrevolution.rideshare.model.user.dto.SignInDTO;
+import com.digitusrevolution.rideshare.model.user.dto.UserBasicInformationDTO;
 import com.digitusrevolution.rideshare.model.user.dto.UserDTO;
 import com.digitusrevolution.rideshare.user.business.UserBusinessService;
 
@@ -72,7 +73,7 @@ public class UserBusinessResource {
 	 * @return List of User Domain models
 	 */
 	@GET
-	@Path("/{id}/potentialFriends")
+	@Path("/{id}/potentialfriends")
 	public Response findAllPotentialFriendsBasedOnEmailOrMobile(@PathParam("id") int userId, 
 			@QueryParam("emailIds") List<String> emailIds, 
 			@QueryParam("mobileNumbers") List<String> mobileNumbers){
@@ -91,7 +92,7 @@ public class UserBusinessResource {
 	 * @return status OK
 	 */
 	@POST
-	@Path("/{id}/friendRequest")
+	@Path("/{id}/friendrequest")
 	public Response sendFriendRequest(@PathParam("id") int userId, List<User> friends){
 		UserBusinessService userBusinessService = new UserBusinessService();
 		userBusinessService.sendFriendRequest(userId, friends);
@@ -105,7 +106,7 @@ public class UserBusinessResource {
 	 * @return status OK
 	 */
 	@POST
-	@Path("/{id}/acceptFriendRequest/{friendUserId}")
+	@Path("/{id}/acceptfriendRequest/{friendUserId}")
 	public Response acceptFriendRequest(@PathParam("id") int userId, @PathParam("friendUserId") int friendUserId){
 		UserBusinessService userBusinessService = new UserBusinessService();
 		userBusinessService.acceptFriendRequest(userId, friendUserId);
@@ -119,7 +120,7 @@ public class UserBusinessResource {
 	 * @return status OK
 	 */
 	@POST
-	@Path("/{id}/rejectFriendRequest/{friendUserId}")
+	@Path("/{id}/rejectfriendrequest/{friendUserId}")
 	public Response rejectFriendRequest(@PathParam("id") int userId, @PathParam("friendUserId") int friendUserId){
 		UserBusinessService userBusinessService = new UserBusinessService();
 		userBusinessService.rejectFriendRequest(userId, friendUserId);
@@ -130,27 +131,69 @@ public class UserBusinessResource {
 	 * 
 	 * @param email Id of the user 
 	 * @param password of the user
-	 * @return status OK with Login token
+	 * @return UserBasicInformation with token
 	 */
 	@POST
-	@Path("/login")
-	public Response login(LoginDTO loginDTO){
+	@Path("/signin")
+	public Response signIn(SignInDTO loginDTO){
 		UserBusinessService userBusinessService = new UserBusinessService();
-		String token = userBusinessService.login(loginDTO);
-		return Response.ok().header("Authorization", "Bearer "+token).build();
+		UserBasicInformationDTO userBasicInformationDTO = userBusinessService.signIn(loginDTO);
+		return Response.ok().entity(userBasicInformationDTO).build();
 	}
 	
 	/**
 	 * 
 	 * @param email Id of the user
-	 * @return status OK with Login token
+	 * @return UserBasicInformation with token
 	 */
 	@POST
-	@Path("/googleLogin")
-	public Response googleLogin(GoogleLoginDTO googleLoginDTO){
+	@Path("/googlesignin")
+	public Response googleSignIn(GoogleSignInDTO googleLoginDTO){
 		UserBusinessService userBusinessService = new UserBusinessService();
-		String token = userBusinessService.googleLogin(googleLoginDTO);
-		return Response.ok().header("Authorization", "Bearer "+token).build();
+		UserBasicInformationDTO userBasicInformationDTO = userBusinessService.googleSignIn(googleLoginDTO);
+		return Response.ok().entity(userBasicInformationDTO).build();
 	}
+	
+	/**
+	 * 
+	 * @param email Id of the user
+	 * @return boolean status if user exist or not
+	 */
+	@GET
+	@Path("/checkuserexist/{userEmail}")
+	public Response checkUserExist(@PathParam("userEmail") String userEmail){
+		UserBusinessService userBusinessService = new UserBusinessService();
+		boolean status = userBusinessService.checkUserExist(userEmail);
+		return Response.ok().entity(status).build();
+	}
+	
+	/**
+	 * 
+	 * @param Mobile number of the user
+	 * @return OTP
+	 */
+	@GET
+	@Path("/getotp/{mobileNumber}")
+	public Response getOTP(@PathParam("mobileNumber") String mobileNumber){
+		UserBusinessService userBusinessService = new UserBusinessService();
+		String OTP = userBusinessService.getOTP(mobileNumber);
+		return Response.ok().entity(OTP).build();
+	}
+	
+	/**
+	 * 
+	 * @param Mobile number of the user
+	 * @param OTP
+	 * @return boolean status if otp validation is success or failed
+	 */
+	@GET
+	@Path("/validateotp/{mobileNumber}/{otp}")
+	public Response validateOTP(@PathParam("mobileNumber") String mobileNumber, 
+			@PathParam("otp") String otp){
+		UserBusinessService userBusinessService = new UserBusinessService();
+		boolean status = userBusinessService.validateOTP(mobileNumber, otp);
+		return Response.ok().entity(status).build();
+	}
+
 
 }

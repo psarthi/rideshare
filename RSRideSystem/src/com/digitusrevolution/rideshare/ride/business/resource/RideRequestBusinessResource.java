@@ -11,7 +11,9 @@ import javax.ws.rs.core.Response;
 
 import org.geojson.FeatureCollection;
 
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.ride.business.RideOfferBusinessService;
 import com.digitusrevolution.rideshare.ride.business.RideRequestBusinessService;
 import com.digitusrevolution.rideshare.ride.business.RideSystemBusinessService;
 
@@ -55,5 +57,19 @@ public class RideRequestBusinessResource {
 		return Response.ok().entity(featureCollection).build();
 
 	}
+	
+	/**
+	 * 
+	 * @param passengerId Id of the User
+	 * @return immediate upcoming ride request
+	 */
+	@GET
+	@Path("/upcoming/{passengerId}")
+	public Response getUpcomingRideRequest(@PathParam("passengerId") int passengerId){
+		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
+		RideRequest upcomingRideRequest = rideRequestBusinessService.getUpcomingRideRequest(passengerId);
+		return Response.ok().entity(upcomingRideRequest).build();
+	}
+
 
 }

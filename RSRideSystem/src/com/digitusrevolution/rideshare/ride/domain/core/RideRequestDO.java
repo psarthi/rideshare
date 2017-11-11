@@ -27,13 +27,16 @@ import org.geojson.Polygon;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
+import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.math.google.LatLng;
 import com.digitusrevolution.rideshare.common.math.google.SphericalUtil;
 import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.common.util.external.LatLngBounds;
 import com.digitusrevolution.rideshare.common.util.external.RouteBoxer;
+import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
@@ -46,6 +49,8 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideRequestSearchResult;
+import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.ride.data.RideRequestDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
 import com.digitusrevolution.rideshare.ride.domain.TrustNetworkDO;
@@ -818,6 +823,25 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			}
 		}
 	}
+	
+	/*
+	 * Purpose - Get upcoming ride request
+	 */
+	public RideRequest getUpcomingRideRequest(int passengerId){		
+		User passenger = RESTClientUtil.getUser(passengerId);
+		UserMapper userMapper = new UserMapper();
+		//We don't need child object of User entity, just the basic user entity is fine as it primarily needs only PK
+		UserEntity passengerEntity = userMapper.getEntity(passenger, false);
+		RideRequestEntity rideRequestEntity = rideRequestDAO.getUpcomingRideRequest(passengerEntity);
+		if (rideRequestEntity!=null) {
+			setRideRequestEntity(rideRequestEntity);
+			return rideRequest;
+		}
+		else {
+			return null;
+		}
+	}
+
 }
 
 

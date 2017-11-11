@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
@@ -46,19 +47,35 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 	 * Purpose - Get all upcoming rides i.e. rides having start time greater than or equal to current time in UTC
 	 * 			 Result should be limited to the required count  
 	 */
-	public List<RideEntity> getUpcomingRides(UserEntity driver, int limit){
+	public List<RideEntity> getAllUpcomingRides(UserEntity driver, int limit){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
 		ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
-		String rideStatus = RideStatus.Planned.toString();
 		@SuppressWarnings("unchecked")
 		List<RideEntity> rideEntities = criteria.add(Restrictions.eq("driver", driver))
 		.add(Restrictions.ge("startTime", currentTime))
-		.add(Restrictions.or(Restrictions.eq("status", rideStatus)))
+		.add(Restrictions.or(Restrictions.eq("status", RideStatus.Planned)))
 		.setMaxResults(limit).list();		
 
 		return rideEntities;	
 	}
+	
+	/*
+	 * Purpose - Get upcoming ride
+	 */
+	public RideEntity getUpcomingRide(UserEntity driver){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass);
+		ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+		RideEntity rideEntity = (RideEntity) criteria.add(Restrictions.eq("driver", driver))
+		.add(Restrictions.ge("startTime", currentTime))
+		.add(Restrictions.or(Restrictions.eq("status", RideStatus.Planned)))
+		.addOrder(Order.asc("startTime"))
+		.setMaxResults(1).uniqueResult();	 
+
+		return rideEntity;
+	}
+
 
 	/*
 	 * Purpose - Get the status of ride, this is required many times, so instead of using get and then fetching the status

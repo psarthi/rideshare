@@ -335,13 +335,13 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	 * 
 	 * TBD - Do we need to support pagination.
 	 */
-	public List<Ride> getUpcomingRides(int driverId){		
+	public List<Ride> getAllUpcomingRides(int driverId){		
 		int limit = Integer.parseInt(PropertyReader.getInstance().getProperty("UPCOMING_RIDE_RESULT_LIMIT"));
-		User user = RESTClientUtil.getUser(driverId);
+		User driver = RESTClientUtil.getUser(driverId);
 		UserMapper userMapper = new UserMapper();
 		//We don't need child object of User entity, just the basic user entity is fine as it primarily needs only PK
-		UserEntity userEntity = userMapper.getEntity(user, false);
-		List<RideEntity> rideEntities = rideDAO.getUpcomingRides(userEntity, limit);
+		UserEntity driverEntity = userMapper.getEntity(driver, false);
+		List<RideEntity> rideEntities = rideDAO.getAllUpcomingRides(driverEntity, limit);
 		List<Ride> rides = new LinkedList<>();
 		for (RideEntity rideEntity : rideEntities) {
 			setRideEntity(rideEntity);
@@ -350,6 +350,22 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return rides;
 	}
 
+	/*
+	 * Purpose - Get upcoming ride
+	 */
+	public Ride getUpcomingRide(int driverId){		
+		User driver = RESTClientUtil.getUser(driverId);
+		UserMapper userMapper = new UserMapper();
+		//We don't need child object of User entity, just the basic user entity is fine as it primarily needs only PK
+		UserEntity driverEntity = userMapper.getEntity(driver, false);
+		RideEntity rideEntity = rideDAO.getUpcomingRide(driverEntity);
+		if (rideEntity != null) {
+			setRideEntity(rideEntity);
+			return ride;
+		}
+		return null;
+	}
+	
 	/*
 	 * Purpose - Search all rides which is matching ride requests criteria
 	 * 

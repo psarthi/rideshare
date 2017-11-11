@@ -13,6 +13,7 @@ import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.user.data.UserDAO;
+import com.digitusrevolution.rideshare.user.domain.OTPDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
 public class UserSystemTest {
@@ -29,7 +30,6 @@ public class UserSystemTest {
 
 			UserSystemTest userSystemTest = new UserSystemTest();
 			userSystemTest.test();
-
 			
 			transaction.commit();
 
@@ -42,6 +42,7 @@ public class UserSystemTest {
 				logger.error("Transaction Failed, Rolling Back");
 				transaction.rollback();
 				throw e;
+				
 			}
 		}
 		finally {
@@ -53,10 +54,10 @@ public class UserSystemTest {
 	}	
 	
 	public void test(){
-		UserDO userDO = new UserDO();
-		User user2 = userDO.get(1);
-		User user3 = userDO.getAllData(1);
-		System.out.println("End");
+		OTPDO otpdo = new OTPDO();
+		String otpNumber = otpdo.getOTP("+91 8123110015");
+		System.out.println("OTP Validation status:" + otpdo.validateOTP("+91 8123110015", otpNumber));
+		
 	}
 
 }

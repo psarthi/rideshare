@@ -10,6 +10,8 @@ import javax.ws.rs.core.UriBuilder;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.dto.RideDTO;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
@@ -149,6 +151,29 @@ public class RESTClientUtil {
 		Response response = restClientUtil.post(uri, rideDTO);
 		return response;
 	}
+	
+	public static Ride getUpcomingRide(int driverId){
+
+		RESTClientImpl<Ride> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_UPCOMING_RIDE");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Integer.toString(driverId));
+		Response response = restClientUtil.get(uri);
+		Ride ride= response.readEntity(Ride.class);
+		return ride;
+	}
+	
+	public static RideRequest getUpcomingRideRequest(int passengerId){
+
+		RESTClientImpl<RideRequest> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_UPCOMING_RIDE_REQUEST");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Integer.toString(passengerId));
+		Response response = restClientUtil.get(uri);
+		RideRequest rideRequest= response.readEntity(RideRequest.class);
+		return rideRequest;
+	}
+
 
 }
 

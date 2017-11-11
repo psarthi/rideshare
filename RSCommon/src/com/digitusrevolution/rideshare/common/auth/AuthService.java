@@ -1,12 +1,13 @@
 package com.digitusrevolution.rideshare.common.auth;
 
 import java.security.Key;
+import java.security.SecureRandom;
 import java.util.Base64;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.digitusrevolution.rideshare.common.inf.AuthService;
+import com.digitusrevolution.rideshare.common.inf.AuthServiceInf;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 
 import io.jsonwebtoken.Jwts;
@@ -14,12 +15,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.impl.crypto.MacProvider;
 
-public class JWTService implements AuthService{
+public class AuthService implements AuthServiceInf{
 	
-	private static final JWTService JWT_SERVICE = new JWTService();
+	private static final AuthService AUTH_SERVICE = new AuthService();
 	
-	public static JWTService getInstance() {
-		return JWT_SERVICE;
+	public static AuthService getInstance() {
+		return AUTH_SERVICE;
 	}
 	
 	public static String generateKey() {
@@ -58,5 +59,48 @@ public class JWTService implements AuthService{
 			return false;
 		}
 	}
+	
+	/*
+	 * This function is temporary and needs to be replaced with proper OTP generation logic
+	 */
+	public String getVerificationCode() {
+
+		SecureRandom secureRandom = new SecureRandom();
+		//This will generate 4 digit number always
+		int number = 1000 + secureRandom.nextInt(9000);
+		return Integer.toString(number);	
+	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

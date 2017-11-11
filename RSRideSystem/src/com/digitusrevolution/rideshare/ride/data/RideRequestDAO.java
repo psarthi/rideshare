@@ -1,20 +1,25 @@
 package com.digitusrevolution.rideshare.ride.data;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
+import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
+import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
 public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 	
@@ -39,6 +44,24 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 		Set<RideRequestEntity> rideRequestEntitiesSet = new HashSet<>(rideRequestEntities);
 		return rideRequestEntitiesSet;		
 	}
+	
+	/*
+	 * Purpose - Get upcoming ride request
+	 */
+	public RideRequestEntity getUpcomingRideRequest(UserEntity passenger){
+
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass);
+		ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+		RideRequestEntity rideRequestEntity = (RideRequestEntity) criteria.add(Restrictions.eq("passenger", passenger))
+		.add(Restrictions.ge("pickupTime", currentTime))
+		.add(Restrictions.or(Restrictions.ne("status", RideRequestStatus.Cancelled)))
+		.addOrder(Order.asc("pickupTime"))
+		.setMaxResults(1).uniqueResult();
+		
+		return rideRequestEntity;		
+	}
+
 
 	/*
 	 * Purpose - Get the status of ride request, this is required many times, so instead of using get and then fetching the status

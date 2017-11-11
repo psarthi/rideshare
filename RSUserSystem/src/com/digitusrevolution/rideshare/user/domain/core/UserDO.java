@@ -12,14 +12,18 @@ import javax.ws.rs.WebApplicationException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.engine.jdbc.connections.internal.UserSuppliedConnectionProviderImpl;
 
-import com.digitusrevolution.rideshare.common.auth.JWTService;
+import com.digitusrevolution.rideshare.common.auth.AuthService;
 import com.digitusrevolution.rideshare.common.exception.EmailExistException;
 import com.digitusrevolution.rideshare.common.exception.LoginFailedException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.billing.dto.RideDTO;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
@@ -28,6 +32,7 @@ import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
+import com.digitusrevolution.rideshare.model.user.dto.UserBasicInformationDTO;
 import com.digitusrevolution.rideshare.user.data.UserDAO;
 import com.digitusrevolution.rideshare.user.domain.CountryDO;
 import com.digitusrevolution.rideshare.user.domain.RoleDO;
@@ -115,7 +120,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 
 
 
-	private boolean isEmailExist(String userEmail){
+	public boolean isEmailExist(String userEmail){
 		if (userDAO.getUserByEmail(userEmail)==null){
 			return false;			
 		}
@@ -301,19 +306,30 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		return user;
 	}
 	
-	public String login(String email, String password) {
+	public UserBasicInformationDTO signIn(String email, String password) {
 		user = getUserByEmail(email);
 		if (user.getPassword().equals(password)) {
-			return JWTService.getInstance().getToken(user.getId());		
+			return getUserBasicInformationDTO(user);
 		} else {
 			throw new LoginFailedException("Login Failed");
 		}
 	}
-	
-	public String googleLogin(String email) {
-		user = getUserByEmail(email);
-		return JWTService.getInstance().getToken(user.getId());		
+
+	private UserBasicInformationDTO getUserBasicInformationDTO(User user) {
+		UserBasicInformationDTO userBasicInformationDTO = new UserBasicInformationDTO();
+		userBasicInformationDTO.setToken(AuthService.getInstance().getToken(user.getId()));
+		//Note - You don't have to get just basic profile of user as getUserByEmail has already got basic user profile.
+		userBasicInformationDTO.setUserProfile(user);
+		userBasicInformationDTO.setUpcomingRide(RESTClientUtil.getUpcomingRide(user.getId()));
+		userBasicInformationDTO.setUpcomingRideRequest(RESTClientUtil.getUpcomingRideRequest(user.getId()));
+		return userBasicInformationDTO;
 	}
+	
+	public UserBasicInformationDTO googleSignIn(String email) {
+		user = getUserByEmail(email);
+		return getUserBasicInformationDTO(user);		
+	}
+	
 }
 
 
