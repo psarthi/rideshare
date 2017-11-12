@@ -13,6 +13,7 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInDTO;
@@ -180,11 +181,12 @@ public class UserBusinessResource {
 	 * @return OTP
 	 */
 	@GET
+	@Secured
 	@Path("/getotp/{mobileNumber}")
 	public Response getOTP(@PathParam("mobileNumber") String mobileNumber){
 		UserBusinessService userBusinessService = new UserBusinessService();
 		String OTP = userBusinessService.getOTP(mobileNumber);
-		return Response.ok().entity(OTP).build();
+		return Response.ok().entity(OTP).build();			
 	}
 	
 	/**
@@ -194,6 +196,7 @@ public class UserBusinessResource {
 	 * @return boolean status if otp validation is success or failed
 	 */
 	@GET
+	@Secured
 	@Path("/validateotp/{mobileNumber}/{otp}")
 	public Response validateOTP(@PathParam("mobileNumber") String mobileNumber, 
 			@PathParam("otp") String otp){

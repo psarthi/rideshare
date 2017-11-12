@@ -3,8 +3,10 @@ package com.digitusrevolution.rideshare.user.domain.core;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;

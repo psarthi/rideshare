@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.model.common.ErrorMessage;
 
-//Not working properly, throwing error while converting errorMessage to JSON
 @Provider
 public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 

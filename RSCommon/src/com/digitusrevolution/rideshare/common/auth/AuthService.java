@@ -3,6 +3,8 @@ package com.digitusrevolution.rideshare.common.auth;
 import java.security.Key;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -10,6 +12,8 @@ import javax.crypto.spec.SecretKeySpec;
 import com.digitusrevolution.rideshare.common.inf.AuthServiceInf;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
@@ -36,10 +40,14 @@ public class AuthService implements AuthServiceInf{
 		return secretKey;
 	}
 	
+
 	public String getToken(int userId) {
+
+		Map<String, Object> claims = new HashMap<>();
+		claims.put("id",String.valueOf(userId));
 		
 		String compactJws = Jwts.builder()
-				  .setSubject(Integer.toString(userId))
+				  .setClaims(claims)
 				  .signWith(SignatureAlgorithm.HS512, getKey())
 				  .compact();
 		
@@ -50,7 +58,8 @@ public class AuthService implements AuthServiceInf{
 		
 		try {
 
-		    Jwts.parser().setSigningKey(getKey()).parseClaimsJws(token);
+		    Jws<Claims> parseClaimsJws = Jwts.parser().setSigningKey(getKey()).parseClaimsJws(token);
+		    System.out.println("Id in payload is:"+parseClaimsJws.getBody().get("id"));
 		    //OK, we can trust this JWT
 		    return true;
 		    
