@@ -18,6 +18,7 @@ public class GenericWebApplicationExceptionMapper implements ExceptionMapper<Web
 	@Override
 	public Response toResponse(WebApplicationException exception) {
 		
+		logger.debug("Caught in GenericWebApplicationExceptionMapper");
 		ErrorMessage errorMessage = null;
 		if (exception.getCause()!=null){
 			exception.printStackTrace();

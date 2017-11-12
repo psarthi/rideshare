@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import com.digitusrevolution.rideshare.model.common.ErrorMessage;
 
 //Not working properly, throwing error while converting errorMessage to JSON
-//@Provider
+@Provider
 public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 
 	private static final Logger logger = LogManager.getLogger(GenericExceptionMapper.class.getName());
@@ -23,6 +23,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 	@Override
 	public Response toResponse(Throwable exception) {
 		
+		logger.debug("Caught in GenericExceptionMapper");
 		ErrorMessage errorMessage = null;
 		int errorCode = Status.INTERNAL_SERVER_ERROR.getStatusCode();
 		if (exception.getCause()!=null){

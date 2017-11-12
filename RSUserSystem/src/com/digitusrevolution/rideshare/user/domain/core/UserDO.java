@@ -9,6 +9,7 @@ import java.util.List;
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -148,7 +149,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		boolean otpValidationStatus = otpdo.validateOTP(user.getMobileNumber(), otp); 
 		boolean emailStatus = isEmailExist(user.getEmail());
 		if (!otpValidationStatus){
-			throw new OTPFailedException("OTP Validation Failed");					
+			throw new OTPFailedException("OTP Validation Failed");
 		}
 		if (emailStatus){
 			throw new EmailExistException("Email id already exist :"+user.getEmail());					
