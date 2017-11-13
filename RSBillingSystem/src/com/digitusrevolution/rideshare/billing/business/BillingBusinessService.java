@@ -7,14 +7,14 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.billing.domain.core.BillDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
-import com.digitusrevolution.rideshare.model.billing.dto.BillDTO;
-import com.digitusrevolution.rideshare.model.billing.dto.RideDTO;
+import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
+import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 
 public class BillingBusinessService {
 	
 	private static final Logger logger = LogManager.getLogger(BillingBusinessService.class.getName());
 	
-	public int generateBill(RideDTO rideDTO){
+	public int generateBill(TripInfo tripInfo){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		int number = 0;
@@ -22,7 +22,7 @@ public class BillingBusinessService {
 			transaction = session.beginTransaction();
 
 			BillDO billDO = new BillDO();	
-			number = billDO.generateBill(rideDTO.getRide(), rideDTO.getRideRequest());
+			number = billDO.generateBill(tripInfo.getRide(), tripInfo.getRideRequest());
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -91,14 +91,14 @@ public class BillingBusinessService {
 		}
 	}
 
-	public void makePayment(BillDTO billDTO){
+	public void makePayment(BillInfo billInfo){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		try {
 			transaction = session.beginTransaction();
 
 			BillDO billDO = new BillDO();	
-			billDO.makePayment(billDTO.getBillNumber(), billDTO.getAccountType());
+			billDO.makePayment(billInfo.getBillNumber(), billInfo.getAccountType());
 			
 			transaction.commit();
 		} catch (RuntimeException e) {

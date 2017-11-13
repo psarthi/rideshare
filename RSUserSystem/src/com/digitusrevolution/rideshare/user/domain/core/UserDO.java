@@ -23,8 +23,15 @@ import com.digitusrevolution.rideshare.common.exception.SignInFailedException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
+import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
+import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
+import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
+import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
@@ -33,7 +40,9 @@ import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
-import com.digitusrevolution.rideshare.model.user.dto.UserBasicInformationDTO;
+import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
+import com.digitusrevolution.rideshare.model.user.dto.FullUser;
+import com.digitusrevolution.rideshare.model.user.dto.UserSignInResult;
 import com.digitusrevolution.rideshare.user.data.UserDAO;
 import com.digitusrevolution.rideshare.user.domain.CountryDO;
 import com.digitusrevolution.rideshare.user.domain.OTPDO;
@@ -314,28 +323,30 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		return user;
 	}
 	
-	public UserBasicInformationDTO signIn(String email, String password) {
+	public UserSignInResult signIn(String email, String password) {
 		user = getUserByEmail(email);
 		if (user.getPassword().equals(password)) {
-			return getUserBasicInformationDTO(user);
+			return getUserSignInResult(user);
 		} else {
 			throw new SignInFailedException("Login Failed");
 		}
 	}
 
-	private UserBasicInformationDTO getUserBasicInformationDTO(User user) {
-		UserBasicInformationDTO userBasicInformationDTO = new UserBasicInformationDTO();
-		userBasicInformationDTO.setToken(AuthService.getInstance().getToken(user.getId()));
+	private UserSignInResult getUserSignInResult(User user) {
+		UserSignInResult userSignInResult = new UserSignInResult();
+		userSignInResult.setToken(AuthService.getInstance().getToken(user.getId()));
 		//Note - You don't have to get just basic profile of user as getUserByEmail has already got basic user profile.
-		userBasicInformationDTO.setUserProfile(user);
-		userBasicInformationDTO.setUpcomingRide(RESTClientUtil.getUpcomingRide(user.getId()));
-		userBasicInformationDTO.setUpcomingRideRequest(RESTClientUtil.getUpcomingRideRequest(user.getId()));
-		return userBasicInformationDTO;
+		userSignInResult.setUserProfile(JsonObjectMapper.getMapper().convertValue(user, BasicUser.class));
+		Ride upcomingRide = RESTClientUtil.getUpcomingRide(user.getId());
+		userSignInResult.setUpcomingRide(JsonObjectMapper.getMapper().convertValue(upcomingRide, FullRide.class));
+		RideRequest upcomingRideRequest = RESTClientUtil.getUpcomingRideRequest(user.getId());
+		userSignInResult.setUpcomingRideRequest(JsonObjectMapper.getMapper().convertValue(upcomingRideRequest, FullRideRequest.class));
+		return userSignInResult;
 	}
 	
-	public UserBasicInformationDTO googleSignIn(String email) {
+	public UserSignInResult googleSignIn(String email) {
 		user = getUserByEmail(email);
-		return getUserBasicInformationDTO(user);		
+		return getUserSignInResult(user);		
 	}
 	
 }

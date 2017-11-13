@@ -12,13 +12,19 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.FriendRequest;
-import com.digitusrevolution.rideshare.model.user.domain.UserFeedback;
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.Preference;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.State;
+import com.digitusrevolution.rideshare.model.user.domain.UserFeedback;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+//This can help in getting just id instead of object but its causing issue while deserialization, so for now lets park it.
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property="id")
+//This would enable deserialization from DTO to Domain model e.g. UserDTO contain otp field which is not here, so it would be ignored
+//we don't want use jsonignore for otp field in userDTO else deserialization of userRegistration would remove otp and you would get null value for that
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
 	
 	private int id;
@@ -37,7 +43,7 @@ public class User {
 	private Collection<User> friends = new HashSet<User>();
 	private Collection<Role> roles = new HashSet<Role>();
 	private Collection<Account> accounts = new HashSet<Account>();
-	
+	//@JsonIdentityReference(alwaysAsId=true)
 	private Collection<Ride> ridesOffered = new HashSet<Ride>();
 	private Collection<Ride> ridesTaken = new HashSet<Ride>();
 	private Collection<RideRequest> rideRequests = new HashSet<RideRequest>();

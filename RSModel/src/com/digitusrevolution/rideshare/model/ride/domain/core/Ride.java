@@ -12,7 +12,14 @@ import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+//This can help in getting just id instead of object but its causing issue while deserialization, so for now lets park it.
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class Ride {
 
 	//id data type needs to be finalized later, whether to use int, long, string
@@ -30,7 +37,8 @@ public class Ride {
 	private RideStatus status;
 	private RideSeatStatus seatStatus;
 	private Vehicle vehicle;
-	private User driver; 
+	//@JsonIdentityReference(alwaysAsId=true)
+	private User driver;
 	private Collection<RidePassenger> ridePassengers = new HashSet<RidePassenger>();
 	private Collection<Bill> bills = new HashSet<Bill>();
 	private Collection<RideRequest> acceptedRideRequests = new HashSet<RideRequest>();

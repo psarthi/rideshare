@@ -16,10 +16,10 @@ import javax.ws.rs.core.Response;
 import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInDTO;
-import com.digitusrevolution.rideshare.model.user.dto.SignInDTO;
-import com.digitusrevolution.rideshare.model.user.dto.UserBasicInformationDTO;
-import com.digitusrevolution.rideshare.model.user.dto.UserDTO;
+import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInInfo;
+import com.digitusrevolution.rideshare.model.user.dto.SignInInfo;
+import com.digitusrevolution.rideshare.model.user.dto.UserSignInResult;
+import com.digitusrevolution.rideshare.model.user.dto.UserRegistration;
 import com.digitusrevolution.rideshare.user.business.UserBusinessService;
 
 @Path("/users")
@@ -33,18 +33,18 @@ public class UserBusinessResource {
 	 * @return UserBasicInformation with token
 	 */
 	@POST
-	public Response registerUser(UserDTO userDTO){
+	public Response registerUser(UserRegistration userRegistration){
 		
 		UserBusinessService userBusinessService = new UserBusinessService();
-		userBusinessService.registerUser(userDTO);
+		userBusinessService.registerUser(userRegistration);
 		//This is very important - Below code can't be placed in registerUser function in business service class as until n unless transaction is committed, 
 		//user information is not available from RideSystem which is trying to fetch upcoming ride related information on REST call. So by putting the statement below
 		//we are ensure first above transaction is completed and new transaction would be initiated for sign in
-		SignInDTO signInDTO = new SignInDTO();
-		signInDTO.setEmail(userDTO.getEmail());
-		signInDTO.setPassword(userDTO.getPassword());
-		UserBasicInformationDTO userBasicInformationDTO = userBusinessService.signIn(signInDTO);
-		return Response.ok().entity(userBasicInformationDTO).build();
+		SignInInfo signInInfo = new SignInInfo();
+		signInInfo.setEmail(userRegistration.getEmail());
+		signInInfo.setPassword(userRegistration.getPassword());
+		UserSignInResult userSignInResult = userBusinessService.signIn(signInInfo);
+		return Response.ok().entity(userSignInResult).build();
 	}
 
 	/**
@@ -143,10 +143,10 @@ public class UserBusinessResource {
 	 */
 	@POST
 	@Path("/signin")
-	public Response signIn(SignInDTO loginDTO){
+	public Response signIn(SignInInfo loginDTO){
 		UserBusinessService userBusinessService = new UserBusinessService();
-		UserBasicInformationDTO userBasicInformationDTO = userBusinessService.signIn(loginDTO);
-		return Response.ok().entity(userBasicInformationDTO).build();
+		UserSignInResult userSignInResult = userBusinessService.signIn(loginDTO);
+		return Response.ok().entity(userSignInResult).build();
 	}
 	
 	/**
@@ -156,10 +156,10 @@ public class UserBusinessResource {
 	 */
 	@POST
 	@Path("/googlesignin")
-	public Response googleSignIn(GoogleSignInDTO googleLoginDTO){
+	public Response googleSignIn(GoogleSignInInfo googleSignInInfo){
 		UserBusinessService userBusinessService = new UserBusinessService();
-		UserBasicInformationDTO userBasicInformationDTO = userBusinessService.googleSignIn(googleLoginDTO);
-		return Response.ok().entity(userBasicInformationDTO).build();
+		UserSignInResult userSignInResult = userBusinessService.googleSignIn(googleSignInInfo);
+		return Response.ok().entity(userSignInResult).build();
 	}
 	
 	/**

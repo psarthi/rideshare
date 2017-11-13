@@ -12,17 +12,24 @@ public class CountryMapper implements Mapper<Country, CountryEntity>{
 	public CountryEntity getEntity(Country country, boolean fetchChild) {
 		CountryEntity countryEntity = new CountryEntity();
 		countryEntity.setName(country.getName());
-		StateMapper stateMapper = new StateMapper();
-		countryEntity.setStates(stateMapper.getEntities(countryEntity.getStates(), country.getStates(), fetchChild));
 		CurrencyMapper currencyMapper = new CurrencyMapper();
 		countryEntity.setCurrency(currencyMapper.getEntity(country.getCurrency(), fetchChild));
 		FuelMapper fuelMapper = new FuelMapper();
 		countryEntity.setFuels(fuelMapper.getEntities(countryEntity.getFuels(), country.getFuels(), fetchChild));
+		
+		if (fetchChild){
+			countryEntity = getEntityChild(country, countryEntity);			
+		} 
+
 		return countryEntity;
 	}
 
 	@Override
 	public CountryEntity getEntityChild(Country country, CountryEntity countryEntity) {
+		
+		StateMapper stateMapper = new StateMapper();
+		countryEntity.setStates(stateMapper.getEntities(countryEntity.getStates(), country.getStates(), true));
+		
 		return countryEntity;
 	}
 
@@ -30,17 +37,23 @@ public class CountryMapper implements Mapper<Country, CountryEntity>{
 	public Country getDomainModel(CountryEntity countryEntity, boolean fetchChild) {
 		Country country = new Country();
 		country.setName(countryEntity.getName());
-		StateMapper stateMapper = new StateMapper();
-		country.setStates(stateMapper.getDomainModels(country.getStates(), countryEntity.getStates(), fetchChild));
 		CurrencyMapper currencyMapper = new CurrencyMapper();
 		country.setCurrency(currencyMapper.getDomainModel(countryEntity.getCurrency(), fetchChild));
 		FuelMapper fuelMapper = new FuelMapper();
 		country.setFuels(fuelMapper.getDomainModels(country.getFuels(), countryEntity.getFuels(), fetchChild));
+		
+		if (fetchChild){
+			country = getDomainModelChild(country, countryEntity);			
+		} 
+
 		return country;
 	}
 
 	@Override
 	public Country getDomainModelChild(Country country, CountryEntity countryEntity) {
+		StateMapper stateMapper = new StateMapper();
+		country.setStates(stateMapper.getDomainModels(country.getStates(), countryEntity.getStates(), true));
+
 		return country;
 	}
 

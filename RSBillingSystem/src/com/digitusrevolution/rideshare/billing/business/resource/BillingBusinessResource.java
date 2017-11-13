@@ -10,8 +10,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.billing.business.BillingBusinessService;
-import com.digitusrevolution.rideshare.model.billing.dto.BillDTO;
-import com.digitusrevolution.rideshare.model.billing.dto.RideDTO;
+import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
+import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 
 @Path("/billing")
 @Produces(MediaType.APPLICATION_JSON)
@@ -20,14 +20,14 @@ public class BillingBusinessResource {
 	
 	/**
 	 * 
-	 * @param rideDTO This contains Ride and Ride Request domain model
+	 * @param tripInfo This contains Ride and Ride Request domain model
 	 * @return billNumber
 	 */
 	@POST
 	@Path("/generatebill")
-	public Response generateBill(RideDTO rideDTO){
+	public Response generateBill(TripInfo tripInfo){
 		BillingBusinessService billingBusinessService = new BillingBusinessService();
-		int number = billingBusinessService.generateBill(rideDTO);
+		int number = billingBusinessService.generateBill(tripInfo);
 		return Response.ok(Integer.toString(number)).build();
 	}
 	
@@ -59,14 +59,14 @@ public class BillingBusinessResource {
 	
 	/**
 	 * 
-	 * @param billDTO DTO containing bill number with account which is primarily Passenger Account
+	 * @param billInfo DTO containing bill number with account which is primarily Passenger Account
 	 * @return status OK
 	 */
 	@POST
 	@Path("/pay")
-	public Response makePayment(BillDTO billDTO){
+	public Response makePayment(BillInfo billInfo){
 		BillingBusinessService billingBusinessService = new BillingBusinessService();
-		billingBusinessService.makePayment(billDTO);
+		billingBusinessService.makePayment(billInfo);
 		return Response.ok().build();
 	}
 

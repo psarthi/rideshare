@@ -13,13 +13,19 @@ public class StateMapper implements Mapper<State, StateEntity>{
 		StateEntity stateEntity = new StateEntity();
 		stateEntity.setId(state.getId());
 		stateEntity.setName(state.getName());
-		CityMapper cityMapper = new CityMapper();
-		stateEntity.setCities(cityMapper.getEntities(stateEntity.getCities(), state.getCities(), fetchChild));
+		
+		if (fetchChild) {
+			stateEntity = getEntityChild(state, stateEntity);
+		}
 		return stateEntity;
 	}
 
 	@Override
 	public StateEntity getEntityChild(State state, StateEntity stateEntity) {
+		
+		CityMapper cityMapper = new CityMapper();
+		stateEntity.setCities(cityMapper.getEntities(stateEntity.getCities(), state.getCities(), true));
+
 		return stateEntity;
 	}
 
@@ -28,13 +34,20 @@ public class StateMapper implements Mapper<State, StateEntity>{
 		State state = new State();
 		state.setId(stateEntity.getId());
 		state.setName(stateEntity.getName());
-		CityMapper cityMapper = new CityMapper();
-		state.setCities(cityMapper.getDomainModels(state.getCities(), stateEntity.getCities(), fetchChild));
+		
+		if (fetchChild) {
+			state = getDomainModelChild(state, stateEntity);
+		}
+		
 		return state;
 	}
 
 	@Override
 	public State getDomainModelChild(State state, StateEntity stateEntity) {
+		
+		CityMapper cityMapper = new CityMapper();
+		state.setCities(cityMapper.getDomainModels(state.getCities(), stateEntity.getCities(), true));
+
 		return state;
 	}
 

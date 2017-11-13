@@ -3,7 +3,7 @@ package com.digitusrevolution.rideshare.model.billing.dto;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 
-public class RideDTO {
+public class TripInfo {
 	
 	private Ride ride;
 	private RideRequest rideRequest;

@@ -6,15 +6,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.hql.internal.ast.tree.BooleanLiteralNode;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInDTO;
-import com.digitusrevolution.rideshare.model.user.dto.SignInDTO;
-import com.digitusrevolution.rideshare.model.user.dto.UserBasicInformationDTO;
-import com.digitusrevolution.rideshare.model.user.dto.UserDTO;
+import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInInfo;
+import com.digitusrevolution.rideshare.model.user.dto.SignInInfo;
+import com.digitusrevolution.rideshare.model.user.dto.UserSignInResult;
+import com.digitusrevolution.rideshare.model.user.dto.UserRegistration;
 import com.digitusrevolution.rideshare.user.domain.OTPDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
@@ -22,7 +22,7 @@ public class UserBusinessService {
 	
 	private static final Logger logger = LogManager.getLogger(UserBusinessService.class.getName());
 	
-	public int registerUser(UserDTO userDTO){
+	public int registerUser(UserRegistration userRegistration){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -31,8 +31,9 @@ public class UserBusinessService {
 			transaction = session.beginTransaction();
 			
 			UserDO userDO = new UserDO();
-			User user = getUser(userDTO);			
-			id = userDO.registerUser(user, userDTO.getOtp());							
+			
+			User user = JsonObjectMapper.getMapper().convertValue(userRegistration, User.class);			
+			id = userDO.registerUser(user, userRegistration.getOtp());							
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -52,21 +53,6 @@ public class UserBusinessService {
 		return id;
 	}
 
-	private User getUser(UserDTO userDTO) {
-		User user = new User();
-		user.setFirstName(userDTO.getFirstName());
-		user.setLastName(userDTO.getLastName());
-		user.setSex(userDTO.getSex());
-		user.setMobileNumber(userDTO.getMobileNumber());
-		user.setEmail(userDTO.getEmail());
-		user.setPassword(userDTO.getPassword());
-		user.setCity(userDTO.getCity());
-		user.setState(userDTO.getState());
-		user.setCountry(userDTO.getCountry());
-		user.setPhoto(userDTO.getPhoto());
-		return user;
-	}
-	
 	public void addAccount(int userId, Account account){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -196,15 +182,15 @@ public class UserBusinessService {
 
 	}
 	
-	public UserBasicInformationDTO signIn(SignInDTO signInDTO) {
+	public UserSignInResult signIn(SignInInfo signInDTO) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		UserBasicInformationDTO userBasicInformationDTO = null;
+		UserSignInResult userSignInResult = null;
 		try {
 			transaction = session.beginTransaction();
 			
 			UserDO userDO = new UserDO();
-			userBasicInformationDTO = userDO.signIn(signInDTO.getEmail(), signInDTO.getPassword());
+			userSignInResult = userDO.signIn(signInDTO.getEmail(), signInDTO.getPassword());
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -220,18 +206,18 @@ public class UserBusinessService {
 				session.close();				
 			}
 		}			
-		return userBasicInformationDTO;
+		return userSignInResult;
 	}
 	
-	public UserBasicInformationDTO googleSignIn(GoogleSignInDTO googleLoginDTO) {
+	public UserSignInResult googleSignIn(GoogleSignInInfo googleSignInInfo) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		UserBasicInformationDTO userBasicInformationDTO = null;
+		UserSignInResult userSignInResult = null;
 		try {
 			transaction = session.beginTransaction();
 			
 			UserDO userDO = new UserDO();
-			userBasicInformationDTO = userDO.googleSignIn(googleLoginDTO.getEmail());
+			userSignInResult = userDO.googleSignIn(googleSignInInfo.getEmail());
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -247,7 +233,7 @@ public class UserBusinessService {
 				session.close();				
 			}
 		}			
-		return userBasicInformationDTO;
+		return userSignInResult;
 	}
 	
 	public boolean checkUserExist(String userEmail){

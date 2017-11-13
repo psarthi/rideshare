@@ -7,7 +7,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.digitusrevolution.rideshare.model.user.dto.UserDTO;
+import com.digitusrevolution.rideshare.model.user.dto.UserRegistration;
 
 @Path("/domain/usersystem")
 @Produces(MediaType.APPLICATION_JSON)
@@ -16,12 +16,12 @@ public class UserSystemDomainResource {
 
 	/**
 	 * 
-	 * @return it will return userDTO model
+	 * @return it will return userRegistration model
 	 */
 	@GET
 	@Path("/model")
 	public Response getModel(){
-		UserDTO model = new UserDTO();
+		UserRegistration model = new UserRegistration();
 		return Response.ok().entity(model).build();
 	}
 }

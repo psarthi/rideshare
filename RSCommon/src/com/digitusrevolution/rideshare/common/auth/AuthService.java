@@ -2,7 +2,9 @@ package com.digitusrevolution.rideshare.common.auth;
 
 import java.security.Key;
 import java.security.SecureRandom;
+import java.time.ZonedDateTime;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,6 +51,8 @@ public class AuthService implements AuthServiceInf{
 		String compactJws = Jwts.builder()
 				  .setClaims(claims)
 				  .signWith(SignatureAlgorithm.HS512, getKey())
+				  .setIssuedAt(new Date())
+				  .setExpiration(Date.from(ZonedDateTime.now().plusMinutes(60).toInstant()))
 				  .compact();
 		
 		return compactJws;

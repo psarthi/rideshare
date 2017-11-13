@@ -2,7 +2,7 @@ package com.digitusrevolution.rideshare.model.billing.dto;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
 
-public class BillDTO {
+public class BillInfo {
 	private int billNumber;
 	private AccountType accountType;
 	public int getBillNumber() {

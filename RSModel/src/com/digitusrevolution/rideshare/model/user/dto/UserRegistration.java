@@ -6,7 +6,7 @@ import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.State;
 
-public class UserDTO {
+public class UserRegistration {
 	
 	private String firstName;
 	private String lastName;
