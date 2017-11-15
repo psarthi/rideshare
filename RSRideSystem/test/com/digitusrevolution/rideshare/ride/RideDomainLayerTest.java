@@ -75,9 +75,10 @@ public class RideDomainLayerTest {
 	public void test(){
 	
 		RideDO rideDO = new RideDO();
-		Ride currentRide = rideDO.getUpcomingRide(1);
-		System.out.println("Current Ride Id is:"+currentRide.getId());
-		System.out.println("Current Ride time is:"+currentRide.getStartTime());
+		rideDO.acceptRideRequest(1, 1);
+//		Ride currentRide = rideDO.getUpcomingRide(1);
+//		System.out.println("Current Ride Id is:"+currentRide.getId());
+//		System.out.println("Current Ride time is:"+currentRide.getStartTime());
 		
 //		rideDO.getUpcomingRides(1);
 		

@@ -18,6 +18,7 @@ import com.digitusrevolution.rideshare.common.mapper.user.StateMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.UserFeedbackMapper;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity;
+import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
@@ -33,12 +34,18 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		userEntity.setMobileNumber(user.getMobileNumber());
 		userEntity.setEmail(user.getEmail());
 		userEntity.setPassword(user.getPassword());
+		userEntity.setRegistrationType(user.getRegistrationType());
 		
 		CityMapper cityMapper = new CityMapper();
-		userEntity.setCity(cityMapper.getEntity(user.getCity(),fetchChild));
+		if (user.getCity()!=null) {
+			userEntity.setCity(cityMapper.getEntity(user.getCity(),fetchChild));			
+		}
+
 		
 		StateMapper stateMapper = new StateMapper();
-		userEntity.setState(stateMapper.getEntity(user.getState(), fetchChild));
+		if (user.getState()!=null) {
+			userEntity.setState(stateMapper.getEntity(user.getState(), fetchChild));			
+		}
 		
 		CountryMapper countryMapper = new CountryMapper();
 		userEntity.setCountry(countryMapper.getEntity(user.getCountry(), fetchChild));
@@ -126,13 +133,18 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		user.setMobileNumber(userEntity.getMobileNumber());
 		user.setEmail(userEntity.getEmail());
 		user.setPassword(userEntity.getPassword());
+		user.setRegistrationType(userEntity.getRegistrationType());
 
 		CityMapper cityMapper = new CityMapper();
-		user.setCity(cityMapper.getDomainModel(userEntity.getCity(), fetchChild));
+		if (userEntity.getCity()!=null) {
+			user.setCity(cityMapper.getDomainModel(userEntity.getCity(), fetchChild));
+		}
 		
 		StateMapper stateMapper = new StateMapper();
-		user.setState(stateMapper.getDomainModel(userEntity.getState(), fetchChild));
-		
+		if (userEntity.getState()!=null){
+			user.setState(stateMapper.getDomainModel(userEntity.getState(), fetchChild));			
+		}
+
 		CountryMapper countryMapper = new CountryMapper();
 		user.setCountry(countryMapper.getDomainModel(userEntity.getCountry(), fetchChild));
 		

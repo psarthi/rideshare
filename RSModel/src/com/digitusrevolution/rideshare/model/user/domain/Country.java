@@ -12,6 +12,7 @@ public class Country {
 	//Apart from that, variation of fuel prices are not that high, so avg price would do and maintenance would be less
 	private Collection<Fuel> fuels = new HashSet<Fuel>();
 	private Currency currency;
+	private String code;
 	
 	public String getName() {
 		return name;
@@ -64,6 +65,12 @@ public class Country {
 			return false;
 		}
 		return true;
+	}
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 }

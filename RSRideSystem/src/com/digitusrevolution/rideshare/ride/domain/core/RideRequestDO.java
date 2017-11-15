@@ -835,6 +835,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		RideRequestEntity rideRequestEntity = rideRequestDAO.getUpcomingRideRequest(passengerEntity);
 		if (rideRequestEntity!=null) {
 			setRideRequestEntity(rideRequestEntity);
+			fetchChild();
 			return rideRequest;
 		}
 		else {

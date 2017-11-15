@@ -14,6 +14,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.SignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.UserSignInResult;
+import com.digitusrevolution.rideshare.model.user.dto.UserStatus;
 import com.digitusrevolution.rideshare.model.user.dto.UserRegistration;
 import com.digitusrevolution.rideshare.user.domain.OTPDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
@@ -236,15 +237,17 @@ public class UserBusinessService {
 		return userSignInResult;
 	}
 	
-	public boolean checkUserExist(String userEmail){
+	public UserStatus checkUserExist(String userEmail){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		boolean status = false;
+		UserStatus userStatus = new UserStatus();
 		try {
 			transaction = session.beginTransaction();
 			
 			UserDO userDO = new UserDO();
 			status = userDO.isEmailExist(userEmail);
+			userStatus.setUserExist(status);
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -260,7 +263,7 @@ public class UserBusinessService {
 				session.close();				
 			}
 		}			
-		return status;
+		return userStatus;
 	}
 	
 	public String getOTP(String mobileNumber){

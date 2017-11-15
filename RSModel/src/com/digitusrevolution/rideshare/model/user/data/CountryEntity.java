@@ -29,6 +29,7 @@ public class CountryEntity {
 	private Collection<FuelEntity> fuels = new HashSet<FuelEntity>();
 	@ManyToOne (cascade=CascadeType.ALL)
 	private CurrencyEntity currency;
+	private String code;
 	
 	public String getName() {
 		return name;
@@ -81,6 +82,12 @@ public class CountryEntity {
 			return false;
 		}
 		return true;
+	}
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	

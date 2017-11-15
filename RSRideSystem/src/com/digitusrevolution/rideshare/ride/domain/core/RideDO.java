@@ -361,6 +361,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		RideEntity rideEntity = rideDAO.getUpcomingRide(driverEntity);
 		if (rideEntity != null) {
 			setRideEntity(rideEntity);
+			fetchChild();
 			return ride;
 		}
 		return null;

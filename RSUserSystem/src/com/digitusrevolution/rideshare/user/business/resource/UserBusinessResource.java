@@ -15,10 +15,12 @@ import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.user.domain.RegistrationType;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.SignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.UserSignInResult;
+import com.digitusrevolution.rideshare.model.user.dto.UserStatus;
 import com.digitusrevolution.rideshare.model.user.dto.UserRegistration;
 import com.digitusrevolution.rideshare.user.business.UserBusinessService;
 
@@ -40,10 +42,18 @@ public class UserBusinessResource {
 		//This is very important - Below code can't be placed in registerUser function in business service class as until n unless transaction is committed, 
 		//user information is not available from RideSystem which is trying to fetch upcoming ride related information on REST call. So by putting the statement below
 		//we are ensure first above transaction is completed and new transaction would be initiated for sign in
-		SignInInfo signInInfo = new SignInInfo();
-		signInInfo.setEmail(userRegistration.getEmail());
-		signInInfo.setPassword(userRegistration.getPassword());
-		UserSignInResult userSignInResult = userBusinessService.signIn(signInInfo);
+		UserSignInResult userSignInResult;
+		if (userRegistration.getRegistrationType().equals(RegistrationType.Google)) {
+			GoogleSignInInfo googleSignInInfo = new GoogleSignInInfo();
+			googleSignInInfo.setEmail(userRegistration.getEmail());
+			userSignInResult = userBusinessService.googleSignIn(googleSignInInfo);
+		}
+		else {
+			SignInInfo signInInfo = new SignInInfo();
+			signInInfo.setEmail(userRegistration.getEmail());
+			signInInfo.setPassword(userRegistration.getPassword());
+			userSignInResult = userBusinessService.signIn(signInInfo);			
+		}		
 		return Response.ok().entity(userSignInResult).build();
 	}
 
@@ -171,8 +181,8 @@ public class UserBusinessResource {
 	@Path("/checkuserexist/{userEmail}")
 	public Response checkUserExist(@PathParam("userEmail") String userEmail){
 		UserBusinessService userBusinessService = new UserBusinessService();
-		boolean status = userBusinessService.checkUserExist(userEmail);
-		return Response.ok().entity(status).build();
+		UserStatus userStatus = userBusinessService.checkUserExist(userEmail);
+		return Response.ok().entity(userStatus).build();
 	}
 	
 	/**
@@ -181,7 +191,7 @@ public class UserBusinessResource {
 	 * @return OTP
 	 */
 	@GET
-	@Secured
+	//@Secured
 	@Path("/getotp/{mobileNumber}")
 	public Response getOTP(@PathParam("mobileNumber") String mobileNumber){
 		UserBusinessService userBusinessService = new UserBusinessService();
@@ -196,7 +206,7 @@ public class UserBusinessResource {
 	 * @return boolean status if otp validation is success or failed
 	 */
 	@GET
-	@Secured
+	//@Secured
 	@Path("/validateotp/{mobileNumber}/{otp}")
 	public Response validateOTP(@PathParam("mobileNumber") String mobileNumber, 
 			@PathParam("otp") String otp){

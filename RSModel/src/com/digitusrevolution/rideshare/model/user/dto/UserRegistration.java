@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.model.user.dto;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
+import com.digitusrevolution.rideshare.model.user.domain.RegistrationType;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.State;
 
@@ -19,6 +20,7 @@ public class UserRegistration {
 	private Country country;
 	private Photo photo;
 	private String otp;
+	private RegistrationType registrationType;
 	
 	public String getFirstName() {
 		return firstName;
@@ -85,6 +87,12 @@ public class UserRegistration {
 	}
 	public void setOtp(String otp) {
 		this.otp = otp;
+	}
+	public RegistrationType getRegistrationType() {
+		return registrationType;
+	}
+	public void setRegistrationType(RegistrationType registrationType) {
+		this.registrationType = registrationType;
 	}
 
 }

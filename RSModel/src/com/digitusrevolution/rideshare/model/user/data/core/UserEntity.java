@@ -34,6 +34,7 @@ import com.digitusrevolution.rideshare.model.user.data.PreferenceEntity;
 import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
 import com.digitusrevolution.rideshare.model.user.data.StateEntity;
 import com.digitusrevolution.rideshare.model.user.data.UserFeedbackEntity;
+import com.digitusrevolution.rideshare.model.user.domain.RegistrationType;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 
 @Entity
@@ -107,6 +108,10 @@ public class UserEntity {
 	@ManyToMany
 	@JoinTable(name="user_group_invite",joinColumns=@JoinColumn(name="user_id"), inverseJoinColumns=@JoinColumn(name="group_id"))
 	private Collection<GroupEntity> groupInvites = new HashSet<GroupEntity>();
+	
+	@Column
+	@Enumerated(EnumType.STRING)
+	private RegistrationType registrationType;
 	
 	public int getId() {
 		return id;
@@ -353,6 +358,14 @@ public class UserEntity {
 
 	public void setGroupInvites(Collection<GroupEntity> groupInvites) {
 		this.groupInvites = groupInvites;
+	}
+
+	public RegistrationType getRegistrationType() {
+		return registrationType;
+	}
+
+	public void setRegistrationType(RegistrationType registrationType) {
+		this.registrationType = registrationType;
 	}
 	
 

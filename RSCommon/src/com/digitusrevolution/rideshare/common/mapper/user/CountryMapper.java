@@ -12,6 +12,7 @@ public class CountryMapper implements Mapper<Country, CountryEntity>{
 	public CountryEntity getEntity(Country country, boolean fetchChild) {
 		CountryEntity countryEntity = new CountryEntity();
 		countryEntity.setName(country.getName());
+		countryEntity.setCode(country.getCode());
 		CurrencyMapper currencyMapper = new CurrencyMapper();
 		countryEntity.setCurrency(currencyMapper.getEntity(country.getCurrency(), fetchChild));
 		FuelMapper fuelMapper = new FuelMapper();
@@ -37,6 +38,7 @@ public class CountryMapper implements Mapper<Country, CountryEntity>{
 	public Country getDomainModel(CountryEntity countryEntity, boolean fetchChild) {
 		Country country = new Country();
 		country.setName(countryEntity.getName());
+		country.setCode(countryEntity.getCode());
 		CurrencyMapper currencyMapper = new CurrencyMapper();
 		country.setCurrency(currencyMapper.getDomainModel(countryEntity.getCurrency(), fetchChild));
 		FuelMapper fuelMapper = new FuelMapper();

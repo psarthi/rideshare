@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <jardesc>
     <jar path="/Users/psarthi/Partha/workspace/build/model_v0.1/RSModel-0.0.1-SNAPSHOT.jar"/>
-    <options buildIfNeeded="true" compress="true" descriptionLocation="/RSModel/AndroidCustomExportJar.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/RSModel/AndroidCustomExportJar.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="true"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
-    <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
-        <sealing sealJar="false">
-            <packagesToSeal/>
-            <packagesToUnSeal/>
-        </sealing>
-    </manifest>
-    <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
+    <selectedElements exportClassFiles="false" exportJavaFiles="true" exportOutputFolder="false">
         <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.serviceprovider"/>
         <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.user.domain.core"/>
         <javaElement handleIdentifier="=RSModel/src&lt;com.digitusrevolution.rideshare.model.billing.data"/>

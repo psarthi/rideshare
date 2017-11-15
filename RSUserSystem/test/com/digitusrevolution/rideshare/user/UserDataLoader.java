@@ -91,6 +91,7 @@ public class UserDataLoader {
 		Country country = new Country();
 		country.setCurrency(currency);
 		country.setName("India");
+		country.setCode("+91");
 		
 		Fuel fuel = new Fuel();
 		fuel.setType(FuelType.Petrol);
