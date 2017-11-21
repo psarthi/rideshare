@@ -216,6 +216,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		boolean driverStatus = false;
 		//This will get travel distance from the first route and first leg
 		int travelDistance = direction.getRoutes().get(0).getLegs().get(0).getDistance().getValue();
+		long travelDuration = direction.getRoutes().get(0).getLegs().get(0).getDuration().getValue();
 		for (Role role : roles) {
 			if (role.getName().equals(RoleName.Driver)){
 				driverStatus = true;
@@ -227,7 +228,9 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 				}
 				ride.setTravelDistance(travelDistance);
 				ZonedDateTime startTimeUTC = ride.getStartTime().withZoneSameInstant(ZoneOffset.UTC);
-				ride.setStartTime(startTimeUTC);	
+				ZonedDateTime endTimeUTC = startTimeUTC.plusSeconds(travelDuration);
+				ride.setStartTime(startTimeUTC);
+				ride.setEndTime(endTimeUTC);
 				
 				//**IMP Problem - Trustnetwork gets created while creating the ride but we don't have its id and without id it will 
 				//recreate the trust network while updating the ride at later part of the this function as trust network id is the primary key
@@ -249,6 +252,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 						//This time needs to updated again while updating at later part else all rides would get
 						//last ride date and time
 						ride.setStartTime(startTimeUTC.plusDays(i));
+						ride.setEndTime(endTimeUTC.plusDays(i));
 						id = create(ride);	
 						rideIds.add(id);
 						logger.debug("Ride has been created with id:" + id);						
@@ -316,6 +320,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 						//This option can be relooked later but for now, we can just update the starttime again while updating
 						ride.setId(rideIds.get(i));
 						ride.setStartTime(startTimeUTC.plusDays(i));
+						ride.setEndTime(endTimeUTC.plusDays(i));
 						update(ride);
 						logger.debug("Ride has been updated with id:"+rideIds.get(i));
 					}
@@ -351,14 +356,14 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	}
 
 	/*
-	 * Purpose - Get upcoming ride
+	 * Purpose - Get current ride
 	 */
-	public Ride getUpcomingRide(int driverId){		
+	public Ride getCurrentRide(int driverId){		
 		User driver = RESTClientUtil.getUser(driverId);
 		UserMapper userMapper = new UserMapper();
 		//We don't need child object of User entity, just the basic user entity is fine as it primarily needs only PK
 		UserEntity driverEntity = userMapper.getEntity(driver, false);
-		RideEntity rideEntity = rideDAO.getUpcomingRide(driverEntity);
+		RideEntity rideEntity = rideDAO.getCurrentRide(driverEntity);
 		if (rideEntity != null) {
 			setRideEntity(rideEntity);
 			fetchChild();

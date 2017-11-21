@@ -20,6 +20,7 @@ public class BasicRide {
 	//id data type needs to be finalized later, whether to use int, long, string
 	private int id;
 	private ZonedDateTime startTime;
+	private ZonedDateTime endTime;
 	private RidePoint startPoint = new RidePoint();
 	private RidePoint endPoint = new RidePoint();
 	private int seatOffered;
@@ -116,5 +117,11 @@ public class BasicRide {
 	}
 	public void setSeatStatus(RideSeatStatus seatStatus) {
 		this.seatStatus = seatStatus;
+	}
+	public ZonedDateTime getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(ZonedDateTime endTime) {
+		this.endTime = endTime;
 	}	
 }

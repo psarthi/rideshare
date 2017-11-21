@@ -7,10 +7,9 @@ public class UserSignInResult {
 
 	private String token;
 	private BasicUser userProfile;
-	private FullRide upcomingRide;
-	private FullRideRequest upcomingRideRequest;
 	private FullRide currentRide;
 	private FullRideRequest currentRideRequest;
+	
 	public String getToken() {
 		return token;
 	}
@@ -22,18 +21,6 @@ public class UserSignInResult {
 	}
 	public void setUserProfile(BasicUser userProfile) {
 		this.userProfile = userProfile;
-	}
-	public FullRide getUpcomingRide() {
-		return upcomingRide;
-	}
-	public void setUpcomingRide(FullRide upcomingRide) {
-		this.upcomingRide = upcomingRide;
-	}
-	public FullRideRequest getUpcomingRideRequest() {
-		return upcomingRideRequest;
-	}
-	public void setUpcomingRideRequest(FullRideRequest upcomingRideRequest) {
-		this.upcomingRideRequest = upcomingRideRequest;
 	}
 	public FullRide getCurrentRide() {
 		return currentRide;
@@ -47,6 +34,5 @@ public class UserSignInResult {
 	public void setCurrentRideRequest(FullRideRequest currentRideRequest) {
 		this.currentRideRequest = currentRideRequest;
 	}
-	
 
 }

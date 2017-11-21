@@ -174,6 +174,21 @@ public class UserBusinessResource {
 	
 	/**
 	 * 
+	 * @param access token
+	 * @return UserBasicInformation with token
+	 */
+	@POST
+	@Secured
+	@Path("/signinwithtoken")
+	public Response signInWithToken(String token){
+		UserBusinessService userBusinessService = new UserBusinessService();
+		UserSignInResult userSignInResult = userBusinessService.signInWithToken(token);
+		return Response.ok().entity(userSignInResult).build();
+	}
+
+	
+	/**
+	 * 
 	 * @param email Id of the user
 	 * @return boolean status if user exist or not
 	 */

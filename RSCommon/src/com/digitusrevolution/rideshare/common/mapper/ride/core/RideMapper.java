@@ -25,6 +25,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		RideEntity rideEntity = new RideEntity();
 		rideEntity.setId(ride.getId());
 		rideEntity.setStartTime(ride.getStartTime());
+		rideEntity.setEndTime(ride.getEndTime());
 		//We need to just map Point ID in Hibernate as we are storing Point in MongoDB
 		rideEntity.setStartPointId(ride.getStartPoint().get_id());
 		rideEntity.setEndPointId(ride.getEndPoint().get_id());
@@ -111,6 +112,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		Ride ride = new Ride();
 		ride.setId(rideEntity.getId());
 		ride.setStartTime(rideEntity.getStartTime());
+		ride.setEndTime(rideEntity.getEndTime());
 		//We need to just map Point ID from Hibernate as we are storing Point in MongoDB
 		ride.getStartPoint().set_id(rideEntity.getStartPointId());
 		ride.getEndPoint().set_id(rideEntity.getEndPointId());

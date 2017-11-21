@@ -61,15 +61,15 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 	}
 	
 	/*
-	 * Purpose - Get upcoming ride
+	 * Purpose - Get current ride
 	 */
-	public RideEntity getUpcomingRide(UserEntity driver){
+	public RideEntity getCurrentRide(UserEntity driver){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
 		ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
 		RideEntity rideEntity = (RideEntity) criteria.add(Restrictions.eq("driver", driver))
-		.add(Restrictions.ge("startTime", currentTime))
-		.add(Restrictions.or(Restrictions.eq("status", RideStatus.Planned)))
+		.add(Restrictions.or(Restrictions.ge("startTime", currentTime),Restrictions.ge("endTime", currentTime)))
+		.add(Restrictions.or(Restrictions.eq("status", RideStatus.Planned),Restrictions.eq("status", RideStatus.Started)))
 		.addOrder(Order.asc("startTime"))
 		.setMaxResults(1).uniqueResult();	 
 

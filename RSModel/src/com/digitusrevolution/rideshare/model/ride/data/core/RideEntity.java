@@ -38,6 +38,7 @@ public class RideEntity {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	private ZonedDateTime startTime;
+	private ZonedDateTime endTime;
 	//We need to store just ridePointId in Hibernate as ridepoint is getting stored in MonogoDB
 	//Apart from that, we don't have Route details here as its stored in MongoDB, instead of Hibernate
 	private String startPointId;
@@ -250,6 +251,12 @@ public class RideEntity {
 	}
 	public void setSeatStatus(RideSeatStatus seatStatus) {
 		this.seatStatus = seatStatus;
+	}
+	public ZonedDateTime getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(ZonedDateTime endTime) {
+		this.endTime = endTime;
 	}
 
 }

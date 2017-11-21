@@ -152,10 +152,10 @@ public class RESTClientUtil {
 		return response;
 	}
 	
-	public static Ride getUpcomingRide(int driverId){
+	public static Ride getCurrentRide(int driverId){
 
 		RESTClientImpl<Ride> restClientUtil = new RESTClientImpl<>();
-		String url = PropertyReader.getInstance().getProperty("GET_UPCOMING_RIDE");
+		String url = PropertyReader.getInstance().getProperty("GET_CURRENT_RIDE");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
 		URI uri = uriBuilder.build(Integer.toString(driverId));
 		Response response = restClientUtil.get(uri);
@@ -163,10 +163,10 @@ public class RESTClientUtil {
 		return ride;
 	}
 	
-	public static RideRequest getUpcomingRideRequest(int passengerId){
+	public static RideRequest getCurrentRideRequest(int passengerId){
 
 		RESTClientImpl<RideRequest> restClientUtil = new RESTClientImpl<>();
-		String url = PropertyReader.getInstance().getProperty("GET_UPCOMING_RIDE_REQUEST");
+		String url = PropertyReader.getInstance().getProperty("GET_CURRENT_RIDE_REQUEST");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
 		URI uri = uriBuilder.build(Integer.toString(passengerId));
 		Response response = restClientUtil.get(uri);

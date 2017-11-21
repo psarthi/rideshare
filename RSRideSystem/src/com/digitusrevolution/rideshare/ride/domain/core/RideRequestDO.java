@@ -825,14 +825,14 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	}
 	
 	/*
-	 * Purpose - Get upcoming ride request
+	 * Purpose - Get current ride request
 	 */
-	public RideRequest getUpcomingRideRequest(int passengerId){		
+	public RideRequest getCurrentRideRequest(int passengerId){		
 		User passenger = RESTClientUtil.getUser(passengerId);
 		UserMapper userMapper = new UserMapper();
 		//We don't need child object of User entity, just the basic user entity is fine as it primarily needs only PK
 		UserEntity passengerEntity = userMapper.getEntity(passenger, false);
-		RideRequestEntity rideRequestEntity = rideRequestDAO.getUpcomingRideRequest(passengerEntity);
+		RideRequestEntity rideRequestEntity = rideRequestDAO.getCurrentRideRequest(passengerEntity);
 		if (rideRequestEntity!=null) {
 			setRideRequestEntity(rideRequestEntity);
 			fetchChild();

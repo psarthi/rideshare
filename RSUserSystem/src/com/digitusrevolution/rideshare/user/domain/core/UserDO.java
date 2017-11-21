@@ -326,7 +326,9 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	public UserSignInResult signIn(String email, String password) {
 		user = getUserByEmail(email);
 		if (user.getPassword().equals(password)) {
-			return getUserSignInResult(user);
+			UserSignInResult userSignInResult = getUserSignInResult(user);
+			userSignInResult.setToken(AuthService.getInstance().getToken(user.getId()));
+			return userSignInResult;
 		} else {
 			throw new SignInFailedException("Login Failed");
 		}
@@ -334,19 +336,28 @@ public class UserDO implements DomainObjectPKInteger<User>{
 
 	private UserSignInResult getUserSignInResult(User user) {
 		UserSignInResult userSignInResult = new UserSignInResult();
-		userSignInResult.setToken(AuthService.getInstance().getToken(user.getId()));
 		//Note - You don't have to get just basic profile of user as getUserByEmail has already got basic user profile.
 		userSignInResult.setUserProfile(JsonObjectMapper.getMapper().convertValue(user, BasicUser.class));
-		Ride upcomingRide = RESTClientUtil.getUpcomingRide(user.getId());
-		userSignInResult.setUpcomingRide(JsonObjectMapper.getMapper().convertValue(upcomingRide, FullRide.class));
-		RideRequest upcomingRideRequest = RESTClientUtil.getUpcomingRideRequest(user.getId());
-		userSignInResult.setUpcomingRideRequest(JsonObjectMapper.getMapper().convertValue(upcomingRideRequest, FullRideRequest.class));
+		Ride upcomingRide = RESTClientUtil.getCurrentRide(user.getId());
+		userSignInResult.setCurrentRide(JsonObjectMapper.getMapper().convertValue(upcomingRide, FullRide.class));
+		RideRequest upcomingRideRequest = RESTClientUtil.getCurrentRideRequest(user.getId());
+		userSignInResult.setCurrentRideRequest(JsonObjectMapper.getMapper().convertValue(upcomingRideRequest, FullRideRequest.class));
 		return userSignInResult;
 	}
 	
 	public UserSignInResult googleSignIn(String email) {
 		user = getUserByEmail(email);
-		return getUserSignInResult(user);		
+		UserSignInResult userSignInResult = getUserSignInResult(user);
+		userSignInResult.setToken(AuthService.getInstance().getToken(user.getId()));
+		return userSignInResult;		
+	}
+	
+	public UserSignInResult signInWithToken(String token) {
+		user = get(AuthService.getInstance().getUserId(token));
+		UserSignInResult userSignInResult = getUserSignInResult(user);
+		//Since token generation is based on the signIn type, so we have excluded this step from common getUserSignInResult function
+		userSignInResult.setToken(token);
+		return userSignInResult;		
 	}
 	
 }

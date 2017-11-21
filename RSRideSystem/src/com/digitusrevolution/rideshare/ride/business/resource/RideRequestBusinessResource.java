@@ -61,13 +61,13 @@ public class RideRequestBusinessResource {
 	/**
 	 * 
 	 * @param passengerId Id of the User
-	 * @return immediate upcoming ride request
+	 * @return current ride request
 	 */
 	@GET
-	@Path("/upcoming/{passengerId}")
+	@Path("/current/{passengerId}")
 	public Response getUpcomingRideRequest(@PathParam("passengerId") int passengerId){
 		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
-		RideRequest upcomingRideRequest = rideRequestBusinessService.getUpcomingRideRequest(passengerId);
+		RideRequest upcomingRideRequest = rideRequestBusinessService.getCurrentRideRequest(passengerId);
 		return Response.ok().entity(upcomingRideRequest).build();
 	}
 

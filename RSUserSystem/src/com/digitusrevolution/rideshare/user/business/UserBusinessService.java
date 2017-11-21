@@ -237,6 +237,34 @@ public class UserBusinessService {
 		return userSignInResult;
 	}
 	
+	public UserSignInResult signInWithToken(String token) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		UserSignInResult userSignInResult = null;
+		try {
+			transaction = session.beginTransaction();
+			
+			UserDO userDO = new UserDO();
+			userSignInResult = userDO.signInWithToken(token);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}			
+		return userSignInResult;
+	}
+
+	
 	public UserStatus checkUserExist(String userEmail){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	

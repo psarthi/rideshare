@@ -202,7 +202,7 @@ public class RideOfferBusinessService {
 		}	
 	}
 	
-	public Ride getUpcomingRide(int driverId){
+	public Ride getCurrentRide(int driverId){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -211,7 +211,7 @@ public class RideOfferBusinessService {
 			transaction = session.beginTransaction();
 		
 			RideDO rideDO = new RideDO();
-			upcomingRide = rideDO.getUpcomingRide(driverId);
+			upcomingRide = rideDO.getCurrentRide(driverId);
 
 			transaction.commit();
 		} catch (RuntimeException e) {

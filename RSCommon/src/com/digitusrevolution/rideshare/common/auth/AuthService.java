@@ -24,6 +24,7 @@ import io.jsonwebtoken.impl.crypto.MacProvider;
 public class AuthService implements AuthServiceInf{
 	
 	private static final AuthService AUTH_SERVICE = new AuthService();
+	private static final String ID_KEY = "id";
 	
 	public static AuthService getInstance() {
 		return AUTH_SERVICE;
@@ -46,7 +47,7 @@ public class AuthService implements AuthServiceInf{
 	public String getToken(int userId) {
 
 		Map<String, Object> claims = new HashMap<>();
-		claims.put("id",String.valueOf(userId));
+		claims.put(ID_KEY,String.valueOf(userId));
 		
 		String compactJws = Jwts.builder()
 				  .setClaims(claims)
@@ -63,7 +64,7 @@ public class AuthService implements AuthServiceInf{
 		try {
 
 		    Jws<Claims> parseClaimsJws = Jwts.parser().setSigningKey(getKey()).parseClaimsJws(token);
-		    System.out.println("Id in payload is:"+parseClaimsJws.getBody().get("id"));
+		    System.out.println("Id in payload is:"+parseClaimsJws.getBody().get(ID_KEY));
 		    //OK, we can trust this JWT
 		    return true;
 		    
@@ -82,6 +83,11 @@ public class AuthService implements AuthServiceInf{
 		//This will generate 4 digit number always
 		int number = 1000 + secureRandom.nextInt(9000);
 		return Integer.toString(number);	
+	}
+	
+	public int getUserId(String token) {
+		Jws<Claims> parseClaimsJws = Jwts.parser().setSigningKey(getKey()).parseClaimsJws(token);
+		return Integer.parseInt(parseClaimsJws.getBody().get(ID_KEY).toString());	
 	}
 
 }

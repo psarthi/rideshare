@@ -46,9 +46,9 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 	}
 	
 	/*
-	 * Purpose - Get upcoming ride request
+	 * Purpose - Get current ride request
 	 */
-	public RideRequestEntity getUpcomingRideRequest(UserEntity passenger){
+	public RideRequestEntity getCurrentRideRequest(UserEntity passenger){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
