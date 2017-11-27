@@ -2,14 +2,14 @@ var getURL = "http://localhost:8080/RSUserSystem/api/domain/users/1/roles";
 var postURL = "http://localhost:8080/RSRideSystem/api/domain/ridesystem/dummypost";
 var getJSONFormatURL = "http://localhost:8080/RSRideSystem/api/domain/ridesystem/model/ride";
 var getRideJSONFormatURL = "http://localhost:8080/RSRideSystem/api/domain/ridesystem/model/ride";
-var postRideURL = "http://localhost:8080/RSRideSystem/api/rides";
+var postRideURL = "http://localhost:8080/RSRideSystem/api/ridesystem/ride";
 var getRideRequestJSONFormatURL = "http://localhost:8080/RSRideSystem/api/domain/ridesystem/model/riderequest";
-var postRideRequestURL = "http://localhost:8080/RSRideSystem/api/riderequests";
+var postRideRequestURL = "http://localhost:8080/RSRideSystem/api/ridesystem/riderequest";
 var postData = { City: 'Bangalore', Age: 25 };
-var getAllRidesURL = "http://localhost:8080/RSRideSystem/api/ridesystem/rides/allpoints";
-var getAllRideRequestURL = "http://localhost:8080/RSRideSystem/api/ridesystem/riderequests/allpoints";
-var searchRidesURL = "http://localhost:8080/RSRideSystem/api/rides/search/{rideRequestId}";
-var searchRideRequestsURL = "http://localhost:8080/RSRideSystem/api/riderequests/search/{rideId}/0/0";
+var getAllRidesURL = "http://localhost:8080/RSRideSystem/api/ridesystem/ride/allpoints";
+var getAllRideRequestURL = "http://localhost:8080/RSRideSystem/api/ridesystem/riderequest/allpoints";
+var searchRidesURL = "http://localhost:8080/RSRideSystem/api/ridesystem/ride/search/{rideRequestId}";
+var searchRideRequestsURL = "http://localhost:8080/RSRideSystem/api/ridesystem/riderequest/search/{rideId}/0/0";
 var rideOfferDTO = { ride:'', googleDirection:null};
 
 /*

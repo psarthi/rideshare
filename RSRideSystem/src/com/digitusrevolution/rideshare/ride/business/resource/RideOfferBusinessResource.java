@@ -1,22 +1,19 @@
 package com.digitusrevolution.rideshare.ride.business.resource;
 
-import java.util.List;
-
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.geojson.FeatureCollection;
-
+import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferDTO;
 import com.digitusrevolution.rideshare.ride.business.RideOfferBusinessService;
-import com.digitusrevolution.rideshare.ride.business.RideSystemBusinessService;
+import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
+import com.digitusrevolution.rideshare.ride.domain.service.RideDomainService;
 
 @Path("/rides")
 @Produces(MediaType.APPLICATION_JSON)
@@ -32,84 +29,17 @@ public class RideOfferBusinessResource {
 	public Response offerRide(RideOfferDTO rideOfferDTO){
 	
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		List<Integer> rideIds = rideOfferBusinessService.offerRide(rideOfferDTO);
-		FeatureCollection featureCollection = new FeatureCollection();
-		for (Integer id : rideIds) {
-			RideSystemBusinessService rideSystemBusinessService = new  RideSystemBusinessService();
-			FeatureCollection rideFeatureCollection = rideSystemBusinessService.getRidePoints(id);
-			featureCollection.addAll(rideFeatureCollection.getFeatures());
-		}
-		return Response.ok().entity(featureCollection).build();
+		int id = rideOfferBusinessService.offerRide(rideOfferDTO);
+		//This is outside the offerRide function as offerRide is doing insert and without commit data would not reflect for another get
+		//i.e. accepted ride request is not reflecting on getAllData function as ride has not commited in the db
+		//So by splitting the request in two different transaction has helped to get the full details of newly created ride post
+		RideDomainService rideDomainService = new RideDomainService();
+		Ride createdRide = rideDomainService.get(id, true);
+		FullRide createdRideDTO = JsonObjectMapper.getMapper().convertValue(createdRide,FullRide.class);
+
+		return Response.ok(createdRideDTO).build();
 	}
 	
-	/**
-	 * 
-	 * @param driverId Id of the driver
-	 * @return list of rides
-	 */
-	@GET
-	@Path("/allupcoming/{driverId}")
-	public Response getAllUpcomingRides(@PathParam("driverId") int driverId){
-		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		List<Ride> upcomingRides = rideOfferBusinessService.getAllUpcomingRides(driverId);
-		return Response.ok().entity(upcomingRides).build();
-	}
-
-	/**
-	 * 
-	 * @param driverId Id of the driver
-	 * @return current ride
-	 */
-	@GET
-	@Path("/current/{driverId}")
-	public Response getCurrentRide(@PathParam("driverId") int driverId){
-		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		Ride upcomingRide = rideOfferBusinessService.getCurrentRide(driverId);
-		return Response.ok().entity(upcomingRide).build();
-	}
-
-	
-	/**
-	 * 
-	 * @param rideRequestId Ride Request Id
-	 * @return FeatureCollection containing matched rides information
-	 */
-	@GET
-	@Path("/search/{rideRequestId}")
-	public Response getMatchingRides(@PathParam("rideRequestId") int rideRequestId){
-		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		FeatureCollection featureCollection = rideOfferBusinessService.getMatchingRides(rideRequestId);
-		return Response.ok(featureCollection).build();		
-	}
-	
-	/**
-	 * 
-	 * @param rideId Ride Id
-	 * @param rideRequestId Ride Request Id
-	 * @return status OK
-	 */
-	@POST
-	@Path("/accept/{rideId}/{rideRequestId}")
-	public Response acceptRideRequest(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
-		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		rideOfferBusinessService.acceptRideRequest(rideId, rideRequestId);
-		return Response.ok().build();				
-	}
-
-	/**
-	 * 
-	 * @param rideId Ride Id
-	 * @param rideRequestId Ride Request Id
-	 * @return status OK
-	 */
-	@POST
-	@Path("/reject/{rideId}/{rideRequestId}")
-	public Response rejectRideRequest(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
-		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		rideOfferBusinessService.rejectRideRequest(rideId, rideRequestId);
-		return Response.ok().build();				
-	}
-
 }
 
 

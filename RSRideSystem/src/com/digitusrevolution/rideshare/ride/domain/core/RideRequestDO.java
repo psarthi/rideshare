@@ -842,7 +842,22 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			return null;
 		}
 	}
-
+	
+	public boolean autoMatchRideRequest(int rideId) {		
+		RideRequestSearchResult searchRideRequests = searchRideRequests(rideId, 0, 0);
+		List<MatchedTripInfo> matchedTripInfos = searchRideRequests.getMatchedTripInfos();
+		if (matchedTripInfos.size() > 0) {
+			RideDO rideDO = new RideDO();
+			//This will match the first ride request
+			rideDO.acceptRideRequest(rideId, matchedTripInfos.get(0).getRideRequestId());
+			logger.debug("Found Matching Ride Request for Ride ID:"+rideId);
+			return true;
+		} else {
+			logger.debug("No Matching Ride Request Found for Ride ID:"+rideId);
+			return false;
+		}		
+	}
+	
 }
 
 

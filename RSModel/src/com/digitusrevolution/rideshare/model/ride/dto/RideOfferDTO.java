@@ -1,17 +1,16 @@
 package com.digitusrevolution.rideshare.model.ride.dto;
 
-import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
 
 public class RideOfferDTO {
 
-	private Ride ride;
+	private BasicRide ride;
 	private GoogleDirection googleDirection;
 	
-	public Ride getRide() {
+	public BasicRide getRide() {
 		return ride;
 	}
-	public void setRide(Ride ride) {
+	public void setRide(BasicRide ride) {
 		this.ride = ride;
 	}
 	public GoogleDirection getGoogleDirection() {
