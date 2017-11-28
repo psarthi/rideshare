@@ -15,6 +15,7 @@ import org.hibernate.criterion.Restrictions;
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
@@ -37,7 +38,8 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 		Criteria criteria = session.createCriteria(entityClass);
 		@SuppressWarnings("unchecked")
 		List<RideEntity> rideEntities = criteria.add(Restrictions.in("id", rideIds))
-		.add(Restrictions.eq("status", RideStatus.Planned)).list();
+		.add(Restrictions.eq("status", RideStatus.Planned))
+		.add(Restrictions.eq("seatStatus", RideSeatStatus.Available)).list();
 
 		Set<RideEntity> rideEntitiesSet = new HashSet<>(rideEntities);
 		return rideEntitiesSet;		

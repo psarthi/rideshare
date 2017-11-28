@@ -522,6 +522,15 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		rideRequestSearchResult.setSearchDistance(distance);
 		rideRequestSearchResult.setResultLastIndex(resultEndIndex);
 		//rideRequestSearchResult.setMultiPolygon(polygonAroundRoute);
+		
+		JSONUtil<MatchedTripInfo> jsonUtil = new JSONUtil<>(MatchedTripInfo.class);
+		for (MatchedTripInfo matchedTripInfo : validMatchedTripInfos) {
+			logger.debug("Final Matching Trip Info:"+ jsonUtil.getJson(matchedTripInfo));	
+		}
+		if (validMatchedTripInfos.size() == 0) {
+			logger.debug("No matching Ride Request found for Ride Id:"+ rideId);
+		}
+
 		return rideRequestSearchResult;
 	}
 

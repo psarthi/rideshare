@@ -62,7 +62,11 @@ public class RideAction {
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
 		RideRequestStatus rideRequestStatus = rideRequest.getStatus();
-
+		
+		int seatOccupied = 0;
+		for (RideRequest acceptedRideRequest : ride.getAcceptedRideRequests()) {
+			seatOccupied += acceptedRideRequest.getSeatRequired();
+		}
 
 		//Check if ride request is unfulfilled
 		//Reason for re-checking status criteria as from the time of search to responding to it, 
@@ -76,7 +80,7 @@ public class RideAction {
 				//Apart from that seats required should be less than or equal to seats offered.
 				//Its important to re-check seats criteria as in between it may happen that number of seats which was initially free at the time of search,  
 				//partial seats may have been occupied.
-				if (rideRequest.getSeatRequired() <= ride.getSeatOffered()){
+				if (rideRequest.getSeatRequired() <= (ride.getSeatOffered() - seatOccupied)){
 					//Set accepted ride in ride request
 					//Note - By adding the ride request in the getAcceptedRideRequests collection, it will not update the ride id in the ride request table
 					//as ride is acceptedRideRequests relationship is owned by ride request entity and not ride (@OneToMany(mappedBy="acceptedRide"))
