@@ -416,8 +416,10 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 				logger.debug("Ride Id and Distance:" + rideId+","+distance);
 				polygonAroundRoute = getPolygonAroundRouteUsingRouteBoxer(ridePoints, distance);
 				rideRequestsMap = rideRequestPointDAO.getAllMatchingRideRequestWithinMultiPolygonOfRide(ride,polygonAroundRoute);
+				
 				rideRequestResultCount = rideRequestsMap.size();
 				logger.debug("Ride Request Result Count:"+rideRequestResultCount);
+
 				counter++;
 			}		
 			//**** Get Ride Requests inside polygon around the route - End 
@@ -435,11 +437,19 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 				for (Integer rideRequestId: rideRequestsMap.keySet()){
 					rideRequestsIdsFromPreviousResult.add(rideRequestId);
 				}
-
-				validMatchedTripInfos = processAndGetValidRideRequests(ride, ridePoints, rideRequestsMap);
-				rideRequestResultValidCount = validMatchedTripInfos.size();
+				
+				//This will process only new records
+				if (rideRequestsMap.size() > 0) {
+					validMatchedTripInfos = processAndGetValidRideRequests(ride, ridePoints, rideRequestsMap);
+					rideRequestResultValidCount = validMatchedTripInfos.size();										
+				}
+				
 			} //**** Get valid ride request with nearest ride pickup and drop points - End
-
+			
+			//This will reset the result count for inside while loop else it will get into infinite loop
+			//once this value is more than expected count and distance has not reached max
+			rideRequestResultCount = 0;
+			
 		}//End of loop for (rideRequestResultValidCount < expectedResultCount)
 
 		//*** Get Valid Ride Requests inside the polygon around route with closest ride pickup and drop points - End
