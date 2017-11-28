@@ -20,7 +20,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePointProperty;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
-import com.digitusrevolution.rideshare.model.ride.dto.RidePointDTO;
+import com.digitusrevolution.rideshare.model.ride.dto.RidePointInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideSearchPoint;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -153,7 +153,7 @@ public class RidePointDAO{
 	 *  
 	 * 1. Reason behind this function in this class instead of riderequestDAO as collection used is ride_point and not rideRequest_point 
 	 */
-	private Map<Integer, RidePointDTO> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, int rideId){
+	private Map<Integer, RidePointInfo> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, int rideId){
 
 		logger.trace("Ride Request Point:"+rideRequestPoint.getPoint().toString());	
 		long variationInSeconds = DateTimeUtil.getSeconds(rideRequestPoint.getTimeVariation());
@@ -240,33 +240,33 @@ public class RidePointDAO{
 			cursor.close();
 		}
 		logger.trace("Total Count" + count);		
-		return getRidePointDTOMap(rideSearchPointMap);
+		return getRidePointInfoMap(rideSearchPointMap);
 	}
 
-	public Map<Integer, RidePointDTO> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint){
+	public Map<Integer, RidePointInfo> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint){
 		return getAllMatchingRidePointNearGivenPoint(rideRequestPoint,-1);
 	}
 	
-	public RidePointDTO getRidePointOfSpecificRideNearGivenPoint(RideRequestPoint rideRequestPoint, int rideId){
-		Map<Integer, RidePointDTO> ridePointDTOMap = getAllMatchingRidePointNearGivenPoint(rideRequestPoint,rideId);	
-		return ridePointDTOMap.get(rideId);
+	public RidePointInfo getRidePointOfSpecificRideNearGivenPoint(RideRequestPoint rideRequestPoint, int rideId){
+		Map<Integer, RidePointInfo> ridePointInfoMap = getAllMatchingRidePointNearGivenPoint(rideRequestPoint,rideId);	
+		return ridePointInfoMap.get(rideId);
 	}
 
 	
-	private Map<Integer, RidePointDTO> getRidePointDTOMap(Map<Integer, RideSearchPoint> rideSearchPointMap){
-		Map<Integer, RidePointDTO> ridePointDTOMap = new HashMap<>();
+	private Map<Integer, RidePointInfo> getRidePointInfoMap(Map<Integer, RideSearchPoint> rideSearchPointMap){
+		Map<Integer, RidePointInfo> ridePointInfoMap = new HashMap<>();
 
 		for (Map.Entry<Integer, RideSearchPoint> entry: rideSearchPointMap.entrySet() ) {
 			RideSearchPoint rideSearchPoint = entry.getValue();
 			Integer rideId = entry.getKey();
 			RidePoint ridePoint = getRidePoint(rideSearchPoint);
-			RidePointDTO ridePointDTO = new RidePointDTO();
-			ridePointDTO.setRidePoint(ridePoint);
-			ridePointDTO.setDistance(rideSearchPoint.getDistance());
-			ridePointDTOMap.put(rideId, ridePointDTO);
-			logger.trace(ridePointDTO.toString());
+			RidePointInfo ridePointInfo = new RidePointInfo();
+			ridePointInfo.setRidePoint(ridePoint);
+			ridePointInfo.setDistance(rideSearchPoint.getDistance());
+			ridePointInfoMap.put(rideId, ridePointInfo);
+			logger.trace(ridePointInfo.toString());
 		}	
-		return ridePointDTOMap;
+		return ridePointInfoMap;
 	}
 
 	private RidePoint getRidePoint(RideSearchPoint rideSearchPoint) {

@@ -15,7 +15,7 @@ import org.geojson.FeatureCollection;
 
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
-import com.digitusrevolution.rideshare.model.ride.dto.RideOfferDTO;
+import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
 import com.digitusrevolution.rideshare.ride.business.RideOfferBusinessService;
 import com.digitusrevolution.rideshare.ride.business.RideRequestBusinessService;
 import com.digitusrevolution.rideshare.ride.business.RideSystemBusinessService;
@@ -77,15 +77,15 @@ public class RideSystemBusinessResource {
 	
 	/**
 	 * 
-	 * @param rideOfferDTO Ride domain model with additional information e.g. google Direction
+	 * @param rideOfferInfo Ride domain model with additional information e.g. google Direction
 	 * @return FeatureCollection containing offered ride information
 	 */
 	@POST
 	@Path("/ride")
-	public Response offerRide(RideOfferDTO rideOfferDTO){
+	public Response offerRide(RideOfferInfo rideOfferInfo){
 	
 		RideSystemBusinessService rideSystemBusinessService = new RideSystemBusinessService();
-		List<Integer> rideIds = rideSystemBusinessService.offerRide(rideOfferDTO);
+		List<Integer> rideIds = rideSystemBusinessService.offerRide(rideOfferInfo);
 		FeatureCollection featureCollection = new FeatureCollection();
 		for (Integer id : rideIds) {
 			FeatureCollection rideFeatureCollection = rideSystemBusinessService.getRidePoints(id);
@@ -134,20 +134,6 @@ public class RideSystemBusinessResource {
 		return Response.ok(featureCollection).build();		
 	}
 	
-	/**
-	 * 
-	 * @param rideId Ride Id
-	 * @param rideRequestId Ride Request Id
-	 * @return status OK
-	 */
-	@POST
-	@Path("/ride/accept/{rideId}/{rideRequestId}")
-	public Response acceptRideRequest(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
-		RideSystemBusinessService rideSystemBusinessService = new RideSystemBusinessService();
-		rideSystemBusinessService.acceptRideRequest(rideId, rideRequestId);
-		return Response.ok().build();				
-	}
-
 	/**
 	 * 
 	 * @param rideId Ride Id

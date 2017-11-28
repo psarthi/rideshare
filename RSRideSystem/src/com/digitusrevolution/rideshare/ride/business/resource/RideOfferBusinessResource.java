@@ -10,7 +10,8 @@ import javax.ws.rs.core.Response;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
-import com.digitusrevolution.rideshare.model.ride.dto.RideOfferDTO;
+import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
+import com.digitusrevolution.rideshare.model.ride.dto.RideOfferResult;
 import com.digitusrevolution.rideshare.ride.business.RideOfferBusinessService;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.service.RideDomainService;
@@ -22,22 +23,17 @@ public class RideOfferBusinessResource {
 	
 	/**
 	 * 
-	 * @param rideOfferDTO Ride domain model with additional information e.g. google Direction
+	 * @param rideOfferInfo Ride domain model with additional information e.g. google Direction
 	 * @return FeatureCollection containing offered ride information
 	 */
 	@POST
-	public Response offerRide(RideOfferDTO rideOfferDTO){
+	public Response offerRide(RideOfferInfo rideOfferInfo){
 	
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		int id = rideOfferBusinessService.offerRide(rideOfferDTO);
-		//This is outside the offerRide function as offerRide is doing insert and without commit data would not reflect for another get
-		//i.e. accepted ride request is not reflecting on getAllData function as ride has not commited in the db
-		//So by splitting the request in two different transaction has helped to get the full details of newly created ride post
-		RideDomainService rideDomainService = new RideDomainService();
-		Ride createdRide = rideDomainService.get(id, true);
-		FullRide createdRideDTO = JsonObjectMapper.getMapper().convertValue(createdRide,FullRide.class);
-
-		return Response.ok(createdRideDTO).build();
+		int id = rideOfferBusinessService.offerRide(rideOfferInfo);
+		//Since we are trying to get all data before even committing, all child objects may not come so its cleaner to have getAllData post commit in different transaction
+		RideOfferResult rideOfferResult = rideOfferBusinessService.getRideOfferResult(id);
+		return Response.ok(rideOfferResult).build();
 	}
 	
 }

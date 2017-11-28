@@ -32,10 +32,10 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 
 		rideEntity.setSeatOffered(ride.getSeatOffered());
 		rideEntity.setLuggageCapacityOffered(ride.getLuggageCapacityOffered());
+		rideEntity.setSexPreference(ride.getSexPreference());
 		rideEntity.setRecur(ride.getRecur());
 		rideEntity.setStatus(ride.getStatus());
 		rideEntity.setSeatStatus(ride.getSeatStatus());
-		rideEntity.setSexPreference(ride.getSexPreference());
 		rideEntity.setTravelDistance(ride.getTravelDistance());
 
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
@@ -119,10 +119,10 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 
 		ride.setSeatOffered(rideEntity.getSeatOffered());
 		ride.setLuggageCapacityOffered(rideEntity.getLuggageCapacityOffered());
+		ride.setSexPreference(rideEntity.getSexPreference());
 		ride.setRecur(rideEntity.getRecur());
 		ride.setStatus(rideEntity.getStatus());
 		ride.setSeatStatus(rideEntity.getSeatStatus());
-		ride.setSexPreference(rideEntity.getSexPreference());
 		ride.setTravelDistance(rideEntity.getTravelDistance());
 
 

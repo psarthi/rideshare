@@ -2,7 +2,7 @@ package com.digitusrevolution.rideshare.model.ride.dto;
 
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
 
-public class RideOfferDTO {
+public class RideOfferInfo {
 
 	private BasicRide ride;
 	private GoogleDirection googleDirection;

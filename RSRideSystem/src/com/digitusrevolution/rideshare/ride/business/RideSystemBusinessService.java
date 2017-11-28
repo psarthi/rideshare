@@ -20,7 +20,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
-import com.digitusrevolution.rideshare.model.ride.dto.RideOfferDTO;
+import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDistance;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
@@ -48,7 +48,7 @@ public class RideSystemBusinessService {
 	 * 
 	 * 
 	 */
-	public List<Integer> offerRide(RideOfferDTO rideOfferDTO){
+	public List<Integer> offerRide(RideOfferInfo rideOfferInfo){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -56,9 +56,9 @@ public class RideSystemBusinessService {
 		try {
 			transaction = session.beginTransaction();
 			
-			BasicRide basicRide = rideOfferDTO.getRide();
+			BasicRide basicRide = rideOfferInfo.getRide();
 			Ride ride = JsonObjectMapper.getMapper().convertValue(basicRide, Ride.class);
-			GoogleDirection googleDirection = rideOfferDTO.getGoogleDirection();
+			GoogleDirection googleDirection = rideOfferInfo.getGoogleDirection();
 			
 			//Start - Temp. Code to work with Web frontend, it will be removed and direction needs to be passed as a parameter to this call
 			ZonedDateTime startTimeUTC = ride.getStartTime().withZoneSameInstant(ZoneOffset.UTC);
@@ -330,31 +330,6 @@ public int requestRide(RideRequest rideRequest){
 			}
 		}
 		return featureCollection;	
-	}
-	
-	public void acceptRideRequest(int rideId, int rideRequestId){
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transaction = null;	
-		try {
-			transaction = session.beginTransaction();
-
-			RideDO rideDO = new RideDO();
-			rideDO.acceptRideRequest(rideId, rideRequestId);;			
-
-			transaction.commit();
-		} catch (RuntimeException e) {
-			if (transaction!=null){
-				logger.error("Transaction Failed, Rolling Back");
-				transaction.rollback();
-				throw e;
-			}
-		}
-		finally {
-			if (session.isOpen()){
-				logger.info("Closing Session");
-				session.close();				
-			}
-		}	
 	}
 	
 	public void rejectRideRequest(int rideId, int rideRequestId){

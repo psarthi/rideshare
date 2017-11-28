@@ -19,7 +19,8 @@ import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
-import com.digitusrevolution.rideshare.model.ride.dto.RideOfferDTO;
+import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
+import com.digitusrevolution.rideshare.model.ride.dto.RideOfferResult;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
@@ -44,7 +45,7 @@ public class RideOfferBusinessService {
 	 * 
 	 * 
 	 */
-	public int offerRide(RideOfferDTO rideOfferDTO){
+	public int offerRide(RideOfferInfo rideOfferInfo){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -52,9 +53,9 @@ public class RideOfferBusinessService {
 		try {
 			transaction = session.beginTransaction();
 			
-			BasicRide basicRide = rideOfferDTO.getRide();
+			BasicRide basicRide = rideOfferInfo.getRide();
 			Ride ride = JsonObjectMapper.getMapper().convertValue(basicRide, Ride.class);
-			GoogleDirection googleDirection = rideOfferDTO.getGoogleDirection();
+			GoogleDirection googleDirection = rideOfferInfo.getGoogleDirection();
 			
 			//Start - Temp. Code to work with Web frontend, it will be removed and direction needs to be passed as a parameter to this call
 			ZonedDateTime startTimeUTC = ride.getStartTime().withZoneSameInstant(ZoneOffset.UTC);
@@ -86,6 +87,42 @@ public class RideOfferBusinessService {
 		}
 		
 		return rideId;
+	}
+	
+	public RideOfferResult getRideOfferResult(int rideId){
+		
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		RideOfferResult rideOfferResult = null;
+		try {
+			transaction = session.beginTransaction();
+			
+			rideOfferResult = new RideOfferResult();
+			RideDO rideDO = new RideDO();
+			//Since we are trying to get all data before even committing, all child objects may not come so its cleaner to have getAllData post commit in different transaction
+			Ride ride = rideDO.getAllData(rideId);
+			rideOfferResult.setRide(JsonObjectMapper.getMapper().convertValue(ride, FullRide.class));
+			Ride currentRide = rideDO.getCurrentRide(ride.getDriver().getId());
+			
+			if (ride.getId() == currentRide.getId()) {
+				rideOfferResult.setCurrentRide(true);
+			}
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return rideOfferResult;
 	}
 	
 }

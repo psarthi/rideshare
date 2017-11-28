@@ -2,7 +2,7 @@ package com.digitusrevolution.rideshare.model.ride.dto;
 
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 
-public class RidePointDTO {
+public class RidePointInfo {
 	
 	private RidePoint ridePoint;
 	private double distance;
@@ -40,10 +40,10 @@ public class RidePointDTO {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof RidePointDTO)) {
+		if (!(obj instanceof RidePointInfo)) {
 			return false;
 		}
-		RidePointDTO other = (RidePointDTO) obj;
+		RidePointInfo other = (RidePointInfo) obj;
 		if (ridePoint == null) {
 			if (other.ridePoint != null) {
 				return false;

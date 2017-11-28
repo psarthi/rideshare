@@ -51,6 +51,7 @@ import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideRequestSearchResult;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
 import com.digitusrevolution.rideshare.ride.domain.TrustNetworkDO;
@@ -82,13 +83,26 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	private void setRideRequestEntity(RideRequestEntity rideRequestEntity) {
 		this.rideRequestEntity = rideRequestEntity;
 		rideRequest = rideRequestMapper.getDomainModel(rideRequestEntity, false);
-		setRideRequestPoint(rideRequest);
+		setRideRequestPoints(rideRequest);
+	}
+
+	//This will set Ride Start and End Points of all Rides reference the Ride Request
+	private void setRideStartAndEndPoints() {
+		RideDO rideDO = new RideDO();
+		if (rideRequest.getAcceptedRide() != null) rideDO.setRideStartAndEndPoints(rideRequest.getAcceptedRide());	
+		for (Ride ride : rideRequest.getCancelledRides()) {
+			rideDO.setRideStartAndEndPoints(ride);
+		}
+		for (Ride ride : rideRequest.getPreferredRides()) {
+			rideDO.setRideStartAndEndPoints(ride);
+		}
 	}
 
 	@Override
 	public void fetchChild() {
 		rideRequest = rideRequestMapper.getDomainModelChild(rideRequest, rideRequestEntity);
-
+		//This will set Ride Start and End Points details in all reference Rides for this Ride Request
+		setRideStartAndEndPoints();
 	}
 
 	@Override
@@ -160,11 +174,19 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	/*
 	 * This method doesn't return but set ride request points in the ride request object itself 
 	 */
-	private void setRideRequestPoint(RideRequest rideRequest) {
+	public void setRideRequestPoints(RideRequest rideRequest) {
 		RideRequestPoint pickupPoint = rideRequestPointDAO.get(rideRequest.getPickupPoint().get_id());
 		RideRequestPoint dropPoint = rideRequestPointDAO.get(rideRequest.getDropPoint().get_id());
 		rideRequest.setPickupPoint(pickupPoint);
 		rideRequest.setDropPoint(dropPoint);
+		//No need to match for both the points as if one is there by default another one would also be there
+		if (rideRequest.getRidePickupPoint().get_id() != null) {
+			RidePointDAO ridePointDAO = new RidePointDAO();
+			RidePoint ridePickupPoint = ridePointDAO.get(rideRequest.getRidePickupPoint().get_id());
+			RidePoint rideDropPoint = ridePointDAO.get(rideRequest.getRideDropPoint().get_id());
+			rideRequest.setRidePickupPoint(ridePickupPoint);
+			rideRequest.setRideDropPoint(rideDropPoint);			
+		}
 	}
 
 	@Override
@@ -849,7 +871,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		if (matchedTripInfos.size() > 0) {
 			RideDO rideDO = new RideDO();
 			//This will match the first ride request
-			rideDO.acceptRideRequest(rideId, matchedTripInfos.get(0).getRideRequestId());
+			rideDO.acceptRideRequest(matchedTripInfos.get(0));
 			logger.debug("Found Matching Ride Request for Ride ID:"+rideId);
 			return true;
 		} else {

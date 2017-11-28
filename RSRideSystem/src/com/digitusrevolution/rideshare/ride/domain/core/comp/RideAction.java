@@ -18,6 +18,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
+import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RidePassengerDO;
@@ -52,7 +53,9 @@ public class RideAction {
 	 * - If its equal, change the status of ride to fulfilled
 	 * 
 	 */
-	public void acceptRideRequest(int rideId, int rideRequestId){
+	public void acceptRideRequest(MatchedTripInfo matchedTripInfo){
+		int rideId = matchedTripInfo.getRideId();
+		int rideRequestId = matchedTripInfo.getRideRequestId();
 		Ride ride = rideDO.getAllData(rideId);
 		RideStatus rideStatus = ride.getStatus();
 		RideSeatStatus rideSeatStatus = ride.getSeatStatus();
@@ -80,6 +83,9 @@ public class RideAction {
 					rideRequest.setAcceptedRide(ride);
 					//Change ride request status to accept status
 					rideRequest.setStatus(RideRequestStatus.Fulfilled);
+					//Set Ride Pickup & Drop Points
+					rideRequest.setRidePickupPoint(matchedTripInfo.getRidePickupPoint());
+					rideRequest.setRideDropPoint(matchedTripInfo.getRideDropPoint());
 					//Adding passenger
 					RidePassenger ridePassenger = new RidePassenger();
 					ridePassenger.setPassenger(rideRequest.getPassenger());
@@ -108,7 +114,6 @@ public class RideAction {
 		else{
 			throw new RideRequestUnavailableException("Ride Request is not available anymore with id:"+rideRequestId);
 		}			
-
 	}
 
 	/*
