@@ -23,8 +23,8 @@ public class RideOfferBusinessResource {
 	
 	/**
 	 * 
-	 * @param rideOfferInfo Ride domain model with additional information e.g. google Direction
-	 * @return FeatureCollection containing offered ride information
+	 * @param rideOfferInfo containing Basic Ride with additional information e.g. google Direction
+	 * @return OfferRideResult having created Ride Request and additional information
 	 */
 	@POST
 	public Response offerRide(RideOfferInfo rideOfferInfo){

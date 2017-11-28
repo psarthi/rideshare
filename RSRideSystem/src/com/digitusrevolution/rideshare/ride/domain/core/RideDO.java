@@ -24,6 +24,7 @@ import org.geojson.FeatureCollection;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
+import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
@@ -37,6 +38,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RidePointInfo;
+import com.digitusrevolution.rideshare.model.ride.dto.RideRequestSearchResult;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
@@ -145,7 +147,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		setRide(ride);
 		rideDAO.delete(rideEntity);
 	}
-	
+
 	/*
 	 * This method should not be used from external classes and instead use offerRide method
 	 * This method is only used internally from offerRide
@@ -247,7 +249,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 				ZonedDateTime endTimeUTC = startTimeUTC.plusSeconds(travelDuration);
 				ride.setStartTime(startTimeUTC);
 				ride.setEndTime(endTimeUTC);
-				
+
 				//**IMP Problem - Trustnetwork gets created while creating the ride but we don't have its id and without id it will 
 				//recreate the trust network while updating the ride at later part of the this function as trust network id is the primary key
 				//for trust network entity. 
@@ -258,7 +260,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 				int trustNetworkId = trustNetworkDO.create(trustNetwork);
 				TrustNetwork trustNetworkWithId = trustNetworkDO.get(trustNetworkId);
 				ride.setTrustNetwork(trustNetworkWithId);
-				
+
 				//Check if ride is recurring, then create multiple rides as per the recurring details
 				//**TBD - Recurring code needs to be written later
 				if (ride.getRecur()){
@@ -387,7 +389,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		}
 		return null;
 	}
-	
+
 	/*
 	 * Purpose - Search all rides which is matching ride requests criteria
 	 * 
@@ -414,42 +416,58 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		logger.debug("[Matching Pickup Rides: Based on Distance]:"+pickupRidePoints.keySet());
 		logger.debug("[Matching Drop Rides: Based on Distance]:"+dropRidePoints.keySet());
 
+		//Step 1 - This will remove all rides which doesn't have corresponding pair i.e. if prickup and drop both doesn't exist then its invalid
 		pickupRidePoints.keySet().retainAll(dropRidePoints.keySet());
 		dropRidePoints.keySet().retainAll(pickupRidePoints.keySet());
 		logger.debug("[Valid Pickup Rides: Based on Matching Pickup and Drop Point]:"+pickupRidePoints.keySet());
 		logger.debug("[Valid Drop Rides: Based on Matching Pickup and Drop Point]:"+dropRidePoints.keySet());
 
 		Iterator<Integer> iterator = pickupRidePoints.keySet().iterator();
-		List<MatchedTripInfo> matchedTripInfos = new ArrayList<>();
 
-
+		//Step 2 - This will remove all rides which is not in right direction
 		while (iterator.hasNext()) {			
 			Integer rideId = iterator.next();
 			if (pickupRidePoints.get(rideId).getRidePoint().getSequence() >= dropRidePoints.get(rideId).getRidePoint().getSequence()){
 				iterator.remove();
-			} else {
-				RidePointInfo pickupRidePointInfo = pickupRidePoints.get(rideId);
-				RidePointInfo dropRidePointInfo =  dropRidePoints.get(rideId);
-				MatchedTripInfo matchedTripInfo = getMatchedTripInfo(rideRequest, pickupRidePointInfo, dropRidePointInfo, rideId);
-				matchedTripInfos.add(matchedTripInfo);
-			}
+			}		
 		}
+		logger.debug("[Valid Pickup Rides: Based on Sequence of Pickup and Drop Points]:"+pickupRidePoints.keySet());
+		logger.debug("[Valid Drop Rides: Based on Sequence of Pickup and Drop Points]:"+dropRidePoints.keySet());
 
 		Set<Integer> rideIds = pickupRidePoints.keySet();
 
+		//Step 3 - This will remove all rides which doesn't match the business criteria e.g. if its not available
 		if (!rideIds.isEmpty()){
 			Set<Integer> validRideIds = getValidRides(rideIds);
-			logger.debug("[Valid Rides]:"+validRideIds);
+			logger.debug("[Valid Rides Based on Business Criteria]:"+validRideIds);
 			//This will remove all invalid rides from the list
 			pickupRidePoints.keySet().retainAll(validRideIds);
 		}
 
-		//Remove invalid ride points again based on sequence and availability
+		//Basic Cleanup - Remove invalid drop points again based on sequence and business criteria
 		dropRidePoints.keySet().retainAll(pickupRidePoints.keySet());
-		logger.debug("[Valid Pickup Rides: Based on Sequence of Pickup and Drop Points]:"+pickupRidePoints.keySet());
-		logger.debug("[Valid Drop Rides: Based on Sequence of Pickup and Drop Points]:"+dropRidePoints.keySet());
+		logger.debug("[Valid Pickup Rides: Based on Business Criteria]:"+pickupRidePoints.keySet());
+		logger.debug("[Valid Drop Rides: Based on Business Criteria]:"+dropRidePoints.keySet());
 
-		logger.debug("Final Matched Trip:" + matchedTripInfos);
+		iterator = pickupRidePoints.keySet().iterator();
+		List<MatchedTripInfo> matchedTripInfos = new ArrayList<>();
+		
+		//Step 4 - This will create matching trip info for all valid rides
+		while (iterator.hasNext()) {			
+			Integer rideId = iterator.next();
+			RidePointInfo pickupRidePointInfo = pickupRidePoints.get(rideId);
+			RidePointInfo dropRidePointInfo =  dropRidePoints.get(rideId);
+			MatchedTripInfo matchedTripInfo = getMatchedTripInfo(rideRequest, pickupRidePointInfo, dropRidePointInfo, rideId);
+			matchedTripInfos.add(matchedTripInfo);
+		}
+
+		JSONUtil<MatchedTripInfo> jsonUtil = new JSONUtil<>(MatchedTripInfo.class);
+		for (MatchedTripInfo matchedTripInfo : matchedTripInfos) {
+			logger.debug("Final Matching Trip Info:"+ jsonUtil.getJson(matchedTripInfo));	
+		}
+		if (matchedTripInfos.size() == 0) {
+			logger.debug("No matching Ride found for Ride Request Id:"+ rideRequestId);
+		}
 
 		return matchedTripInfos;
 	}
@@ -483,6 +501,19 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return validRideIds;
 	}
 
+	public boolean autoMatchRide(int rideRequestId) {		
+		List<MatchedTripInfo> matchedTripInfos = searchRides(rideRequestId);
+		if (matchedTripInfos.size() > 0) {
+			//This will match the first ride request
+			acceptRideRequest(matchedTripInfos.get(0));
+			logger.debug("Found Matching Ride for Ride Request ID:"+rideRequestId);
+			return true;
+		} else {
+			logger.debug("No Matching Ride Found for Ride Request ID:"+rideRequestId);
+			return false;
+		}		
+	}
+
 	public List<RidePoint> getAllRidePointsOfRide(int rideId) {
 		return ridePointDAO.getAllRidePointsOfRide(rideId);
 	}
@@ -512,7 +543,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return rideGeoJSON.getMatchedTripInfoGeoJSON(matchedTripInfos);
 
 	}
-	
+
 	/*
 	 * Purpose - Get the status of ride
 	 */
@@ -524,22 +555,22 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		RideAction rideAction = new RideAction(this);
 		rideAction.acceptRideRequest(matchedTripInfo);
 	}
-	
+
 	public void rejectRideRequest(int rideId, int rideRequestId){
 		RideAction rideAction = new RideAction(this);
 		rideAction.rejectRideRequest(rideId, rideRequestId);
 	}
-	
+
 	public void startRide(int rideId){
 		RideAction rideAction = new RideAction(this);
 		rideAction.startRide(rideId);
 	}
-	
+
 	public void pickupPassenger(int rideId, int passengerId){
 		RideAction rideAction = new RideAction(this);
 		rideAction.pickupPassenger(rideId, passengerId);
 	}
-	
+
 	public void dropPassenger(int rideId, int passengerId){
 		RideAction rideAction = new RideAction(this);
 		rideAction.dropPassenger(rideId, passengerId);
@@ -549,12 +580,12 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		RideAction rideAction = new RideAction(this);
 		rideAction.endRide(rideId);
 	}
-	
+
 	public void cancelRideRequest(int rideId, int rideRequestId){
 		RideAction rideAction = new RideAction(this);
 		rideAction.cancelRideRequest(rideId, rideRequestId);
 	}
-	
+
 	public void cancelRide(int rideId){
 		RideAction rideAction = new RideAction(this);
 		rideAction.cancelRide(rideId);
