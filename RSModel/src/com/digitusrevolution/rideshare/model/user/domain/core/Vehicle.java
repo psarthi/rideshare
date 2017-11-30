@@ -7,10 +7,46 @@ import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 public class Vehicle {
 
 	private int id;
+	private String registrationNumber;
+	private String model;
+	private int seatCapacity;
+	private int smallLuggageCapacity;
 	private VehicleCategory vehicleCategory;
 	private VehicleSubCategory vehicleSubCategory;
 	private Photo photo;
 	
+	public String getRegistrationNumber() {
+		return registrationNumber;
+	}
+
+	public void setRegistrationNumber(String registrationNumber) {
+		this.registrationNumber = registrationNumber;
+	}
+
+	public String getModel() {
+		return model;
+	}
+
+	public void setModel(String model) {
+		this.model = model;
+	}
+
+	public int getSeatCapacity() {
+		return seatCapacity;
+	}
+
+	public void setSeatCapacity(int seatCapacity) {
+		this.seatCapacity = seatCapacity;
+	}
+
+	public int getSmallLuggageCapacity() {
+		return smallLuggageCapacity;
+	}
+
+	public void setSmallLuggageCapacity(int smallLuggageCapacity) {
+		this.smallLuggageCapacity = smallLuggageCapacity;
+	}
+
 	public int getId() {
 		return id;
 	}

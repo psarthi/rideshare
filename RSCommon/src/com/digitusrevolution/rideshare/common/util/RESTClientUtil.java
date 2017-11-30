@@ -4,12 +4,14 @@ import java.net.URI;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 
+import javax.swing.TransferHandler.TransferSupport;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
@@ -172,9 +174,7 @@ public class RESTClientUtil {
 		Response response = restClientUtil.get(uri);
 		RideRequest rideRequest= response.readEntity(RideRequest.class);
 		return rideRequest;
-	}
-
-
+	}	
 }
 
 

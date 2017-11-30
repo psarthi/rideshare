@@ -14,15 +14,19 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.common.auth.Secured;
+import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.user.domain.Preference;
 import com.digitusrevolution.rideshare.model.user.domain.RegistrationType;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.SignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.UserSignInResult;
 import com.digitusrevolution.rideshare.model.user.dto.UserStatus;
 import com.digitusrevolution.rideshare.model.user.dto.UserRegistration;
 import com.digitusrevolution.rideshare.user.business.UserBusinessService;
+import com.digitusrevolution.rideshare.user.domain.service.UserDomainService;
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -230,5 +234,22 @@ public class UserBusinessResource {
 		return Response.ok().entity(status).build();
 	}
 
+	/**
+	 * 
+	 * @param userId Id of the user
+	 * @param Preference to be updated
+	 * @return Updated User with its preference
+	 */
+	@POST
+	@Path("/{id}/preference")
+	public Response updateUserPrefernce(@PathParam("id") int userId, Preference preference){
+
+		UserBusinessService userBusinessService = new UserBusinessService();
+		userBusinessService.updateUserPreference(userId, preference);
+		UserDomainService userDomainService = new UserDomainService();
+		User user = userDomainService.get(userId, false);
+		BasicUser basicUser = JsonObjectMapper.getMapper().convertValue(user, BasicUser.class);
+		return Response.ok().entity(basicUser).build();
+	}
 
 }

@@ -18,6 +18,10 @@ public class VehicleMapper implements Mapper<Vehicle, VehicleEntity>{
 	public VehicleEntity getEntity(Vehicle vehicle, boolean fetchChild){
 		VehicleEntity vehicleEntity = new VehicleEntity();
 		vehicleEntity.setId(vehicle.getId());
+		vehicleEntity.setRegistrationNumber(vehicle.getRegistrationNumber());
+		vehicleEntity.setModel(vehicle.getModel());
+		vehicleEntity.setSeatCapacity(vehicle.getSeatCapacity());
+		vehicleEntity.setSmallLuggageCapacity(vehicle.getSmallLuggageCapacity());
 		
 		VehicleCategoryMapper vehicleCategoryMapper = new VehicleCategoryMapper();
 		VehicleCategory vehicleCategory = vehicle.getVehicleCategory();
@@ -39,6 +43,10 @@ public class VehicleMapper implements Mapper<Vehicle, VehicleEntity>{
 	public Vehicle getDomainModel(VehicleEntity vehicleEntity, boolean fetchChild){
 		Vehicle vehicle = new Vehicle();
 		vehicle.setId(vehicleEntity.getId());
+		vehicle.setRegistrationNumber(vehicleEntity.getRegistrationNumber());
+		vehicle.setModel(vehicleEntity.getModel());
+		vehicle.setSeatCapacity(vehicleEntity.getSeatCapacity());
+		vehicle.setSmallLuggageCapacity(vehicleEntity.getSmallLuggageCapacity());
 		
 		VehicleCategoryMapper vehicleCategoryMapper = new VehicleCategoryMapper();
 		VehicleCategoryEntity vehicleCategoryEntity = vehicleEntity.getVehicleCategory();

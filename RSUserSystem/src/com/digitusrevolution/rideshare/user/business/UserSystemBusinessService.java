@@ -9,7 +9,9 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
+import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.user.domain.CountryDO;
+import com.digitusrevolution.rideshare.user.domain.VehicleCategoryDO;
 
 public class UserSystemBusinessService {
 
@@ -45,4 +47,31 @@ public class UserSystemBusinessService {
 
 	}
 
+	public List<VehicleCategory> getVehicleCategories(){
+		
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		List<VehicleCategory> vehicleCategories = null;
+		try {
+			transaction = session.beginTransaction();
+			
+			VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();
+			vehicleCategories = vehicleCategoryDO.getAll();
+						
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}	
+		return vehicleCategories;
+	}
 }

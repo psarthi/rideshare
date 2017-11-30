@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.user.domain.core;
 
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.management.openmbean.InvalidKeyException;
+import javax.persistence.PreRemove;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
@@ -24,8 +26,11 @@ import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustCategoryName;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
@@ -36,8 +41,11 @@ import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.FriendRequest;
+import com.digitusrevolution.rideshare.model.user.domain.Preference;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
+import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
+import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
@@ -47,6 +55,8 @@ import com.digitusrevolution.rideshare.user.data.UserDAO;
 import com.digitusrevolution.rideshare.user.domain.CountryDO;
 import com.digitusrevolution.rideshare.user.domain.OTPDO;
 import com.digitusrevolution.rideshare.user.domain.RoleDO;
+import com.digitusrevolution.rideshare.user.domain.VehicleCategoryDO;
+import com.digitusrevolution.rideshare.user.domain.VehicleSubCategoryDO;
 
 public class UserDO implements DomainObjectPKInteger<User>{
 
@@ -169,9 +179,42 @@ public class UserDO implements DomainObjectPKInteger<User>{
 			CountryDO countryDO = new CountryDO();
 			Country country = countryDO.get(user.getCountry().getName());
 			user.setCountry(country);
+			user.setPreference(getDefaultPreference());
 			id = create(user);
 		}
 		return id;
+	}
+		
+	private Preference getDefaultPreference() {
+		
+		Preference preference = new Preference();
+		VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();
+		int vehicleCategoryId = Integer.parseInt(PropertyReader.getInstance().getProperty("USER_DEFAULT_PREFS_VEHICLE_CATEGORY_ID"));
+		VehicleCategory vehicleCategory = vehicleCategoryDO.get(vehicleCategoryId);
+		preference.setVehicleCategory(vehicleCategory);
+		VehicleSubCategoryDO vehicleSubCategoryDO = new VehicleSubCategoryDO();
+		int vehicleSubCategoryId = Integer.parseInt(PropertyReader.getInstance().getProperty("USER_DEFAULT_PREFS_VEHICLE_SUB_CATEGORY_ID"));
+		VehicleSubCategory vehicleSubCategory = vehicleSubCategoryDO.get(vehicleSubCategoryId);
+		preference.setVehicleSubCategory(vehicleSubCategory);
+
+		LocalTime pickupTimeVariation = LocalTime.of(0, Integer.parseInt(PropertyReader.getInstance().getProperty("USER_DEFAULT_PREFS_PICKUP_TIME_VARIATION_MINS")));
+		preference.setPickupTimeVariation(pickupTimeVariation);
+		preference.setPickupPointVariation(Integer.parseInt(PropertyReader.getInstance().getProperty("USER_DEFAULT_PREFS_PICKUP_POINT_VARIATION_IN_METERS")));
+		preference.setDropPointVariation(Integer.parseInt(PropertyReader.getInstance().getProperty("USER_DEFAULT_PREFS_DROP_POINT_VARIATION_IN_METERS")));
+		
+		preference.setSeatRequired(Integer.parseInt(PropertyReader.getInstance().getProperty("USER_DEFAULT_PREFS_SEAT_REQUIRED")));
+		preference.setLuggageCapacityRequired(Integer.parseInt(PropertyReader.getInstance().getProperty("USER_DEFAULT_PREFS_LUGGAGE_REQUIRED")));
+		
+		preference.setSeatOffered(Integer.parseInt(PropertyReader.getInstance().getProperty("USER_DEFAULT_PREFS_SEAT_OFFERED")));
+		preference.setLuggageCapacityOffered(Integer.parseInt(PropertyReader.getInstance().getProperty("USER_DEFAULT_PREFS_LUGGAGE_OFFERED")));
+		
+		preference.setMinProfileRating(Integer.parseInt(PropertyReader.getInstance().getProperty("USER_DEFAULT_PREFS_MIN_PROFILE_RATING")));
+		
+		TrustCategory trustCategory = new TrustCategory();
+		trustCategory.setName(TrustCategoryName.Anonymous);
+		preference.setTrustCategory(trustCategory);
+
+		return preference;
 	}
 
 	/*

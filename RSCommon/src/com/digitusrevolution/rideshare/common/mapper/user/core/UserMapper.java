@@ -72,6 +72,9 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		
 		PhotoMapper photoMapper = new PhotoMapper();
 		if (user.getPhoto()!=null) userEntity.setPhoto(photoMapper.getEntity(user.getPhoto(), fetchChild));
+		
+		PreferenceMapper preferenceMapper = new PreferenceMapper();
+		if (user.getPreference()!=null) userEntity.setPreference(preferenceMapper.getEntity(user.getPreference(), fetchChild));
 				
 		if (fetchChild){
 			userEntity = getEntityChild(user, userEntity);			
@@ -96,10 +99,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		BillMapper billMapper = new BillMapper();
 		//Don't fetch child as bill has user and user has bill, so it will get into recursive loop
 		userEntity.setBills(billMapper.getEntities(userEntity.getBills(), user.getBills(), false));
-		
-		PreferenceMapper preferenceMapper = new PreferenceMapper();
-		if (user.getPreference()!=null) userEntity.setPreference(preferenceMapper.getEntity(user.getPreference(), true));
-		
+				
 		UserFeedbackMapper userFeedbackMapper = new UserFeedbackMapper();
 		//Don't fetch child as User has feedback and feedback has user
 		userEntity.setFeedbacks(userFeedbackMapper.getEntities(userEntity.getFeedbacks(), 
@@ -171,6 +171,8 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		PhotoMapper photoMapper = new PhotoMapper();
 		if (userEntity.getPhoto()!=null) user.setPhoto(photoMapper.getDomainModel(userEntity.getPhoto(), fetchChild));
 
+		PreferenceMapper preferenceMapper = new PreferenceMapper();
+		if (userEntity.getPreference()!=null)  user.setPreference(preferenceMapper.getDomainModel(userEntity.getPreference(), fetchChild));
 		
 		if (fetchChild){
 			user = getDomainModelChild(user, userEntity);
@@ -204,10 +206,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		BillMapper billMapper = new BillMapper();
 		//Don't fetch child as bill has user and user has bill, so it will get into recursive loop
 		user.setBills(billMapper.getDomainModels(user.getBills(), userEntity.getBills(), false));
-		
-		PreferenceMapper preferenceMapper = new PreferenceMapper();
-		if (userEntity.getPreference()!=null)  user.setPreference(preferenceMapper.getDomainModel(userEntity.getPreference(), true));
-		
+				
 		UserFeedbackMapper userFeedbackMapper = new UserFeedbackMapper();
 		//Don't fetch child as User has feedback and feedback has user
 		user.setFeedbacks(userFeedbackMapper.getDomainModels(user.getFeedbacks(), 

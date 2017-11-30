@@ -8,8 +8,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
+import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.user.business.VehicleBusinessService;
+import com.digitusrevolution.rideshare.user.domain.service.UserDomainService;
 
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
@@ -28,8 +32,14 @@ public class VehicleBusinessResource {
 	public Response addVehicle(@PathParam("id") int userId, Vehicle vehicle){
 
 		VehicleBusinessService vehicleBusinessService = new VehicleBusinessService();
-		vehicleBusinessService.addVehicle(userId, vehicle);			
-		return Response.ok().build();
+		vehicleBusinessService.addVehicle(userId, vehicle);
+		//Reason for invoking in separate transaction so that previous data gets committed and then we get the proper data
+		//else there is chances that you may not get updated data
+		UserDomainService userDomainService = new UserDomainService();
+		User user = userDomainService.get(userId, false);
+		BasicUser basicUser = JsonObjectMapper.getMapper().convertValue(user, BasicUser.class);
+		
+		return Response.ok(basicUser).build();
 	}
 
 }

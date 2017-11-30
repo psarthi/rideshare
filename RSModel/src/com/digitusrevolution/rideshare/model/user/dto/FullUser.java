@@ -20,7 +20,6 @@ public class FullUser extends BasicUser {
 	private Collection<BasicRide> ridesTaken = new HashSet<BasicRide>();
 	private Collection<BasicRideRequest> rideRequests = new HashSet<BasicRideRequest>();
 	private Collection<Bill> bills = new HashSet<Bill>();
-	private Preference preference;
 	private Collection<UserFeedback> feedbacks = new LinkedList<UserFeedback>();
 	private Collection<FriendRequest> friendRequests = new HashSet<FriendRequest>();	
 	private Collection<Group> groupInvites = new HashSet<Group>();
@@ -79,14 +78,6 @@ public class FullUser extends BasicUser {
 
 	public void setFeedbacks(Collection<UserFeedback> feedbacks) {
 		this.feedbacks = feedbacks;
-	}
-
-	public Preference getPreference() {
-		return preference;
-	}
-
-	public void setPreference(Preference preference) {
-		this.preference = preference;
 	}
 
 	public Collection<FriendRequest> getFriendRequests() {

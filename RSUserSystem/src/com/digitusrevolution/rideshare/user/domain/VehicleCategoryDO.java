@@ -75,6 +75,8 @@ public class VehicleCategoryDO implements DomainObjectPKInteger<VehicleCategory>
 		List<VehicleCategoryEntity> vehicleCategoryEntities = genericDAO.getAll();
 		for (VehicleCategoryEntity vehicleCategoryEntity : vehicleCategoryEntities) {
 			setVehicleCategoryEntity(vehicleCategoryEntity);
+			//Reason behind adding fetchChild as we want full details in one go
+			fetchChild();
 			vehicleCategories.add(vehicleCategory);
 		}
 		return vehicleCategories;

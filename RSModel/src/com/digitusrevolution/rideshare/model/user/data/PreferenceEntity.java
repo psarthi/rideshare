@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
+import com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 
 @Entity
@@ -37,7 +37,7 @@ public class PreferenceEntity {
 
 	//Common Preference
 	@OneToOne
-	private TrustNetworkEntity trustNetwork;
+	private TrustCategoryEntity trustCategory;
 	private Sex sexPreference;
 	private float minProfileRating;
 	
@@ -54,11 +54,11 @@ public class PreferenceEntity {
 	public void setVehicleSubCategory(VehicleSubCategoryEntity vehicleSubCategory) {
 		this.vehicleSubCategory = vehicleSubCategory;
 	}
-	public TrustNetworkEntity getTrustNetwork() {
-		return trustNetwork;
+	public TrustCategoryEntity getTrustCategory() {
+		return trustCategory;
 	}
-	public void setTrustNetwork(TrustNetworkEntity trustNetwork) {
-		this.trustNetwork = trustNetwork;
+	public void setTrustCategory(TrustCategoryEntity trustCategory) {
+		this.trustCategory = trustCategory;
 	}
 	public LocalTime getPickupTimeVariation() {
 		return pickupTimeVariation;

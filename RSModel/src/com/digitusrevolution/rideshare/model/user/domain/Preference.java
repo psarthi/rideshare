@@ -2,7 +2,7 @@ package com.digitusrevolution.rideshare.model.user.domain;
 
 import java.time.LocalTime;
 
-import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 
 public class Preference {
 
@@ -21,7 +21,7 @@ public class Preference {
 	private int luggageCapacityOffered;
 
 	//Common Preference
-	private TrustNetwork trustNetwork;
+	private TrustCategory trustCategory;
 	private Sex sexPreference;
 	private float minProfileRating;
 	
@@ -79,11 +79,11 @@ public class Preference {
 	public void setLuggageCapacityOffered(int luggageCapacityOffered) {
 		this.luggageCapacityOffered = luggageCapacityOffered;
 	}
-	public TrustNetwork getTrustNetwork() {
-		return trustNetwork;
+	public TrustCategory getTrustCategory() {
+		return trustCategory;
 	}
-	public void setTrustNetwork(TrustNetwork trustNetwork) {
-		this.trustNetwork = trustNetwork;
+	public void setTrustCategory(TrustCategory trustCategory) {
+		this.trustCategory = trustCategory;
 	}
 	public Sex getSexPreference() {
 		return sexPreference;

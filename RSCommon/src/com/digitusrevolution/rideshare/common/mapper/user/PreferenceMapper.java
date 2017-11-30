@@ -3,7 +3,7 @@ package com.digitusrevolution.rideshare.common.mapper.user;
 import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
-import com.digitusrevolution.rideshare.common.mapper.ride.TrustNetworkMapper;
+import com.digitusrevolution.rideshare.common.mapper.ride.TrustCategoryMapper;
 import com.digitusrevolution.rideshare.model.user.data.PreferenceEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Preference;
 
@@ -24,8 +24,8 @@ public class PreferenceMapper implements Mapper<Preference, PreferenceEntity> {
 		preferenceEntity.setLuggageCapacityRequired(preference.getLuggageCapacityRequired());
 		preferenceEntity.setSeatOffered(preference.getSeatOffered());
 		preferenceEntity.setLuggageCapacityRequired(preference.getLuggageCapacityRequired());
-		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
-		preferenceEntity.setTrustNetwork(trustNetworkMapper.getEntity(preference.getTrustNetwork(), fetchChild));
+		TrustCategoryMapper trustCategoryMapper = new TrustCategoryMapper();
+		preferenceEntity.setTrustCategory(trustCategoryMapper.getEntity(preference.getTrustCategory(), fetchChild));
 		preferenceEntity.setSexPreference(preference.getSexPreference());
 		preferenceEntity.setMinProfileRating(preference.getMinProfileRating());
 		return preferenceEntity;
@@ -51,8 +51,8 @@ public class PreferenceMapper implements Mapper<Preference, PreferenceEntity> {
 		preference.setLuggageCapacityRequired(preferenceEntity.getLuggageCapacityRequired());
 		preference.setSeatOffered(preferenceEntity.getSeatOffered());
 		preference.setLuggageCapacityRequired(preferenceEntity.getLuggageCapacityRequired());
-		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
-		preference.setTrustNetwork(trustNetworkMapper.getDomainModel(preferenceEntity.getTrustNetwork(), fetchChild));
+		TrustCategoryMapper trustCategoryMapper = new TrustCategoryMapper();
+		preference.setTrustCategory(trustCategoryMapper.getDomainModel(preferenceEntity.getTrustCategory(), fetchChild));
 		preference.setSexPreference(preferenceEntity.getSexPreference());
 		preference.setMinProfileRating(preferenceEntity.getMinProfileRating());
 		return preference;	

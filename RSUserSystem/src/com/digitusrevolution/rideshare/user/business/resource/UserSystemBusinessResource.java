@@ -11,6 +11,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.user.domain.Country;
+import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.user.business.UserSystemBusinessService;
 
 @Path("/usersystem")
@@ -27,5 +28,16 @@ public class UserSystemBusinessResource {
 		GenericEntity<List<Country>> entity = new GenericEntity<List<Country>>(countries) {};
 		return Response.ok(entity).build();
 	}
+	
+	@GET
+	@Path("/vehiclecategores")
+	public Response getVehicleCategories() {
+		UserSystemBusinessService userSystemBusinessService = new UserSystemBusinessService();
+		 List<VehicleCategory> vehicleCategories = userSystemBusinessService.getVehicleCategories();
+		
+		GenericEntity<List<VehicleCategory>> entity = new GenericEntity<List<VehicleCategory>>(vehicleCategories) {};
+		return Response.ok(entity).build();
+	}
+
 
 }
