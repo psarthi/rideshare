@@ -54,13 +54,8 @@ public class RideOfferBusinessService {
 			Ride ride = JsonObjectMapper.getMapper().convertValue(basicRide, Ride.class);
 			GoogleDirection googleDirection = rideOfferInfo.getGoogleDirection();
 						
- 			//Start - Temp. Code to work with Web frontend, it will be removed and direction needs to be passed as a parameter to this call
-			ZonedDateTime startTimeUTC = ride.getStartTime().withZoneSameInstant(ZoneOffset.UTC);
-			RouteDO routeDO = new RouteDO();
-			GoogleDirection direction = routeDO.getDirection(ride.getStartPoint().getPoint(), ride.getEndPoint().getPoint(),startTimeUTC);
-
 			RideDO rideDO = new RideDO();
-			List<Integer> rideIds = rideDO.offerRide(ride,direction);
+			List<Integer> rideIds = rideDO.offerRide(ride,googleDirection);
 			//This will get first ride ID
 			rideId = rideIds.get(0);
 			//Need to think on the logic of recurring ride

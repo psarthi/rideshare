@@ -10,6 +10,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity;
+import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 
 @Entity
@@ -34,6 +35,8 @@ public class PreferenceEntity {
 	//Ride Preference
 	private int seatOffered;
 	private int luggageCapacityOffered;
+	@OneToOne
+	private VehicleEntity defaultVehicle;
 
 	//Common Preference
 	@OneToOne
@@ -119,5 +122,11 @@ public class PreferenceEntity {
 	}
 	public void setId(int id) {
 		this.id = id;
+	}
+	public VehicleEntity getDefaultVehicle() {
+		return defaultVehicle;
+	}
+	public void setDefaultVehicle(VehicleEntity defaultVehicle) {
+		this.defaultVehicle = defaultVehicle;
 	}
 }

@@ -162,8 +162,27 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		}
 		user.getVehicles().add(vehicle);
 		update(user);
+		//This will get the vehicle with updated ID and then set the default vehicle
+		user = get(user.getId());
+		if (user.getVehicles().size() == 1) {
+			updateDefaultVehicle(user, getVehicle(user, vehicle.getRegistrationNumber()));
+		}
+	}
+	
+	private Vehicle getVehicle(User user, String registrationNumber) {
+		for (Vehicle vehicle: user.getVehicles()) {
+			if (vehicle.getRegistrationNumber().equals(registrationNumber)) {
+				return vehicle;
+			}
+		}
+		return null;
 	}
 
+	private void updateDefaultVehicle(User user, Vehicle vehicle) {
+		user.getPreference().setDefaultVehicle(vehicle);
+		update(user);
+	}
+	
 	public int registerUser(User user, String otp){
 		int id = 0;
 		OTPDO otpdo = new OTPDO();

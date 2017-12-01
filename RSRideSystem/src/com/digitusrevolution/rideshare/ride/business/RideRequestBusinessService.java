@@ -65,7 +65,7 @@ public class RideRequestBusinessService {
 		return id;
 	}
 
-	public RideRequestResult getRideReuqestResult(int rideRequestId){
+	public RideRequestResult getRideRequestResult(int rideRequestId){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	

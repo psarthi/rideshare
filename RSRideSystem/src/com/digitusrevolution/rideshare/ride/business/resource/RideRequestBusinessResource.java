@@ -27,7 +27,7 @@ public class RideRequestBusinessResource {
 		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
 		int id = rideRequestBusinessService.requestRide(rideRequest);
 		//Since we are trying to get all data before even committing, all child objects may not come so its cleaner to have getAllData post commit in different transaction
-		RideRequestResult rideRequestResult = rideRequestBusinessService.getRideReuqestResult(id);
+		RideRequestResult rideRequestResult = rideRequestBusinessService.getRideRequestResult(id);
 		return Response.ok(rideRequestResult).build();
 	}
 	

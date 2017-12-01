@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.model.user.domain;
 import java.time.LocalTime;
 
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
+import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 
 public class Preference {
 
@@ -19,6 +20,7 @@ public class Preference {
 	//Ride Preference
 	private int seatOffered;
 	private int luggageCapacityOffered;
+	private Vehicle defaultVehicle;
 
 	//Common Preference
 	private TrustCategory trustCategory;
@@ -102,6 +104,12 @@ public class Preference {
 	}
 	public void setId(int id) {
 		this.id = id;
+	}
+	public Vehicle getDefaultVehicle() {
+		return defaultVehicle;
+	}
+	public void setDefaultVehicle(Vehicle defaultVehicle) {
+		this.defaultVehicle = defaultVehicle;
 	}
 
 }

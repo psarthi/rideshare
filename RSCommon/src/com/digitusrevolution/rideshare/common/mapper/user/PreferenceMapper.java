@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.TrustCategoryMapper;
+import com.digitusrevolution.rideshare.common.mapper.user.core.VehicleMapper;
 import com.digitusrevolution.rideshare.model.user.data.PreferenceEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Preference;
 
@@ -23,11 +24,13 @@ public class PreferenceMapper implements Mapper<Preference, PreferenceEntity> {
 		preferenceEntity.setSeatRequired(preference.getSeatRequired());
 		preferenceEntity.setLuggageCapacityRequired(preference.getLuggageCapacityRequired());
 		preferenceEntity.setSeatOffered(preference.getSeatOffered());
-		preferenceEntity.setLuggageCapacityRequired(preference.getLuggageCapacityRequired());
+		preferenceEntity.setLuggageCapacityOffered(preference.getLuggageCapacityOffered());
 		TrustCategoryMapper trustCategoryMapper = new TrustCategoryMapper();
 		preferenceEntity.setTrustCategory(trustCategoryMapper.getEntity(preference.getTrustCategory(), fetchChild));
 		preferenceEntity.setSexPreference(preference.getSexPreference());
 		preferenceEntity.setMinProfileRating(preference.getMinProfileRating());
+		VehicleMapper vehicleMapper = new VehicleMapper();
+		if (preference.getDefaultVehicle()!=null) preferenceEntity.setDefaultVehicle(vehicleMapper.getEntity(preference.getDefaultVehicle(), fetchChild));
 		return preferenceEntity;
 	}
 
@@ -50,11 +53,13 @@ public class PreferenceMapper implements Mapper<Preference, PreferenceEntity> {
 		preference.setSeatRequired(preferenceEntity.getSeatRequired());
 		preference.setLuggageCapacityRequired(preferenceEntity.getLuggageCapacityRequired());
 		preference.setSeatOffered(preferenceEntity.getSeatOffered());
-		preference.setLuggageCapacityRequired(preferenceEntity.getLuggageCapacityRequired());
+		preference.setLuggageCapacityOffered(preferenceEntity.getLuggageCapacityOffered());
 		TrustCategoryMapper trustCategoryMapper = new TrustCategoryMapper();
 		preference.setTrustCategory(trustCategoryMapper.getDomainModel(preferenceEntity.getTrustCategory(), fetchChild));
 		preference.setSexPreference(preferenceEntity.getSexPreference());
 		preference.setMinProfileRating(preferenceEntity.getMinProfileRating());
+		VehicleMapper vehicleMapper = new VehicleMapper();
+		if (preferenceEntity.getDefaultVehicle()!=null) preference.setDefaultVehicle(vehicleMapper.getDomainModel(preferenceEntity.getDefaultVehicle(), fetchChild));
 		return preference;	
 	}
 
