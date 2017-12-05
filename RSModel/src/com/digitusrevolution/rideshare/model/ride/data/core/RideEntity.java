@@ -44,6 +44,8 @@ public class RideEntity {
 	//Apart from that, we don't have Route details here as its stored in MongoDB, instead of Hibernate
 	private String startPointId;
 	private String endPointId;
+	private String startPointAddress;
+	private String endPointAddress;
 	private int seatOffered;
 	private int luggageCapacityOffered;
 	@Enumerated(EnumType.STRING)
@@ -267,6 +269,18 @@ public class RideEntity {
 	}
 	public void setEndTime(ZonedDateTime endTime) {
 		this.endTime = endTime;
+	}
+	public String getStartPointAddress() {
+		return startPointAddress;
+	}
+	public void setStartPointAddress(String startPointAddress) {
+		this.startPointAddress = startPointAddress;
+	}
+	public String getEndPointAddress() {
+		return endPointAddress;
+	}
+	public void setEndPointAddress(String endPointAddress) {
+		this.endPointAddress = endPointAddress;
 	}
 
 }

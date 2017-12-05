@@ -29,6 +29,8 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		//We need to just map Point ID in Hibernate as we are storing Point in MongoDB
 		rideEntity.setStartPointId(ride.getStartPoint().get_id());
 		rideEntity.setEndPointId(ride.getEndPoint().get_id());
+		rideEntity.setStartPointAddress(ride.getStartPointAddress());
+		rideEntity.setEndPointAddress(ride.getEndPointAddress());
 
 		rideEntity.setSeatOffered(ride.getSeatOffered());
 		rideEntity.setLuggageCapacityOffered(ride.getLuggageCapacityOffered());
@@ -117,6 +119,8 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		//We need to just map Point ID from Hibernate as we are storing Point in MongoDB
 		ride.getStartPoint().set_id(rideEntity.getStartPointId());
 		ride.getEndPoint().set_id(rideEntity.getEndPointId());
+		ride.setStartPointAddress(rideEntity.getStartPointAddress());
+		ride.setEndPointAddress(rideEntity.getEndPointAddress());
 
 		ride.setSeatOffered(rideEntity.getSeatOffered());
 		ride.setLuggageCapacityOffered(rideEntity.getLuggageCapacityOffered());

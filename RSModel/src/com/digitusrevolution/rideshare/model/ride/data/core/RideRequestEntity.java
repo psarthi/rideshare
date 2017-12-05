@@ -37,6 +37,8 @@ public class RideRequestEntity {
 	//We need to store just rideRequestPointId in Hibernate as rideRequestPoint is getting stored in MonogoDB
 	private String pickupPointId;
 	private String dropPointId;
+	private String pickupPointAddress;
+	private String dropPointAddress;
 	private ZonedDateTime pickupTime;
 	private LocalTime pickupTimeVariation;
 	@ManyToOne
@@ -65,6 +67,8 @@ public class RideRequestEntity {
 	//We need to store just ridePointId in Hibernate as ridepoint is getting stored in MonogoDB
 	private String ridePickupPointId;
 	private String rideDropPointId;
+	private String ridePickupPointAddress;
+	private String rideDropPointAddress;
 	private int travelTime;
 	private int travelDistance;
 	@ManyToMany (mappedBy="cancelledRideRequests")
@@ -256,6 +260,30 @@ public class RideRequestEntity {
 	}
 	public void setCancelledRides(Collection<RideEntity> cancelledRides) {
 		this.cancelledRides = cancelledRides;
+	}
+	public String getPickupPointAddress() {
+		return pickupPointAddress;
+	}
+	public void setPickupPointAddress(String pickupPointAddress) {
+		this.pickupPointAddress = pickupPointAddress;
+	}
+	public String getDropPointAddress() {
+		return dropPointAddress;
+	}
+	public void setDropPointAddress(String dropPointAddress) {
+		this.dropPointAddress = dropPointAddress;
+	}
+	public String getRidePickupPointAddress() {
+		return ridePickupPointAddress;
+	}
+	public void setRidePickupPointAddress(String ridePickupPointAddress) {
+		this.ridePickupPointAddress = ridePickupPointAddress;
+	}
+	public String getRideDropPointAddress() {
+		return rideDropPointAddress;
+	}
+	public void setRideDropPointAddress(String rideDropPointAddress) {
+		this.rideDropPointAddress = rideDropPointAddress;
 	}
 
 }

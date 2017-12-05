@@ -40,6 +40,7 @@ import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RidePointInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideRequestSearchResult;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
+import com.digitusrevolution.rideshare.model.ride.dto.google.Leg;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
@@ -233,8 +234,9 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		List<Integer> rideIds = new ArrayList<>();
 		boolean driverStatus = false;
 		//This will get travel distance from the first route and first leg
-		int travelDistance = direction.getRoutes().get(0).getLegs().get(0).getDistance().getValue();
-		long travelDuration = direction.getRoutes().get(0).getLegs().get(0).getDuration().getValue();
+		Leg leg = direction.getRoutes().get(0).getLegs().get(0);
+		int travelDistance = leg.getDistance().getValue();
+		long travelDuration = leg.getDuration().getValue();
 		for (Role role : roles) {
 			if (role.getName().equals(RoleName.Driver)){
 				driverStatus = true;
@@ -249,6 +251,10 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 				ZonedDateTime endTimeUTC = startTimeUTC.plusSeconds(travelDuration);
 				ride.setStartTime(startTimeUTC);
 				ride.setEndTime(endTimeUTC);
+				
+				//This will set Start and End Address
+				ride.setStartPointAddress(leg.getStartAddress());
+				ride.setEndPointAddress(leg.getEndAddress());
 
 				//**IMP Problem - Trustnetwork gets created while creating the ride but we don't have its id and without id it will 
 				//recreate the trust network while updating the ride at later part of the this function as trust network id is the primary key

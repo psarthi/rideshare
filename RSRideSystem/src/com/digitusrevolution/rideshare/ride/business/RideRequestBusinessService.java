@@ -14,6 +14,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.RideRequestResult;
+import com.digitusrevolution.rideshare.model.ride.dto.google.Element;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDistance;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
@@ -35,10 +36,16 @@ public class RideRequestBusinessService {
 			//This is written here as there is no difference between calling this API from Android or backend from the cost perspective
 			RouteDO routeDO = new RouteDO();
 			ZonedDateTime pickupTimeUTC = rideRequest.getPickupTime().withZoneSameInstant(ZoneOffset.UTC);
-			GoogleDistance googleDistance = routeDO.getDistance(rideRequest.getPickupPoint().getPoint(), rideRequest.getDropPoint().getPoint(),pickupTimeUTC);	
-			int travelDistance = googleDistance.getRows().get(0).getElements().get(0).getDistance().getValue();
-			int travelTime = googleDistance.getRows().get(0).getElements().get(0).getDuration().getValue();
-
+			GoogleDistance googleDistance = routeDO.getDistance(rideRequest.getPickupPoint().getPoint(), rideRequest.getDropPoint().getPoint(),pickupTimeUTC);
+			//This will get first element
+			Element element = googleDistance.getRows().get(0).getElements().get(0);
+			int travelDistance = element.getDistance().getValue();
+			int travelTime = element.getDuration().getValue();
+			
+			//This will set Pickup and Drop address
+			rideRequest.setPickupPointAddress(googleDistance.getOriginAddresses().get(0));
+			rideRequest.setDropPointAddress(googleDistance.getDestinationAddresses().get(0));
+			
 			rideRequest.setTravelDistance(travelDistance);
 			rideRequest.setTravelTime(travelTime);
 		

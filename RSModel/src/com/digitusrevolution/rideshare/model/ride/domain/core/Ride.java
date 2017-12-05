@@ -28,6 +28,8 @@ public class Ride {
 	private ZonedDateTime endTime;
 	private RidePoint startPoint = new RidePoint();
 	private RidePoint endPoint = new RidePoint();
+	private String startPointAddress;
+	private String endPointAddress;
 	private int seatOffered;
 	private int luggageCapacityOffered;
 	private Sex sexPreference;
@@ -253,6 +255,18 @@ public class Ride {
 	}
 	public void setRideMode(RideMode rideMode) {
 		this.rideMode = rideMode;
+	}
+	public String getStartPointAddress() {
+		return startPointAddress;
+	}
+	public void setStartPointAddress(String startPointAddress) {
+		this.startPointAddress = startPointAddress;
+	}
+	public String getEndPointAddress() {
+		return endPointAddress;
+	}
+	public void setEndPointAddress(String endPointAddress) {
+		this.endPointAddress = endPointAddress;
 	}
 
 	

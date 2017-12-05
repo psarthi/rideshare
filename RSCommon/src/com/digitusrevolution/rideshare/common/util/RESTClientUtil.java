@@ -74,6 +74,19 @@ public class RESTClientUtil {
 		return json;
 	}
 	
+	public static String getReverserGeocode(Double lat, Double lng){
+
+		RESTClientImpl<String> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_GOOGLE_REVERSE_GEOCODE_URL");
+		String key = PropertyReader.getInstance().getProperty("GOOGLE_SERVER_KEY");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(lat,lng,key);
+		Response response = restClientUtil.get(uri);
+		String json = response.readEntity(String.class);
+		return json;
+	}
+
+	
 	public static String getDirection(Double originLat, Double originLng, Double destinationLat, Double destinationLng, ZonedDateTime departureTimeUTC){
 		
 		long departureEpochSecond = departureTimeUTC.toEpochSecond(); 

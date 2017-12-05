@@ -11,6 +11,10 @@ import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.exception.RideRequestUnavailableException;
 import com.digitusrevolution.rideshare.common.exception.RideUnavailableException;
+import com.digitusrevolution.rideshare.common.util.GoogleUtil;
+import com.digitusrevolution.rideshare.common.util.JSONUtil;
+import com.digitusrevolution.rideshare.common.util.RESTClientImpl;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
@@ -19,6 +23,8 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
+import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleGeocode;
+import com.digitusrevolution.rideshare.model.ride.dto.google.Result;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RidePassengerDO;
@@ -90,6 +96,21 @@ public class RideAction {
 					//Set Ride Pickup & Drop Points
 					rideRequest.setRidePickupPoint(matchedTripInfo.getRidePickupPoint());
 					rideRequest.setRideDropPoint(matchedTripInfo.getRideDropPoint());
+					
+					//This will get address from lat lng
+					String rideRidePickupPointAddress = GoogleUtil.getAddress(rideRequest.getRidePickupPoint().getPoint().getLatitude(), 
+							rideRequest.getRidePickupPoint().getPoint().getLongitude());
+					String rideRideDropPointAddress = GoogleUtil.getAddress(rideRequest.getRideDropPoint().getPoint().getLatitude(), 
+							rideRequest.getRideDropPoint().getPoint().getLongitude());
+
+					//This will set Ride Pickup and Drop point address
+					if (rideRidePickupPointAddress!=null) {
+						rideRequest.setRidePickupPointAddress(rideRidePickupPointAddress);
+					}
+					if (rideRideDropPointAddress!=null) {
+						rideRequest.setRideDropPointAddress(rideRideDropPointAddress);
+					}
+					
 					//Adding passenger
 					RidePassenger ridePassenger = new RidePassenger();
 					ridePassenger.setPassenger(rideRequest.getPassenger());

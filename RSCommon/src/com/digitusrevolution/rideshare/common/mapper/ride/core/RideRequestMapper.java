@@ -39,12 +39,18 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		rideRequestEntity.setTravelTime(rideRequest.getTravelTime());
 		rideRequestEntity.setTravelDistance(rideRequest.getTravelDistance());
 		rideRequestEntity.setRideMode(rideRequest.getRideMode());
+		
 
 		//We need to just map Point ID in Hibernate as we are storing Point in MongoDB
 		rideRequestEntity.setPickupPointId(rideRequest.getPickupPoint().get_id());
 		rideRequestEntity.setDropPointId(rideRequest.getDropPoint().get_id());	
 		rideRequestEntity.setRidePickupPointId(rideRequest.getRidePickupPoint().get_id());		
-		rideRequestEntity.setRideDropPointId(rideRequest.getRideDropPoint().get_id());	
+		rideRequestEntity.setRideDropPointId(rideRequest.getRideDropPoint().get_id());
+		
+		rideRequestEntity.setPickupPointAddress(rideRequest.getPickupPointAddress());
+		rideRequestEntity.setDropPointAddress(rideRequest.getDropPointAddress());
+		rideRequestEntity.setRidePickupPointAddress(rideRequest.getRidePickupPointAddress());
+		rideRequestEntity.setRideDropPointAddress(rideRequest.getRideDropPointAddress());
 
 		VehicleCategoryMapper vehicleCategoryMapper = new VehicleCategoryMapper();
 		VehicleCategory vehicleCategory = rideRequest.getVehicleCategory();
@@ -120,6 +126,11 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		rideRequest.getDropPoint().set_id(rideRequestEntity.getDropPointId());	
 		rideRequest.getRidePickupPoint().set_id(rideRequestEntity.getRidePickupPointId());
 		rideRequest.getRideDropPoint().set_id(rideRequestEntity.getRideDropPointId());	
+		
+		rideRequest.setPickupPointAddress(rideRequestEntity.getPickupPointAddress());
+		rideRequest.setDropPointAddress(rideRequestEntity.getDropPointAddress());
+		rideRequest.setRidePickupPointAddress(rideRequestEntity.getRidePickupPointAddress());
+		rideRequest.setRideDropPointAddress(rideRequestEntity.getRideDropPointAddress());
 
 		VehicleCategoryMapper vehicleCategoryMapper = new VehicleCategoryMapper();
 		VehicleCategoryEntity vehicleCategoryEntity = rideRequestEntity.getVehicleCategory();
