@@ -37,6 +37,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		rideEntity.setStatus(ride.getStatus());
 		rideEntity.setSeatStatus(ride.getSeatStatus());
 		rideEntity.setTravelDistance(ride.getTravelDistance());
+		rideEntity.setRideMode(ride.getRideMode());
 
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();
 		TrustNetwork trustNetwork = ride.getTrustNetwork();
@@ -124,6 +125,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		ride.setStatus(rideEntity.getStatus());
 		ride.setSeatStatus(rideEntity.getSeatStatus());
 		ride.setTravelDistance(rideEntity.getTravelDistance());
+		ride.setRideMode(rideEntity.getRideMode());
 
 
 		TrustNetworkMapper trustNetworkMapper = new TrustNetworkMapper();

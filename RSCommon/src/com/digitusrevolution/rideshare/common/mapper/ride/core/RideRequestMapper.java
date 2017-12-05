@@ -38,8 +38,7 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		rideRequestEntity.setRidePreference(rideRequest.getRidePreference());
 		rideRequestEntity.setTravelTime(rideRequest.getTravelTime());
 		rideRequestEntity.setTravelDistance(rideRequest.getTravelDistance());
-
-
+		rideRequestEntity.setRideMode(rideRequest.getRideMode());
 
 		//We need to just map Point ID in Hibernate as we are storing Point in MongoDB
 		rideRequestEntity.setPickupPointId(rideRequest.getPickupPoint().get_id());
@@ -114,6 +113,7 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		rideRequest.setRidePreference(rideRequestEntity.getRidePreference());
 		rideRequest.setTravelTime(rideRequestEntity.getTravelTime());
 		rideRequest.setTravelDistance(rideRequestEntity.getTravelDistance());
+		rideRequest.setRideMode(rideRequestEntity.getRideMode());
 
 		//We need to just map Point ID from Hibernate as we are storing Point in MongoDB
 		rideRequest.getPickupPoint().set_id(rideRequestEntity.getPickupPointId());

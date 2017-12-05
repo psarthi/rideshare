@@ -21,6 +21,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.model.user.data.VehicleCategoryEntity;
 import com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity;
@@ -68,7 +69,16 @@ public class RideRequestEntity {
 	private int travelDistance;
 	@ManyToMany (mappedBy="cancelledRideRequests")
 	private Collection<RideEntity> cancelledRides = new HashSet<RideEntity>();
+	@Column (name="rideMode")
+	@Enumerated(EnumType.STRING)
+	private RideMode rideMode;
 	
+	public RideMode getRideMode() {
+		return rideMode;
+	}
+	public void setRideMode(RideMode rideMode) {
+		this.rideMode = rideMode;
+	}
 	public int getId() {
 		return id;
 	}

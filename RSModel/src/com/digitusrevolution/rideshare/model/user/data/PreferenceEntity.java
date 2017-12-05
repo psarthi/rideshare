@@ -2,7 +2,10 @@ package com.digitusrevolution.rideshare.model.user.data;
 
 import java.time.LocalTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -10,6 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 
@@ -43,6 +47,9 @@ public class PreferenceEntity {
 	private TrustCategoryEntity trustCategory;
 	private Sex sexPreference;
 	private float minProfileRating;
+	@Column (name="rideMode")
+	@Enumerated(EnumType.STRING)
+	private RideMode rideMode;
 	
 
 	public VehicleCategoryEntity getVehicleCategory() {
@@ -128,5 +135,11 @@ public class PreferenceEntity {
 	}
 	public void setDefaultVehicle(VehicleEntity defaultVehicle) {
 		this.defaultVehicle = defaultVehicle;
+	}
+	public RideMode getRideMode() {
+		return rideMode;
+	}
+	public void setRideMode(RideMode rideMode) {
+		this.rideMode = rideMode;
 	}
 }

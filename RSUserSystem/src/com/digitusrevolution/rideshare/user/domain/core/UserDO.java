@@ -32,6 +32,7 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategoryName;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
@@ -232,6 +233,8 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		TrustCategory trustCategory = new TrustCategory();
 		trustCategory.setName(TrustCategoryName.Anonymous);
 		preference.setTrustCategory(trustCategory);
+		
+		preference.setRideMode(RideMode.Paid);
 
 		return preference;
 	}

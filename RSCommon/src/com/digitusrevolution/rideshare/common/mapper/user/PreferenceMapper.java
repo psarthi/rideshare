@@ -31,6 +31,7 @@ public class PreferenceMapper implements Mapper<Preference, PreferenceEntity> {
 		preferenceEntity.setMinProfileRating(preference.getMinProfileRating());
 		VehicleMapper vehicleMapper = new VehicleMapper();
 		if (preference.getDefaultVehicle()!=null) preferenceEntity.setDefaultVehicle(vehicleMapper.getEntity(preference.getDefaultVehicle(), fetchChild));
+		preferenceEntity.setRideMode(preference.getRideMode());
 		return preferenceEntity;
 	}
 
@@ -60,6 +61,7 @@ public class PreferenceMapper implements Mapper<Preference, PreferenceEntity> {
 		preference.setMinProfileRating(preferenceEntity.getMinProfileRating());
 		VehicleMapper vehicleMapper = new VehicleMapper();
 		if (preferenceEntity.getDefaultVehicle()!=null) preference.setDefaultVehicle(vehicleMapper.getDomainModel(preferenceEntity.getDefaultVehicle(), fetchChild));
+		preference.setRideMode(preferenceEntity.getRideMode());
 		return preference;	
 	}
 

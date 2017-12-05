@@ -25,6 +25,7 @@ import javax.persistence.TemporalType;
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
 import com.digitusrevolution.rideshare.model.ride.data.RecurringDetailEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
@@ -83,7 +84,16 @@ public class RideEntity {
 	@JoinTable(name="ride_cancelledRideRequest",joinColumns=@JoinColumn(name="ride_id"))
 	private Collection<RideRequestEntity> cancelledRideRequests = new HashSet<RideRequestEntity>();
 	private int travelDistance;
+	@Column (name="rideMode")
+	@Enumerated(EnumType.STRING)
+	private RideMode rideMode;
 	
+	public RideMode getRideMode() {
+		return rideMode;
+	}
+	public void setRideMode(RideMode rideMode) {
+		this.rideMode = rideMode;
+	}
 	public int getId() {
 		return id;
 	}
