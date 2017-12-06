@@ -3,10 +3,12 @@ package com.digitusrevolution.rideshare.common.mapper.ride.core;
 import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
+import com.digitusrevolution.rideshare.common.mapper.billing.core.BillMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.TrustNetworkMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.VehicleCategoryMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.VehicleSubCategoryMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
+import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
@@ -99,6 +101,10 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
 		//is called irrespective of fetchChild status
 		if (ride!=null) rideRequestEntity.setAcceptedRide(rideMapper.getEntity(ride, false));
+		
+		BillMapper billMapper = new BillMapper();
+		//Don't get child as Ride Request has bill and Bill has ride request
+		if (rideRequest.getBill()!=null) rideRequestEntity.setBill(billMapper.getEntity(rideRequest.getBill(), false));
 
 		return rideRequestEntity;
 	}
@@ -170,6 +176,10 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
 		//is called irrespective of fetchChild status. Ride request is calling ride domain function and ride is calling ride request domain function
 		if (rideEntity!=null) rideRequest.setAcceptedRide(rideMapper.getDomainModel(rideEntity, false));
+		
+		BillMapper billMapper = new BillMapper();
+		//Don't get child as Ride Request has bill and Bill has ride request
+		if (rideRequestEntity.getBill()!=null) rideRequest.setBill(billMapper.getDomainModel(rideRequestEntity.getBill(), false));
 
 		return rideRequest;
 	}

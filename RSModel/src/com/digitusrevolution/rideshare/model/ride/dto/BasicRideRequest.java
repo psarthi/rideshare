@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.model.ride.dto;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 
+import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
@@ -200,5 +201,5 @@ public class BasicRideRequest {
 	}
 	public void setRideDropPointAddress(String rideDropPointAddress) {
 		this.rideDropPointAddress = rideDropPointAddress;
-	}
+	}	
 }

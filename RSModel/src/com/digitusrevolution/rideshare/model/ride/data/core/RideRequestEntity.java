@@ -20,6 +20,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
@@ -76,6 +78,8 @@ public class RideRequestEntity {
 	@Column (name="rideMode")
 	@Enumerated(EnumType.STRING)
 	private RideMode rideMode;
+	@OneToOne
+	private BillEntity bill;
 	
 	public RideMode getRideMode() {
 		return rideMode;
@@ -284,6 +288,12 @@ public class RideRequestEntity {
 	}
 	public void setRideDropPointAddress(String rideDropPointAddress) {
 		this.rideDropPointAddress = rideDropPointAddress;
+	}
+	public BillEntity getBill() {
+		return bill;
+	}
+	public void setBill(BillEntity bill) {
+		this.bill = bill;
 	}
 
 }

@@ -3,11 +3,13 @@ package com.digitusrevolution.rideshare.model.ride.dto;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
+
 public class FullRideRequest extends BasicRideRequest{
 
 	private Collection<BasicRide> preferredRides = new HashSet<BasicRide>();
 	private Collection<BasicRide> cancelledRides = new HashSet<BasicRide>();
-	
+	private Bill bill;	
 
 	public Collection<BasicRide> getPreferredRides() {
 		return preferredRides;
@@ -20,6 +22,12 @@ public class FullRideRequest extends BasicRideRequest{
 	}
 	public void setCancelledRides(Collection<BasicRide> cancelledRides) {
 		this.cancelledRides = cancelledRides;
+	}
+	public Bill getBill() {
+		return bill;
+	}
+	public void setBill(Bill bill) {
+		this.bill = bill;
 	}
 
 }

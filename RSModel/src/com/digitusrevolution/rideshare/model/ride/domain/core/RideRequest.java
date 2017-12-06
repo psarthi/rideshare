@@ -5,6 +5,7 @@ import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
@@ -49,6 +50,7 @@ public class RideRequest {
 	private int travelDistance;
 	private Collection<Ride> cancelledRides = new HashSet<Ride>();
 	private RideMode rideMode;
+	private Bill bill;
 	
 	public int getId() {
 		return id;
@@ -259,6 +261,12 @@ public class RideRequest {
 	}
 	public void setRideDropPointAddress(String rideDropPointAddress) {
 		this.rideDropPointAddress = rideDropPointAddress;
+	}
+	public Bill getBill() {
+		return bill;
+	}
+	public void setBill(Bill bill) {
+		this.bill = bill;
 	}
 
 
