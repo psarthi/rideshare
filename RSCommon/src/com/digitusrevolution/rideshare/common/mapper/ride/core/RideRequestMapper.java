@@ -73,6 +73,8 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		User user = rideRequest.getPassenger();
 		//Don't get child of user as user has ride request and ride request has user, so it will get into recursive loop
 		rideRequestEntity.setPassenger(userMapper.getEntity(user, false));
+		
+		rideRequestEntity.setPassengerStatus(rideRequest.getPassengerStatus());
 
 		if (fetchChild){
 			rideRequestEntity = getEntityChild(rideRequest, rideRequestEntity);			
@@ -157,6 +159,8 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		UserEntity userEntity = rideRequestEntity.getPassenger();
 		//Don't get child of user as user has ride request and ride request has user, so it will get into recursive loop
 		rideRequest.setPassenger(userMapper.getDomainModel(userEntity, false));
+		
+		rideRequest.setPassengerStatus(rideRequestEntity.getPassengerStatus());
 		
 		if (fetchChild){
 			rideRequest = getDomainModelChild(rideRequest, rideRequestEntity);			

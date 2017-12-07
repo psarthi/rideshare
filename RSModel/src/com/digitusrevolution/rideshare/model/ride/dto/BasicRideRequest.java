@@ -7,6 +7,7 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
+import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
@@ -36,6 +37,7 @@ public class BasicRideRequest {
 	private int dropPointVariation;
 	private RideRequestStatus status;
 	private BasicUser passenger;
+	private PassengerStatus passengerStatus;
 	private boolean ridePreference;
 	private RidePoint ridePickupPoint = new RidePoint();
 	private RidePoint rideDropPoint = new RidePoint();
@@ -201,5 +203,11 @@ public class BasicRideRequest {
 	}
 	public void setRideDropPointAddress(String rideDropPointAddress) {
 		this.rideDropPointAddress = rideDropPointAddress;
+	}
+	public PassengerStatus getPassengerStatus() {
+		return passengerStatus;
+	}
+	public void setPassengerStatus(PassengerStatus passengerStatus) {
+		this.passengerStatus = passengerStatus;
 	}	
 }

@@ -23,6 +23,7 @@ import javax.persistence.Table;
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.model.user.data.VehicleCategoryEntity;
@@ -60,6 +61,15 @@ public class RideRequestEntity {
 	private RideRequestStatus status;
 	@ManyToOne
 	private UserEntity passenger;
+	@Column (name="passengerStatus")
+	@Enumerated(EnumType.STRING)
+	private PassengerStatus passengerStatus;
+	public PassengerStatus getPassengerStatus() {
+		return passengerStatus;
+	}
+	public void setPassengerStatus(PassengerStatus passengerStatus) {
+		this.passengerStatus = passengerStatus;
+	}
 	private boolean ridePreference;
 	@ManyToMany
 	@JoinTable(name="rideRequest_preferred_ride",joinColumns=@JoinColumn(name="ride_request_id"))

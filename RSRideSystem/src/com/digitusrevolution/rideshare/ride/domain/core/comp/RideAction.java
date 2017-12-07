@@ -115,7 +115,7 @@ public class RideAction {
 					RidePassenger ridePassenger = new RidePassenger();
 					ridePassenger.setPassenger(rideRequest.getPassenger());
 					ridePassenger.setRide(ride);
-					ridePassenger.setStatus(PassengerStatus.Confirmed);
+					rideRequest.setPassengerStatus(PassengerStatus.Confirmed);
 					ride.getRidePassengers().add(ridePassenger);
 
 					//This will get the new status of seat post the acceptance of this ride request 
@@ -211,7 +211,9 @@ public class RideAction {
 	 * - If yes, then change the status of passenger to pickup state
 	 * 
 	 */
-	public void pickupPassenger(int rideId, int passengerId){
+	public void pickupPassenger(int rideId, int rideRequestId){
+		RideRequestDO rideRequestDO = new RideRequestDO();
+		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
 		Ride ride = rideDO.getAllData(rideId);
 		logger.debug("Passenger Count:"+ride.getRidePassengers().size());
 		RideStatus rideCurrentStatus = ride.getStatus();
@@ -219,22 +221,22 @@ public class RideAction {
 		if (rideCurrentStatus.equals(RideStatus.Started)){
 			boolean passengerNotFound = true;
 			//Get matching passenger from list of passengers
-			RidePassenger passenger = ride.getRidePassenger(passengerId);
+			RidePassenger passenger = ride.getRidePassenger(rideRequest.getPassenger().getId());
 			//Check if passenger is found
 			//As it may happen, that in between passenger has cancelled the ride request, so passenger would not be available 
 			if (passenger!=null){
 				passengerNotFound = false;
 				//Check the passenger status if it has initial status else you can't change to pickup status
 				//e.g. if its dropped, then it can't be picked up again
-				if (passenger.getStatus().equals(PassengerStatus.Confirmed)){
-					passenger.setStatus(PassengerStatus.Picked);
+				if (rideRequest.getPassengerStatus().equals(PassengerStatus.Confirmed)){
+					rideRequest.setPassengerStatus(PassengerStatus.Picked);
 					//Update the status in the db
 					rideDO.update(ride);
 				}else {
-					throw new NotAcceptableException("Passenger is not in valid state. Passenger current status:"+passenger.getStatus());
+					throw new NotAcceptableException("Passenger is not in valid state. Passenger current status:"+rideRequest.getPassengerStatus());
 				}
 			} if (passengerNotFound){
-				throw new NotAcceptableException("Passenger is not available for this ride. Passenger Id:"+passengerId);
+				throw new NotAcceptableException("Passenger is not available for this ride. Passenger Id:"+rideRequest.getPassenger().getId());
 			}
 		} else {
 			throw new NotAcceptableException("Passenger can't be picked up as ride is not in valid state. Ride current statues:"+rideCurrentStatus);
@@ -252,27 +254,29 @@ public class RideAction {
 	 * - If yes, then update the passenger status to dropped state
 	 * 
 	 */
-	public void dropPassenger(int rideId, int passengerId){
+	public void dropPassenger(int rideId, int rideRequestId){
+		RideRequestDO rideRequestDO = new RideRequestDO();
+		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
 		Ride ride = rideDO.getAllData(rideId);
 		RideStatus rideCurrentStatus = ride.getStatus();
 		//Check if ride is started
 		if (rideCurrentStatus.equals(RideStatus.Started)){
 			boolean passengerNotFound = true;
 			//Get matching passenger from list of passengers
-			RidePassenger ridePassenger = ride.getRidePassenger(passengerId);
+			RidePassenger ridePassenger = ride.getRidePassenger(rideRequest.getPassenger().getId());
 			//This is actually not required, but doing it as extra check in the backend to make it full proof
 			if (ridePassenger!=null){
 				passengerNotFound = false;
 				//Check if passenger states is picked up
-				if (ridePassenger.getStatus().equals(PassengerStatus.Picked)){
-					ridePassenger.setStatus(PassengerStatus.Dropped);
+				if (rideRequest.getPassengerStatus().equals(PassengerStatus.Picked)){
+					rideRequest.setPassengerStatus(PassengerStatus.Dropped);
 					//Update the status in the db
 					rideDO.update(ride);
 				}else {
-					throw new NotAcceptableException("Passenger is not in valid state. Passenger current status:"+ridePassenger.getStatus());					
+					throw new NotAcceptableException("Passenger is not in valid state. Passenger current status:"+rideRequest.getPassengerStatus());					
 				}
 			} if (passengerNotFound){
-				throw new NotAcceptableException("Passenger is not available for this ride. Passenger Id:"+passengerId);
+				throw new NotAcceptableException("Passenger is not available for this ride. Passenger Id:"+rideRequest.getPassenger().getId());
 			}
 		} else {
 			throw new NotAcceptableException("Passenger can't be dropped as ride is not in valid state. Ride current statues:"+rideCurrentStatus);
@@ -308,19 +312,19 @@ public class RideAction {
 			boolean passengerNotPicked = false;
 			List<User> onBoardedPassengerList = new ArrayList<>();
 			List<User> notPickedPassengerList = new ArrayList<>();
-			Collection<RidePassenger> ridePassengers = ride.getRidePassengers();
-			for (RidePassenger ridePassenger : ridePassengers) {
-				if (ridePassenger.getStatus().equals(PassengerStatus.Dropped)){
+			Collection<RideRequest> rideRequests = ride.getAcceptedRideRequests();
+			for (RideRequest rideRequest:rideRequests) {
+				if (rideRequest.getPassengerStatus().equals(PassengerStatus.Dropped)){
 					continue;
 				}
-				if (ridePassenger.getStatus().equals(PassengerStatus.Picked)){
+				if (rideRequest.getPassengerStatus().equals(PassengerStatus.Picked)){
 					passengerOnBoard = true;
-					onBoardedPassengerList.add(ridePassenger.getPassenger());
+					onBoardedPassengerList.add(rideRequest.getPassenger());
 					continue;
 				}
-				if (ridePassenger.getStatus().equals(PassengerStatus.Confirmed)){
+				if (rideRequest.getPassengerStatus().equals(PassengerStatus.Confirmed)){
 					passengerNotPicked = true;
-					notPickedPassengerList.add(ridePassenger.getPassenger());
+					notPickedPassengerList.add(rideRequest.getPassenger());
 				}
 			}
 			
@@ -381,7 +385,7 @@ public class RideAction {
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
 		RideStatus rideStatus = ride.getStatus();
 		RidePassenger ridePassenger = ride.getRidePassenger(rideRequest.getPassenger().getId());
-		PassengerStatus passengerStatus = ridePassenger.getStatus();
+		PassengerStatus passengerStatus = rideRequest.getPassengerStatus();
 		//Check if ride request has been accepted by this ride
 		//Accepted ride would be null for unfulfilled ride request, so need to check for null condition 
 		if (rideRequest.getAcceptedRide() !=null ? rideRequest.getAcceptedRide().getId() == ride.getId() : false){

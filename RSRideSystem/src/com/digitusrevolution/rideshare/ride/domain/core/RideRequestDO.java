@@ -212,6 +212,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		//Storing dateTime in UTC
 		rideRequest.setPickupTime(pickupTimeUTC);
 		rideRequest.setStatus(RideRequestStatus.Unfulfilled);
+		rideRequest.setPassengerStatus(PassengerStatus.Unconfirmed);
 
 		//**IMP Problem - Trustnetwork gets created while creating the ride but we don't have its id and without id it will 
 		//recreate the trust network while updating the ride at later part of the this function as trust network id is the primary key
@@ -847,20 +848,17 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			rideRequest.setStatus(RideRequestStatus.Cancelled);
 			update(rideRequest);
 		} else {
-			//Reason for getting child of ride as ride Request has basic ride object which doesn't have passenger list
 			int rideId = rideRequest.getAcceptedRide().getId();
 			RideDO rideDO = new RideDO();
-			Ride ride = rideDO.getAllData(rideId);
-			RidePassenger ridePassenger = ride.getRidePassenger(rideRequest.getPassenger().getId());
-			if (ridePassenger.getStatus().equals(PassengerStatus.Confirmed)){
+			if (rideRequest.getPassengerStatus().equals(PassengerStatus.Confirmed)){
 				//This will cancel the ride request from confirmed ride
-				rideDO.cancelRideRequest(ride.getId(), rideRequestId);
+				rideDO.cancelRideRequest(rideId, rideRequestId);
 				//Once its cancelled from ride front, then we can cancel ride request
 				rideRequest.setStatus(RideRequestStatus.Cancelled);
 				update(rideRequest);
 			} else {
 				throw new NotAcceptableException("Ride request can't be cancelled as its already picked up. "
-						+ "Passenger current status:"+ridePassenger.getStatus());
+						+ "Passenger current status:"+rideRequest.getPassengerStatus());
 			}
 		}
 	}

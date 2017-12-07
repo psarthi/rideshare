@@ -572,14 +572,14 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		rideAction.startRide(rideId);
 	}
 
-	public void pickupPassenger(int rideId, int passengerId){
+	public void pickupPassenger(int rideId, int rideRequestId){
 		RideAction rideAction = new RideAction(this);
-		rideAction.pickupPassenger(rideId, passengerId);
+		rideAction.pickupPassenger(rideId, rideRequestId);;
 	}
 
-	public void dropPassenger(int rideId, int passengerId){
+	public void dropPassenger(int rideId, int rideRequestId){
 		RideAction rideAction = new RideAction(this);
-		rideAction.dropPassenger(rideId, passengerId);
+		rideAction.dropPassenger(rideId, rideRequestId);
 	}
 
 	public void endRide(int rideId){

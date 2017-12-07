@@ -16,19 +16,12 @@ public class BasicRidePassenger {
 	
 	private int id;
 	private BasicUser passenger;
-	private PassengerStatus status;
 	
 	public BasicUser getPassenger() {
 		return passenger;
 	}
 	public void setPassenger(BasicUser passenger) {
 		this.passenger = passenger;
-	}
-	public PassengerStatus getStatus() {
-		return status;
-	}
-	public void setStatus(PassengerStatus status) {
-		this.status = status;
 	}
 	public int getId() {
 		return id;

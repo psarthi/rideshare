@@ -29,9 +29,6 @@ public class RidePassengerEntity {
 	private RideEntity ride;
 	@ManyToOne
 	private UserEntity passenger;
-	@Column (name="status")
-	@Enumerated(EnumType.STRING)
-	private PassengerStatus status;
 	
 	public int getId() {
 		return id;
@@ -50,12 +47,6 @@ public class RidePassengerEntity {
 	}
 	public void setPassenger(UserEntity passenger) {
 		this.passenger = passenger;
-	}
-	public PassengerStatus getStatus() {
-		return status;
-	}
-	public void setStatus(PassengerStatus status) {
-		this.status = status;
 	}
 	@Override
 	public int hashCode() {

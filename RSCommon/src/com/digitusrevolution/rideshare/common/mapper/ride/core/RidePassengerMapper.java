@@ -14,7 +14,6 @@ public class RidePassengerMapper implements Mapper<RidePassenger, RidePassengerE
 	public RidePassengerEntity getEntity(RidePassenger ridePassenger, boolean fetchChild) {
 		RidePassengerEntity ridePassengerEntity = new RidePassengerEntity();
 		ridePassengerEntity.setId(ridePassenger.getId());
-		ridePassengerEntity.setStatus(ridePassenger.getStatus());
 	
 		//Its important not to fetch child as this will get into recursive loop
 		//as ride has ride passenger and ride passenger has ride
@@ -42,7 +41,6 @@ public class RidePassengerMapper implements Mapper<RidePassenger, RidePassengerE
 	public RidePassenger getDomainModel(RidePassengerEntity ridePassengerEntity, boolean fetchChild) {
 		RidePassenger ridePassenger = new RidePassenger();
 		ridePassenger.setId(ridePassengerEntity.getId());
-		ridePassenger.setStatus(ridePassengerEntity.getStatus());	
 		
 		//Its important not to fetch child as this will get into recursive loop
 		//as ride has ride passenger and ride passenger has ride
