@@ -441,7 +441,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 				
 				//This will process only new records
 				if (rideRequestsMap.size() > 0) {
-					validMatchedTripInfos = processAndGetValidRideRequests(ride, ridePoints, rideRequestsMap);
+					validMatchedTripInfos = processAndGetValidRideRequests(ride, ridePoints, rideRequestsMap,validMatchedTripInfos);
 					rideRequestResultValidCount = validMatchedTripInfos.size();										
 				}
 				
@@ -467,10 +467,9 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * 
 	 */
 	private List<MatchedTripInfo> processAndGetValidRideRequests(Ride ride, List<RidePoint> ridePoints,
-			Map<Integer, List<RideRequestPoint>> rideRequestsMap) {
+			Map<Integer, List<RideRequestPoint>> rideRequestsMap, List<MatchedTripInfo> validMatchedTripInfos) {
 
-		//This will hold the final valid ride requests
-		List<MatchedTripInfo> matchedTripInfoFinalResultSet = new LinkedList<>();
+		//Note - Don't reinitialize the validMatedTripInfos otherwise previous valid result would be lost
 
 		//This will get ridepoint which is having shortest distance from pickup and drop point of each ride requests
 		//Final result would be stored into MatchedTripInfo Map
@@ -485,14 +484,14 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		matchedTripInfoMap = validateProcessedRideRequests(ride, matchedTripInfoMap);
 
 		//*** Add valid points to the final result set
-		matchedTripInfoFinalResultSet.addAll(matchedTripInfoMap.values());
-		logger.trace("Ride Request Final Result Count:"+matchedTripInfoFinalResultSet.size());
+		validMatchedTripInfos.addAll(matchedTripInfoMap.values());
+		logger.trace("Ride Request Final Result Count:"+validMatchedTripInfos.size());
 		int index =0;
-		for (MatchedTripInfo matchedTripInfo : matchedTripInfoFinalResultSet) {
+		for (MatchedTripInfo matchedTripInfo : validMatchedTripInfos) {
 			logger.debug("Final Ride Request ["+index+"]:"+matchedTripInfo.getRideRequestId());
 			index++;
 		}
-		return matchedTripInfoFinalResultSet;
+		return validMatchedTripInfos;
 	}
 
 	/*

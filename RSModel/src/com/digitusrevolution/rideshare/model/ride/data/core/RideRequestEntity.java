@@ -81,6 +81,8 @@ public class RideRequestEntity {
 	private String rideDropPointId;
 	private String ridePickupPointAddress;
 	private String rideDropPointAddress;
+	private double ridePickupPointDistance;
+	private double rideDropPointDistance;
 	private int travelTime;
 	private int travelDistance;
 	@ManyToMany (mappedBy="cancelledRideRequests")
@@ -304,6 +306,18 @@ public class RideRequestEntity {
 	}
 	public void setBill(BillEntity bill) {
 		this.bill = bill;
+	}
+	public double getRidePickupPointDistance() {
+		return ridePickupPointDistance;
+	}
+	public void setRidePickupPointDistance(double ridePickupPointDistance) {
+		this.ridePickupPointDistance = ridePickupPointDistance;
+	}
+	public double getRideDropPointDistance() {
+		return rideDropPointDistance;
+	}
+	public void setRideDropPointDistance(double rideDropPointDistance) {
+		this.rideDropPointDistance = rideDropPointDistance;
 	}
 
 }

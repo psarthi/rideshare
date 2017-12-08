@@ -53,6 +53,9 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		rideRequestEntity.setDropPointAddress(rideRequest.getDropPointAddress());
 		rideRequestEntity.setRidePickupPointAddress(rideRequest.getRidePickupPointAddress());
 		rideRequestEntity.setRideDropPointAddress(rideRequest.getRideDropPointAddress());
+		
+		rideRequestEntity.setRidePickupPointDistance(rideRequest.getRidePickupPointDistance());
+		rideRequestEntity.setRideDropPointDistance(rideRequest.getRideDropPointDistance());
 
 		VehicleCategoryMapper vehicleCategoryMapper = new VehicleCategoryMapper();
 		VehicleCategory vehicleCategory = rideRequest.getVehicleCategory();
@@ -139,6 +142,9 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		rideRequest.setDropPointAddress(rideRequestEntity.getDropPointAddress());
 		rideRequest.setRidePickupPointAddress(rideRequestEntity.getRidePickupPointAddress());
 		rideRequest.setRideDropPointAddress(rideRequestEntity.getRideDropPointAddress());
+		
+		rideRequest.setRidePickupPointDistance(rideRequestEntity.getRidePickupPointDistance());
+		rideRequest.setRideDropPointDistance(rideRequestEntity.getRideDropPointDistance());
 
 		VehicleCategoryMapper vehicleCategoryMapper = new VehicleCategoryMapper();
 		VehicleCategoryEntity vehicleCategoryEntity = rideRequestEntity.getVehicleCategory();

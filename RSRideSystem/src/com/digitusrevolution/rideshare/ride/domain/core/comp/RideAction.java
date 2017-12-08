@@ -111,6 +111,9 @@ public class RideAction {
 						rideRequest.setRideDropPointAddress(rideRideDropPointAddress);
 					}
 					
+					rideRequest.setRidePickupPointDistance(matchedTripInfo.getPickupPointDistance());
+					rideRequest.setRideDropPointDistance(matchedTripInfo.getDropPointDistance());
+					
 					//Adding passenger
 					RidePassenger ridePassenger = new RidePassenger();
 					ridePassenger.setPassenger(rideRequest.getPassenger());
