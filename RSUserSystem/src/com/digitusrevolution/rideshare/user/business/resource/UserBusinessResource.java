@@ -16,10 +16,13 @@ import javax.ws.rs.core.Response;
 import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
+import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
 import com.digitusrevolution.rideshare.model.user.domain.Preference;
 import com.digitusrevolution.rideshare.model.user.domain.RegistrationType;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
+import com.digitusrevolution.rideshare.model.user.dto.FullUser;
 import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.SignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.UserSignInResult;
@@ -252,4 +255,11 @@ public class UserBusinessResource {
 		return Response.ok().entity(basicUser).build();
 	}
 
+	@GET
+	@Path("/{id}")
+	public Response get(@PathParam("id") int id, @QueryParam("fetchChild") String fetchChild){
+		UserBusinessService userBusinessService = new UserBusinessService();
+		FullUser user = userBusinessService.get(id, Boolean.valueOf(fetchChild));
+		return Response.ok(user).build();
+	}
 }

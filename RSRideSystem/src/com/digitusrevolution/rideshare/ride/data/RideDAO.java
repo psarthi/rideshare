@@ -63,6 +63,19 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 	}
 	
 	/*
+	 * Purpose - Get all rides of a user
+	 */
+	public List<RideEntity> getAllRides(UserEntity driver){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass);
+		@SuppressWarnings("unchecked")
+		List<RideEntity> rideEntities = criteria.add(Restrictions.eq("driver", driver)).list();		
+
+		return rideEntities;	
+	}
+
+	
+	/*
 	 * Purpose - Get current ride
 	 */
 	public RideEntity getCurrentRide(UserEntity driver){

@@ -395,6 +395,20 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		}
 		return null;
 	}
+	
+	public List<Ride> getAllRides(int driverId){
+		User driver = RESTClientUtil.getUser(driverId);
+		UserMapper userMapper = new UserMapper();
+		//We don't need child object of User entity, just the basic user entity is fine as it primarily needs only PK
+		UserEntity driverEntity = userMapper.getEntity(driver, false);
+		List<RideEntity> rideEntities = rideDAO.getAllRides(driverEntity);
+		List<Ride> rides = new LinkedList<>();
+		for (RideEntity rideEntity : rideEntities) {
+			setRideEntity(rideEntity);
+			rides.add(ride);
+		}
+		return rides;
+	}
 
 	/*
 	 * Purpose - Search all rides which is matching ride requests criteria

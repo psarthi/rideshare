@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 //This can help in getting just id instead of object but its causing issue while deserialization, so for now lets park it.
 //@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property="id")
-public class RideRequest {
+public class RideRequest implements Comparable<RideRequest>{
 
 	private int id;
 	private RideRequestPoint pickupPoint = new RideRequestPoint();
@@ -288,6 +288,14 @@ public class RideRequest {
 	}
 	public void setRideDropPointDistance(double rideDropPointDistance) {
 		this.rideDropPointDistance = rideDropPointDistance;
+	}
+	@Override
+	public int compareTo(RideRequest rideRequest) {
+		//ascending order
+		//return this.id - rideRequest.id;
+
+		//descending order
+		return rideRequest.id - this.id;
 	}
 
 

@@ -1,7 +1,7 @@
 package com.digitusrevolution.rideshare.ride.business;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -12,17 +12,11 @@ import org.hibernate.Transaction;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
-import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
-import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
-import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferResult;
-import com.digitusrevolution.rideshare.model.ride.dto.RideRequestResult;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
-import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDistance;
-import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
 
@@ -117,6 +111,71 @@ public class RideOfferBusinessService {
 		return rideOfferResult;
 	}
 
+	public List<FullRide> getRides(int driverId, int page){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		List<FullRide> fullRides = new ArrayList<>();
+		try {
+			transaction = session.beginTransaction();
+	
+			RideDO rideDO = new RideDO();
+			List<Ride> rides = rideDO.getAllRides(driverId);
+			//This will sort in descending order
+			Collections.sort(rides);
+			
+			int itemsCount = 10;
+			//This will return the result from lets say 0 to 9, 10 to 19, 20 to 29 etc.
+			List<Ride> subRides = rides.subList(page*itemsCount, (page+1)*itemsCount);
+			
+			for (Ride ride: subRides) {
+				fullRides.add(JsonObjectMapper.getMapper().convertValue(ride, FullRide.class));
+			}
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return fullRides;
+	}
+
+	public FullRide getRide(int rideId){
+		
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		FullRide fullRide = null;
+		try {
+			transaction = session.beginTransaction();
+			
+			RideDO rideDO = new RideDO();
+			//Since we are trying to get all data before even committing, all child objects may not come so its cleaner to have getAllData post commit in different transaction
+			Ride ride = rideDO.getAllData(rideId);
+			fullRide = JsonObjectMapper.getMapper().convertValue(ride, FullRide.class);
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return fullRide;
+	}
 }
 	
 	

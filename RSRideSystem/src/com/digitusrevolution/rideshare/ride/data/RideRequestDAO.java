@@ -61,7 +61,21 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 		
 		return rideRequestEntity;		
 	}
+	
+	/*
+	 * Purpose - Get all ride request of a user
+	 */
+	public List<RideRequestEntity> getAllRideRequests(UserEntity passenger){
 
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass);
+		@SuppressWarnings("unchecked")
+		List<RideRequestEntity> rideRequestEntities = criteria.add(Restrictions.eq("passenger", passenger))
+				.list();
+		return rideRequestEntities;		
+	}
+
+	
 
 	/*
 	 * Purpose - Get the status of ride request, this is required many times, so instead of using get and then fetching the status

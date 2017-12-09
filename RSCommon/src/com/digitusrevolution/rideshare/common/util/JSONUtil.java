@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.ws.rs.WebApplicationException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /*
  * This is used internally by the application.
@@ -21,7 +22,9 @@ public class JSONUtil<T> {
 	}
 	
 	public String getJson(T model){
-		ObjectMapper mapper = JsonObjectMapper.getMapper();
+		//IMP - Don't try to use JsonObjectMapper to keep the code clean as somehow JavaTimeModule is not getting registered
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
 		String json = null;
 		try {
 			json = mapper.writeValueAsString(model);
@@ -32,7 +35,9 @@ public class JSONUtil<T> {
 	}
 	
 	public T getModel(String json){
-		ObjectMapper mapper = JsonObjectMapper.getMapper();
+		//IMP - Don't try to use JsonObjectMapper to keep the code clean as somehow JavaTimeModule is not getting registered
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
 		T model;
 		try {
 			model = mapper.readValue(json, modelClass);

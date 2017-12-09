@@ -2,6 +2,9 @@ package com.digitusrevolution.rideshare.ride.business;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -106,6 +109,73 @@ public class RideRequestBusinessService {
 			}
 		}
 		return rideRequestResult;
+	}
+	
+	public List<FullRideRequest> getRideRequests(int passengerId, int page){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		List<FullRideRequest> fullRideRequests = new ArrayList<>();
+		try {
+			transaction = session.beginTransaction();
+	
+			RideRequestDO rideRequestDO = new RideRequestDO();
+			List<RideRequest> rideRequests = rideRequestDO.getAllRideRequests(passengerId);
+			//This will sort in descending order
+			Collections.sort(rideRequests);
+			
+			int itemsCount = 10;
+			//This will return the result from lets say 0 to 9, 10 to 19, 20 to 29 etc.
+			List<RideRequest> subRideRequests = rideRequests.subList(page*itemsCount, (page+1)*itemsCount);
+			
+			for (RideRequest rideRequest: subRideRequests) {
+				fullRideRequests.add(JsonObjectMapper.getMapper().convertValue(rideRequest, FullRideRequest.class));
+			}
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return fullRideRequests;
+	}
+	
+	public FullRideRequest getRideRequest(int rideRequestId){
+		
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		FullRideRequest fullRideRequest = null;
+		try {
+			transaction = session.beginTransaction();
+		
+			RideRequestDO rideRequestDO = new RideRequestDO();
+			//Since we are trying to get all data before even committing, all child objects may not come so its cleaner to have getAllData post commit in different transaction
+			RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
+			fullRideRequest = JsonObjectMapper.getMapper().convertValue(rideRequest, FullRideRequest.class);
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return fullRideRequest;
 	}
 	
 }

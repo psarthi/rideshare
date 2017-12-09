@@ -28,5 +28,10 @@
 			level="debug" additivity="false">
 			<AppenderRef ref="Console" />
 		</Logger>
+		<Logger
+			name="com.digitusrevolution.rideshare.ride.data.RidePointDAO"
+			level="debug" additivity="false">
+			<AppenderRef ref="Console" />
+		</Logger>
 	</Loggers>
 </Configuration>

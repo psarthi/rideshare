@@ -1,20 +1,22 @@
 package com.digitusrevolution.rideshare.ride.business.resource;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
-import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferResult;
 import com.digitusrevolution.rideshare.ride.business.RideOfferBusinessService;
-import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
-import com.digitusrevolution.rideshare.ride.domain.service.RideDomainService;
 
 @Path("/rides")
 @Produces(MediaType.APPLICATION_JSON)
@@ -36,6 +38,23 @@ public class RideOfferBusinessResource {
 		return Response.ok(rideOfferResult).build();
 	}
 	
+	@GET
+	@Path("/user/{id}")
+	public Response getRides(@PathParam("id") int id, @QueryParam("page") int page){
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		List<FullRide> rides = rideOfferBusinessService.getRides(id, page);
+		GenericEntity<List<FullRide>> entity = new GenericEntity<List<FullRide>>(rides) {};
+		return Response.ok(entity).build();
+	}
+	
+	@GET
+	@Path("/{id}")
+	public Response getRide(@PathParam("id") int id){
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		FullRide ride = rideOfferBusinessService.getRide(id);
+		return Response.ok(ride).build();
+	}
+
 }
 
 

@@ -881,6 +881,20 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		}
 	}
 	
+	public List<RideRequest> getAllRideRequests(int passengerId){
+		User passenger = RESTClientUtil.getUser(passengerId);
+		UserMapper userMapper = new UserMapper();
+		//We don't need child object of User entity, just the basic user entity is fine as it primarily needs only PK
+		UserEntity passengerEntity = userMapper.getEntity(passenger, false);
+		List<RideRequestEntity> rideRequestEntities = rideRequestDAO.getAllRideRequests(passengerEntity);
+		List<RideRequest> rideRequests = new LinkedList<>();
+		for (RideRequestEntity rideRequestEntity : rideRequestEntities) {
+			setRideRequestEntity(rideRequestEntity);
+			rideRequests.add(rideRequest);
+		}
+		return rideRequests;
+	}
+	
 	public boolean autoMatchRideRequest(int rideId) {		
 		RideRequestSearchResult searchRideRequests = searchRideRequests(rideId, 0, 0);
 		List<MatchedTripInfo> matchedTripInfos = searchRideRequests.getMatchedTripInfos();
