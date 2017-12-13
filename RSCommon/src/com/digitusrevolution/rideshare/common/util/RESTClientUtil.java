@@ -124,10 +124,10 @@ public class RESTClientUtil {
 		return vehicleCategory;
 	}
 	
-	public static Account getAccount(int number){
+	public static Account getVirtualAccount(int number){
 
 		RESTClientImpl<Account> restClientUtil = new RESTClientImpl<>();
-		String url = PropertyReader.getInstance().getProperty("GET_ACCOUNT_URL");
+		String url = PropertyReader.getInstance().getProperty("GET_VIRTUAL_ACCOUNT_URL");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
 		URI uri = uriBuilder.build(Integer.toString(number));
 		Response response = restClientUtil.get(uri);
@@ -160,11 +160,22 @@ public class RESTClientUtil {
 	public static Response generateBill(TripInfo tripInfo){
 
 		RESTClientImpl<TripInfo> restClientUtil = new RESTClientImpl<>();
-		String url = PropertyReader.getInstance().getProperty("POST_GENERATE_BILL_URL");
+		String url = PropertyReader.getInstance().getProperty("GENERATE_BILL_URL");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
 		URI uri = uriBuilder.build();
 		Response response = restClientUtil.post(uri, tripInfo);
 		return response;
+	}
+	
+	public static Account createVirtualAccount(){
+
+		RESTClientImpl<Account> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("CREATE_VIRTUAL_ACCOUNT_URL");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build();
+		Response response = restClientUtil.get(uri);
+		Account virtualAccount = response.readEntity(Account.class);
+		return virtualAccount;
 	}
 	
 	public static Ride getCurrentRide(int driverId){

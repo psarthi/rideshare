@@ -120,17 +120,20 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	 * - Create bill in the system
 	 * 
 	 */
-	public int generateBill(Ride ride, RideRequest rideRequest){
+	public int generateBill(Ride ride, RideRequest rideRequest, float discountPercentage){
 		
 		User passenger = rideRequest.getPassenger();
 		User driver = ride.getDriver();
 		float price = getFare(ride.getVehicle().getVehicleSubCategory(), driver);
 		float distance = rideRequest.getTravelDistance();
 		float amount = price * distance;
+		//This is post applying discount
+		amount = amount * (100 - discountPercentage) / 100;
 		Company company = RESTClientUtil.getCompany(1);
 		float serviceChargePercentage = company.getServiceChargePercentage();
 		//Set Bill properties
 		bill.setAmount(amount);
+		bill.setDiscountPercentage(discountPercentage);
 		bill.setServiceChargePercentage(serviceChargePercentage);
 		bill.setCompany(company);
 		bill.setDriver(driver);
@@ -198,11 +201,14 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 			float serviceCharge = amount * serviceChargePercentage;
 			float driverAmount = amount - serviceCharge;
 			//Get AccountDO for specific account type
-			Account accountDO = getAccountDO(accountType);
+			AccountDO accountDO = getAccountDO(accountType);
 			String remark = "Bill:"+billNumber+",Ride:"+bill.getRide().getId()+",RideRequest:"+bill.getRideRequest().getId();
-			accountDO.debit(bill.getPassenger().getAccount(AccountType.Virtual).getNumber(), amount, remark);
-			accountDO.credit(bill.getDriver().getAccount(AccountType.Virtual).getNumber(), driverAmount, remark);
-			accountDO.debit(bill.getCompany().getAccount(AccountType.Virtual).getNumber(), serviceCharge, remark);		
+			//This will ensure that we don't do any transaction if the bill amount is ZERO which would be applicable for lets say Free Rides or 100% discounted rides
+			if (amount!=0) {
+				accountDO.debit(bill.getPassenger().getAccount(AccountType.Virtual).getNumber(), amount, remark);
+				accountDO.credit(bill.getDriver().getAccount(AccountType.Virtual).getNumber(), driverAmount, remark);
+				accountDO.debit(bill.getCompany().getAccount(AccountType.Virtual).getNumber(), serviceCharge, remark);						
+			}
 			bill.setStatus(BillStatus.Paid);
 			update(bill);
 		} else {
@@ -213,7 +219,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	/*
 	 * Purpose - It should return appropriate Account DO Impl based on Account type
 	 */
-	private Account getAccountDO(AccountType accountType){
+	private AccountDO getAccountDO(AccountType accountType){
 		if (accountType.equals(AccountType.Virtual)){
 			return new VirtualAccountDO();
 		}

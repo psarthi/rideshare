@@ -7,28 +7,85 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-import com.digitusrevolution.rideshare.billing.domain.core.VirtualAccountDO;
+import com.digitusrevolution.rideshare.billing.domain.core.BillDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.inf.DomainService;
-import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
-import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
+import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 
-public class AccountDomainService implements DomainService<Account>{
+public class BillDomainService implements DomainService<Bill>{
 
-	private static final Logger logger = LogManager.getLogger(AccountDomainService.class.getName());
+	private static final Logger logger = LogManager.getLogger(BillDomainService.class.getName());
 
-	public int createVirtualAccount() {
+	@Override
+	public Bill get(int number, boolean fetchChild) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		Bill bill = null;
+		try {
+			transaction = session.beginTransaction();
+
+			BillDO billDO = new BillDO();
+			if (fetchChild){
+				bill = billDO.getAllData(number);
+			} else {
+				bill = billDO.get(number);			
+			}
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return bill;
+	}
+
+	@Override
+	public List<Bill> getAll() {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		List<Bill> bills = null;
+		try {
+			transaction = session.beginTransaction();
+
+			BillDO billDO = new BillDO();
+			bills = billDO.getAll();
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return bills;	
+	}
+
+	public int generateBill(TripInfo tripInfo){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		int number = 0;
 		try {
 			transaction = session.beginTransaction();
 
-			VirtualAccountDO accountDO = new VirtualAccountDO();
-			Account account = new Account();
-			account.setBalance(0);
-			account.setType(AccountType.Virtual);
-			number = accountDO.create(account);
+			BillDO billDO = new BillDO();	
+			number = billDO.generateBill(tripInfo.getRide(), tripInfo.getRideRequest(), tripInfo.getDiscountPercentage());
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -45,65 +102,5 @@ public class AccountDomainService implements DomainService<Account>{
 			}
 		}
 		return number;	
-	}
-	
-	@Override
-	public Account get(int number, boolean fetchChild) {
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transaction = null;	
-		Account account = null;
-		try {
-			transaction = session.beginTransaction();
-
-			VirtualAccountDO accountDO = new VirtualAccountDO();
-			if (fetchChild){
-				account = accountDO.getAllData(number);
-			} else {
-				account = accountDO.get(number);			
-			}
-
-			transaction.commit();
-		} catch (RuntimeException e) {
-			if (transaction!=null){
-				logger.error("Transaction Failed, Rolling Back");
-				transaction.rollback();
-				throw e;
-			}
-		}
-		finally {
-			if (session.isOpen()){
-				logger.info("Closing Session");
-				session.close();				
-			}
-		}
-		return account;	
-	}
-
-	@Override
-	public List<Account> getAll() {
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transaction = null;	
-		List<Account> accounts = null;
-		try {
-			transaction = session.beginTransaction();
-
-			VirtualAccountDO accountDO = new VirtualAccountDO();	
-			accounts = accountDO.getAll();
-			
-			transaction.commit();
-		} catch (RuntimeException e) {
-			if (transaction!=null){
-				logger.error("Transaction Failed, Rolling Back");
-				transaction.rollback();
-				throw e;
-			}
-		}
-		finally {
-			if (session.isOpen()){
-				logger.info("Closing Session");
-				session.close();				
-			}
-		}
-		return accounts;	
 	}
 }

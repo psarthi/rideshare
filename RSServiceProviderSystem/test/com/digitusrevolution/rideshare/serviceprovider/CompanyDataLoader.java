@@ -65,7 +65,7 @@ public class CompanyDataLoader {
 	}
 	
 	public void addAccount(){
-		Account account = RESTClientUtil.getAccount(6);
+		Account account = RESTClientUtil.getVirtualAccount(6);
 		CompanyDO companyDO = new CompanyDO();
 		companyDO.addAccount(1, account);
 	}

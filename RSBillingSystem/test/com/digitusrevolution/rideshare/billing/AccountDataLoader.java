@@ -10,6 +10,7 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.billing.business.AccountBusinessService;
 import com.digitusrevolution.rideshare.billing.domain.core.VirtualAccountDO;
+import com.digitusrevolution.rideshare.billing.domain.service.AccountDomainService;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
@@ -22,13 +23,9 @@ public class AccountDataLoader {
 	@GET
 	public static void main(String[] args) {
 		
-		AccountBusinessService accountService = new AccountBusinessService();
-		Account account = new Account();
-		account.setBalance(0);
-		account.setType(AccountType.Virtual);
-		
+		AccountDomainService accountService = new AccountDomainService();
 		for(int i=0; i<6;i++){
-			accountService.create(account);					
+			accountService.createVirtualAccount();					
 		}
 		
 		AccountDataLoader accountDataLoader = new AccountDataLoader();

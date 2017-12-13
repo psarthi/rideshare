@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +23,7 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
 import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionType;
 
 //Need to implement Account Interface which is standard for any AccountDO implementation so that all type of account has same behavior
-public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.digitusrevolution.rideshare.billing.domain.core.Account{
+public class VirtualAccountDO implements DomainObjectPKInteger<Account>, AccountDO{
 	
 	private Account account;
 	private AccountEntity accountEntity;
@@ -141,6 +142,26 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, com.dig
 		transaction.setRemark(remark);
 		account.getTransactions().add(transaction);
 		update(account);
+	}
+	
+	public void addMoneyToWallet(int accountNumber, float amount) {
+		//TODO Connect with Payment Gateway and on successful transaction, credit to its wallet which is virtual account
+		boolean paymentSuccess=true;
+		if (paymentSuccess) {
+			credit(accountNumber, amount, "Top Up");	
+		} else {
+			throw new WebApplicationException("Recharge Failed");
+		}
+	}
+	
+	public void redeemFromWallet(int virtualAccountNumber, int redemptionAccountNumber, float amount) {
+		//TODO Connect with payment gateway and on successful transaction, debit money from its wallet which is virtual account
+		boolean transferSuccess=true;
+		if (transferSuccess) {
+			debit(virtualAccountNumber, amount, "Redemption");
+		} else {
+			throw new WebApplicationException("Redemption Failed");
+		}
 	}
 }
 

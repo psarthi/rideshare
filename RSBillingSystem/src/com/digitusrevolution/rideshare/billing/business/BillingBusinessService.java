@@ -14,33 +14,6 @@ public class BillingBusinessService {
 	
 	private static final Logger logger = LogManager.getLogger(BillingBusinessService.class.getName());
 	
-	public int generateBill(TripInfo tripInfo){
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transaction = null;	
-		int number = 0;
-		try {
-			transaction = session.beginTransaction();
-
-			BillDO billDO = new BillDO();	
-			number = billDO.generateBill(tripInfo.getRide(), tripInfo.getRideRequest());
-			
-			transaction.commit();
-		} catch (RuntimeException e) {
-			if (transaction!=null){
-				logger.error("Transaction Failed, Rolling Back");
-				transaction.rollback();
-				throw e;
-			}
-		}
-		finally {
-			if (session.isOpen()){
-				logger.info("Closing Session");
-				session.close();				
-			}
-		}
-		return number;	
-	}
-	
 	public void approveBill(int billNumber){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	

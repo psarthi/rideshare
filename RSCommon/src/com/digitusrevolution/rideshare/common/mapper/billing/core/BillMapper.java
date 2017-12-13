@@ -18,6 +18,7 @@ public class BillMapper implements Mapper<Bill, BillEntity>{
 		billEntity.setNumber(bill.getNumber());
 		billEntity.setAmount(bill.getAmount());
 		billEntity.setServiceChargePercentage(bill.getServiceChargePercentage());
+		billEntity.setDiscountPercentage(bill.getDiscountPercentage());
 		billEntity.setStatus(bill.getStatus());
 		
 		if (fetchChild){
@@ -48,6 +49,7 @@ public class BillMapper implements Mapper<Bill, BillEntity>{
 		bill.setNumber(billEntity.getNumber());
 		bill.setAmount(billEntity.getAmount());
 		bill.setServiceChargePercentage(billEntity.getServiceChargePercentage());
+		bill.setDiscountPercentage(billEntity.getDiscountPercentage());
 		bill.setStatus(billEntity.getStatus());
 		if (fetchChild){
 			bill = getDomainModelChild(bill, billEntity);

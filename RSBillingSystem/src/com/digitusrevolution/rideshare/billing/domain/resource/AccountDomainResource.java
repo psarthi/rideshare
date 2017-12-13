@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -20,6 +21,22 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AccountDomainResource implements DomainResource<Account>{
+	
+	/**
+	 * 
+	 * @param account User Account
+	 * @return accountNumber
+	 */
+	@GET
+	@Path("/create")
+	public Response createVirtualAccount(){
+		
+		AccountDomainService accountDomainService = new AccountDomainService();
+		int number = accountDomainService.createVirtualAccount();
+		//Reason for doing get post create so that we get different transaction
+		Account account = accountDomainService.get(number, true);
+		return Response.ok(account).build();
+	}
 
 	@Override
 	@GET

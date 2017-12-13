@@ -35,6 +35,7 @@ public class BillEntity {
 	private RideRequestEntity rideRequest;
 	private float amount;
 	private float serviceChargePercentage;
+	private float discountPercentage;
 	@Column
 	@Enumerated(EnumType.STRING)
 	private BillStatus status;
@@ -132,6 +133,12 @@ public class BillEntity {
 	}
 	public void setStatus(BillStatus status) {
 		this.status = status;
+	}
+	public float getDiscountPercentage() {
+		return discountPercentage;
+	}
+	public void setDiscountPercentage(float discountPercentage) {
+		this.discountPercentage = discountPercentage;
 	}
 	
 }

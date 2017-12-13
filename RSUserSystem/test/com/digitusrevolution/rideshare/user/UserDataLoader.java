@@ -215,7 +215,7 @@ public class UserDataLoader {
 	public void addAccount(){
 		UserDO userDO = new UserDO();
 		for (int i=1; i<6; i++){
-			Account account = RESTClientUtil.getAccount(i);
+			Account account = RESTClientUtil.getVirtualAccount(i);
 			userDO.addAccount(i, account);			
 		}
 

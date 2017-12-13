@@ -13,6 +13,7 @@ import javax.management.openmbean.InvalidKeyException;
 import javax.persistence.PreRemove;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.logging.log4j.LogManager;
@@ -27,6 +28,7 @@ import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
+import com.digitusrevolution.rideshare.common.util.RESTClientImpl;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
@@ -200,7 +202,11 @@ public class UserDO implements DomainObjectPKInteger<User>{
 			Country country = countryDO.get(user.getCountry().getName());
 			user.setCountry(country);
 			user.setPreference(getDefaultPreference());
-			id = create(user);
+			//This will create virtual account
+			Account account = RESTClientUtil.createVirtualAccount();
+			//This will associate the same virtual account to the user
+			user.getAccounts().add(account);
+			id = create(user);			
 		}
 		return id;
 	}

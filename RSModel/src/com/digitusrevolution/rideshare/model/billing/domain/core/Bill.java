@@ -20,6 +20,7 @@ public class Bill {
 	private float amount;
 	//Reason for storing this value, as if the service charge changes in between, so old bill would not get affected
 	private float serviceChargePercentage;
+	private float discountPercentage;
 	private BillStatus status;
 	
 	public int getNumber() {
@@ -115,6 +116,12 @@ public class Bill {
 	}
 	public void setStatus(BillStatus status) {
 		this.status = status;
+	}
+	public float getDiscountPercentage() {
+		return discountPercentage;
+	}
+	public void setDiscountPercentage(float discountPercentage) {
+		this.discountPercentage = discountPercentage;
 	}
 	
 }

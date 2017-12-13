@@ -17,20 +17,7 @@ import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class BillingBusinessResource {
-	
-	/**
-	 * 
-	 * @param tripInfo This contains Ride and Ride Request domain model
-	 * @return billNumber
-	 */
-	@POST
-	@Path("/generatebill")
-	public Response generateBill(TripInfo tripInfo){
-		BillingBusinessService billingBusinessService = new BillingBusinessService();
-		int number = billingBusinessService.generateBill(tripInfo);
-		return Response.ok(Integer.toString(number)).build();
-	}
-	
+		
 	/**
 	 * 
 	 * @param billNumber Bill Number of a Ride
