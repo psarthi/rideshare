@@ -6,6 +6,8 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 
 public class BillingDomainLayerTest {
 
@@ -42,6 +44,8 @@ public class BillingDomainLayerTest {
 	}
 	
 	public void test(){
+		
+		
 		
 	}
 

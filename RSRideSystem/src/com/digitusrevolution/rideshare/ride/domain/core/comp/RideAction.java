@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.ws.rs.NotAcceptableException;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,8 +18,10 @@ import com.digitusrevolution.rideshare.common.util.GoogleUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientImpl;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
+import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
@@ -68,7 +73,7 @@ public class RideAction {
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
 		RideRequestStatus rideRequestStatus = rideRequest.getStatus();
-		
+
 		int seatOccupied = 0;
 		for (RideRequest acceptedRideRequest : ride.getAcceptedRideRequests()) {
 			seatOccupied += acceptedRideRequest.getSeatRequired();
@@ -87,6 +92,7 @@ public class RideAction {
 				//Its important to re-check seats criteria as in between it may happen that number of seats which was initially free at the time of search,  
 				//partial seats may have been occupied.
 				if (rideRequest.getSeatRequired() <= (ride.getSeatOffered() - seatOccupied)){
+
 					//Set accepted ride in ride request
 					//Note - By adding the ride request in the getAcceptedRideRequests collection, it will not update the ride id in the ride request table
 					//as ride is acceptedRideRequests relationship is owned by ride request entity and not ride (@OneToMany(mappedBy="acceptedRide"))
@@ -96,7 +102,7 @@ public class RideAction {
 					//Set Ride Pickup & Drop Points
 					rideRequest.setRidePickupPoint(matchedTripInfo.getRidePickupPoint());
 					rideRequest.setRideDropPoint(matchedTripInfo.getRideDropPoint());
-					
+
 					//This will get address from lat lng
 					String rideRidePickupPointAddress = GoogleUtil.getAddress(rideRequest.getRidePickupPoint().getPoint().getLatitude(), 
 							rideRequest.getRidePickupPoint().getPoint().getLongitude());
@@ -110,10 +116,10 @@ public class RideAction {
 					if (rideRideDropPointAddress!=null) {
 						rideRequest.setRideDropPointAddress(rideRideDropPointAddress);
 					}
-					
+
 					rideRequest.setRidePickupPointDistance(matchedTripInfo.getPickupPointDistance());
 					rideRequest.setRideDropPointDistance(matchedTripInfo.getDropPointDistance());
-					
+
 					//Adding passenger
 					RidePassenger ridePassenger = new RidePassenger();
 					ridePassenger.setPassenger(rideRequest.getPassenger());
@@ -129,7 +135,7 @@ public class RideAction {
 					//Update all the changes in DB for ride and ride request
 					rideDO.update(ride);
 					//This is required to update accepted ride as well as status update on ride request table
-					rideRequestDO.update(rideRequest);
+					rideRequestDO.update(rideRequest);						
 				}
 				else{
 					throw new RideUnavailableException("Ride doesn't have sufficient seats available with id:"+rideId);
@@ -330,7 +336,7 @@ public class RideAction {
 					notPickedPassengerList.add(rideRequest.getPassenger());
 				}
 			}
-			
+
 			//This is the scenario, when some/all passenger has not been picked
 			if (passengerNotPicked){
 				for (User passenger : notPickedPassengerList) {
@@ -350,7 +356,7 @@ public class RideAction {
 					dropPassenger(rideId, passenger.getId());
 				}
 			}
-			
+
 			//So now all passenger has been either dropped / cancelled
 			//Change the ride status to finished
 			//Note - You can't update the status upfront, otherwise drop/cancellation would not work if ride is in Finished state
