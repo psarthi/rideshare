@@ -198,7 +198,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 		if (bill.getStatus().equals(BillStatus.Approved)){
 			float amount = bill.getAmount();
 			float serviceChargePercentage = bill.getServiceChargePercentage();
-			float serviceCharge = amount * serviceChargePercentage;
+			float serviceCharge = amount * serviceChargePercentage / 100;
 			float driverAmount = amount - serviceCharge;
 			//Get AccountDO for specific account type
 			AccountDO accountDO = getAccountDO(accountType);

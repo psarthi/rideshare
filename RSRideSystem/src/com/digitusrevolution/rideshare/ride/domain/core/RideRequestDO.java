@@ -628,22 +628,22 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		return matchedTripInfoMap;
 	}
 
-	private boolean validateRideRequestPointTimeAndDistanceCondition(RideRequestPoint requestPoint, RidePoint ridePoint, double pointDistance) {
+	private boolean validateRideRequestPointTimeAndDistanceCondition(RideRequestPoint rideRequestPoint, RidePoint ridePoint, double pointDistance) {
 
 		//Check if Ride Pickup time is within range
-		long variationInSeconds = DateTimeUtil.getSeconds(requestPoint.getTimeVariation());
-		ZonedDateTime rideRequestPointEarliestTime = requestPoint.getDateTime().minusSeconds(variationInSeconds);
-		ZonedDateTime rideRequestPointLatestTime = requestPoint.getDateTime().plusSeconds(variationInSeconds);
-		int distanceVariation = requestPoint.getDistanceVariation();
+		long variationInSeconds = DateTimeUtil.getSeconds(rideRequestPoint.getTimeVariation());
+		ZonedDateTime rideRequestPointEarliestTime = rideRequestPoint.getDateTime().minusSeconds(variationInSeconds);
+		ZonedDateTime rideRequestPointLatestTime = rideRequestPoint.getDateTime().plusSeconds(variationInSeconds);
+		int distanceVariation = rideRequestPoint.getDistanceVariation();
 
 		//Check if Ride Pickup distance is within range
 		ZonedDateTime ridePointTime = ridePoint.getRidePointProperties().get(0).getDateTime();
 		//Note - We are validating all this with the shortest distance ride point, so this doesn't match then no other ride point can match
 		if (ridePointTime.isAfter(rideRequestPointEarliestTime) && ridePointTime.isBefore(rideRequestPointLatestTime) && pointDistance <= distanceVariation) {
-			logger.debug("Valid Ride Request Point based on Time and distance variation criteria:[Ride Request Id, Point Id]"+requestPoint.getRideRequestId()+","+requestPoint.get_id());
+			logger.debug("Valid Ride Request Point based on Time and distance variation criteria:[Ride Request Id, Point Id]"+rideRequestPoint.getRideRequestId()+","+rideRequestPoint.get_id());
 			return true;
 		}
-		logger.debug("InValid Ride Request Point based on Time and distance variation criteria:[Ride Request Id, Point Id]"+requestPoint.getRideRequestId()+","+requestPoint.get_id());
+		logger.debug("InValid Ride Request Point based on Time and distance variation criteria:[Ride Request Id, Point Id]"+rideRequestPoint.getRideRequestId()+","+rideRequestPoint.get_id());
 		return false;
 	}
 
@@ -941,18 +941,19 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		return rideRequests;
 	}
 
-	public boolean autoMatchRideRequest(int rideId) {		
+	public MatchedTripInfo autoMatchRideRequest(int rideId) {		
 		RideRequestSearchResult searchRideRequests = searchRideRequests(rideId, 0, 0);
 		List<MatchedTripInfo> matchedTripInfos = searchRideRequests.getMatchedTripInfos();
 		if (matchedTripInfos.size() > 0) {
 			RideDO rideDO = new RideDO();
 			//This will match the first ride request
-			rideDO.acceptRideRequest(matchedTripInfos.get(0));
+			MatchedTripInfo matchedTripInfo = matchedTripInfos.get(0);
+			rideDO.acceptRideRequest(matchedTripInfo);
 			logger.debug("Found Matching Ride Request for Ride ID:"+rideId);
-			return true;
+			return matchedTripInfo;
 		} else {
 			logger.debug("No Matching Ride Request Found for Ride ID:"+rideId);
-			return false;
+			return null;
 		}		
 	}
 

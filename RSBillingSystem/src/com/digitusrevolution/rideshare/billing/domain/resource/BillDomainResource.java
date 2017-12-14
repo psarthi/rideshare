@@ -51,8 +51,8 @@ public class BillDomainResource implements DomainResource<Bill>{
 	@Path("/generate")
 	public Response generateBill(TripInfo tripInfo){
 		BillDomainService billDomainService = new BillDomainService();
-		int number = billDomainService.generateBill(tripInfo);
-		return Response.ok(Integer.toString(number)).build();
+		Bill bill = billDomainService.generateBill(tripInfo);
+		return Response.ok(bill).build();
 	}
 }
 

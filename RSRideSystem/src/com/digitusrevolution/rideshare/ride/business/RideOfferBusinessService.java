@@ -14,6 +14,7 @@ import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
+import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferResult;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
@@ -36,11 +37,11 @@ public class RideOfferBusinessService {
 	 * 
 	 * 
 	 */
-	public int offerRide(RideOfferInfo rideOfferInfo){
+	public MatchedTripInfo offerRide(RideOfferInfo rideOfferInfo){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		int rideId = 0;
+		MatchedTripInfo matchedTripInfo = null;
 		try {
 			transaction = session.beginTransaction();
 			
@@ -51,11 +52,16 @@ public class RideOfferBusinessService {
 			RideDO rideDO = new RideDO();
 			List<Integer> rideIds = rideDO.offerRide(ride,googleDirection);
 			//This will get first ride ID
-			rideId = rideIds.get(0);
+			int rideId = rideIds.get(0);
 			//Need to think on the logic of recurring ride
 			RideRequestDO rideRequestDO = new RideRequestDO();
-			rideRequestDO.autoMatchRideRequest(rideId);
-
+			matchedTripInfo = rideRequestDO.autoMatchRideRequest(rideId);
+			
+			if (matchedTripInfo==null) {
+				matchedTripInfo = new MatchedTripInfo();
+				matchedTripInfo.setRideId(rideId);
+			}
+						
 			transaction.commit();
 			
 		} catch (RuntimeException e) {
@@ -72,9 +78,10 @@ public class RideOfferBusinessService {
 			}
 		}
 		
-		return rideId;
+		return matchedTripInfo;
 	}
-	
+
+
 	public RideOfferResult getRideOfferResult(int rideId){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();

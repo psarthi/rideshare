@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.ws.rs.NotAcceptableException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -18,6 +19,8 @@ import com.digitusrevolution.rideshare.common.util.GoogleUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientImpl;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
+import com.digitusrevolution.rideshare.model.billing.domain.core.BillStatus;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
@@ -30,6 +33,10 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleGeocode;
 import com.digitusrevolution.rideshare.model.ride.dto.google.Result;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
+import com.digitusrevolution.rideshare.model.user.domain.Fuel;
+import com.digitusrevolution.rideshare.model.user.domain.FuelType;
+import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RidePassengerDO;
@@ -463,7 +470,6 @@ public class RideAction {
 			throw new NotAcceptableException("Ride can't be cancelled as its not in valid state. Current ride status:"+rideStatus);
 		}
 	}
-
 }
 
 

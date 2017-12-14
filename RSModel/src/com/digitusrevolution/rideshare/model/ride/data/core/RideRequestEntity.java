@@ -90,7 +90,7 @@ public class RideRequestEntity {
 	@Column (name="rideMode")
 	@Enumerated(EnumType.STRING)
 	private RideMode rideMode;
-	@OneToOne
+	@OneToOne (mappedBy="rideRequest")
 	private BillEntity bill;
 	
 	public RideMode getRideMode() {

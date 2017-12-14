@@ -77,15 +77,16 @@ public class BillDomainService implements DomainService<Bill>{
 		return bills;	
 	}
 
-	public int generateBill(TripInfo tripInfo){
+	public Bill generateBill(TripInfo tripInfo){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		int number = 0;
+		Bill bill = null;
 		try {
 			transaction = session.beginTransaction();
 
 			BillDO billDO = new BillDO();	
-			number = billDO.generateBill(tripInfo.getRide(), tripInfo.getRideRequest(), tripInfo.getDiscountPercentage());
+			int number = billDO.generateBill(tripInfo.getRide(), tripInfo.getRideRequest(), tripInfo.getDiscountPercentage());
+			bill = billDO.get(number);
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -101,6 +102,6 @@ public class BillDomainService implements DomainService<Bill>{
 				session.close();				
 			}
 		}
-		return number;	
+		return bill;	
 	}
 }

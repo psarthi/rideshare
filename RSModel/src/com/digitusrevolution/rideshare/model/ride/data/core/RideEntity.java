@@ -71,8 +71,6 @@ public class RideEntity {
 	//and one user can be part of many rides as different passenger
 	@OneToMany(mappedBy="ride", cascade=CascadeType.ALL)
 	private Collection<RidePassengerEntity> ridePassengers = new HashSet<RidePassengerEntity>();
-	@OneToMany(mappedBy="ride")
-	private Collection<BillEntity> bills = new HashSet<BillEntity>();
 	//Reason for one to many relationship, as one ride can accept many ride requests 
 	//but one ride request can be accepted by only one ride
 	@OneToMany(mappedBy="acceptedRide")
@@ -161,12 +159,6 @@ public class RideEntity {
 	}
 	public void setVehicle(VehicleEntity vehicle) {
 		this.vehicle = vehicle;
-	}
-	public Collection<BillEntity> getBills() {
-		return bills;
-	}
-	public void setBills(Collection<BillEntity> bills) {
-		this.bills = bills;
 	}
 	public Collection<RideRequestEntity> getAcceptedRideRequests() {
 		return acceptedRideRequests;

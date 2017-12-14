@@ -10,6 +10,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
@@ -157,14 +158,15 @@ public class RESTClientUtil {
 		return company;
 	}
 	
-	public static Response generateBill(TripInfo tripInfo){
+	public static Bill generateBill(TripInfo tripInfo){
 
 		RESTClientImpl<TripInfo> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GENERATE_BILL_URL");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
 		URI uri = uriBuilder.build();
 		Response response = restClientUtil.post(uri, tripInfo);
-		return response;
+		Bill bill = response.readEntity(Bill.class);
+		return bill;
 	}
 	
 	public static Account createVirtualAccount(){

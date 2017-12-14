@@ -16,6 +16,7 @@ import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
+import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideRequestResult;
 import com.digitusrevolution.rideshare.model.ride.dto.google.Element;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDistance;
@@ -28,11 +29,11 @@ public class RideRequestBusinessService {
 	private static final Logger logger = LogManager.getLogger(RideRequestBusinessService.class.getName());
 
 	
-	public int requestRide(BasicRideRequest rideRequest){
+	public MatchedTripInfo requestRide(BasicRideRequest rideRequest){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		int id = 0;
+		MatchedTripInfo matchedTripInfo = null;
 		try {
 			transaction = session.beginTransaction();
 						
@@ -53,9 +54,14 @@ public class RideRequestBusinessService {
 			rideRequest.setTravelTime(travelTime);
 		
 			RideRequestDO rideRequestDO = new RideRequestDO();
-			id = rideRequestDO.requestRide(JsonObjectMapper.getMapper().convertValue(rideRequest, RideRequest.class));
+			int id = rideRequestDO.requestRide(JsonObjectMapper.getMapper().convertValue(rideRequest, RideRequest.class));
 			RideDO rideDO = new RideDO();
-			rideDO.autoMatchRide(id);
+			matchedTripInfo =  rideDO.autoMatchRide(id);
+			
+			if (matchedTripInfo==null) {
+				matchedTripInfo = new MatchedTripInfo();
+				matchedTripInfo.setRideRequestId(id);
+			}
 
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -72,7 +78,7 @@ public class RideRequestBusinessService {
 			}
 		}
 		
-		return id;
+		return matchedTripInfo;
 	}
 
 	public RideRequestResult getRideRequestResult(int rideRequestId){
@@ -177,5 +183,4 @@ public class RideRequestBusinessService {
 		}
 		return fullRideRequest;
 	}
-	
 }

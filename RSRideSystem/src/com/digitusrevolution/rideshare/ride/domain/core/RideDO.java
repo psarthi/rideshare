@@ -28,8 +28,8 @@ import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
-import com.digitusrevolution.rideshare.model.ride.domain.RidePointProperty;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
+import com.digitusrevolution.rideshare.model.ride.domain.RidePointProperty;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
@@ -38,7 +38,6 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RidePointInfo;
-import com.digitusrevolution.rideshare.model.ride.dto.RideRequestSearchResult;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
 import com.digitusrevolution.rideshare.model.ride.dto.google.Leg;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
@@ -521,16 +520,17 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return validRideIds;
 	}
 
-	public boolean autoMatchRide(int rideRequestId) {		
+	public MatchedTripInfo autoMatchRide(int rideRequestId) {		
 		List<MatchedTripInfo> matchedTripInfos = searchRides(rideRequestId);
 		if (matchedTripInfos.size() > 0) {
 			//This will match the first ride request
-			acceptRideRequest(matchedTripInfos.get(0));
+			MatchedTripInfo matchedTripInfo = matchedTripInfos.get(0);
+			acceptRideRequest(matchedTripInfo);
 			logger.debug("Found Matching Ride for Ride Request ID:"+rideRequestId);
-			return true;
+			return matchedTripInfo;
 		} else {
 			logger.debug("No Matching Ride Found for Ride Request ID:"+rideRequestId);
-			return false;
+			return null;
 		}		
 	}
 

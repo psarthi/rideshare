@@ -102,11 +102,6 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 				ride.getCancelledRideRequests(), false);
 		rideEntity.setCancelledRideRequests(cancelledRideRequestEntities);
 
-
-		BillMapper billMapper = new BillMapper();
-		//Don't fetch child of bill as bill has ride and ride has bill, it will get into recursive loop
-		rideEntity.setBills(billMapper.getEntities(rideEntity.getBills(), ride.getBills(), false));
-
 		return rideEntity;
 	}
 
@@ -186,11 +181,6 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		Collection<RideRequest> cancelledRideRequests = rideRequestMapper.getDomainModels(ride.getCancelledRideRequests(), 
 				rideEntity.getCancelledRideRequests(), false);
 		ride.setCancelledRideRequests(cancelledRideRequests);
-
-		
-		BillMapper billMapper = new BillMapper();
-		//Don't fetch child of bill as bill has ride and ride has bill, it will get into recursive loop
-		ride.setBills(billMapper.getDomainModels(ride.getBills(), rideEntity.getBills(), false));
 
 		return ride;
 	}
