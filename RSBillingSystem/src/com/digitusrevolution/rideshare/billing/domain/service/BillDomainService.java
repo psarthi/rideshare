@@ -76,32 +76,4 @@ public class BillDomainService implements DomainService<Bill>{
 		}
 		return bills;	
 	}
-
-	public Bill generateBill(TripInfo tripInfo){
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transaction = null;	
-		Bill bill = null;
-		try {
-			transaction = session.beginTransaction();
-
-			BillDO billDO = new BillDO();	
-			int number = billDO.generateBill(tripInfo.getRide(), tripInfo.getRideRequest(), tripInfo.getDiscountPercentage());
-			bill = billDO.get(number);
-			
-			transaction.commit();
-		} catch (RuntimeException e) {
-			if (transaction!=null){
-				logger.error("Transaction Failed, Rolling Back");
-				transaction.rollback();
-				throw e;
-			}
-		}
-		finally {
-			if (session.isOpen()){
-				logger.info("Closing Session");
-				session.close();				
-			}
-		}
-		return bill;	
-	}
 }

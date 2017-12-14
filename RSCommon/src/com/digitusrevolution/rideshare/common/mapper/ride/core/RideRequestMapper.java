@@ -108,8 +108,10 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		if (ride!=null) rideRequestEntity.setAcceptedRide(rideMapper.getEntity(ride, false));
 		
 		BillMapper billMapper = new BillMapper();
-		//Don't get child as Ride Request has bill and Bill has ride request
-		if (rideRequest.getBill()!=null) rideRequestEntity.setBill(billMapper.getEntity(rideRequest.getBill(), false));
+		//Intentionally we are getting Bill childs so that we can generate Bills from Ride System and all mapping is in place while creation
+		//Imp - Since we are getting child of bills, its very important to ensure we stop the recursive loop by making false in Bill Childs for Ride Request
+		//As Ride Request has bill and bill has ride request, but in case of fetching bills child we don't fetch Ride request child again and this helps to stop recursive loop
+		if (rideRequest.getBill()!=null) rideRequestEntity.setBill(billMapper.getEntity(rideRequest.getBill(), true));
 
 		return rideRequestEntity;
 	}
@@ -182,14 +184,16 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 				rideRequestEntity.getPreferredRides(), true));
 	
 		RideEntity rideEntity = rideRequestEntity.getAcceptedRide();
-		//Don't get child of ride has ride request and ride request has ride, so it will get into recursive loop
+		//Don't get child as ride has ride request and ride request has ride, so it will get into recursive loop
 		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
 		//is called irrespective of fetchChild status. Ride request is calling ride domain function and ride is calling ride request domain function
 		if (rideEntity!=null) rideRequest.setAcceptedRide(rideMapper.getDomainModel(rideEntity, false));
 		
 		BillMapper billMapper = new BillMapper();
-		//Don't get child as Ride Request has bill and Bill has ride request
-		if (rideRequestEntity.getBill()!=null) rideRequest.setBill(billMapper.getDomainModel(rideRequestEntity.getBill(), false));
+		//Intentionally we are getting Bill childs so that we can generate Bills from Ride System and all mapping is in place while creation
+		//Imp - Since we are getting child of bills, its very important to ensure we stop the recursive loop by making false in Bill Childs for Ride Request
+		//As Ride Request has bill and bill has ride request, but in case of fetching bills child we don't fetch Ride request child again and this helps to stop recursive loop
+		if (rideRequestEntity.getBill()!=null) rideRequest.setBill(billMapper.getDomainModel(rideRequestEntity.getBill(), true));
 
 		return rideRequest;
 	}

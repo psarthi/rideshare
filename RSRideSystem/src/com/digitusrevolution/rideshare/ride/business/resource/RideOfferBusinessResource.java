@@ -14,11 +14,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
-import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferResult;
 import com.digitusrevolution.rideshare.ride.business.RideOfferBusinessService;
-import com.digitusrevolution.rideshare.ride.business.RideSystemBusinessService;
 
 @Path("/rides")
 @Produces(MediaType.APPLICATION_JSON)
@@ -34,12 +32,9 @@ public class RideOfferBusinessResource {
 	public Response offerRide(RideOfferInfo rideOfferInfo){
 	
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		MatchedTripInfo matchedTripInfo = rideOfferBusinessService.offerRide(rideOfferInfo);
-		//Reason for doing in separate transaction, as we need ride and ride request for bill generation and ride would not be available till we commit
-		RideSystemBusinessService rideSystemBusinessService = new RideSystemBusinessService();
-		rideSystemBusinessService.generateBill(matchedTripInfo);
+		int id = rideOfferBusinessService.offerRide(rideOfferInfo);
 		//Since we are trying to get all data before even committing, all child objects may not come so its cleaner to have getAllData post commit in different transaction
-		RideOfferResult rideOfferResult = rideOfferBusinessService.getRideOfferResult(matchedTripInfo.getRideId());
+		RideOfferResult rideOfferResult = rideOfferBusinessService.getRideOfferResult(id);
 		return Response.ok(rideOfferResult).build();
 	}
 	

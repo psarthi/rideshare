@@ -158,17 +158,6 @@ public class RESTClientUtil {
 		return company;
 	}
 	
-	public static Bill generateBill(TripInfo tripInfo){
-
-		RESTClientImpl<TripInfo> restClientUtil = new RESTClientImpl<>();
-		String url = PropertyReader.getInstance().getProperty("GENERATE_BILL_URL");
-		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build();
-		Response response = restClientUtil.post(uri, tripInfo);
-		Bill bill = response.readEntity(Bill.class);
-		return bill;
-	}
-	
 	public static Account createVirtualAccount(){
 
 		RESTClientImpl<Account> restClientUtil = new RESTClientImpl<>();

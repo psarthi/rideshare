@@ -108,62 +108,6 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 		billDAO.delete(billEntity);
 	}
 	
-	/*
-	 * Purpose - Generate bill for specific ride request
-	 * 
-	 * High level logic -
-	 * 
-	 * - Get Fare for the ride
-	 * - Calculate total bill amount based on fare and travel distance
-	 * - Calculate service charge based on service charge 
-	 * - Set all the bill properties including status
-	 * - Create bill in the system
-	 * 
-	 */
-	public int generateBill(Ride ride, RideRequest rideRequest, float discountPercentage){
-		
-		User passenger = rideRequest.getPassenger();
-		User driver = ride.getDriver();
-		float price = getFare(ride.getVehicle().getVehicleSubCategory(), driver);
-		float distance = rideRequest.getTravelDistance();
-		float amount = price * distance;
-		//This is post applying discount
-		amount = amount * (100 - discountPercentage) / 100;
-		Company company = RESTClientUtil.getCompany(1);
-		float serviceChargePercentage = company.getServiceChargePercentage();
-		//Set Bill properties
-		bill.setAmount(amount);
-		bill.setDiscountPercentage(discountPercentage);
-		bill.setServiceChargePercentage(serviceChargePercentage);
-		bill.setCompany(company);
-		bill.setDriver(driver);
-		bill.setPassenger(passenger);
-		bill.setRide(ride);
-		bill.setRideRequest(rideRequest);
-		bill.setStatus(BillStatus.Pending);
-		//Create Bill
-		int number = create(bill);
-		return number;
-	}
-	
-	/*
-	 * Purpose - Get fare rate per meter basis (Note - Its not per Km as all data in the system is in meters)
-	 * 
-	 */
-	private float getFare(VehicleSubCategory vehicleSubCategory, User driver){
-		FuelType fuelType = vehicleSubCategory.getFuelType();
-		int averageMileage = vehicleSubCategory.getAverageMileage();
-		Collection<Fuel> fuels = driver.getCountry().getFuels(); 
-		for (Fuel fuel : fuels) {
-			if (fuel.getType().name().equals(fuelType.name())){
-				//This will get fare per meter and not by Km
-				float fare = fuel.getPrice() / (averageMileage * 1000);
-				return fare;
-			}
-		}
-		throw new NotFoundException("Fuel type is not found. Fuel type is:"+fuelType);
-	}
-	
 	private BillStatus getStatus(int billNumber){
 		return billDAO.getStatus(billNumber);
 	}

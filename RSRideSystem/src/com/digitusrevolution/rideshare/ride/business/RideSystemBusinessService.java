@@ -151,49 +151,4 @@ public class RideSystemBusinessService {
 
 		return upcomingRideRequest;
 	}
-
-	public Bill generateBill(MatchedTripInfo matchedTripInfo) {
-
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transaction = null;	
-		Bill bill = null;
-		//Reason for checking Ride Id and Ride Request Id instead of matchedTripInfo, 
-		//as we are using matchedTripInfo to store RideId / RideRequestId even if there is no match
-		//And this is a common function used in both scenario - offer ride and request ride 
-		if (matchedTripInfo.getRideId()!=0 && matchedTripInfo.getRideRequestId()!=0) {
-			try {
-				transaction = session.beginTransaction();
-
-				RideDO rideDO = new RideDO();
-				Ride ride = rideDO.get(matchedTripInfo.getRideId());
-				RideRequestDO rideRequestDO = new RideRequestDO();
-				RideRequest rideRequest = rideRequestDO.get(matchedTripInfo.getRideRequestId());
-				float discountPercentage = 0;
-				if (ride.getRideMode().equals(RideMode.Free)) discountPercentage = 100; 
-
-				TripInfo tripInfo = new TripInfo();
-				tripInfo.setRide(ride);
-				tripInfo.setRideRequest(rideRequest);
-				tripInfo.setDiscountPercentage(discountPercentage);
-
-				bill = RESTClientUtil.generateBill(tripInfo);
-
-				transaction.commit();
-
-			} catch (RuntimeException e) {
-				if (transaction!=null){
-					logger.error("Unable to generate bill. Transaction Failed, Rolling Back");
-					transaction.rollback();
-					throw e;
-				}
-			}
-			finally {
-				if (session.isOpen()){
-					logger.info("Closing Session");
-					session.close();				
-				}
-			}
-		}
-		return bill;
-	}
 }

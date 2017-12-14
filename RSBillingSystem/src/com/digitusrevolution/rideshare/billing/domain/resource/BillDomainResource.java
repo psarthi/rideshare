@@ -41,19 +41,6 @@ public class BillDomainResource implements DomainResource<Bill>{
 		GenericEntity<List<Bill>> entity = new GenericEntity<List<Bill>>(bills) {};
 		return Response.ok(entity).build();
 	}
-
-	/**
-	 * 
-	 * @param tripInfo This contains Ride and Ride Request domain model
-	 * @return billNumber
-	 */
-	@POST
-	@Path("/generate")
-	public Response generateBill(TripInfo tripInfo){
-		BillDomainService billDomainService = new BillDomainService();
-		Bill bill = billDomainService.generateBill(tripInfo);
-		return Response.ok(bill).build();
-	}
 }
 
 

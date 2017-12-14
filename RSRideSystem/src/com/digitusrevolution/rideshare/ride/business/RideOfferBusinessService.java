@@ -37,11 +37,11 @@ public class RideOfferBusinessService {
 	 * 
 	 * 
 	 */
-	public MatchedTripInfo offerRide(RideOfferInfo rideOfferInfo){
+	public int offerRide(RideOfferInfo rideOfferInfo){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		MatchedTripInfo matchedTripInfo = null;
+		int rideId = 0;
 		try {
 			transaction = session.beginTransaction();
 			
@@ -52,16 +52,11 @@ public class RideOfferBusinessService {
 			RideDO rideDO = new RideDO();
 			List<Integer> rideIds = rideDO.offerRide(ride,googleDirection);
 			//This will get first ride ID
-			int rideId = rideIds.get(0);
+			rideId = rideIds.get(0);
 			//Need to think on the logic of recurring ride
 			RideRequestDO rideRequestDO = new RideRequestDO();
-			matchedTripInfo = rideRequestDO.autoMatchRideRequest(rideId);
+			rideRequestDO.autoMatchRideRequest(rideId);
 			
-			if (matchedTripInfo==null) {
-				matchedTripInfo = new MatchedTripInfo();
-				matchedTripInfo.setRideId(rideId);
-			}
-						
 			transaction.commit();
 			
 		} catch (RuntimeException e) {
@@ -78,7 +73,7 @@ public class RideOfferBusinessService {
 			}
 		}
 		
-		return matchedTripInfo;
+		return rideId;
 	}
 
 

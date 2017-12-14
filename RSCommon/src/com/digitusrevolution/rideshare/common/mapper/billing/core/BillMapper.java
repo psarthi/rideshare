@@ -38,6 +38,7 @@ public class BillMapper implements Mapper<Bill, BillEntity>{
 		RideMapper rideMapper = new RideMapper();
 		billEntity.setRide(rideMapper.getEntity(bill.getRide(), false));
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
+		//Very Imp - Don't get child of Ride Request otherwise it will get into recursive loop
 		billEntity.setRideRequest(rideRequestMapper.getEntity(bill.getRideRequest(), false));
 
 		return billEntity;
@@ -67,6 +68,7 @@ public class BillMapper implements Mapper<Bill, BillEntity>{
 		RideMapper rideMapper = new RideMapper();
 		bill.setRide(rideMapper.getDomainModel(billEntity.getRide(), false));
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
+		//Very Imp - Don't get child of Ride Request otherwise it will get into recursive loop
 		bill.setRideRequest(rideRequestMapper.getDomainModel(billEntity.getRideRequest(), false));
 		return bill;
 	}

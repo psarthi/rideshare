@@ -138,6 +138,14 @@ public class RideAction {
 					//Seat status may or may not change depending on total seats occupied vs offered 
 					RideSeatStatus newRideSeatStatus = getRideSeatStatusPostAcceptance(rideRequest.getSeatRequired(), ride);
 					ride.setSeatStatus(newRideSeatStatus);
+					
+					//VERY Imp. - We are generating bill directly from here instead of going to Billing system so that we can do all this in one transaction
+					//If we go to Billing system, then it has to be done post commit which will force to have another transaction 
+					//and we need to do too many things to rollback manually
+					float discountPercentage = 0;
+					if (ride.getRideMode().equals(RideMode.Free)) discountPercentage = 100;
+					Bill bill = generateBill(ride, rideRequest, discountPercentage);
+					rideRequest.setBill(bill);
 
 					//Update all the changes in DB for ride and ride request
 					rideDO.update(ride);
@@ -156,6 +164,62 @@ public class RideAction {
 			throw new RideRequestUnavailableException("Ride Request is not available anymore with id:"+rideRequestId);
 		}			
 	}
+	
+	/*
+	 * Purpose - Generate bill for specific ride request
+	 * 
+	 * High level logic -
+	 * 
+	 * - Get Fare for the ride
+	 * - Calculate total bill amount based on fare and travel distance
+	 * - Calculate service charge based on service charge 
+	 * - Set all the bill properties including status
+	 * - Create bill in the system
+	 * 
+	 */
+	public Bill generateBill(Ride ride, RideRequest rideRequest, float discountPercentage){
+		
+		User passenger = rideRequest.getPassenger();
+		User driver = ride.getDriver();
+		float price = getFare(ride.getVehicle().getVehicleSubCategory(), driver);
+		float distance = rideRequest.getTravelDistance();
+		float amount = price * distance;
+		//This is post applying discount
+		amount = amount * (100 - discountPercentage) / 100;
+		Company company = RESTClientUtil.getCompany(1);
+		float serviceChargePercentage = company.getServiceChargePercentage();
+		Bill bill = new Bill();
+		//Set Bill properties
+		bill.setAmount(amount);
+		bill.setDiscountPercentage(discountPercentage);
+		bill.setServiceChargePercentage(serviceChargePercentage);
+		bill.setCompany(company);
+		bill.setDriver(driver);
+		bill.setPassenger(passenger);
+		bill.setRide(ride);
+		bill.setRideRequest(rideRequest);
+		bill.setStatus(BillStatus.Pending);
+		return bill;
+	}
+	
+	/*
+	 * Purpose - Get fare rate per meter basis (Note - Its not per Km as all data in the system is in meters)
+	 * 
+	 */
+	private float getFare(VehicleSubCategory vehicleSubCategory, User driver){
+		FuelType fuelType = vehicleSubCategory.getFuelType();
+		int averageMileage = vehicleSubCategory.getAverageMileage();
+		Collection<Fuel> fuels = driver.getCountry().getFuels(); 
+		for (Fuel fuel : fuels) {
+			if (fuel.getType().name().equals(fuelType.name())){
+				//This will get fare per meter and not by Km
+				float fare = fuel.getPrice() / (averageMileage * 1000);
+				return fare;
+			}
+		}
+		throw new NotFoundException("Fuel type is not found. Fuel type is:"+fuelType);
+	}
+	
 
 	/*
 	 * Purpose - This will check the ride seat status post the acceptance of new ride request

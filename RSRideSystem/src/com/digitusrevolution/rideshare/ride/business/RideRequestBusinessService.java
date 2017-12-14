@@ -29,11 +29,11 @@ public class RideRequestBusinessService {
 	private static final Logger logger = LogManager.getLogger(RideRequestBusinessService.class.getName());
 
 	
-	public MatchedTripInfo requestRide(BasicRideRequest rideRequest){
+	public int requestRide(BasicRideRequest rideRequest){
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		MatchedTripInfo matchedTripInfo = null;
+		int rideRequestId = 0;
 		try {
 			transaction = session.beginTransaction();
 						
@@ -54,15 +54,10 @@ public class RideRequestBusinessService {
 			rideRequest.setTravelTime(travelTime);
 		
 			RideRequestDO rideRequestDO = new RideRequestDO();
-			int id = rideRequestDO.requestRide(JsonObjectMapper.getMapper().convertValue(rideRequest, RideRequest.class));
+			rideRequestId = rideRequestDO.requestRide(JsonObjectMapper.getMapper().convertValue(rideRequest, RideRequest.class));
 			RideDO rideDO = new RideDO();
-			matchedTripInfo =  rideDO.autoMatchRide(id);
+			rideDO.autoMatchRide(rideRequestId);
 			
-			if (matchedTripInfo==null) {
-				matchedTripInfo = new MatchedTripInfo();
-				matchedTripInfo.setRideRequestId(id);
-			}
-
 			transaction.commit();
 		} catch (RuntimeException e) {
 			if (transaction!=null){
@@ -78,7 +73,7 @@ public class RideRequestBusinessService {
 			}
 		}
 		
-		return matchedTripInfo;
+		return rideRequestId;
 	}
 
 	public RideRequestResult getRideRequestResult(int rideRequestId){
