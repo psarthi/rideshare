@@ -471,6 +471,10 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			Map<Integer, List<RideRequestPoint>> rideRequestsMap, List<MatchedTripInfo> validMatchedTripInfos) {
 
 		//Note - Don't reinitialize the validMatedTripInfos otherwise previous valid result would be lost
+		
+		//Reason for doing this as Phase - 0 so that we remove all invalid ride request's initially itself
+		//and save unnecessary processing of them in next step which is an extensive operation
+		validateBusinessCriteria(ride, rideRequestsMap);
 
 		//This will get ridepoint which is having shortest distance from pickup and drop point of each ride requests
 		//Final result would be stored into MatchedTripInfo Map
@@ -481,7 +485,8 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 
 		//This will get all valid ride requests based on ride pickup and drop point availability as well as sequence of ride pickup and drop point
 
-		//**** Validate ride requests based on ride direction as well as pickup and drop point availability 
+		//**** Validate ride requests based on ride direction, ride request time variation, distance variation, pickup and drop point availability
+		//Note - This will not validate on business criteria again which has already been done in Phase - 0
 		matchedTripInfoMap = validateProcessedRideRequests(ride, matchedTripInfoMap, rideRequestsMap);
 
 		//*** Add valid points to the final result set
@@ -616,16 +621,19 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			}
 		}
 		logger.debug("Phase 1 - Valid Ride Request Ids of Ride Id["+ride.getId()+"]:"+matchedTripInfoMap.keySet());
-
-		//*** Validating ride requests based on business criteria
-		if (!matchedTripInfoMap.keySet().isEmpty()){
-			//Getting valid ride request Ids based on all business criteria
-			Set<Integer> validRideRequestIds = getValidRideRequests(matchedTripInfoMap.keySet());
-			//Removing all the invalid ride request Ids
-			matchedTripInfoMap.keySet().retainAll(validRideRequestIds);
-			logger.debug("Phase 2 - Valid Ride Request Ids based on all business criteria of Ride Id["+ride.getId()+"]:"+matchedTripInfoMap.keySet());
-		}
 		return matchedTripInfoMap;
+	}
+
+	//No need to return anything as we are using shared map, and by removing invalid ride request Ids it would reflect everywhere
+	private void validateBusinessCriteria(Ride ride, Map<Integer, List<RideRequestPoint>> rideRequestsMap) {
+		//*** Validating ride requests based on business criteria
+		if (!rideRequestsMap.keySet().isEmpty()){
+			//Getting valid ride request Ids based on all business criteria
+			Set<Integer> validRideRequestIds = getValidRideRequests(rideRequestsMap.keySet());
+			//Removing all the invalid ride request Ids
+			rideRequestsMap.keySet().retainAll(validRideRequestIds);
+			logger.debug("Phase 0 - Valid Ride Request Ids based on all business criteria of Ride Id["+ride.getId()+"]:"+rideRequestsMap.keySet());
+		}
 	}
 
 	private boolean validateRideRequestPointTimeAndDistanceCondition(RideRequestPoint rideRequestPoint, RidePoint ridePoint, double pointDistance) {
