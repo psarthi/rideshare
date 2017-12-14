@@ -12,11 +12,15 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
+import com.digitusrevolution.rideshare.model.ride.dto.FullRidesInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferResult;
 import com.digitusrevolution.rideshare.ride.business.RideOfferBusinessService;
+import com.digitusrevolution.rideshare.ride.business.RideSystemBusinessService;
 
 @Path("/rides")
 @Produces(MediaType.APPLICATION_JSON)
@@ -55,6 +59,99 @@ public class RideOfferBusinessResource {
 		return Response.ok(ride).build();
 	}
 
+	/**
+	 * 
+	 * @param driverId Id of the driver
+	 * @return current ride
+	 */
+	@GET
+	@Path("/current/{driverId}")
+	public Response getCurrentRide(@PathParam("driverId") int driverId){
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		FullRide ride = rideOfferBusinessService.getCurrentRide(driverId);
+		return Response.ok().entity(ride).build();
+	}
+
+	/**
+	 * 
+	 * @param rideId Ride Id
+	 * @return updated Ride
+	 */
+	@GET
+	@Path("/start/{rideId}")
+	public Response startRide(@PathParam("rideId") int rideId){
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		FullRide ride = rideOfferBusinessService.startRide(rideId);
+		return Response.ok(ride).build();				
+	}
+	
+	/**
+	 * 
+	 * @param rideId Ride Id
+	 * @return updated Ride
+	 */
+	@GET
+	@Path("/end/{rideId}")
+	public Response endRide(@PathParam("rideId") int rideId){
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		FullRide ride = rideOfferBusinessService.endRide(rideId);
+		return Response.ok(ride).build();				
+	}
+
+	/**
+	 * 
+	 * @param rideId Ride Id
+	 * @return updated Ride
+	 */
+	@GET
+	@Path("/cancel/{rideId}")
+	public Response cancelRide(@PathParam("rideId") int rideId){
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		FullRide ride = rideOfferBusinessService.cancelRide(rideId);
+		return Response.ok(ride).build();				
+	}
+
+	/**
+	 * 
+	 * @param rideId Ride Id
+	 * @param rideRequestId Ride Request Id
+	 * @return Updated Ride and Ride Request
+	 */
+	@GET
+	@Path("{rideId}/cancel/acceptedriderequest/{rideRequestId}")
+	public Response cancelAcceptedRideRequest(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		FullRidesInfo ridesInfo = rideOfferBusinessService.cancelAcceptedRideRequest(rideId, rideRequestId);
+		return Response.ok(ridesInfo).build();				
+	}
+
+	/**
+	 * 
+	 * @param rideId Ride Id
+	 * @param rideRequestId Ride Request Id
+	 * @return Updated Ride
+	 */
+	@GET
+	@Path("/{rideId}/pickup/{rideRequestId}")
+	public Response pickupPassenger(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		FullRide ride = rideOfferBusinessService.pickupPassenger(rideId, rideRequestId);
+		return Response.ok(ride).build();				
+	}
+	
+	/**
+	 * 
+	 * @param rideId Ride Id
+	 * @param rideRequestId Ride Request Id
+	 * @return Updated Ride
+	 */
+	@GET
+	@Path("/{rideId}/drop/{rideRequestId}")
+	public Response dropPassenger(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		FullRide ride = rideOfferBusinessService.dropPassenger(rideId, rideRequestId);
+		return Response.ok(ride).build();				
+	}
 }
 
 

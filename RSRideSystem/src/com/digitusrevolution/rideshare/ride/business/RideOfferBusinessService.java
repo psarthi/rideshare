@@ -14,9 +14,11 @@ import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
-import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
+import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
+import com.digitusrevolution.rideshare.model.ride.dto.FullRidesInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferResult;
+import com.digitusrevolution.rideshare.model.ride.dto.RidesInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
@@ -178,6 +180,208 @@ public class RideOfferBusinessService {
 		}
 		return fullRide;
 	}
+	
+	public FullRide getCurrentRide(int driverId){
+
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		FullRide fullRide = null;
+		try {
+			transaction = session.beginTransaction();
+
+			RideDO rideDO = new RideDO();
+			Ride ride = rideDO.getCurrentRide(driverId);
+			fullRide = JsonObjectMapper.getMapper().convertValue(ride, FullRide.class);
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+
+		return fullRide;
+	}
+	
+	public FullRide startRide(int rideId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		FullRide fullRide = null;
+		try {
+			transaction = session.beginTransaction();
+
+			RideDO rideDO = new RideDO();
+			Ride ride = rideDO.startRide(rideId);
+			fullRide = JsonObjectMapper.getMapper().convertValue(ride, FullRide.class);
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return fullRide;
+	}
+	
+	public FullRide endRide(int rideId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		FullRide fullRide = null;
+		try {
+			transaction = session.beginTransaction();
+
+			RideDO rideDO = new RideDO();
+			Ride ride = rideDO.endRide(rideId);
+			fullRide = JsonObjectMapper.getMapper().convertValue(ride, FullRide.class);
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return fullRide;
+	}
+	
+	public FullRide pickupPassenger(int rideId, int rideRequestId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		FullRide fullRide = null;
+		try {
+			transaction = session.beginTransaction();
+
+			RideDO rideDO = new RideDO();
+			Ride ride = rideDO.pickupPassenger(rideId, rideRequestId);
+			fullRide = JsonObjectMapper.getMapper().convertValue(ride, FullRide.class);
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return fullRide;
+	}
+	
+	public FullRide dropPassenger(int rideId, int rideRequestId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		FullRide fullRide = null;
+		try {
+			transaction = session.beginTransaction();
+
+			RideDO rideDO = new RideDO();
+			Ride ride = rideDO.dropPassenger(rideId, rideRequestId);
+			fullRide = JsonObjectMapper.getMapper().convertValue(ride, FullRide.class);
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return fullRide;
+	}
+	
+	public FullRide cancelRide(int rideId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		FullRide fullRide = null;
+		try {
+			transaction = session.beginTransaction();
+
+			RideDO rideDO = new RideDO();
+			Ride ride = rideDO.cancelRide(rideId);
+			fullRide = JsonObjectMapper.getMapper().convertValue(ride, FullRide.class);
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return fullRide;
+	}
+	
+	public FullRidesInfo cancelAcceptedRideRequest(int rideId, int rideRequestId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		FullRidesInfo fullRidesInfo = new FullRidesInfo();
+		try {
+			transaction = session.beginTransaction();
+
+			RideDO rideDO = new RideDO();
+			RidesInfo ridesInfo = rideDO.cancelAcceptedRideRequest(rideId, rideRequestId);
+			fullRidesInfo.setRide(JsonObjectMapper.getMapper().
+					convertValue(ridesInfo.getRide(), FullRide.class));
+			fullRidesInfo.setRideRequest(JsonObjectMapper.getMapper().
+					convertValue(ridesInfo.getRideRequest(), FullRideRequest.class));
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return fullRidesInfo;
+	}
+
 }
 	
 	

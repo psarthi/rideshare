@@ -409,10 +409,8 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		UserSignInResult userSignInResult = new UserSignInResult();
 		//Note - You don't have to get just basic profile of user as getUserByEmail has already got basic user profile.
 		userSignInResult.setUserProfile(JsonObjectMapper.getMapper().convertValue(user, BasicUser.class));
-		Ride currentRide = RESTClientUtil.getCurrentRide(user.getId());
-		userSignInResult.setCurrentRide(JsonObjectMapper.getMapper().convertValue(currentRide, FullRide.class));
-		RideRequest currentRideRequest = RESTClientUtil.getCurrentRideRequest(user.getId());
-		userSignInResult.setCurrentRideRequest(JsonObjectMapper.getMapper().convertValue(currentRideRequest, FullRideRequest.class));
+		userSignInResult.setCurrentRide(RESTClientUtil.getCurrentRide(user.getId()));
+		userSignInResult.setCurrentRideRequest(RESTClientUtil.getCurrentRideRequest(user.getId()));
 		return userSignInResult;
 	}
 	

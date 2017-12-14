@@ -34,13 +34,14 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 	 * e.g. user rating, preference, trust category etc.
 	 * 
 	 */
-	public Set<RideRequestEntity> getValidRideRequests(Set<Integer> rideRequestIds){
+	public Set<RideRequestEntity> getValidRideRequests(Set<Integer> rideRequestIds, int availableSeats){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
 		@SuppressWarnings("unchecked")
 		List<RideRequestEntity> rideRequestEntities = criteria.add(Restrictions.in("id", rideRequestIds))
-				.add(Restrictions.eq("status", RideRequestStatus.Unfulfilled)).list();
+				.add(Restrictions.eq("status", RideRequestStatus.Unfulfilled))
+				.add(Restrictions.le("seatRequired", availableSeats)).list();
 		Set<RideRequestEntity> rideRequestEntitiesSet = new HashSet<>(rideRequestEntities);
 		return rideRequestEntitiesSet;		
 	}

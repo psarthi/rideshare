@@ -13,8 +13,10 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
+import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideRequestResult;
@@ -23,6 +25,7 @@ import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDistance;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
+import com.mongodb.util.JSON;
 
 public class RideRequestBusinessService {
 	
@@ -178,4 +181,97 @@ public class RideRequestBusinessService {
 		}
 		return fullRideRequest;
 	}
+	
+	public FullRideRequest getCurrentRideRequest(int passengerId){
+
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		FullRideRequest fullRideRequest = null;
+		try {
+			transaction = session.beginTransaction();
+
+			RideRequestDO rideRequestDO = new RideRequestDO();
+			RideRequest rideRequest = rideRequestDO.getCurrentRideRequest(passengerId);
+			fullRideRequest = JsonObjectMapper.getMapper().convertValue(rideRequest, FullRideRequest.class);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+
+		return fullRideRequest;
+	}
+	
+	public FullRideRequest cancelRideRequest(int rideRequestId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		FullRideRequest fullRideRequest = null;
+		try {
+			transaction = session.beginTransaction();
+
+			RideRequestDO rideRequestDO = new RideRequestDO();
+			RideRequest rideRequest = rideRequestDO.cancelRideRequest(rideRequestId);
+			fullRideRequest = JsonObjectMapper.getMapper().convertValue(rideRequest, FullRideRequest.class);
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return fullRideRequest;
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

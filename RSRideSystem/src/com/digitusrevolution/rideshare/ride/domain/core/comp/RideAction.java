@@ -31,6 +31,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
+import com.digitusrevolution.rideshare.model.ride.dto.RidesInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleGeocode;
 import com.digitusrevolution.rideshare.model.ride.dto.google.Result;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
@@ -244,10 +245,13 @@ public class RideAction {
 
 
 	/*
-	 * Purpose - Add ride request in the rejected list of ride
+	 * Purpose - Add ride request in the rejected list of ride. This function is only applicable if ride has not been accepted
+	 * and User has choice of accepting or rejecting. So in that case this function would work but if ride has already been accepted
+	 * be it by system or manually, then this is not the right method. Instead use cancelAcceptedRideRequest method
+	 * 
 	 * 
 	 */
-	public void rejectRideRequest(int rideId, int rideRequestId){
+	public Ride rejectRideRequest(int rideId, int rideRequestId){
 
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
@@ -257,6 +261,7 @@ public class RideAction {
 
 		//This will update the ride details in DB
 		rideDO.update(ride);
+		return ride;
 	}
 
 	/*
@@ -268,16 +273,17 @@ public class RideAction {
 	 * - If its in valid state, then change the status to started
 	 * 
 	 */
-	public void startRide(int rideId){
+	public Ride startRide(int rideId){
 		//Get child else child properties would get deleted while updating, as Ride Passenger has cascade enabled
 		Ride ride = rideDO.getAllData(rideId);
 		RideStatus rideCurrentStatus = ride.getStatus();
 		if (rideCurrentStatus.equals(RideStatus.Planned)){
 			ride.setStatus(RideStatus.Started);
-			rideDO.update(ride);			
+			rideDO.update(ride);	
 		} else {
 			throw new NotAcceptableException("Ride can't be started as its not in valid state. Ride current status:"+rideCurrentStatus);
 		}
+		return ride;
 	}
 
 	/*
@@ -291,7 +297,7 @@ public class RideAction {
 	 * - If yes, then change the status of passenger to pickup state
 	 * 
 	 */
-	public void pickupPassenger(int rideId, int rideRequestId){
+	public Ride pickupPassenger(int rideId, int rideRequestId){
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
 		Ride ride = rideDO.getAllData(rideId);
@@ -321,6 +327,7 @@ public class RideAction {
 		} else {
 			throw new NotAcceptableException("Passenger can't be picked up as ride is not in valid state. Ride current statues:"+rideCurrentStatus);
 		}
+		return ride;
 	}
 
 	/*
@@ -334,7 +341,7 @@ public class RideAction {
 	 * - If yes, then update the passenger status to dropped state
 	 * 
 	 */
-	public void dropPassenger(int rideId, int rideRequestId){
+	public Ride dropPassenger(int rideId, int rideRequestId){
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
 		Ride ride = rideDO.getAllData(rideId);
@@ -361,6 +368,7 @@ public class RideAction {
 		} else {
 			throw new NotAcceptableException("Passenger can't be dropped as ride is not in valid state. Ride current statues:"+rideCurrentStatus);
 		}
+		return ride;
 	}
 
 	/*
@@ -383,7 +391,7 @@ public class RideAction {
 	 * - Update the ride status to finished
 	 * 
 	 */
-	public void endRide(int rideId){
+	public Ride endRide(int rideId){
 		Ride ride = rideDO.getAllData(rideId);
 		RideStatus rideStatus = ride.getStatus();
 		//Check if the ride has been started
@@ -415,7 +423,7 @@ public class RideAction {
 					//Cancel all the ride request which has not been picked
 					//We can also ask driver to cancel all ride request, but for convinience system would take care of it 
 					//as it doesn't change anything from driver end 
-					cancelRideRequest(rideId, rideRequest.getId());
+					cancelAcceptedRideRequest(rideId, rideRequest.getId());
 				}
 			}
 			//This is the scenario when all has been picked but some/all not dropped
@@ -439,6 +447,7 @@ public class RideAction {
 		} else {
 			throw new NotAcceptableException("Ride can't be ended as its not in valid state. Current ride status:"+rideStatus);
 		}
+		return ride;
 	}
 
 	/*
@@ -459,7 +468,8 @@ public class RideAction {
 	 * - Remove accepted ride from ride requests 
 	 * 
 	 */
-	public void cancelRideRequest(int rideId, int rideRequestId){
+	public RidesInfo cancelAcceptedRideRequest(int rideId, int rideRequestId){
+		RidesInfo ridesInfo = new RidesInfo();
 		Ride ride = rideDO.getAllData(rideId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
@@ -493,6 +503,8 @@ public class RideAction {
 					//This will update ride and ride request in db
 					rideDO.update(ride);
 					rideRequestDO.update(rideRequest);
+					ridesInfo.setRide(ride);
+					ridesInfo.setRideRequest(rideRequest);
 				} else {
 					throw new NotAcceptableException("Ride request can't be cancelled as Passenger has already been picked up. "
 							+ "Passenger current status:"+passengerStatus);
@@ -504,6 +516,7 @@ public class RideAction {
 			throw new NotAcceptableException("Ride request can't be cancelled as currently this ride is not mapped to the ride request."
 					+ "Ride id:"+rideId+",Ride Request id:"+rideRequestId);
 		}
+		return ridesInfo;
 	}
 
 	/*
@@ -517,7 +530,7 @@ public class RideAction {
 	 * - Update the ride status as cancelled
 	 * 
 	 */
-	public void cancelRide(int rideId){
+	public Ride cancelRide(int rideId){
 
 		Ride ride = rideDO.getAllData(rideId);
 		RideStatus rideStatus = ride.getStatus();
@@ -525,7 +538,7 @@ public class RideAction {
 		if (!rideStatus.equals(RideStatus.Finished)){
 			Collection<RideRequest> acceptedRideRequests = ride.getAcceptedRideRequests();
 			for (RideRequest rideRequest : acceptedRideRequests) {
-				cancelRideRequest(rideId, rideRequest.getId());
+				cancelAcceptedRideRequest(rideId, rideRequest.getId());
 			}
 			//Update the ride status as cancelled and update the db
 			ride.setStatus(RideStatus.Cancelled);
@@ -533,6 +546,7 @@ public class RideAction {
 		} else {
 			throw new NotAcceptableException("Ride can't be cancelled as its not in valid state. Current ride status:"+rideStatus);
 		}
+		return ride;
 	}
 }
 

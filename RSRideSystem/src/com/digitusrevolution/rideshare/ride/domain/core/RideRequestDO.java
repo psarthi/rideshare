@@ -628,8 +628,13 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	private void validateBusinessCriteria(Ride ride, Map<Integer, List<RideRequestPoint>> rideRequestsMap) {
 		//*** Validating ride requests based on business criteria
 		if (!rideRequestsMap.keySet().isEmpty()){
+			int seatOccupied = 0;
+			for (RideRequest acceptedRideRequest : ride.getAcceptedRideRequests()) {
+				seatOccupied += acceptedRideRequest.getSeatRequired();
+			}
+			int availableSeats = ride.getSeatOffered() - seatOccupied;
 			//Getting valid ride request Ids based on all business criteria
-			Set<Integer> validRideRequestIds = getValidRideRequests(rideRequestsMap.keySet());
+			Set<Integer> validRideRequestIds = getValidRideRequests(rideRequestsMap.keySet(), availableSeats);
 			//Removing all the invalid ride request Ids
 			rideRequestsMap.keySet().retainAll(validRideRequestIds);
 			logger.debug("Phase 0 - Valid Ride Request Ids based on all business criteria of Ride Id["+ride.getId()+"]:"+rideRequestsMap.keySet());
@@ -771,8 +776,8 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * e.g. user rating, preference, trust category etc.
 	 * 
 	 */
-	private Set<Integer> getValidRideRequests(Set<Integer> rideRequestIds){		
-		Set<RideRequestEntity> validRideRequestEntities = rideRequestDAO.getValidRideRequests(rideRequestIds);
+	private Set<Integer> getValidRideRequests(Set<Integer> rideRequestIds, int availableSeats){		
+		Set<RideRequestEntity> validRideRequestEntities = rideRequestDAO.getValidRideRequests(rideRequestIds, availableSeats);
 		Set<Integer> validRideRequestIds = new HashSet<>();
 		for (RideRequestEntity rideRequestEntity : validRideRequestEntities) {
 			validRideRequestIds.add(rideRequestEntity.getId());
@@ -894,7 +899,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * - Update the status of ride request as cancelled 
 	 * 
 	 */
-	public void cancelRideRequest(int rideRequestId){
+	public RideRequest cancelRideRequest(int rideRequestId){
 		rideRequest = getAllData(rideRequestId);
 		RideRequestStatus rideRequestStatus = rideRequest.getStatus();
 		if (rideRequestStatus.equals(RideRequestStatus.Unfulfilled)){
@@ -905,7 +910,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			RideDO rideDO = new RideDO();
 			if (rideRequest.getPassengerStatus().equals(PassengerStatus.Confirmed)){
 				//This will cancel the ride request from confirmed ride
-				rideDO.cancelRideRequest(rideId, rideRequestId);
+				rideDO.cancelAcceptedRideRequest(rideId, rideRequestId);
 				//Once its cancelled from ride front, then we can cancel ride request
 				rideRequest.setStatus(RideRequestStatus.Cancelled);
 				update(rideRequest);
@@ -914,6 +919,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 						+ "Passenger current status:"+rideRequest.getPassengerStatus());
 			}
 		}
+		return rideRequest;
 	}
 
 	/*

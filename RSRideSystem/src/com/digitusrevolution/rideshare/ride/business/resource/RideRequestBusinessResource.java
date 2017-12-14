@@ -12,11 +12,16 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
+import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.RideRequestResult;
+import com.digitusrevolution.rideshare.ride.business.RideOfferBusinessService;
 import com.digitusrevolution.rideshare.ride.business.RideRequestBusinessService;
+import com.digitusrevolution.rideshare.ride.business.RideSystemBusinessService;
 
 @Path("/riderequests")
 @Produces(MediaType.APPLICATION_JSON)
@@ -54,6 +59,33 @@ public class RideRequestBusinessResource {
 		FullRideRequest rideRequest = rideRequestBusinessService.getRideRequest(id);
 		return Response.ok(rideRequest).build();
 	}
+	
+	/**
+	 * 
+	 * @param passengerId Id of the User
+	 * @return current ride request
+	 */
+	@GET
+	@Path("/current/{passengerId}")
+	public Response getCurrentRideRequest(@PathParam("passengerId") int passengerId){
+		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
+		FullRideRequest rideRequest = rideRequestBusinessService.getCurrentRideRequest(passengerId);
+		return Response.ok().entity(rideRequest).build();
+	}
+	
+	/**
+	 * 
+	 * @param rideRequestId Ride Request Id
+	 * @return updated Ride Request
+	 */
+	@GET
+	@Path("/cancel/{rideRequestId}")
+	public Response cancelRide(@PathParam("rideRequestId") int rideRequestId){
+		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
+		FullRideRequest rideRequest = rideRequestBusinessService.cancelRideRequest(rideRequestId);
+		return Response.ok(rideRequest).build();				
+	}
+
 
 
 }

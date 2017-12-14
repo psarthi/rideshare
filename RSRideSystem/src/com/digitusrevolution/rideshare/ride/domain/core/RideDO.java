@@ -38,6 +38,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RidePointInfo;
+import com.digitusrevolution.rideshare.model.ride.dto.RidesInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
 import com.digitusrevolution.rideshare.model.ride.dto.google.Leg;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
@@ -432,8 +433,8 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		//Get all rides around radius of pickup variation from pickup point
 		Map<Integer, RidePointInfo> pickupRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint());
 		Map<Integer, RidePointInfo> dropRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getDropPoint());
-		logger.debug("[Matching Pickup Rides: Based on Distance]:"+pickupRidePoints.keySet());
-		logger.debug("[Matching Drop Rides: Based on Distance]:"+dropRidePoints.keySet());
+		logger.debug("[Matching Pickup Rides: Based on Time and Distance]:"+pickupRidePoints.keySet());
+		logger.debug("[Matching Drop Rides: Based on Time and Distance]:"+dropRidePoints.keySet());
 
 		//Step 1 - This will remove all rides which doesn't have corresponding pair i.e. if prickup and drop both doesn't exist then its invalid
 		pickupRidePoints.keySet().retainAll(dropRidePoints.keySet());
@@ -457,7 +458,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 
 		//Step 3 - This will remove all rides which doesn't match the business criteria e.g. if its not available
 		if (!rideIds.isEmpty()){
-			Set<Integer> validRideIds = getValidRides(rideIds);
+			Set<Integer> validRideIds = getValidRides(rideIds, rideRequest.getSeatRequired());
 			logger.debug("[Valid Rides Based on Business Criteria]:"+validRideIds);
 			//This will remove all invalid rides from the list
 			pickupRidePoints.keySet().retainAll(validRideIds);
@@ -511,8 +512,8 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	 * e.g. user rating, preference, trust category etc.
 	 * 
 	 */
-	private Set<Integer> getValidRides(Set<Integer> rideIds){
-		Set<RideEntity> validRideEntities = rideDAO.getValidRides(rideIds);
+	private Set<Integer> getValidRides(Set<Integer> rideIds, int seatRequired){
+		Set<RideEntity> validRideEntities = rideDAO.getValidRides(rideIds, seatRequired);
 		Set<Integer> validRideIds = new HashSet<>();
 		for (RideEntity rideEntity : validRideEntities) {
 			validRideIds.add(rideEntity.getId());
@@ -576,39 +577,39 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		rideAction.acceptRideRequest(matchedTripInfo);
 	}
 
-	public void rejectRideRequest(int rideId, int rideRequestId){
+	public Ride rejectRideRequest(int rideId, int rideRequestId){
 		RideAction rideAction = new RideAction(this);
-		rideAction.rejectRideRequest(rideId, rideRequestId);
+		return rideAction.rejectRideRequest(rideId, rideRequestId);
 	}
 
-	public void startRide(int rideId){
+	public Ride startRide(int rideId){
 		RideAction rideAction = new RideAction(this);
-		rideAction.startRide(rideId);
+		return rideAction.startRide(rideId);
 	}
 
-	public void pickupPassenger(int rideId, int rideRequestId){
+	public Ride pickupPassenger(int rideId, int rideRequestId){
 		RideAction rideAction = new RideAction(this);
-		rideAction.pickupPassenger(rideId, rideRequestId);;
+		return rideAction.pickupPassenger(rideId, rideRequestId);
 	}
 
-	public void dropPassenger(int rideId, int rideRequestId){
+	public Ride dropPassenger(int rideId, int rideRequestId){
 		RideAction rideAction = new RideAction(this);
-		rideAction.dropPassenger(rideId, rideRequestId);
+		return rideAction.dropPassenger(rideId, rideRequestId);
 	}
 
-	public void endRide(int rideId){
+	public Ride endRide(int rideId){
 		RideAction rideAction = new RideAction(this);
-		rideAction.endRide(rideId);
+		return rideAction.endRide(rideId);
 	}
 
-	public void cancelRideRequest(int rideId, int rideRequestId){
+	public RidesInfo cancelAcceptedRideRequest(int rideId, int rideRequestId){
 		RideAction rideAction = new RideAction(this);
-		rideAction.cancelRideRequest(rideId, rideRequestId);
+		return rideAction.cancelAcceptedRideRequest(rideId, rideRequestId);
 	}
 
-	public void cancelRide(int rideId){
+	public Ride cancelRide(int rideId){
 		RideAction rideAction = new RideAction(this);
-		rideAction.cancelRide(rideId);
+		return rideAction.cancelRide(rideId);
 	}
 }
 
