@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -70,6 +71,9 @@ public class RideRequestBusinessResource {
 	public Response getCurrentRideRequest(@PathParam("passengerId") int passengerId){
 		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
 		FullRideRequest rideRequest = rideRequestBusinessService.getCurrentRideRequest(passengerId);
+		if (rideRequest==null) {
+			throw new NotFoundException("No current ride request for the user id:"+passengerId);
+		}
 		return Response.ok().entity(rideRequest).build();
 	}
 	
@@ -80,7 +84,7 @@ public class RideRequestBusinessResource {
 	 */
 	@GET
 	@Path("/cancel/{rideRequestId}")
-	public Response cancelRide(@PathParam("rideRequestId") int rideRequestId){
+	public Response cancelRideRequest(@PathParam("rideRequestId") int rideRequestId){
 		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
 		FullRideRequest rideRequest = rideRequestBusinessService.cancelRideRequest(rideRequestId);
 		return Response.ok(rideRequest).build();				

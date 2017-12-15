@@ -50,6 +50,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideRequestSearchResult;
+import com.digitusrevolution.rideshare.model.ride.dto.RidesInfo;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
@@ -574,11 +575,12 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			//Validate if Ride pickup and Ride drop both exist
 			//If there is any valid Ride pickup or Ride drop point then value would not be null
 			//i.e. both point exist
+			logger.debug("Phase 1 - Checking status of Ride Request Id:"+entry.getKey());
 			if (matchedTripInfo.getRidePickupPoint()!=null && matchedTripInfo.getRideDropPoint()!=null){
 				//Validate if Ride pickup is before Ride drop
 				//Ride pickup sequence number should be smaller than drop sequence number, then we can say pickup point is before drop point
 				if (matchedTripInfo.getRidePickupPoint().getSequence() < matchedTripInfo.getRideDropPoint().getSequence()){
-					logger.debug("Phase 1 - Valid Ride Request Id:"+entry.getKey());
+					logger.debug("Valid Ride Request Id based on ride direction:"+entry.getKey());
 					logger.debug("Ride Pickup and Drop Sequence number:"+matchedTripInfo.getRidePickupPoint().getSequence()+","
 							+matchedTripInfo.getRideDropPoint().getSequence());
 					
@@ -601,8 +603,11 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 
 					if (!pickupPointValidation || !dropPointValidation) {
 						//Remove the invalid ride request ids entry from the map based on Time & Distance variation condition
-						logger.debug("Phase 1 - InValid Ride Request Id as its not meeting distance variation and time variation criteria:"+entry.getKey());
+						logger.debug("InValid Ride Request Id as its not meeting distance variation and time variation criteria:"+entry.getKey());
+						logger.debug("Phase 1 - InValid Ride Request Id:"+entry.getKey());
 						iterator.remove();
+					} else {
+						logger.debug("Phase 1 - Valid Ride Request Id:"+entry.getKey());
 					}
 				} else {
 					//Note - This can't be done before finding out the shortest ride point for each ride request points, as sequence is of ride point and ride request points
@@ -910,7 +915,9 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			RideDO rideDO = new RideDO();
 			if (rideRequest.getPassengerStatus().equals(PassengerStatus.Confirmed)){
 				//This will cancel the ride request from confirmed ride
-				rideDO.cancelAcceptedRideRequest(rideId, rideRequestId);
+				RidesInfo ridesInfo = rideDO.cancelAcceptedRideRequest(rideId, rideRequestId);
+				//This is important to get updated value of Ride Request else it will update with outdated data
+				rideRequest = ridesInfo.getRideRequest();
 				//Once its cancelled from ride front, then we can cancel ride request
 				rideRequest.setStatus(RideRequestStatus.Cancelled);
 				update(rideRequest);

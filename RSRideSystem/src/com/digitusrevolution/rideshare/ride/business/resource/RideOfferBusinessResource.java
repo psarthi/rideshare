@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -69,6 +70,9 @@ public class RideOfferBusinessResource {
 	public Response getCurrentRide(@PathParam("driverId") int driverId){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
 		FullRide ride = rideOfferBusinessService.getCurrentRide(driverId);
+		if (ride==null) {
+			throw new NotFoundException("No current ride for the user id:"+driverId);
+		}
 		return Response.ok().entity(ride).build();
 	}
 

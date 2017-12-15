@@ -7,6 +7,7 @@ import java.util.Collection;
 import javax.swing.TransferHandler.TransferSupport;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
@@ -178,6 +179,9 @@ public class RESTClientUtil {
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
 		URI uri = uriBuilder.build(Integer.toString(driverId));
 		Response response = restClientUtil.get(uri);
+		if (response.getStatus() == Status.NOT_FOUND.getStatusCode()) {
+			return null;
+		} 
 		FullRide ride= response.readEntity(FullRide.class);
 		return ride;
 	}
@@ -189,6 +193,9 @@ public class RESTClientUtil {
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
 		URI uri = uriBuilder.build(Integer.toString(passengerId));
 		Response response = restClientUtil.get(uri);
+		if (response.getStatus() == Status.NOT_FOUND.getStatusCode()) {
+			return null;
+		} 
 		FullRideRequest rideRequest= response.readEntity(FullRideRequest.class);
 		return rideRequest;
 	}	

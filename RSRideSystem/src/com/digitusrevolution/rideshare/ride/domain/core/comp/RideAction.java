@@ -317,7 +317,7 @@ public class RideAction {
 				if (rideRequest.getPassengerStatus().equals(PassengerStatus.Confirmed)){
 					rideRequest.setPassengerStatus(PassengerStatus.Picked);
 					//Update the status in the db
-					rideDO.update(ride);
+					rideRequestDO.update(rideRequest);
 				}else {
 					throw new NotAcceptableException("Passenger is not in valid state. Passenger current status:"+rideRequest.getPassengerStatus());
 				}
@@ -358,7 +358,7 @@ public class RideAction {
 				if (rideRequest.getPassengerStatus().equals(PassengerStatus.Picked)){
 					rideRequest.setPassengerStatus(PassengerStatus.Dropped);
 					//Update the status in the db
-					rideDO.update(ride);
+					rideRequestDO.update(rideRequest);
 				}else {
 					throw new NotAcceptableException("Passenger is not in valid state. Passenger current status:"+rideRequest.getPassengerStatus());					
 				}
