@@ -73,20 +73,21 @@ public class RideAction {
 	 * 
 	 */
 	public void acceptRideRequest(MatchedTripInfo matchedTripInfo){
+		logger.debug("Accept Ride Request Request for [Ride Id/Ride Request Id]:"+matchedTripInfo.getRideId()+","+matchedTripInfo.getRideRequestId());
 		int rideId = matchedTripInfo.getRideId();
 		int rideRequestId = matchedTripInfo.getRideRequestId();
 		Ride ride = rideDO.getAllData(rideId);
 		RideStatus rideStatus = ride.getStatus();
 		RideSeatStatus rideSeatStatus = ride.getSeatStatus();
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
+		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
 		RideRequestStatus rideRequestStatus = rideRequest.getStatus();
 
 		int seatOccupied = 0;
 		for (RideRequest acceptedRideRequest : ride.getAcceptedRideRequests()) {
 			seatOccupied += acceptedRideRequest.getSeatRequired();
 		}
-
+		
 		//Check if ride request is unfulfilled
 		//Reason for re-checking status criteria as from the time of search to responding to it, 
 		//there may be someone else who may have accepted the ride request already and status may have changed
@@ -151,7 +152,9 @@ public class RideAction {
 					//Update all the changes in DB for ride and ride request
 					rideDO.update(ride);
 					//This is required to update accepted ride as well as status update on ride request table
-					rideRequestDO.update(rideRequest);						
+					rideRequestDO.update(rideRequest);
+					//TODO Implement notification here
+					logger.debug("Ride Request Accepted. Send Notification to Ride Owner & Requester on new Match. [Ride Id/Ride Request Id]:"+rideId+","+rideRequestId);
 				}
 				else{
 					throw new RideUnavailableException("Ride doesn't have sufficient seats available with id:"+rideId);
@@ -274,6 +277,7 @@ public class RideAction {
 	 * 
 	 */
 	public Ride startRide(int rideId){
+		logger.debug("Start Ride:"+rideId);
 		//Get child else child properties would get deleted while updating, as Ride Passenger has cascade enabled
 		Ride ride = rideDO.getAllData(rideId);
 		RideStatus rideCurrentStatus = ride.getStatus();
@@ -298,6 +302,7 @@ public class RideAction {
 	 * 
 	 */
 	public Ride pickupPassenger(int rideId, int rideRequestId){
+		logger.debug("Pickup Passenger for Ride Id/Ride RequestId:"+rideId+","+rideRequestId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
 		Ride ride = rideDO.getAllData(rideId);
@@ -342,6 +347,7 @@ public class RideAction {
 	 * 
 	 */
 	public Ride dropPassenger(int rideId, int rideRequestId){
+		logger.debug("Drop Passenger for Ride Id/Ride RequestId:"+rideId+","+rideRequestId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
 		Ride ride = rideDO.getAllData(rideId);
@@ -392,6 +398,7 @@ public class RideAction {
 	 * 
 	 */
 	public Ride endRide(int rideId){
+		logger.debug("Ending Ride:"+rideId);
 		Ride ride = rideDO.getAllData(rideId);
 		RideStatus rideStatus = ride.getStatus();
 		//Check if the ride has been started
@@ -468,7 +475,9 @@ public class RideAction {
 	 * - Remove accepted ride from ride requests 
 	 * 
 	 */
-	public void cancelAcceptedRideRequest(int rideId, int rideRequestId){
+	public RidesInfo cancelAcceptedRideRequest(int rideId, int rideRequestId){
+		logger.debug("Cancelling Accepted Ride Request - ride Id/Ride Request Id:"+rideId+","+rideRequestId);
+		RidesInfo ridesInfo = new RidesInfo();
 		Ride ride = rideDO.getAllData(rideId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
@@ -496,13 +505,23 @@ public class RideAction {
 					ride.setSeatStatus(RideSeatStatus.Available);
 					//Change ride request status to Unfulfilled
 					rideRequest.setStatus(RideRequestStatus.Unfulfilled);
+					//VERY IMP - This will ensure ride request is also removed from the ride, so that we are able to get updated ride post updation of ride and ride request
+					//If you don't do this then you will get ride with same accepted ride requests which you wanted to remove
+					//So in nutsehll, within a transaction if you want to return the data then ensure all sides data is updated 
+					//e.g ride has ride request and ride request has ride, so update both side property from ride as well as ride request for accepted ride 
+					ride.getAcceptedRideRequests().remove(rideRequest);
 					//This is important which will make ride request back to the original state by resetting all fields related to this matched Ride
 					resetRideRequestFieldsRelatedToMatchedRide(rideRequest);
 					//Add ride request in cancelled list
 					ride.getCancelledRideRequests().add(rideRequest);
+					//Reason for doing this so that we get the updated cancelled ride within this transaction itself
+					rideRequest.getCancelledRides().add(ride);
 					//This will update ride and ride request in db
 					rideRequestDO.update(rideRequest);
 					rideDO.update(ride); 
+					logger.debug("Passenger Count post cancellation:"+ride.getAcceptedRideRequests().size());
+					ridesInfo.setRide(ride);
+					ridesInfo.setRideRequest(rideRequest);
 				} else {
 					throw new NotAcceptableException("Ride request can't be cancelled as Passenger has already been picked up. "
 							+ "Passenger current status:"+passengerStatus);
@@ -514,6 +533,7 @@ public class RideAction {
 			throw new NotAcceptableException("Ride request can't be cancelled as currently this ride is not mapped to the ride request."
 					+ "Ride id:"+rideId+",Ride Request id:"+rideRequestId);
 		}
+		return ridesInfo;
 	}
 
 	private void resetRideRequestFieldsRelatedToMatchedRide(RideRequest rideRequest) {
@@ -543,7 +563,7 @@ public class RideAction {
 	 * 
 	 */
 	public Ride cancelRide(int rideId){
-
+		logger.debug("Cancelling Ride:"+rideId);
 		Ride ride = rideDO.getAllData(rideId);
 		RideStatus rideStatus = ride.getStatus();
 		//Check if ride has not been finished
@@ -551,6 +571,11 @@ public class RideAction {
 			Collection<RideRequest> acceptedRideRequests = ride.getAcceptedRideRequests();
 			for (RideRequest rideRequest : acceptedRideRequests) {
 				cancelAcceptedRideRequest(rideId, rideRequest.getId());
+				//This will take care of re-matching effected ride requests
+				//IMP - I am not doing this inside canceAcceptedRideRequest as that function is called by even cancelRideRequest
+				//and if i do auto match there then for cancel ride request case, first it will cancel the ride request and then do 
+				//auto match for the same ride request which would be wrong.
+				rideDO.autoMatchRide(rideRequest.getId());
 			}
 			//Update the ride status as cancelled and update the db
 			ride.setStatus(RideStatus.Cancelled);

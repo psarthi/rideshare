@@ -429,7 +429,8 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 
 		logger.debug("[Searching Rides for Ride Request Id]:"+ rideRequestId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
+		//This is important else you will not get cancelled rides info
+		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
 		//Get all rides around radius of pickup variation from pickup point
 		Map<Integer, RidePointInfo> pickupRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint());
 		Map<Integer, RidePointInfo> dropRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getDropPoint());
@@ -454,7 +455,18 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		logger.debug("[Valid Pickup Rides: Based on Sequence of Pickup and Drop Points]:"+pickupRidePoints.keySet());
 		logger.debug("[Valid Drop Rides: Based on Sequence of Pickup and Drop Points]:"+dropRidePoints.keySet());
 
-		Set<Integer> rideIds = pickupRidePoints.keySet();
+		Set<Integer> rideIds = pickupRidePoints.keySet(); 
+		
+		Collection<Ride> cancelledRides = rideRequest.getCancelledRides();
+		Set<Integer> cancelledRideIds = new HashSet<>();
+		
+		for (Ride ride: cancelledRides) {
+			cancelledRideIds.add(ride.getId());
+		}
+		
+		logger.debug("Cancelled Rides List:"+cancelledRideIds);
+		rideIds.removeAll(cancelledRideIds);
+		logger.debug("Valid Rides List after exclusion of cancelled Rides:"+rideIds);
 
 		//Step 3 - This will remove all rides which doesn't match the business criteria e.g. if its not available
 		if (!rideIds.isEmpty()){
@@ -602,9 +614,9 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return rideAction.endRide(rideId);
 	}
 
-	public void cancelAcceptedRideRequest(int rideId, int rideRequestId){
+	public RidesInfo cancelAcceptedRideRequest(int rideId, int rideRequestId){
 		RideAction rideAction = new RideAction(this);
-		rideAction.cancelAcceptedRideRequest(rideId, rideRequestId);
+		return rideAction.cancelAcceptedRideRequest(rideId, rideRequestId);
 	}
 
 	public Ride cancelRide(int rideId){

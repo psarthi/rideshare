@@ -19,6 +19,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
+import com.digitusrevolution.rideshare.model.ride.dto.FullRidesInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideRequestResult;
 import com.digitusrevolution.rideshare.ride.business.RideOfferBusinessService;
 import com.digitusrevolution.rideshare.ride.business.RideRequestBusinessService;
@@ -87,6 +88,20 @@ public class RideRequestBusinessResource {
 	public Response cancelRideRequest(@PathParam("rideRequestId") int rideRequestId){
 		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
 		FullRideRequest rideRequest = rideRequestBusinessService.cancelRideRequest(rideRequestId);
+		return Response.ok(rideRequest).build();				
+	}
+
+	/**
+	 * 
+	 * @param rideId Ride Id
+	 * @param rideRequestId Ride Request Id
+	 * @return Updated Ride Request
+	 */
+	@GET
+	@Path("{rideRequestId}/canceldriver/{rideId}")
+	public Response cancelDriver(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
+		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
+		FullRideRequest rideRequest = rideRequestBusinessService.cancelDriver(rideId, rideRequestId);
 		return Response.ok(rideRequest).build();				
 	}
 

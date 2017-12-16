@@ -351,15 +351,22 @@ public class RideOfferBusinessService {
 		return fullRide;
 	}
 	
-	public void cancelAcceptedRideRequest(int rideId, int rideRequestId){
+	public FullRide cancelPassenger(int rideId, int rideRequestId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
+		FullRide fullRide = new FullRide();
 		try {
 			transaction = session.beginTransaction();
 
+			logger.debug("Cancelling Passenger for ride Id/Ride Request Id:"+rideId+","+rideRequestId);
 			RideDO rideDO = new RideDO();
 			rideDO.cancelAcceptedRideRequest(rideId, rideRequestId);
+			RideRequestDO rideRequestDO = new RideRequestDO();
+			rideRequestDO.autoMatchRideRequest(rideId);
+			Ride ride = rideDO.getAllData(rideId);
 			
+			fullRide = JsonObjectMapper.getMapper().convertValue(ride, FullRide.class);
+
 			transaction.commit();
 		} catch (RuntimeException e) {
 			if (transaction!=null){
@@ -374,6 +381,7 @@ public class RideOfferBusinessService {
 				session.close();				
 			}
 		}
+		return fullRide;
 	}
 
 }

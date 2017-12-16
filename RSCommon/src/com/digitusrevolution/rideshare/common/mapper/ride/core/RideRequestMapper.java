@@ -112,6 +112,10 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		//Imp - Since we are getting child of bills, its very important to ensure we stop the recursive loop by making false in Bill Childs for Ride Request
 		//As Ride Request has bill and bill has ride request, but in case of fetching bills child we don't fetch Ride request child again and this helps to stop recursive loop
 		if (rideRequest.getBill()!=null) rideRequestEntity.setBill(billMapper.getEntity(rideRequest.getBill(), true));
+		
+		//Don't fetch Child as Ride Request has Rides and vice versa
+		rideRequestEntity.setCancelledRides(rideMapper.getEntities(rideRequestEntity.getCancelledRides(), 
+				rideRequest.getCancelledRides(), false));
 
 		return rideRequestEntity;
 	}
@@ -194,6 +198,10 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		//Imp - Since we are getting child of bills, its very important to ensure we stop the recursive loop by making false in Bill Childs for Ride Request
 		//As Ride Request has bill and bill has ride request, but in case of fetching bills child we don't fetch Ride request child again and this helps to stop recursive loop
 		if (rideRequestEntity.getBill()!=null) rideRequest.setBill(billMapper.getDomainModel(rideRequestEntity.getBill(), true));
+		
+		//Don't fetch Child as Ride Request has Rides and vice versa
+		rideRequest.setCancelledRides(rideMapper.getDomainModels(rideRequest.getCancelledRides(), 
+				rideRequestEntity.getCancelledRides(), false));
 
 		return rideRequest;
 	}

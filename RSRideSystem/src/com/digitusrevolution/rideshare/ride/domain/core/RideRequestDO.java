@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.ride.domain.core;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -336,7 +337,8 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		logger.debug("[Searching Rides Requests for Ride Id]:"+ rideId);
 		RideDO rideDO = new RideDO();
 		List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(rideId);
-		Ride ride = rideDO.get(rideId);
+		//This is important else you will not get cancelled ride requests info
+		Ride ride = rideDO.getAllData(rideId);
 		double minDistancePercent = Double.parseDouble(PropertyReader.getInstance().getProperty("RIDE_REQUEST_MIN_DISTANCE_VARIATION"));
 		double maxDistancePercent = Double.parseDouble(PropertyReader.getInstance().getProperty("RIDE_REQUEST_MAX_DISTANCE_VARIATION"));
 		double minDistance = ride.getTravelDistance() * minDistancePercent;
@@ -632,6 +634,27 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	//No need to return anything as we are using shared map, and by removing invalid ride request Ids it would reflect everywhere
 	private void validateBusinessCriteria(Ride ride, Map<Integer, List<RideRequestPoint>> rideRequestsMap) {
 		//*** Validating ride requests based on business criteria
+		Collection<RideRequest> cancelledRideRequests = ride.getCancelledRideRequests();
+		Collection<RideRequest> rejectedRideRequests = ride.getRejectedRideRequests();
+		Set<Integer> cancelledRideRequestIds = new HashSet<>();
+		
+		for (RideRequest rideRequest: cancelledRideRequests) {
+			cancelledRideRequestIds.add(rideRequest.getId());
+		}
+		Set<Integer> rejectedRideRequestIds = new HashSet<>();
+		for (RideRequest rideRequest: rejectedRideRequests) {
+			rejectedRideRequestIds.add(rideRequest.getId());
+		}
+		//This will just create a single common list of all excluded list
+		Set<Integer> excludedRideRequestIds = new HashSet<>();
+		excludedRideRequestIds.addAll(rejectedRideRequestIds);
+		excludedRideRequestIds.addAll(cancelledRideRequestIds);
+		logger.debug("Excluded List of Ride Request Ids:"+excludedRideRequestIds);
+		
+		//IMP - This will remove all the entries of excluded list of ride requests from the ride requestMap
+		rideRequestsMap.keySet().removeAll(excludedRideRequestIds);
+		logger.debug("Final List of Ride Request Ids for validation:"+rideRequestsMap.keySet());
+		
 		if (!rideRequestsMap.keySet().isEmpty()){
 			int seatOccupied = 0;
 			for (RideRequest acceptedRideRequest : ride.getAcceptedRideRequests()) {
@@ -905,6 +928,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * 
 	 */
 	public RideRequest cancelRideRequest(int rideRequestId){
+		logger.debug("Cancelling Ride Request:"+rideRequestId);
 		rideRequest = getAllData(rideRequestId);
 		RideRequestStatus rideRequestStatus = rideRequest.getStatus();
 		if (rideRequestStatus.equals(RideRequestStatus.Unfulfilled)){
@@ -923,6 +947,8 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 				//Once its cancelled from ride front, then we can cancel ride request
 				rideRequest.setStatus(RideRequestStatus.Cancelled);
 				update(rideRequest);
+				//This will just ensure that we do auto match for the Ride which has got affected because of this
+				autoMatchRideRequest(rideId);
 			} else {
 				throw new NotAcceptableException("Ride request can't be cancelled as its already picked up. "
 						+ "Passenger current status:"+rideRequest.getPassengerStatus());

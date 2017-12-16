@@ -239,6 +239,39 @@ public class RideRequestBusinessService {
 		}
 		return fullRideRequest;
 	}
+	
+	public FullRideRequest cancelDriver(int rideId, int rideRequestId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		FullRideRequest fullRideRequest = new FullRideRequest();
+		try {
+			transaction = session.beginTransaction();
+			
+			logger.debug("Cancelling Driver for ride Id/Ride Request Id:"+rideId+","+rideRequestId);
+			RideDO rideDO = new RideDO();
+			rideDO.cancelAcceptedRideRequest(rideId, rideRequestId);
+			RideRequestDO rideRequestDO = new RideRequestDO();
+			rideDO.autoMatchRide(rideRequestId);
+			RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
+			
+			fullRideRequest = JsonObjectMapper.getMapper().convertValue(rideRequest, FullRideRequest.class);
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return fullRideRequest;
+	}
 }
 
 
