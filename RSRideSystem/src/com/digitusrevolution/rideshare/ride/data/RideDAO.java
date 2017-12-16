@@ -38,7 +38,8 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 		Criteria criteria = session.createCriteria(entityClass);
 		@SuppressWarnings("unchecked")
 		List<RideEntity> rideEntities = criteria.add(Restrictions.in("id", rideIds))
-		.add(Restrictions.eq("status", RideStatus.Planned))
+		.add(Restrictions.or(Restrictions.eq("status", RideStatus.Planned))
+				.add(Restrictions.eq("status", RideStatus.Started)))
 		.add(Restrictions.eq("seatStatus", RideSeatStatus.Available))
 		.add(Restrictions.ge("seatOffered", seatRequired)).list();
 

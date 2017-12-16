@@ -468,14 +468,14 @@ public class RideAction {
 	 * - Remove accepted ride from ride requests 
 	 * 
 	 */
-	public RidesInfo cancelAcceptedRideRequest(int rideId, int rideRequestId){
-		RidesInfo ridesInfo = new RidesInfo();
+	public void cancelAcceptedRideRequest(int rideId, int rideRequestId){
 		Ride ride = rideDO.getAllData(rideId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
 		RideStatus rideStatus = ride.getStatus();
 		RidePassenger ridePassenger = ride.getRidePassenger(rideRequest.getPassenger().getId());
 		PassengerStatus passengerStatus = rideRequest.getPassengerStatus();
+		logger.debug("Passenger Count pre cancellation:"+ride.getAcceptedRideRequests().size());
 		//Check if ride request has been accepted by this ride
 		//Accepted ride would be null for unfulfilled ride request, so need to check for null condition 
 		if (rideRequest.getAcceptedRide() !=null ? rideRequest.getAcceptedRide().getId() == ride.getId() : false){
@@ -496,15 +496,13 @@ public class RideAction {
 					ride.setSeatStatus(RideSeatStatus.Available);
 					//Change ride request status to Unfulfilled
 					rideRequest.setStatus(RideRequestStatus.Unfulfilled);
-					//Remove accepted ride from ride request
-					rideRequest.setAcceptedRide(null);
+					//This is important which will make ride request back to the original state by resetting all fields related to this matched Ride
+					resetRideRequestFieldsRelatedToMatchedRide(rideRequest);
 					//Add ride request in cancelled list
 					ride.getCancelledRideRequests().add(rideRequest);
 					//This will update ride and ride request in db
-					rideDO.update(ride);
 					rideRequestDO.update(rideRequest);
-					ridesInfo.setRide(ride);
-					ridesInfo.setRideRequest(rideRequest);
+					rideDO.update(ride); 
 				} else {
 					throw new NotAcceptableException("Ride request can't be cancelled as Passenger has already been picked up. "
 							+ "Passenger current status:"+passengerStatus);
@@ -516,7 +514,21 @@ public class RideAction {
 			throw new NotAcceptableException("Ride request can't be cancelled as currently this ride is not mapped to the ride request."
 					+ "Ride id:"+rideId+",Ride Request id:"+rideRequestId);
 		}
-		return ridesInfo;
+	}
+
+	private void resetRideRequestFieldsRelatedToMatchedRide(RideRequest rideRequest) {
+		//Remove accepted ride from ride request
+		rideRequest.setAcceptedRide(null);
+		//Reset Ride Pickup and Drop related fields from ride request
+		//Its important to set Id as null and not the Point as we are storing only ID in SQL DB else you will get NPE
+		rideRequest.getRideDropPoint().set_id(null);
+		rideRequest.setRideDropPointAddress(null);
+		rideRequest.setRidePickupPointDistance(0);
+		//Its important to set Id as null and not the Point as we are storing only ID in SQL DB else you will get NPE
+		rideRequest.getRidePickupPoint().set_id(null);
+		rideRequest.setRidePickupPointAddress(null);
+		rideRequest.setRideDropPointDistance(0);
+		rideRequest.setPassengerStatus(PassengerStatus.Unconfirmed);
 	}
 
 	/*

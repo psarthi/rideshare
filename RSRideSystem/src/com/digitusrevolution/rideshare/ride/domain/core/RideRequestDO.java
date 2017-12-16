@@ -915,9 +915,11 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			RideDO rideDO = new RideDO();
 			if (rideRequest.getPassengerStatus().equals(PassengerStatus.Confirmed)){
 				//This will cancel the ride request from confirmed ride
-				RidesInfo ridesInfo = rideDO.cancelAcceptedRideRequest(rideId, rideRequestId);
-				//This is important to get updated value of Ride Request else it will update with outdated data
-				rideRequest = ridesInfo.getRideRequest();
+				rideDO.cancelAcceptedRideRequest(rideId, rideRequestId);
+				//This is important to get updated value of Ride Request else it will update with out dated data
+				//Note - Not sure but sometimes you will not get updated data if its a different DO 
+				//e.g. from ride DO i am unable to get latest ride when ride request is updated which is the case in cancellingAcceptedRideRequest method of rideAction
+				rideRequest = getAllData(rideRequestId);
 				//Once its cancelled from ride front, then we can cancel ride request
 				rideRequest.setStatus(RideRequestStatus.Cancelled);
 				update(rideRequest);

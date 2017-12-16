@@ -15,13 +15,18 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
+import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRidesInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferResult;
 import com.digitusrevolution.rideshare.ride.business.RideOfferBusinessService;
 import com.digitusrevolution.rideshare.ride.business.RideSystemBusinessService;
+import com.digitusrevolution.rideshare.ride.domain.service.RideDomainService;
+import com.digitusrevolution.rideshare.ride.domain.service.RideRequestDomainService;
 
 @Path("/rides")
 @Produces(MediaType.APPLICATION_JSON)
@@ -125,7 +130,18 @@ public class RideOfferBusinessResource {
 	@Path("{rideId}/cancel/acceptedriderequest/{rideRequestId}")
 	public Response cancelAcceptedRideRequest(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		FullRidesInfo ridesInfo = rideOfferBusinessService.cancelAcceptedRideRequest(rideId, rideRequestId);
+		rideOfferBusinessService.cancelAcceptedRideRequest(rideId, rideRequestId);
+		//Reason for getting the Ride and Ride Request fresh as inside the transaction 
+		//somehow i am unable to get latest data without committing transaction
+		RideDomainService rideDomainService = new RideDomainService();
+		Ride ride = rideDomainService.get(rideId, true);
+		RideRequestDomainService rideRequestDomainService = new RideRequestDomainService();
+		RideRequest rideRequest = rideRequestDomainService.get(rideRequestId, true);
+		FullRidesInfo ridesInfo = new FullRidesInfo();
+		ridesInfo.setRide(JsonObjectMapper.getMapper().
+				convertValue(ride, FullRide.class));
+		ridesInfo.setRideRequest(JsonObjectMapper.getMapper().
+				convertValue(rideRequest, FullRideRequest.class));
 		return Response.ok(ridesInfo).build();				
 	}
 

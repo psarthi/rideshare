@@ -602,9 +602,9 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return rideAction.endRide(rideId);
 	}
 
-	public RidesInfo cancelAcceptedRideRequest(int rideId, int rideRequestId){
+	public void cancelAcceptedRideRequest(int rideId, int rideRequestId){
 		RideAction rideAction = new RideAction(this);
-		return rideAction.cancelAcceptedRideRequest(rideId, rideRequestId);
+		rideAction.cancelAcceptedRideRequest(rideId, rideRequestId);
 	}
 
 	public Ride cancelRide(int rideId){
