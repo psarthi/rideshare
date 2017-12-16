@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.persistence.PreRemove;
@@ -270,7 +271,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	 * 
 	 */
 	public List<User> findAllPotentialFriendsBasedOnEmailOrMobile(int userId, List<String> emailIds, List<String> mobileNumbers){
-		List<UserEntity> registeredUserEntities = userDAO.findAllRegisteredUserBasedOnEmailOrMobile(userId, emailIds, mobileNumbers);
+		Set<UserEntity> registeredUserEntities = userDAO.findAllRegisteredUserBasedOnEmailOrMobile(userId, emailIds, mobileNumbers);
 		Collection<User> registeredUsers = new LinkedList<>();
 		registeredUsers = userMapper.getDomainModels(registeredUsers, registeredUserEntities, false);
 		//We are only using once to fetch the user, so this will not get overwritten, otherwise we have to be careful when 

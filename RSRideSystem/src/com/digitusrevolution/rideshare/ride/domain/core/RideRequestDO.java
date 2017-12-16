@@ -981,12 +981,14 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		UserMapper userMapper = new UserMapper();
 		//We don't need child object of User entity, just the basic user entity is fine as it primarily needs only PK
 		UserEntity passengerEntity = userMapper.getEntity(passenger, false);
-		List<RideRequestEntity> rideRequestEntities = rideRequestDAO.getAllRideRequests(passengerEntity);
+		Set<RideRequestEntity> rideRequestEntities = rideRequestDAO.getAllRideRequests(passengerEntity);
+		logger.debug("Ride Request Entity List Size:"+rideRequestEntities.size());
 		List<RideRequest> rideRequests = new LinkedList<>();
 		for (RideRequestEntity rideRequestEntity : rideRequestEntities) {
 			setRideRequestEntity(rideRequestEntity);
 			rideRequests.add(rideRequest);
 		}
+		logger.debug("Ride Request List Size:"+rideRequests.size());
 		return rideRequests;
 	}
 

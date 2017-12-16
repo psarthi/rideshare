@@ -3,7 +3,6 @@ package com.digitusrevolution.rideshare.ride.data;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Criteria;
@@ -14,11 +13,8 @@ import org.hibernate.criterion.Restrictions;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
-import com.digitusrevolution.rideshare.common.util.PropertyReader;
-import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
-import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
 public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
@@ -38,12 +34,12 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
+		//VERY IMP - Get the result in Set else you would get duplicate values
 		@SuppressWarnings("unchecked")
-		List<RideRequestEntity> rideRequestEntities = criteria.add(Restrictions.in("id", rideRequestIds))
+		Set<RideRequestEntity> rideRequestEntities = new HashSet<>(criteria.add(Restrictions.in("id", rideRequestIds))
 				.add(Restrictions.eq("status", RideRequestStatus.Unfulfilled))
-				.add(Restrictions.le("seatRequired", availableSeats)).list();
-		Set<RideRequestEntity> rideRequestEntitiesSet = new HashSet<>(rideRequestEntities);
-		return rideRequestEntitiesSet;		
+				.add(Restrictions.le("seatRequired", availableSeats)).list());
+		return rideRequestEntities;		
 	}
 	
 	/*
@@ -66,13 +62,14 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 	/*
 	 * Purpose - Get all ride request of a user
 	 */
-	public List<RideRequestEntity> getAllRideRequests(UserEntity passenger){
+	public Set<RideRequestEntity> getAllRideRequests(UserEntity passenger){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
+		//VERY IMP - Get the result in Set else you would get duplicate values
 		@SuppressWarnings("unchecked")
-		List<RideRequestEntity> rideRequestEntities = criteria.add(Restrictions.eq("passenger", passenger))
-				.list();
+		Set<RideRequestEntity> rideRequestEntities = new HashSet<> (criteria.add(Restrictions.eq("passenger", passenger))
+				.list());
 		return rideRequestEntities;		
 	}
 

@@ -36,30 +36,31 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
+		//VERY IMP - Get the result in Set else you would get duplicate values
 		@SuppressWarnings("unchecked")
-		List<RideEntity> rideEntities = criteria.add(Restrictions.in("id", rideIds))
+		Set<RideEntity> rideEntities = new HashSet<>(criteria.add(Restrictions.in("id", rideIds))
 		.add(Restrictions.or(Restrictions.eq("status", RideStatus.Planned))
 				.add(Restrictions.eq("status", RideStatus.Started)))
 		.add(Restrictions.eq("seatStatus", RideSeatStatus.Available))
-		.add(Restrictions.ge("seatOffered", seatRequired)).list();
-
-		Set<RideEntity> rideEntitiesSet = new HashSet<>(rideEntities);
-		return rideEntitiesSet;		
+		.add(Restrictions.ge("seatOffered", seatRequired)).list());
+		
+		return rideEntities;		
 	}
 
 	/*
 	 * Purpose - Get all upcoming rides i.e. rides having start time greater than or equal to current time in UTC
 	 * 			 Result should be limited to the required count  
 	 */
-	public List<RideEntity> getAllUpcomingRides(UserEntity driver, int limit){
+	public Set<RideEntity> getAllUpcomingRides(UserEntity driver, int limit){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
 		ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+		//VERY IMP - Get the result in Set else you would get duplicate values
 		@SuppressWarnings("unchecked")
-		List<RideEntity> rideEntities = criteria.add(Restrictions.eq("driver", driver))
+		Set<RideEntity> rideEntities = new HashSet<> (criteria.add(Restrictions.eq("driver", driver))
 		.add(Restrictions.ge("startTime", currentTime))
 		.add(Restrictions.or(Restrictions.eq("status", RideStatus.Planned)))
-		.setMaxResults(limit).list();		
+		.setMaxResults(limit).list());		
 
 		return rideEntities;	
 	}
@@ -67,11 +68,12 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 	/*
 	 * Purpose - Get all rides of a user
 	 */
-	public List<RideEntity> getAllRides(UserEntity driver){
+	public Set<RideEntity> getAllRides(UserEntity driver){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
+		//VERY IMP - Get the result in Set else you would get duplicate values
 		@SuppressWarnings("unchecked")
-		List<RideEntity> rideEntities = criteria.add(Restrictions.eq("driver", driver)).list();		
+		Set<RideEntity> rideEntities = new HashSet<>(criteria.add(Restrictions.eq("driver", driver)).list());		
 
 		return rideEntities;	
 	}
