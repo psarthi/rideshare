@@ -153,6 +153,13 @@ public class RideAction {
 					float discountPercentage = 0;
 					if (ride.getRideMode().equals(RideMode.Free)) discountPercentage = 100;
 					Bill bill = generateBill(ride, rideRequest, discountPercentage);
+					
+					if (rideRequest.getBill()!=null) {
+						//IMP - This will update the bill instead of regeneration
+						//Instead of deletion and maintaining the transaction rollback issue, its easy to update
+						//this may have some implication of data cleanliness but we need to handle programmatically till we get cleaner solution
+						bill.setNumber(rideRequest.getBill().getNumber());
+					} 
 					rideRequest.setBill(bill);
 					
 					//This will act as payment confirmation code for debiting money from passenger account
@@ -364,7 +371,7 @@ public class RideAction {
 	 * as updated ride request would not come into effect until we commit the transaction
 	 * 
 	 */
-	public void dropPassenger(int rideId, int rideRequestId){
+	public void dropPassenger(int rideId, int rideRequestId, RideMode rideMode){
 		logger.debug("Drop Passenger for Ride Id/Ride RequestId:"+rideId+","+rideRequestId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
@@ -381,6 +388,13 @@ public class RideAction {
 				//Check if passenger states is picked up
 				if (rideRequest.getPassengerStatus().equals(PassengerStatus.Picked)){
 					rideRequest.setPassengerStatus(PassengerStatus.Dropped);
+					
+					//This will take care in case of change of ride mode at the time of dropping
+					if (rideMode.equals(RideMode.Free)) {
+						rideRequest.getBill().setDiscountPercentage(100);
+						rideRequest.getBill().setAmount(0);
+					}
+					
 					//Update the status in the db
 					rideRequestDO.update(rideRequest);
 				}else {
@@ -532,6 +546,8 @@ public class RideAction {
 					//Ride seat status would always become available as we are freeing up at least one seat in any case
 					//So even if its Unavailable before cancellation, this will make seat available
 					ride.setSeatStatus(RideSeatStatus.Available);
+					//This will make Ride Status as Planned again in case it was fulfilled earlier
+					ride.setStatus(RideStatus.Planned);
 					//Change ride request status to Unfulfilled
 					rideRequest.setStatus(RideRequestStatus.Unfulfilled);
 					//Note - This is only applicable if we are planning to return update ride and ride request from this function

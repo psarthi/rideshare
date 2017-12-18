@@ -105,9 +105,9 @@ public class RideRequestBusinessResource {
 	 */
 	@GET
 	@Path("{rideRequestId}/canceldriver/{rideId}")
-	public Response cancelDriver(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
+	public Response cancelDriver(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId, @QueryParam("rating") float rating){
 		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
-		rideRequestBusinessService.cancelDriver(rideId, rideRequestId);
+		rideRequestBusinessService.cancelDriver(rideId, rideRequestId, rating);
 		//This will ensure that we are getting fully updated data once transaction is committed
 		RideRequestDomainService rideRequestDomainService = new RideRequestDomainService();
 		FullRideRequest rideRequest = JsonObjectMapper.getMapper().convertValue(rideRequestDomainService.get(rideRequestId, true), FullRideRequest.class);

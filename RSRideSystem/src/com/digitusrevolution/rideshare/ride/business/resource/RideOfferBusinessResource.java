@@ -15,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferResult;
@@ -130,9 +131,9 @@ public class RideOfferBusinessResource {
 	 */
 	@GET
 	@Path("{rideId}/cancelpassenger/{rideRequestId}")
-	public Response cancelPassenger(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
+	public Response cancelPassenger(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId, @QueryParam("rating") float rating){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		rideOfferBusinessService.cancelPassenger(rideId, rideRequestId);
+		rideOfferBusinessService.cancelPassenger(rideId, rideRequestId, rating);
 		//This will ensure that we are getting fully updated data once transaction is committed
 		RideDomainService rideDomainService = new RideDomainService();
 		FullRide ride = JsonObjectMapper.getMapper().convertValue(rideDomainService.get(rideId, true), FullRide.class);
@@ -164,9 +165,9 @@ public class RideOfferBusinessResource {
 	 */
 	@GET
 	@Path("/{rideId}/drop/{rideRequestId}")
-	public Response dropPassenger(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
+	public Response dropPassenger(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId, @QueryParam("ridemode") RideMode rideMode){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		rideOfferBusinessService.dropPassenger(rideId, rideRequestId);
+		rideOfferBusinessService.dropPassenger(rideId, rideRequestId, rideMode);
 		//This will ensure that we are getting fully updated data once transaction is committed
 		RideDomainService rideDomainService = new RideDomainService();
 		FullRide ride = JsonObjectMapper.getMapper().convertValue(rideDomainService.get(rideId, true), FullRide.class);

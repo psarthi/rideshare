@@ -33,6 +33,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.RidePointProperty;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
@@ -604,9 +605,9 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		rideAction.pickupPassenger(rideId, rideRequestId);
 	}
 
-	public void dropPassenger(int rideId, int rideRequestId){
+	public void dropPassenger(int rideId, int rideRequestId, RideMode rideMode){
 		RideAction rideAction = new RideAction(this);
-		rideAction.dropPassenger(rideId, rideRequestId);
+		rideAction.dropPassenger(rideId, rideRequestId, rideMode);
 	}
 
 	public void endRide(int rideId){

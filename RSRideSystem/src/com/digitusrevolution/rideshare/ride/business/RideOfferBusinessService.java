@@ -12,6 +12,7 @@ import org.hibernate.Transaction;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
@@ -283,15 +284,14 @@ public class RideOfferBusinessService {
 		}
 	}
 	
-	public void dropPassenger(int rideId, int rideRequestId){
+	public void dropPassenger(int rideId, int rideRequestId, RideMode rideMode){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
-		FullRide fullRide = null;
 		try {
 			transaction = session.beginTransaction();
 
 			RideDO rideDO = new RideDO();
-			rideDO.dropPassenger(rideId, rideRequestId);
+			rideDO.dropPassenger(rideId, rideRequestId, rideMode);
 
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -334,7 +334,7 @@ public class RideOfferBusinessService {
 		}
 	}
 	
-	public void cancelPassenger(int rideId, int rideRequestId){
+	public void cancelPassenger(int rideId, int rideRequestId, float rating){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -343,6 +343,7 @@ public class RideOfferBusinessService {
 			logger.debug("Cancelling Passenger for ride Id/Ride Request Id:"+rideId+","+rideRequestId);
 			RideDO rideDO = new RideDO();
 			rideDO.cancelAcceptedRideRequest(rideId, rideRequestId, false);
+			//TODO Implement User Feedback later
 			RideRequestDO rideRequestDO = new RideRequestDO();
 			rideRequestDO.autoMatchRideRequest(rideId);
 

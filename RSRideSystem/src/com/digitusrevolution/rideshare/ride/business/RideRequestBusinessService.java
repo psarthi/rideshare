@@ -234,7 +234,7 @@ public class RideRequestBusinessService {
 		}
 	}
 	
-	public void cancelDriver(int rideId, int rideRequestId){
+	public void cancelDriver(int rideId, int rideRequestId, float rating){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -243,6 +243,8 @@ public class RideRequestBusinessService {
 			logger.debug("Cancelling Driver for ride Id/Ride Request Id:"+rideId+","+rideRequestId);
 			RideDO rideDO = new RideDO();
 			rideDO.cancelAcceptedRideRequest(rideId, rideRequestId, false);
+			//TODO Implement User Feedback later
+			
 			rideDO.autoMatchRide(rideRequestId);
 
 			transaction.commit();
