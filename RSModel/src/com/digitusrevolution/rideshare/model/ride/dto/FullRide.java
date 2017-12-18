@@ -13,7 +13,6 @@ public class FullRide extends BasicRide{
 	private boolean recur;
 	private RecurringDetail recurringDetail;
 
-	private Collection<Bill> bills = new HashSet<Bill>();
 	private Collection<BasicRideRequest> acceptedRideRequests = new HashSet<BasicRideRequest>();
 	private Collection<BasicRideRequest> rejectedRideRequests = new HashSet<BasicRideRequest>();
 	private Collection<BasicRideRequest> cancelledRideRequests = new HashSet<BasicRideRequest>();
@@ -36,12 +35,6 @@ public class FullRide extends BasicRide{
 	}
 	public void setRecurringDetail(RecurringDetail recurringDetail) {
 		this.recurringDetail = recurringDetail;
-	}
-	public Collection<Bill> getBills() {
-		return bills;
-	}
-	public void setBills(Collection<Bill> bills) {
-		this.bills = bills;
 	}
 	public Collection<BasicRideRequest> getAcceptedRideRequests() {
 		return acceptedRideRequests;

@@ -3,7 +3,6 @@ package com.digitusrevolution.rideshare.common.mapper.ride.core;
 import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
-import com.digitusrevolution.rideshare.common.mapper.billing.core.BillMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.TrustNetworkMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.VehicleMapper;
@@ -81,11 +80,10 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		if (rideEntity.getRidePassengers()!=null) rideEntity.setRidePassengers(ridePassengerMapper.getEntities(rideEntity.getRidePassengers(), ride.getRidePassengers(), false));
 				
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
-		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop
-		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
-		//is called irrespective of fetchChild status
+		//Intentionally we are getting child of ride requests, so that we can get bill details as well from Ride
+		//however we need to ensure that from Ride Request we don't fetch child of Ride otherwise it will get into recursive loop
 		Collection<RideRequestEntity> acceptedRideRequestEntities = rideRequestMapper.getEntities(rideEntity.getAcceptedRideRequests(),
-				ride.getAcceptedRideRequests(), false);
+				ride.getAcceptedRideRequests(), true);
 		rideEntity.setAcceptedRideRequests(acceptedRideRequestEntities);
 
 		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop
@@ -161,11 +159,10 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		if (ride.getRidePassengers()!=null)  ride.setRidePassengers(ridePassengerMapper.getDomainModels(ride.getRidePassengers(), rideEntity.getRidePassengers(), false));
 				
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
-		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop
-		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
-		//is called irrespective of fetchChild status. Ride is calling ride request domain function and ride request is calling ride domain function
+		//Intentionally we are getting child of ride requests, so that we can get bill details as well from Ride
+		//however we need to ensure that from Ride Request we don't fetch child of Ride otherwise it will get into recursive loop
 		Collection<RideRequest> acceptedRideRequests = rideRequestMapper.getDomainModels(ride.getAcceptedRideRequests(), 
-				rideEntity.getAcceptedRideRequests(), false);
+				rideEntity.getAcceptedRideRequests(), true);
 		ride.setAcceptedRideRequests(acceptedRideRequests);
 
 		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop

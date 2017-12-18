@@ -92,6 +92,7 @@ public class RideRequestEntity {
 	private RideMode rideMode;
 	@OneToOne (mappedBy="rideRequest", cascade=CascadeType.ALL)
 	private BillEntity bill;
+	private String confirmationCode;
 	
 	public RideMode getRideMode() {
 		return rideMode;
@@ -302,6 +303,12 @@ public class RideRequestEntity {
 	}
 	public void setRideDropPointDistance(double rideDropPointDistance) {
 		this.rideDropPointDistance = rideDropPointDistance;
+	}
+	public String getConfirmationCode() {
+		return confirmationCode;
+	}
+	public void setConfirmationCode(String confirmationCode) {
+		this.confirmationCode = confirmationCode;
 	}
 
 }

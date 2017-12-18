@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.digitusrevolution.rideshare.common.auth.AuthService;
 import com.digitusrevolution.rideshare.common.exception.RideRequestUnavailableException;
 import com.digitusrevolution.rideshare.common.exception.RideUnavailableException;
 import com.digitusrevolution.rideshare.common.util.GoogleUtil;
@@ -101,7 +102,7 @@ public class RideAction {
 				//Its important to re-check seats criteria as in between it may happen that number of seats which was initially free at the time of search,  
 				//partial seats may have been occupied.
 				if (rideRequest.getSeatRequired() <= (ride.getSeatOffered() - seatOccupied)){
-
+					
 					//Set accepted ride in ride request
 					//Note - By adding the ride request in the getAcceptedRideRequests collection, it will not update the ride id in the ride request table
 					//as ride is acceptedRideRequests relationship is owned by ride request entity and not ride (@OneToMany(mappedBy="acceptedRide"))
@@ -135,6 +136,11 @@ public class RideAction {
 					ridePassenger.setRide(ride);
 					rideRequest.setPassengerStatus(PassengerStatus.Confirmed);
 					ride.getRidePassengers().add(ridePassenger);
+					
+					//Updating the ride status in case all seats are filled up
+					if (rideRequest.getSeatRequired() == (ride.getSeatOffered() - seatOccupied)) {
+						ride.setStatus(RideStatus.Fulfilled);
+					}
 
 					//This will get the new status of seat post the acceptance of this ride request 
 					//Seat status may or may not change depending on total seats occupied vs offered 
@@ -148,6 +154,9 @@ public class RideAction {
 					if (ride.getRideMode().equals(RideMode.Free)) discountPercentage = 100;
 					Bill bill = generateBill(ride, rideRequest, discountPercentage);
 					rideRequest.setBill(bill);
+					
+					//This will act as payment confirmation code for debiting money from passenger account
+					rideRequest.setConfirmationCode(AuthService.getInstance().getVerificationCode());
 
 					//Update all the changes in DB for ride and ride request
 					rideDO.update(ride);
@@ -273,7 +282,7 @@ public class RideAction {
 	 * 
 	 * High Level Logic -
 	 * 
-	 * - Check the status of ride to see if its in planned state 
+	 * - Check the status of ride to see if its in planned state or fulfilled state
 	 * - If its in valid state, then change the status to started
 	 * 
 	 * Note - Reason for returning void for consistency with other rides action method 
@@ -286,7 +295,7 @@ public class RideAction {
 		//Get child else child properties would get deleted while updating, as Ride Passenger has cascade enabled
 		Ride ride = rideDO.getAllData(rideId);
 		RideStatus rideCurrentStatus = ride.getStatus();
-		if (rideCurrentStatus.equals(RideStatus.Planned)){
+		if (rideCurrentStatus.equals(RideStatus.Planned) || rideCurrentStatus.equals(RideStatus.Fulfilled)){
 			ride.setStatus(RideStatus.Started);
 			rideDO.update(ride);	
 		} else {
@@ -444,14 +453,18 @@ public class RideAction {
 					cancelAcceptedRideRequest(rideId, rideRequest.getId(), false);
 				}
 			}
-			//This is the scenario when all has been picked but some/all not dropped
+		
+			//This is the scenario when some/all passenger has not been dropped
 			if (passengerOnBoard){
 				//Drop all the onboarded passenger who has not been dropped
 				//We can also ask driver to drop all passenger, but for convinience system would take care of it 
-				//as it doesn't change anything from driver end 
+				//as it doesn't change anything from driver end
+				//Note - Lets not allow auto drop of the passenger as this would affect payment confirmation flow
+				/*
 				for (RideRequest rideRequest : onBoardedPassengerRideRequestList) {
 					dropPassenger(rideId, rideRequest.getId());
-				}
+				}*/
+				throw new NotAcceptableException("You have passenger on-board, please drop them first");
 			}
 
 			//So now all passenger has been either dropped / cancelled

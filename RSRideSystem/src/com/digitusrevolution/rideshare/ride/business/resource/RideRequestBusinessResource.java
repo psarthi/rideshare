@@ -114,6 +114,19 @@ public class RideRequestBusinessResource {
 		return Response.ok(rideRequest).build();				
 	}
 
+	/**
+	 * 
+	 * @param rideRequestId Ride Request Id
+	 * @param code is payment confirmation code
+	 * @return true/false
+	 */
+	@GET
+	@Path("{rideRequestId}/validatepaymentcode/{code}")
+	public Response validatePaymentConfirmationCode(@PathParam("rideRequestId") int rideRequestId, @PathParam("code") String code) {
+		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
+		boolean status = rideRequestBusinessService.validatePaymentConfirmationCode(rideRequestId, code);
+		return Response.ok(status).build();
+	}
 
 
 }

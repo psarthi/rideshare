@@ -39,8 +39,7 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 		//VERY IMP - Get the result in Set else you would get duplicate values
 		@SuppressWarnings("unchecked")
 		Set<RideEntity> rideEntities = new HashSet<>(criteria.add(Restrictions.in("id", rideIds))
-		.add(Restrictions.or(Restrictions.eq("status", RideStatus.Planned))
-				.add(Restrictions.eq("status", RideStatus.Started)))
+		.add(Restrictions.or(Restrictions.eq("status", RideStatus.Planned), Restrictions.eq("status", RideStatus.Started)))
 		.add(Restrictions.eq("seatStatus", RideSeatStatus.Available))
 		.add(Restrictions.ge("seatOffered", seatRequired)).list());
 		
@@ -88,7 +87,7 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 		ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
 		RideEntity rideEntity = (RideEntity) criteria.add(Restrictions.eq("driver", driver))
 		.add(Restrictions.or(Restrictions.ge("startTime", currentTime),Restrictions.ge("endTime", currentTime)))
-		.add(Restrictions.or(Restrictions.eq("status", RideStatus.Planned),Restrictions.eq("status", RideStatus.Started)))
+		.add(Restrictions.or(Restrictions.eq("status", RideStatus.Planned),Restrictions.eq("status", RideStatus.Started),Restrictions.eq("status", RideStatus.Fulfilled)))
 		.addOrder(Order.asc("startTime"))
 		.setMaxResults(1).uniqueResult();	 
 

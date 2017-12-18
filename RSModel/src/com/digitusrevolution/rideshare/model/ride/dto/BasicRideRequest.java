@@ -49,6 +49,8 @@ public class BasicRideRequest {
 	private int travelDistance;
 	private BasicRide acceptedRide;
 	private RideMode rideMode;
+	private Bill bill;
+	private String confirmationCode;
 	
 	public int getId() {
 		return id;
@@ -224,4 +226,16 @@ public class BasicRideRequest {
 	public void setRideDropPointDistance(double rideDropPointDistance) {
 		this.rideDropPointDistance = rideDropPointDistance;
 	}	
+	public Bill getBill() {
+		return bill;
+	}
+	public void setBill(Bill bill) {
+		this.bill = bill;
+	}
+	public String getConfirmationCode() {
+		return confirmationCode;
+	}
+	public void setConfirmationCode(String confirmationCode) {
+		this.confirmationCode = confirmationCode;
+	}
 }

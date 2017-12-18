@@ -22,6 +22,7 @@ import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDistance;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
+import com.digitusrevolution.rideshare.ride.domain.service.RideRequestDomainService;
 
 public class RideRequestBusinessService {
 	
@@ -259,6 +260,14 @@ public class RideRequestBusinessService {
 			}
 		}
 	}
+	
+	public boolean validatePaymentConfirmationCode(int rideRequestId, String code){
+		RideRequestDomainService rideRequestDomainService = new RideRequestDomainService();
+		RideRequest rideRequest = rideRequestDomainService.get(rideRequestId, false);
+		if (rideRequest.getConfirmationCode().equals(code)) return true;
+		return false;
+	}
+	
 }
 
 
