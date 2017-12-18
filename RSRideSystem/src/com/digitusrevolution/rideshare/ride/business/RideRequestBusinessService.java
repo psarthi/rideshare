@@ -13,19 +13,15 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
-import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
-import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
-import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideRequestResult;
 import com.digitusrevolution.rideshare.model.ride.dto.google.Element;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDistance;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
-import com.mongodb.util.JSON;
 
 public class RideRequestBusinessService {
 	
@@ -212,16 +208,14 @@ public class RideRequestBusinessService {
 		return fullRideRequest;
 	}
 	
-	public FullRideRequest cancelRideRequest(int rideRequestId){
+	public void cancelRideRequest(int rideRequestId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
-		FullRideRequest fullRideRequest = null;
 		try {
 			transaction = session.beginTransaction();
 
 			RideRequestDO rideRequestDO = new RideRequestDO();
-			RideRequest rideRequest = rideRequestDO.cancelRideRequest(rideRequestId);
-			fullRideRequest = JsonObjectMapper.getMapper().convertValue(rideRequest, FullRideRequest.class);
+			rideRequestDO.cancelRideRequest(rideRequestId);
 
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -237,24 +231,18 @@ public class RideRequestBusinessService {
 				session.close();				
 			}
 		}
-		return fullRideRequest;
 	}
 	
-	public FullRideRequest cancelDriver(int rideId, int rideRequestId){
+	public void cancelDriver(int rideId, int rideRequestId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
-		FullRideRequest fullRideRequest = new FullRideRequest();
 		try {
 			transaction = session.beginTransaction();
 			
 			logger.debug("Cancelling Driver for ride Id/Ride Request Id:"+rideId+","+rideRequestId);
 			RideDO rideDO = new RideDO();
-			rideDO.cancelAcceptedRideRequest(rideId, rideRequestId);
-			RideRequestDO rideRequestDO = new RideRequestDO();
+			rideDO.cancelAcceptedRideRequest(rideId, rideRequestId, false);
 			rideDO.autoMatchRide(rideRequestId);
-			RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
-			
-			fullRideRequest = JsonObjectMapper.getMapper().convertValue(rideRequest, FullRideRequest.class);
 
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -270,7 +258,6 @@ public class RideRequestBusinessService {
 				session.close();				
 			}
 		}
-		return fullRideRequest;
 	}
 }
 

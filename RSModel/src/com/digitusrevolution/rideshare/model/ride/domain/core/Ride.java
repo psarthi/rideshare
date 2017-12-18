@@ -162,10 +162,7 @@ public class Ride implements Comparable<Ride>{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((driver == null) ? 0 : driver.hashCode());
 		result = prime * result + id;
-		result = prime * result + ((startTime == null) ? 0 : startTime.hashCode());
-		result = prime * result + ((vehicle == null) ? 0 : vehicle.hashCode());
 		return result;
 	}
 
@@ -181,28 +178,7 @@ public class Ride implements Comparable<Ride>{
 			return false;
 		}
 		Ride other = (Ride) obj;
-		if (driver == null) {
-			if (other.driver != null) {
-				return false;
-			}
-		} else if (!driver.equals(other.driver)) {
-			return false;
-		}
 		if (id != other.id) {
-			return false;
-		}
-		if (startTime == null) {
-			if (other.startTime != null) {
-				return false;
-			}
-		} else if (!startTime.equals(other.startTime)) {
-			return false;
-		}
-		if (vehicle == null) {
-			if (other.vehicle != null) {
-				return false;
-			}
-		} else if (!vehicle.equals(other.vehicle)) {
 			return false;
 		}
 		return true;

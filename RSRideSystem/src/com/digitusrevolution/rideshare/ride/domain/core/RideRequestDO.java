@@ -923,11 +923,14 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * - Update the status of ride request as cancelled
 	 * - If its fulfilled, then check if the passenger has been picked
 	 * - If its not picked, then you can cancel, else it can't be cancelled
-	 * - If not picked, then call Cancel Ride Request function of ride 
-	 * - Update the status of ride request as cancelled 
+	 * - If not picked, then call Cancel Ride Request function of ride and Update the status of ride request as cancelled 
+	 * 
+	 * Note - Reason for returning void for consistency with other rides action method 
+	 * as well as it will give flexibility to modify this function without worrying about updating both side references
+	 * e.g ride should be updated with ride request and vice versa
 	 * 
 	 */
-	public RideRequest cancelRideRequest(int rideRequestId){
+	public void cancelRideRequest(int rideRequestId){
 		logger.debug("Cancelling Ride Request:"+rideRequestId);
 		rideRequest = getAllData(rideRequestId);
 		RideRequestStatus rideRequestStatus = rideRequest.getStatus();
@@ -938,15 +941,8 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			int rideId = rideRequest.getAcceptedRide().getId();
 			RideDO rideDO = new RideDO();
 			if (rideRequest.getPassengerStatus().equals(PassengerStatus.Confirmed)){
-				//This will cancel the ride request from confirmed ride
-				rideDO.cancelAcceptedRideRequest(rideId, rideRequestId);
-				//This is important to get updated value of Ride Request else it will update with out dated data
-				//Note - Not sure but sometimes you will not get updated data if its a different DO 
-				//e.g. from ride DO i am unable to get latest ride when ride request is updated which is the case in cancellingAcceptedRideRequest method of rideAction
-				rideRequest = getAllData(rideRequestId);
-				//Once its cancelled from ride front, then we can cancel ride request
-				rideRequest.setStatus(RideRequestStatus.Cancelled);
-				update(rideRequest);
+				//This will cancel the ride request from confirmed ride as well as update the cancellation status in ride request
+				rideDO.cancelAcceptedRideRequest(rideId, rideRequestId, true);
 				//This will just ensure that we do auto match for the Ride which has got affected because of this
 				autoMatchRideRequest(rideId);
 			} else {
@@ -954,7 +950,6 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 						+ "Passenger current status:"+rideRequest.getPassengerStatus());
 			}
 		}
-		return rideRequest;
 	}
 
 	/*

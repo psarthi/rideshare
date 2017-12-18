@@ -15,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
@@ -24,6 +25,8 @@ import com.digitusrevolution.rideshare.model.ride.dto.RideRequestResult;
 import com.digitusrevolution.rideshare.ride.business.RideOfferBusinessService;
 import com.digitusrevolution.rideshare.ride.business.RideRequestBusinessService;
 import com.digitusrevolution.rideshare.ride.business.RideSystemBusinessService;
+import com.digitusrevolution.rideshare.ride.domain.service.RideDomainService;
+import com.digitusrevolution.rideshare.ride.domain.service.RideRequestDomainService;
 
 @Path("/riderequests")
 @Produces(MediaType.APPLICATION_JSON)
@@ -87,7 +90,10 @@ public class RideRequestBusinessResource {
 	@Path("/cancel/{rideRequestId}")
 	public Response cancelRideRequest(@PathParam("rideRequestId") int rideRequestId){
 		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
-		FullRideRequest rideRequest = rideRequestBusinessService.cancelRideRequest(rideRequestId);
+		rideRequestBusinessService.cancelRideRequest(rideRequestId);
+		//This will ensure that we are getting fully updated data once transaction is committed
+		RideRequestDomainService rideRequestDomainService = new RideRequestDomainService();
+		FullRideRequest rideRequest = JsonObjectMapper.getMapper().convertValue(rideRequestDomainService.get(rideRequestId, true), FullRideRequest.class);
 		return Response.ok(rideRequest).build();				
 	}
 
@@ -101,7 +107,10 @@ public class RideRequestBusinessResource {
 	@Path("{rideRequestId}/canceldriver/{rideId}")
 	public Response cancelDriver(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
 		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
-		FullRideRequest rideRequest = rideRequestBusinessService.cancelDriver(rideId, rideRequestId);
+		rideRequestBusinessService.cancelDriver(rideId, rideRequestId);
+		//This will ensure that we are getting fully updated data once transaction is committed
+		RideRequestDomainService rideRequestDomainService = new RideRequestDomainService();
+		FullRideRequest rideRequest = JsonObjectMapper.getMapper().convertValue(rideRequestDomainService.get(rideRequestId, true), FullRideRequest.class);
 		return Response.ok(rideRequest).build();				
 	}
 

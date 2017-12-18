@@ -236,8 +236,6 @@ public class RideRequestEntity {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + id;
-		result = prime * result + ((passenger == null) ? 0 : passenger.hashCode());
-		result = prime * result + ((pickupTime == null) ? 0 : pickupTime.hashCode());
 		return result;
 	}
 	@Override
@@ -253,20 +251,6 @@ public class RideRequestEntity {
 		}
 		RideRequestEntity other = (RideRequestEntity) obj;
 		if (id != other.id) {
-			return false;
-		}
-		if (passenger == null) {
-			if (other.passenger != null) {
-				return false;
-			}
-		} else if (!passenger.equals(other.passenger)) {
-			return false;
-		}
-		if (pickupTime == null) {
-			if (other.pickupTime != null) {
-				return false;
-			}
-		} else if (!pickupTime.equals(other.pickupTime)) {
 			return false;
 		}
 		return true;

@@ -589,39 +589,39 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		rideAction.acceptRideRequest(matchedTripInfo);
 	}
 
-	public Ride rejectRideRequest(int rideId, int rideRequestId){
+	public void rejectRideRequest(int rideId, int rideRequestId){
 		RideAction rideAction = new RideAction(this);
-		return rideAction.rejectRideRequest(rideId, rideRequestId);
+		rideAction.rejectRideRequest(rideId, rideRequestId);
 	}
 
-	public Ride startRide(int rideId){
+	public void startRide(int rideId){
 		RideAction rideAction = new RideAction(this);
-		return rideAction.startRide(rideId);
+		rideAction.startRide(rideId);
 	}
 
-	public Ride pickupPassenger(int rideId, int rideRequestId){
+	public void pickupPassenger(int rideId, int rideRequestId){
 		RideAction rideAction = new RideAction(this);
-		return rideAction.pickupPassenger(rideId, rideRequestId);
+		rideAction.pickupPassenger(rideId, rideRequestId);
 	}
 
-	public Ride dropPassenger(int rideId, int rideRequestId){
+	public void dropPassenger(int rideId, int rideRequestId){
 		RideAction rideAction = new RideAction(this);
-		return rideAction.dropPassenger(rideId, rideRequestId);
+		rideAction.dropPassenger(rideId, rideRequestId);
 	}
 
-	public Ride endRide(int rideId){
+	public void endRide(int rideId){
 		RideAction rideAction = new RideAction(this);
-		return rideAction.endRide(rideId);
+		rideAction.endRide(rideId);
 	}
 
-	public RidesInfo cancelAcceptedRideRequest(int rideId, int rideRequestId){
+	public void cancelAcceptedRideRequest(int rideId, int rideRequestId, boolean cancelRideRequest){
 		RideAction rideAction = new RideAction(this);
-		return rideAction.cancelAcceptedRideRequest(rideId, rideRequestId);
+		rideAction.cancelAcceptedRideRequest(rideId, rideRequestId, cancelRideRequest);
 	}
 
-	public Ride cancelRide(int rideId){
+	public void cancelRide(int rideId){
 		RideAction rideAction = new RideAction(this);
-		return rideAction.cancelRide(rideId);
+		rideAction.cancelRide(rideId);
 	}
 }
 

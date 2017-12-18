@@ -252,9 +252,11 @@ public class RideAction {
 	 * and User has choice of accepting or rejecting. So in that case this function would work but if ride has already been accepted
 	 * be it by system or manually, then this is not the right method. Instead use cancelAcceptedRideRequest method
 	 * 
-	 * 
+	 * Note - Reason for returning void for consistency with other rides action method 
+	 * as well as it will give flexibility to modify this function without worrying about updating both side references
+	 * e.g ride should be updated with ride request and vice versa
 	 */
-	public Ride rejectRideRequest(int rideId, int rideRequestId){
+	public void rejectRideRequest(int rideId, int rideRequestId){
 
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
@@ -264,7 +266,6 @@ public class RideAction {
 
 		//This will update the ride details in DB
 		rideDO.update(ride);
-		return ride;
 	}
 
 	/*
@@ -275,8 +276,12 @@ public class RideAction {
 	 * - Check the status of ride to see if its in planned state 
 	 * - If its in valid state, then change the status to started
 	 * 
+	 * Note - Reason for returning void for consistency with other rides action method 
+	 * as well as it will give flexibility to modify this function without worrying about updating both side references
+	 * e.g ride should be updated with ride request and vice versa
+	 * 
 	 */
-	public Ride startRide(int rideId){
+	public void startRide(int rideId){
 		logger.debug("Start Ride:"+rideId);
 		//Get child else child properties would get deleted while updating, as Ride Passenger has cascade enabled
 		Ride ride = rideDO.getAllData(rideId);
@@ -287,7 +292,6 @@ public class RideAction {
 		} else {
 			throw new NotAcceptableException("Ride can't be started as its not in valid state. Ride current status:"+rideCurrentStatus);
 		}
-		return ride;
 	}
 
 	/*
@@ -300,8 +304,11 @@ public class RideAction {
 	 * - If passenger found, then check if passenger is in initial state
 	 * - If yes, then change the status of passenger to pickup state
 	 * 
+	 * Note - Reason for returning void as we are not updating ride but ride request and there is no point returning old ride 
+	 * as updated ride request would not come into effect until we commit the transaction
+	 * 
 	 */
-	public Ride pickupPassenger(int rideId, int rideRequestId){
+	public void pickupPassenger(int rideId, int rideRequestId){
 		logger.debug("Pickup Passenger for Ride Id/Ride RequestId:"+rideId+","+rideRequestId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
@@ -322,7 +329,7 @@ public class RideAction {
 				if (rideRequest.getPassengerStatus().equals(PassengerStatus.Confirmed)){
 					rideRequest.setPassengerStatus(PassengerStatus.Picked);
 					//Update the status in the db
-					rideRequestDO.update(rideRequest);
+					rideRequestDO.update(rideRequest);					
 				}else {
 					throw new NotAcceptableException("Passenger is not in valid state. Passenger current status:"+rideRequest.getPassengerStatus());
 				}
@@ -332,7 +339,6 @@ public class RideAction {
 		} else {
 			throw new NotAcceptableException("Passenger can't be picked up as ride is not in valid state. Ride current statues:"+rideCurrentStatus);
 		}
-		return ride;
 	}
 
 	/*
@@ -345,8 +351,11 @@ public class RideAction {
 	 * - Check if the passenger is in pickup state
 	 * - If yes, then update the passenger status to dropped state
 	 * 
+	 * Note - Reason for returning void as we are not updating ride but ride request and there is no point returning old ride 
+	 * as updated ride request would not come into effect until we commit the transaction
+	 * 
 	 */
-	public Ride dropPassenger(int rideId, int rideRequestId){
+	public void dropPassenger(int rideId, int rideRequestId){
 		logger.debug("Drop Passenger for Ride Id/Ride RequestId:"+rideId+","+rideRequestId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
@@ -374,7 +383,6 @@ public class RideAction {
 		} else {
 			throw new NotAcceptableException("Passenger can't be dropped as ride is not in valid state. Ride current statues:"+rideCurrentStatus);
 		}
-		return ride;
 	}
 
 	/*
@@ -392,12 +400,15 @@ public class RideAction {
 	 * - Check if there is any passenger who has not been picked or dropped
 	 * - Drop all the passenger who is on board
 	 * - Cancel all the ride request who has not been picked up
-	 * - Reason for dropping / cancelling by system instead of asking driver to do that as its mandatory to drop/cancel all the passengers
+	 * - Reason for dropping / canceling by system instead of asking driver to do that as its mandatory to drop/cancel all the passengers
 	 *   before ending the ride and it will not create any difference if driver/system do this task, so for convenience system will take care of it 
 	 * - Update the ride status to finished
 	 * 
+	 * Note - Reason for returning void as we are not just updating ride but also ride request inside drop and pickup function and there is no point returning old ride 
+	 * as updated ride request would not come into effect until we commit the transaction
+	 * 
 	 */
-	public Ride endRide(int rideId){
+	public void endRide(int rideId){
 		logger.debug("Ending Ride:"+rideId);
 		Ride ride = rideDO.getAllData(rideId);
 		RideStatus rideStatus = ride.getStatus();
@@ -405,8 +416,8 @@ public class RideAction {
 		if (rideStatus.equals(RideStatus.Started)){
 			boolean passengerOnBoard = false;
 			boolean passengerNotPicked = false;
-			List<User> onBoardedPassengerList = new ArrayList<>();
-			List<User> notPickedPassengerList = new ArrayList<>();
+			List<RideRequest> onBoardedPassengerRideRequestList = new ArrayList<>();
+			List<RideRequest> notPickedPassengerRideRequestList = new ArrayList<>();
 			Collection<RideRequest> rideRequests = ride.getAcceptedRideRequests();
 			for (RideRequest rideRequest:rideRequests) {
 				if (rideRequest.getPassengerStatus().equals(PassengerStatus.Dropped)){
@@ -414,23 +425,23 @@ public class RideAction {
 				}
 				if (rideRequest.getPassengerStatus().equals(PassengerStatus.Picked)){
 					passengerOnBoard = true;
-					onBoardedPassengerList.add(rideRequest.getPassenger());
+					onBoardedPassengerRideRequestList.add(rideRequest);
 					continue;
 				}
 				if (rideRequest.getPassengerStatus().equals(PassengerStatus.Confirmed)){
 					passengerNotPicked = true;
-					notPickedPassengerList.add(rideRequest.getPassenger());
+					notPickedPassengerRideRequestList.add(rideRequest);
 				}
 			}
 
 			//This is the scenario, when some/all passenger has not been picked
 			if (passengerNotPicked){
-				for (User passenger : notPickedPassengerList) {
-					RideRequest rideRequest = ride.getRideRequestOfPassenger(passenger.getId());
+				for (RideRequest rideRequest : notPickedPassengerRideRequestList) {
 					//Cancel all the ride request which has not been picked
-					//We can also ask driver to cancel all ride request, but for convinience system would take care of it 
+					//We can also ask driver to cancel all ride request, but for convenience system would take care of it 
 					//as it doesn't change anything from driver end 
-					cancelAcceptedRideRequest(rideId, rideRequest.getId());
+					//Note - Reason for passing the cancelRideRequest as false, as we don't want ride request to be cancelled as well
+					cancelAcceptedRideRequest(rideId, rideRequest.getId(), false);
 				}
 			}
 			//This is the scenario when all has been picked but some/all not dropped
@@ -438,8 +449,8 @@ public class RideAction {
 				//Drop all the onboarded passenger who has not been dropped
 				//We can also ask driver to drop all passenger, but for convinience system would take care of it 
 				//as it doesn't change anything from driver end 
-				for (User passenger : onBoardedPassengerList) {
-					dropPassenger(rideId, passenger.getId());
+				for (RideRequest rideRequest : onBoardedPassengerRideRequestList) {
+					dropPassenger(rideId, rideRequest.getId());
 				}
 			}
 
@@ -454,7 +465,6 @@ public class RideAction {
 		} else {
 			throw new NotAcceptableException("Ride can't be ended as its not in valid state. Current ride status:"+rideStatus);
 		}
-		return ride;
 	}
 
 	/*
@@ -473,9 +483,15 @@ public class RideAction {
 	 *   so even if its Unavailable before cancellation, this will make seat available
 	 * - Change Ride request status to Unfulfilled
 	 * - Remove accepted ride from ride requests 
+	 * - If cancelRideRequest status is true, then change the status to cancelled (This is just to support all action in one transaction 
+	 *   and avoid issue of returning updated ride and ride request to another function which may be a challenge within the same transaction before commit)
+	 * 
+	 * Note - Reason for returning void for consistency with other rides action method 
+	 * as well as it will give flexibility to modify this function without worrying about updating both side references
+	 * e.g ride should be updated with ride request and vice versa
 	 * 
 	 */
-	public RidesInfo cancelAcceptedRideRequest(int rideId, int rideRequestId){
+	public void cancelAcceptedRideRequest(int rideId, int rideRequestId, boolean cancelRideRequest){
 		logger.debug("Cancelling Accepted Ride Request - ride Id/Ride Request Id:"+rideId+","+rideRequestId);
 		RidesInfo ridesInfo = new RidesInfo();
 		Ride ride = rideDO.getAllData(rideId);
@@ -505,6 +521,10 @@ public class RideAction {
 					ride.setSeatStatus(RideSeatStatus.Available);
 					//Change ride request status to Unfulfilled
 					rideRequest.setStatus(RideRequestStatus.Unfulfilled);
+					//Note - This is only applicable if we are planning to return update ride and ride request from this function
+					//but for the time being we have changed the return type to void and we will think if we need to return any value at all later
+					//so for now lets have below statements as it is as there is no harm
+					
 					//VERY IMP - This will ensure ride request is also removed from the ride, so that we are able to get updated ride post updation of ride and ride request
 					//If you don't do this then you will get ride with same accepted ride requests which you wanted to remove
 					//So in nutsehll, within a transaction if you want to return the data then ensure all sides data is updated 
@@ -516,6 +536,16 @@ public class RideAction {
 					ride.getCancelledRideRequests().add(rideRequest);
 					//Reason for doing this so that we get the updated cancelled ride within this transaction itself
 					rideRequest.getCancelledRides().add(ride);
+					
+					//Note - This will take care of cancelling ride request as well in this function itself, 
+					//otherwise we are having issue in returning updated ride request before committing the transaction
+					//and since we are trying to do cancellation of ride request in Ride RequestDO this may become challenge
+					//so cleaner approach is to do all in one go
+					
+					if (cancelRideRequest) {
+						rideRequest.setStatus(RideRequestStatus.Cancelled);
+					}
+					
 					//This will update ride and ride request in db
 					rideRequestDO.update(rideRequest);
 					rideDO.update(ride); 
@@ -533,7 +563,6 @@ public class RideAction {
 			throw new NotAcceptableException("Ride request can't be cancelled as currently this ride is not mapped to the ride request."
 					+ "Ride id:"+rideId+",Ride Request id:"+rideRequestId);
 		}
-		return ridesInfo;
 	}
 
 	private void resetRideRequestFieldsRelatedToMatchedRide(RideRequest rideRequest) {
@@ -561,8 +590,12 @@ public class RideAction {
 	 * - Cancel all the accepted ride request
 	 * - Update the ride status as cancelled
 	 * 
+	 * Note - Reason for returning void for consistency with other rides action method 
+	 * as well as it will give flexibility to modify this function without worrying about updating both side references
+	 * e.g ride should be updated with ride request and vice versa
+	 * 
 	 */
-	public Ride cancelRide(int rideId){
+	public void cancelRide(int rideId){
 		logger.debug("Cancelling Ride:"+rideId);
 		Ride ride = rideDO.getAllData(rideId);
 		RideStatus rideStatus = ride.getStatus();
@@ -570,7 +603,8 @@ public class RideAction {
 		if (!rideStatus.equals(RideStatus.Finished)){
 			Collection<RideRequest> acceptedRideRequests = ride.getAcceptedRideRequests();
 			for (RideRequest rideRequest : acceptedRideRequests) {
-				cancelAcceptedRideRequest(rideId, rideRequest.getId());
+				//Note - Reason for passing the cancelRideRequest as false, as we don't want ride request to be cancelled as well
+				cancelAcceptedRideRequest(rideId, rideRequest.getId(), false);
 				//This will take care of re-matching effected ride requests
 				//IMP - I am not doing this inside canceAcceptedRideRequest as that function is called by even cancelRideRequest
 				//and if i do auto match there then for cancel ride request case, first it will cancel the ride request and then do 
@@ -583,7 +617,6 @@ public class RideAction {
 		} else {
 			throw new NotAcceptableException("Ride can't be cancelled as its not in valid state. Current ride status:"+rideStatus);
 		}
-		return ride;
 	}
 }
 

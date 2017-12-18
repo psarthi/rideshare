@@ -13,17 +13,12 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
-import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
-import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
-import com.digitusrevolution.rideshare.model.ride.dto.FullRidesInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferResult;
 import com.digitusrevolution.rideshare.ride.business.RideOfferBusinessService;
-import com.digitusrevolution.rideshare.ride.business.RideSystemBusinessService;
 import com.digitusrevolution.rideshare.ride.domain.service.RideDomainService;
 
 @Path("/rides")
@@ -88,7 +83,10 @@ public class RideOfferBusinessResource {
 	@Path("/start/{rideId}")
 	public Response startRide(@PathParam("rideId") int rideId){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		FullRide ride = rideOfferBusinessService.startRide(rideId);
+		rideOfferBusinessService.startRide(rideId);
+		//This will ensure that we are getting fully updated data once transaction is committed
+		RideDomainService rideDomainService = new RideDomainService();
+		FullRide ride = JsonObjectMapper.getMapper().convertValue(rideDomainService.get(rideId, true), FullRide.class);
 		return Response.ok(ride).build();				
 	}
 	
@@ -101,7 +99,10 @@ public class RideOfferBusinessResource {
 	@Path("/end/{rideId}")
 	public Response endRide(@PathParam("rideId") int rideId){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		FullRide ride = rideOfferBusinessService.endRide(rideId);
+		rideOfferBusinessService.endRide(rideId);
+		//This will ensure that we are getting fully updated data once transaction is committed
+		RideDomainService rideDomainService = new RideDomainService();
+		FullRide ride = JsonObjectMapper.getMapper().convertValue(rideDomainService.get(rideId, true), FullRide.class);
 		return Response.ok(ride).build();				
 	}
 
@@ -114,7 +115,10 @@ public class RideOfferBusinessResource {
 	@Path("/cancel/{rideId}")
 	public Response cancelRide(@PathParam("rideId") int rideId){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		FullRide ride = rideOfferBusinessService.cancelRide(rideId);
+		rideOfferBusinessService.cancelRide(rideId);
+		//This will ensure that we are getting fully updated data once transaction is committed
+		RideDomainService rideDomainService = new RideDomainService();
+		FullRide ride = JsonObjectMapper.getMapper().convertValue(rideDomainService.get(rideId, true), FullRide.class);
 		return Response.ok(ride).build();				
 	}
 
@@ -128,7 +132,10 @@ public class RideOfferBusinessResource {
 	@Path("{rideId}/cancelpassenger/{rideRequestId}")
 	public Response cancelPassenger(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		FullRide ride = rideOfferBusinessService.cancelPassenger(rideId, rideRequestId);
+		rideOfferBusinessService.cancelPassenger(rideId, rideRequestId);
+		//This will ensure that we are getting fully updated data once transaction is committed
+		RideDomainService rideDomainService = new RideDomainService();
+		FullRide ride = JsonObjectMapper.getMapper().convertValue(rideDomainService.get(rideId, true), FullRide.class);
 		return Response.ok(ride).build();				
 	}
 
@@ -142,7 +149,10 @@ public class RideOfferBusinessResource {
 	@Path("/{rideId}/pickup/{rideRequestId}")
 	public Response pickupPassenger(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		FullRide ride = rideOfferBusinessService.pickupPassenger(rideId, rideRequestId);
+		rideOfferBusinessService.pickupPassenger(rideId, rideRequestId);
+		//This will ensure that we are getting fully updated data once transaction is committed
+		RideDomainService rideDomainService = new RideDomainService();
+		FullRide ride = JsonObjectMapper.getMapper().convertValue(rideDomainService.get(rideId, true), FullRide.class);
 		return Response.ok(ride).build();				
 	}
 	
@@ -156,7 +166,10 @@ public class RideOfferBusinessResource {
 	@Path("/{rideId}/drop/{rideRequestId}")
 	public Response dropPassenger(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		FullRide ride = rideOfferBusinessService.dropPassenger(rideId, rideRequestId);
+		rideOfferBusinessService.dropPassenger(rideId, rideRequestId);
+		//This will ensure that we are getting fully updated data once transaction is committed
+		RideDomainService rideDomainService = new RideDomainService();
+		FullRide ride = JsonObjectMapper.getMapper().convertValue(rideDomainService.get(rideId, true), FullRide.class);
 		return Response.ok(ride).build();				
 	}
 }

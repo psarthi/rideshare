@@ -14,6 +14,8 @@ import org.hibernate.criterion.Restrictions;
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
@@ -53,6 +55,7 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 		RideRequestEntity rideRequestEntity = (RideRequestEntity) criteria.add(Restrictions.eq("passenger", passenger))
 		.add(Restrictions.ge("pickupTime", currentTime))
 		.add(Restrictions.or(Restrictions.ne("status", RideRequestStatus.Cancelled)))
+		.add(Restrictions.ne("passengerStatus", PassengerStatus.Dropped))
 		.addOrder(Order.asc("pickupTime"))
 		.setMaxResults(1).uniqueResult();
 		
