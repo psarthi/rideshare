@@ -8,7 +8,6 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.user.domain.FriendRequest;
-import com.digitusrevolution.rideshare.model.user.domain.Preference;
 import com.digitusrevolution.rideshare.model.user.domain.UserFeedback;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 
@@ -16,6 +15,8 @@ public class FullUser extends BasicUser {
 	
 	private Collection<Group> groups = new HashSet<Group>();
 	private Collection<BasicUser> friends = new HashSet<BasicUser>();
+	//Don't change this to FullRide or FullRideRequest as it will unnecessarily cause load on the system 
+	//which is not required as if we need details Ride Request or Ride, then we should call Ride Server and not User Service
 	private Collection<BasicRide> ridesOffered = new HashSet<BasicRide>();
 	private Collection<BasicRide> ridesTaken = new HashSet<BasicRide>();
 	private Collection<BasicRideRequest> rideRequests = new HashSet<BasicRideRequest>();

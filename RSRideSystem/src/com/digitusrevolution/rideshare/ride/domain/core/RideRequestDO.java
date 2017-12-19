@@ -981,6 +981,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		List<RideRequest> rideRequests = new LinkedList<>();
 		for (RideRequestEntity rideRequestEntity : rideRequestEntities) {
 			setRideRequestEntity(rideRequestEntity);
+			//Don't fetch child objects be it from mySQL or MongoDB as it will become very resource intensive job
 			rideRequests.add(rideRequest);
 		}
 		logger.debug("Ride Request List Size:"+rideRequests.size());

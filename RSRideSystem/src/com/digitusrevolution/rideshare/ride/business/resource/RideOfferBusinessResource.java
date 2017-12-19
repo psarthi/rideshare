@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
+import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferResult;
@@ -46,8 +47,8 @@ public class RideOfferBusinessResource {
 	@Path("/user/{id}")
 	public Response getRides(@PathParam("id") int id, @QueryParam("page") int page){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		List<FullRide> rides = rideOfferBusinessService.getRides(id, page);
-		GenericEntity<List<FullRide>> entity = new GenericEntity<List<FullRide>>(rides) {};
+		List<BasicRide> rides = rideOfferBusinessService.getRides(id, page);
+		GenericEntity<List<BasicRide>> entity = new GenericEntity<List<BasicRide>>(rides) {};
 		return Response.ok(entity).build();
 	}
 	

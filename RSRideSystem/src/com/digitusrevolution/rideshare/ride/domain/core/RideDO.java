@@ -406,6 +406,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		List<Ride> rides = new LinkedList<>();
 		for (RideEntity rideEntity : rideEntities) {
 			setRideEntity(rideEntity);
+			//Don't fetch child objects be it from mySQL or MongoDB as it will become very resource intensive job
 			rides.add(ride);
 		}
 		return rides;

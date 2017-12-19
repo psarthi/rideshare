@@ -141,7 +141,7 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		UserEntity userEntity = rideEntity.getDriver();
 		//Don't fetch child of user as it will get into recursive loop as driver has ride and ride has driver
 		ride.setDriver(userMapper.getDomainModel(userEntity, false));
-				
+						
 		if (fetchChild){
 			ride = getDomainModelChild(ride, rideEntity);
 		}
@@ -157,13 +157,15 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		//so that would call ride mapper entity/model and it will get into recursive loop 
 		RidePassengerMapper ridePassengerMapper = new RidePassengerMapper();
 		if (ride.getRidePassengers()!=null)  ride.setRidePassengers(ridePassengerMapper.getDomainModels(ride.getRidePassengers(), rideEntity.getRidePassengers(), false));
-				
+		
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
+		//Don't move this into entity/model function otherwise we will get into recursive loop
 		//Intentionally we are getting child of ride requests, so that we can get bill details as well from Ride
 		//however we need to ensure that from Ride Request we don't fetch child of Ride otherwise it will get into recursive loop
 		Collection<RideRequest> acceptedRideRequests = rideRequestMapper.getDomainModels(ride.getAcceptedRideRequests(), 
 				rideEntity.getAcceptedRideRequests(), true);
 		ride.setAcceptedRideRequests(acceptedRideRequests);
+				
 
 		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop
 		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 

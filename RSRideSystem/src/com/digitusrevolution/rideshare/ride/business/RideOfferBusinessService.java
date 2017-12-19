@@ -113,10 +113,10 @@ public class RideOfferBusinessService {
 		return rideOfferResult;
 	}
 
-	public List<FullRide> getRides(int driverId, int page){
+	public List<BasicRide> getRides(int driverId, int page){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		List<FullRide> fullRides = new ArrayList<>();
+		List<BasicRide> basicRides = new ArrayList<>();
 		try {
 			transaction = session.beginTransaction();
 	
@@ -130,7 +130,7 @@ public class RideOfferBusinessService {
 			List<Ride> subRides = rides.subList(page*itemsCount, (page+1)*itemsCount);
 			
 			for (Ride ride: subRides) {
-				fullRides.add(JsonObjectMapper.getMapper().convertValue(ride, FullRide.class));
+				basicRides.add(JsonObjectMapper.getMapper().convertValue(ride, BasicRide.class));
 			}
 			
 			transaction.commit();
@@ -147,7 +147,7 @@ public class RideOfferBusinessService {
 				session.close();				
 			}
 		}
-		return fullRides;
+		return basicRides;
 	}
 
 	public FullRide getRide(int rideId){

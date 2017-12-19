@@ -12,10 +12,11 @@ public class FullRide extends BasicRide{
 	private Route route;
 	private boolean recur;
 	private RecurringDetail recurringDetail;
-
-	private Collection<BasicRideRequest> acceptedRideRequests = new HashSet<BasicRideRequest>();
-	private Collection<BasicRideRequest> rejectedRideRequests = new HashSet<BasicRideRequest>();
-	private Collection<BasicRideRequest> cancelledRideRequests = new HashSet<BasicRideRequest>();
+	
+	private Collection<BasicRidePassenger> ridePassengers = new HashSet<BasicRidePassenger>();
+	private Collection<FullRideRequest> acceptedRideRequests = new HashSet<FullRideRequest>();
+	private Collection<FullRideRequest> rejectedRideRequests = new HashSet<FullRideRequest>();
+	private Collection<FullRideRequest> cancelledRideRequests = new HashSet<FullRideRequest>();
 	
 
 	public Route getRoute() {
@@ -36,22 +37,28 @@ public class FullRide extends BasicRide{
 	public void setRecurringDetail(RecurringDetail recurringDetail) {
 		this.recurringDetail = recurringDetail;
 	}
-	public Collection<BasicRideRequest> getAcceptedRideRequests() {
+	public Collection<BasicRidePassenger> getRidePassengers() {
+		return ridePassengers;
+	}
+	public void setRidePassengers(Collection<BasicRidePassenger> ridePassengers) {
+		this.ridePassengers = ridePassengers;
+	}
+	public Collection<FullRideRequest> getAcceptedRideRequests() {
 		return acceptedRideRequests;
 	}
-	public void setAcceptedRideRequests(Collection<BasicRideRequest> acceptedRideRequests) {
+	public void setAcceptedRideRequests(Collection<FullRideRequest> acceptedRideRequests) {
 		this.acceptedRideRequests = acceptedRideRequests;
 	}
-	public Collection<BasicRideRequest> getRejectedRideRequests() {
+	public Collection<FullRideRequest> getRejectedRideRequests() {
 		return rejectedRideRequests;
 	}
-	public void setRejectedRideRequests(Collection<BasicRideRequest> rejectedRideRequests) {
+	public void setRejectedRideRequests(Collection<FullRideRequest> rejectedRideRequests) {
 		this.rejectedRideRequests = rejectedRideRequests;
 	}
-	public Collection<BasicRideRequest> getCancelledRideRequests() {
+	public Collection<FullRideRequest> getCancelledRideRequests() {
 		return cancelledRideRequests;
 	}
-	public void setCancelledRideRequests(Collection<BasicRideRequest> cancelledRideRequests) {
+	public void setCancelledRideRequests(Collection<FullRideRequest> cancelledRideRequests) {
 		this.cancelledRideRequests = cancelledRideRequests;
 	}
 }

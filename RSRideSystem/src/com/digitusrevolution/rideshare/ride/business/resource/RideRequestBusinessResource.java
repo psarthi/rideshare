@@ -52,8 +52,8 @@ public class RideRequestBusinessResource {
 	@Path("/user/{id}")
 	public Response getRideRequests(@PathParam("id") int id, @QueryParam("page") int page){
 		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
-		List<FullRideRequest> rideRequests = rideRequestBusinessService.getRideRequests(id, page);
-		GenericEntity<List<FullRideRequest>> entity = new GenericEntity<List<FullRideRequest>>(rideRequests) {};
+		List<BasicRideRequest> rideRequests = rideRequestBusinessService.getRideRequests(id, page);
+		GenericEntity<List<BasicRideRequest>> entity = new GenericEntity<List<BasicRideRequest>>(rideRequests) {};
 		return Response.ok(entity).build();
 	}
 	
