@@ -3,8 +3,11 @@ package com.digitusrevolution.rideshare.ride.data;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
@@ -13,14 +16,17 @@ import org.hibernate.criterion.Restrictions;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
 public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 	
+	private static final Logger logger = LogManager.getLogger(RideRequestDAO.class.getName());
 	private static final Class<RideRequestEntity> entityClass = RideRequestEntity.class;
 
 	public RideRequestDAO() {
@@ -32,7 +38,7 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 	 * e.g. user rating, preference, trust category etc.
 	 * 
 	 */
-	public Set<RideRequestEntity> getValidRideRequests(Set<Integer> rideRequestIds, int availableSeats){
+	public Set<RideRequestEntity> getValidRideRequests(Set<Integer> rideRequestIds, int availableSeats, RideMode createdRideMode){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
@@ -41,6 +47,21 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 		Set<RideRequestEntity> rideRequestEntities = new HashSet<>(criteria.add(Restrictions.in("id", rideRequestIds))
 				.add(Restrictions.eq("status", RideRequestStatus.Unfulfilled))
 				.add(Restrictions.le("seatRequired", availableSeats)).list());
+		
+		//This will ensure we only get Paid Rides for paid Ride Request
+		//For Free ride request, this is not required as Free and Paid both is fine
+		//Use itereator to remove else you will get ConcurrentModification Exception
+		if (createdRideMode.equals(RideMode.Paid)) {
+			Iterator<RideRequestEntity> iterator = rideRequestEntities.iterator(); 
+			while(iterator.hasNext()) {
+				RideRequestEntity entity = iterator.next();
+				if (!entity.getRideMode().equals(createdRideMode)) {
+					iterator.remove();
+					logger.debug("Removing ride request as its a free ride request and requirement is Paid: Ride Request Id:"+entity.getId());
+				}
+			}
+		} 
+
 		return rideRequestEntities;		
 	}
 	

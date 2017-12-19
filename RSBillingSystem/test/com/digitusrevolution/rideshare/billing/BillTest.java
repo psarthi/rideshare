@@ -11,7 +11,6 @@ public class BillTest {
 		billingService.approveBill(1);
 		BillInfo billInfo = new BillInfo();
 		billInfo.setBillNumber(1);
-		billInfo.setAccountType(AccountType.Virtual);
 		billingService.makePayment(billInfo);
 	}
 

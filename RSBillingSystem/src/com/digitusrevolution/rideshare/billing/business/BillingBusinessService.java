@@ -64,6 +64,7 @@ public class BillingBusinessService {
 		}
 	}
 
+	//We are using BillInfo from future perspective so that we can add more fields if required
 	public void makePayment(BillInfo billInfo){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -71,7 +72,7 @@ public class BillingBusinessService {
 			transaction = session.beginTransaction();
 
 			BillDO billDO = new BillDO();	
-			billDO.makePayment(billInfo.getBillNumber(), billInfo.getAccountType());
+			billDO.makePayment(billInfo.getBillNumber());
 			
 			transaction.commit();
 		} catch (RuntimeException e) {

@@ -12,6 +12,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
+import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
@@ -168,8 +169,12 @@ public class RESTClientUtil {
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
 		URI uri = uriBuilder.build();
 		Response response = restClientUtil.get(uri);
-		Account virtualAccount = response.readEntity(Account.class);
-		return virtualAccount;
+		if (response.getStatus() == Status.ACCEPTED.getStatusCode()) {
+			Account virtualAccount = response.readEntity(Account.class);
+			return virtualAccount;
+		} else {
+			return null;
+		}
 	}
 	
 	public static FullRide getCurrentRide(int driverId){
@@ -198,7 +203,32 @@ public class RESTClientUtil {
 		} 
 		FullRideRequest rideRequest= response.readEntity(FullRideRequest.class);
 		return rideRequest;
-	}	
+	}
+	
+	public static boolean makePayment(BillInfo billInfo){
+		RESTClientImpl<BillInfo> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("BILL_PAYMENT_URL");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build();
+		Response response = restClientUtil.post(uri, billInfo);
+		if (response.getStatus() == Status.ACCEPTED.getStatusCode()) {
+			return true;
+		} 
+		return false;
+	}
+	
+	public static Account addMoneyToWallet(int accountNumber, float amount){
+		RESTClientImpl<Account> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("ADD_MONEY_TO_WALLET");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Integer.toString(accountNumber), Float.toString(amount));
+		Response response = restClientUtil.get(uri);
+		if (response.getStatus() == Status.ACCEPTED.getStatusCode()) {
+			Account account= response.readEntity(Account.class);
+			return account;
+		} 
+		return null;
+	}
 }
 
 

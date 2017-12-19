@@ -46,6 +46,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
@@ -662,7 +663,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			}
 			int availableSeats = ride.getSeatOffered() - seatOccupied;
 			//Getting valid ride request Ids based on all business criteria
-			Set<Integer> validRideRequestIds = getValidRideRequests(rideRequestsMap.keySet(), availableSeats);
+			Set<Integer> validRideRequestIds = getValidRideRequests(rideRequestsMap.keySet(), availableSeats, ride.getRideMode());
 			//Removing all the invalid ride request Ids
 			rideRequestsMap.keySet().retainAll(validRideRequestIds);
 			logger.debug("Phase 0 - Valid Ride Request Ids based on all business criteria of Ride Id["+ride.getId()+"]:"+rideRequestsMap.keySet());
@@ -804,8 +805,8 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * e.g. user rating, preference, trust category etc.
 	 * 
 	 */
-	private Set<Integer> getValidRideRequests(Set<Integer> rideRequestIds, int availableSeats){		
-		Set<RideRequestEntity> validRideRequestEntities = rideRequestDAO.getValidRideRequests(rideRequestIds, availableSeats);
+	private Set<Integer> getValidRideRequests(Set<Integer> rideRequestIds, int availableSeats, RideMode createdRideMode){		
+		Set<RideRequestEntity> validRideRequestEntities = rideRequestDAO.getValidRideRequests(rideRequestIds, availableSeats, createdRideMode);
 		Set<Integer> validRideRequestIds = new HashSet<>();
 		for (RideRequestEntity rideRequestEntity : validRideRequestEntities) {
 			validRideRequestIds.add(rideRequestEntity.getId());

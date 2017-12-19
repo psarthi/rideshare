@@ -154,6 +154,11 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 		}
 	}
 	
+	public float getBalance(int accountNumber) {
+		account = get(accountNumber);
+		return account.getBalance();
+	}
+	
 	public void redeemFromWallet(int virtualAccountNumber, int redemptionAccountNumber, float amount) {
 		//TODO Connect with payment gateway and on successful transaction, debit money from its wallet which is virtual account
 		boolean transferSuccess=true;

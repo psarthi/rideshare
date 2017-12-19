@@ -205,6 +205,10 @@ public class UserDO implements DomainObjectPKInteger<User>{
 			user.setPreference(getDefaultPreference());
 			//This will create virtual account
 			Account account = RESTClientUtil.createVirtualAccount();
+			//This will take care of exception thrown by the Billing system if any
+			if (account==null) {
+				throw new WebApplicationException("Unable to create Virtual account for the user email:"+user.getEmail());
+			}
 			//This will associate the same virtual account to the user
 			user.getAccounts().add(account);
 			id = create(user);			

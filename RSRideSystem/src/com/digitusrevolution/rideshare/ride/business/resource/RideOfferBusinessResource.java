@@ -166,9 +166,14 @@ public class RideOfferBusinessResource {
 	 */
 	@GET
 	@Path("/{rideId}/drop/{rideRequestId}")
-	public Response dropPassenger(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId, @QueryParam("ridemode") RideMode rideMode){
+	public Response dropPassenger(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId, 
+			@QueryParam("ridemode") RideMode rideMode, @QueryParam("paymentcode") String paymentCode){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		rideOfferBusinessService.dropPassenger(rideId, rideRequestId, rideMode);
+		rideOfferBusinessService.dropPassenger(rideId, rideRequestId, rideMode, paymentCode);
+		//Imp - We don't have to worry about payment success or failure as in failure case, we will provide option to pay to passenger 
+		//Another important point, payment can only be done if its approved by passenger so this has to be done post the drop transaction
+		//and also this would avoid issue with transactional rollbacks
+		rideOfferBusinessService.makePayment(rideRequestId);
 		//This will ensure that we are getting fully updated data once transaction is committed
 		RideDomainService rideDomainService = new RideDomainService();
 		FullRide ride = JsonObjectMapper.getMapper().convertValue(rideDomainService.get(rideId, true), FullRide.class);

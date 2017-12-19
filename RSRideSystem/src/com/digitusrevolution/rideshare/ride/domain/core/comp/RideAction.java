@@ -22,6 +22,7 @@ import com.digitusrevolution.rideshare.common.util.RESTClientImpl;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.domain.core.BillStatus;
+import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
@@ -88,7 +89,7 @@ public class RideAction {
 		for (RideRequest acceptedRideRequest : ride.getAcceptedRideRequests()) {
 			seatOccupied += acceptedRideRequest.getSeatRequired();
 		}
-		
+
 		//Check if ride request is unfulfilled
 		//Reason for re-checking status criteria as from the time of search to responding to it, 
 		//there may be someone else who may have accepted the ride request already and status may have changed
@@ -102,7 +103,7 @@ public class RideAction {
 				//Its important to re-check seats criteria as in between it may happen that number of seats which was initially free at the time of search,  
 				//partial seats may have been occupied.
 				if (rideRequest.getSeatRequired() <= (ride.getSeatOffered() - seatOccupied)){
-					
+
 					//Set accepted ride in ride request
 					//Note - By adding the ride request in the getAcceptedRideRequests collection, it will not update the ride id in the ride request table
 					//as ride is acceptedRideRequests relationship is owned by ride request entity and not ride (@OneToMany(mappedBy="acceptedRide"))
@@ -136,7 +137,7 @@ public class RideAction {
 					ridePassenger.setRide(ride);
 					rideRequest.setPassengerStatus(PassengerStatus.Confirmed);
 					ride.getRidePassengers().add(ridePassenger);
-					
+
 					//Updating the ride status in case all seats are filled up
 					if (rideRequest.getSeatRequired() == (ride.getSeatOffered() - seatOccupied)) {
 						ride.setStatus(RideStatus.Fulfilled);
@@ -146,14 +147,14 @@ public class RideAction {
 					//Seat status may or may not change depending on total seats occupied vs offered 
 					RideSeatStatus newRideSeatStatus = getRideSeatStatusPostAcceptance(rideRequest.getSeatRequired(), ride);
 					ride.setSeatStatus(newRideSeatStatus);
-					
+
 					//VERY Imp. - We are generating bill directly from here instead of going to Billing system so that we can do all this in one transaction
 					//If we go to Billing system, then it has to be done post commit which will force to have another transaction 
 					//and we need to do too many things to rollback manually
 					float discountPercentage = 0;
 					if (ride.getRideMode().equals(RideMode.Free)) discountPercentage = 100;
 					Bill bill = generateBill(ride, rideRequest, discountPercentage);
-					
+
 					if (rideRequest.getBill()!=null) {
 						//IMP - This will update the bill instead of regeneration
 						//Instead of deletion and maintaining the transaction rollback issue, its easy to update
@@ -161,7 +162,7 @@ public class RideAction {
 						bill.setNumber(rideRequest.getBill().getNumber());
 					} 
 					rideRequest.setBill(bill);
-					
+
 					//This will act as payment confirmation code for debiting money from passenger account
 					rideRequest.setConfirmationCode(AuthService.getInstance().getVerificationCode());
 
@@ -184,7 +185,7 @@ public class RideAction {
 			throw new RideRequestUnavailableException("Ride Request is not available anymore with id:"+rideRequestId);
 		}			
 	}
-	
+
 	/*
 	 * Purpose - Generate bill for specific ride request
 	 * 
@@ -198,7 +199,7 @@ public class RideAction {
 	 * 
 	 */
 	public Bill generateBill(Ride ride, RideRequest rideRequest, float discountPercentage){
-		
+
 		User passenger = rideRequest.getPassenger();
 		User driver = ride.getDriver();
 		float price = getFare(ride.getVehicle().getVehicleSubCategory(), driver);
@@ -221,7 +222,7 @@ public class RideAction {
 		bill.setStatus(BillStatus.Pending);
 		return bill;
 	}
-	
+
 	/*
 	 * Purpose - Get fare rate per meter basis (Note - Its not per Km as all data in the system is in meters)
 	 * 
@@ -239,7 +240,7 @@ public class RideAction {
 		}
 		throw new NotFoundException("Fuel type is not found. Fuel type is:"+fuelType);
 	}
-	
+
 
 	/*
 	 * Purpose - This will check the ride seat status post the acceptance of new ride request
@@ -371,7 +372,7 @@ public class RideAction {
 	 * as updated ride request would not come into effect until we commit the transaction
 	 * 
 	 */
-	public void dropPassenger(int rideId, int rideRequestId, RideMode rideMode){
+	public void dropPassenger(int rideId, int rideRequestId, RideMode rideMode, String paymentCode){
 		logger.debug("Drop Passenger for Ride Id/Ride RequestId:"+rideId+","+rideRequestId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
@@ -387,16 +388,32 @@ public class RideAction {
 				passengerNotFound = false;
 				//Check if passenger states is picked up
 				if (rideRequest.getPassengerStatus().equals(PassengerStatus.Picked)){
-					rideRequest.setPassengerStatus(PassengerStatus.Dropped);
-					
+
 					//This will take care in case of change of ride mode at the time of dropping
 					if (rideMode.equals(RideMode.Free)) {
 						rideRequest.getBill().setDiscountPercentage(100);
 						rideRequest.getBill().setAmount(0);
+						//Payment not required here as its a free ride, so calls to billing system to makePayment, 
+						//only we need to updated the BillStatus without any transaction
+						rideRequest.getBill().setStatus(BillStatus.Paid);
+						logger.debug("Its a Free Ride, so no payment is required for Ride Request Id:"+rideRequestId);
+					} 
+					//This is scenario for Paid ride
+					else {
+						if(rideRequest.getConfirmationCode().equals(paymentCode)){
+							//Not doing payment here to avoid any transactional failures in between, 
+							//instead we will do payment post successful drop in separate transaction
+							rideRequest.getBill().setStatus(BillStatus.Approved);
+							logger.debug("Its a Paid Ride, and payment is approved for Ride Request Id:"+rideRequestId);
+						} else {
+							throw new NotAcceptableException("Payment code is invalid for the ride request"+rideRequest.getId());
+						}
 					}
 					
+					rideRequest.setPassengerStatus(PassengerStatus.Dropped);
 					//Update the status in the db
-					rideRequestDO.update(rideRequest);
+					rideRequestDO.update(rideRequest);												
+
 				}else {
 					throw new NotAcceptableException("Passenger is not in valid state. Passenger current status:"+rideRequest.getPassengerStatus());					
 				}
@@ -467,7 +484,7 @@ public class RideAction {
 					cancelAcceptedRideRequest(rideId, rideRequest.getId(), false);
 				}
 			}
-		
+
 			//This is the scenario when some/all passenger has not been dropped
 			if (passengerOnBoard){
 				//Drop all the onboarded passenger who has not been dropped
@@ -553,7 +570,7 @@ public class RideAction {
 					//Note - This is only applicable if we are planning to return update ride and ride request from this function
 					//but for the time being we have changed the return type to void and we will think if we need to return any value at all later
 					//so for now lets have below statements as it is as there is no harm
-					
+
 					//VERY IMP - This will ensure ride request is also removed from the ride, so that we are able to get updated ride post updation of ride and ride request
 					//If you don't do this then you will get ride with same accepted ride requests which you wanted to remove
 					//So in nutsehll, within a transaction if you want to return the data then ensure all sides data is updated 
@@ -565,16 +582,19 @@ public class RideAction {
 					ride.getCancelledRideRequests().add(rideRequest);
 					//Reason for doing this so that we get the updated cancelled ride within this transaction itself
 					rideRequest.getCancelledRides().add(ride);
-					
+
+					//This will change the status of Bill to Cancelled
+					rideRequest.getBill().setStatus(BillStatus.Cancelled);
+
 					//Note - This will take care of cancelling ride request as well in this function itself, 
 					//otherwise we are having issue in returning updated ride request before committing the transaction
 					//and since we are trying to do cancellation of ride request in Ride RequestDO this may become challenge
 					//so cleaner approach is to do all in one go
-					
+
 					if (cancelRideRequest) {
 						rideRequest.setStatus(RideRequestStatus.Cancelled);
 					}
-					
+
 					//This will update ride and ride request in db
 					rideRequestDO.update(rideRequest);
 					rideDO.update(ride); 

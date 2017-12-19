@@ -11,8 +11,11 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
+import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
@@ -20,6 +23,7 @@ import com.digitusrevolution.rideshare.model.ride.dto.RideOfferResult;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
+import com.digitusrevolution.rideshare.ride.domain.service.RideRequestDomainService;
 
 public class RideOfferBusinessService {
 	
@@ -284,14 +288,14 @@ public class RideOfferBusinessService {
 		}
 	}
 	
-	public void dropPassenger(int rideId, int rideRequestId, RideMode rideMode){
+	public void dropPassenger(int rideId, int rideRequestId, RideMode rideMode, String paymentCode){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();
 
 			RideDO rideDO = new RideDO();
-			rideDO.dropPassenger(rideId, rideRequestId, rideMode);
+			rideDO.dropPassenger(rideId, rideRequestId, rideMode, paymentCode);
 
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -363,6 +367,19 @@ public class RideOfferBusinessService {
 		}
 	}
 
+	public boolean makePayment(int rideRequestId) {
+		
+		RideRequestDomainService rideRequestDomainService = new RideRequestDomainService();
+		RideRequest rideRequest = rideRequestDomainService.get(rideRequestId, true);
+		BillInfo billInfo = new BillInfo();
+		billInfo.setBillNumber(rideRequest.getBill().getNumber());
+		if (rideRequest.getRideMode().equals(RideMode.Paid)) {
+			return RESTClientUtil.makePayment(billInfo);	
+		} 
+		//This will be the case when its a free ride request and no payment is required
+		return true;
+	}
+	
 }
 	
 	

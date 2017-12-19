@@ -137,7 +137,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	 * Purpose - Make payment to driver and company from Passenger account
 	 * 
 	 */
-	public void makePayment(int billNumber, AccountType accountType){
+	public void makePayment(int billNumber){
 		bill = getAllData(billNumber);
 		if (bill.getStatus().equals(BillStatus.Approved)){
 			float amount = bill.getAmount();
@@ -145,7 +145,9 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 			float serviceCharge = amount * serviceChargePercentage / 100;
 			float driverAmount = amount - serviceCharge;
 			//Get AccountDO for specific account type
-			AccountDO accountDO = getAccountDO(accountType);
+			//This is more from future usage if there are multiple types of account associated with user, 
+			//so we can use it for the current usage, we always need to withdraw money from Virtual account
+			AccountDO accountDO = getAccountDO(AccountType.Virtual);
 			String remark = "Bill:"+billNumber+",Ride:"+bill.getRide().getId()+",RideRequest:"+bill.getRideRequest().getId();
 			//This will ensure that we don't do any transaction if the bill amount is ZERO which would be applicable for lets say Free Rides or 100% discounted rides
 			if (amount!=0) {
