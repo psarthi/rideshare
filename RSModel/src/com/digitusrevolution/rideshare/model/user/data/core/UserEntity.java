@@ -93,9 +93,8 @@ public class UserEntity {
 
 	@OneToOne(cascade=CascadeType.ALL)
 	private PreferenceEntity preference;
-	@ElementCollection
-	@JoinTable(name="user_feedback",joinColumns=@JoinColumn(name="user_id"))
-	private Collection<UserFeedbackEntity> feedbacks = new LinkedList<UserFeedbackEntity>();
+	@OneToMany(mappedBy="forUser", cascade=CascadeType.ALL)
+	private Collection<UserFeedbackEntity> feedbacks = new HashSet<UserFeedbackEntity>();
 	@ElementCollection
 	@JoinTable(name="user_friend_request",joinColumns=@JoinColumn(name="user_id"))
 	private Collection<FriendRequestEntity> friendRequests = new HashSet<FriendRequestEntity>();

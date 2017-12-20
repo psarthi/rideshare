@@ -10,6 +10,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.billing.business.BillingBusinessService;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 
@@ -53,8 +54,8 @@ public class BillingBusinessResource {
 	@Path("/pay")
 	public Response makePayment(BillInfo billInfo){
 		BillingBusinessService billingBusinessService = new BillingBusinessService();
-		billingBusinessService.makePayment(billInfo);
-		return Response.ok().build();
+		Bill bill = billingBusinessService.makePayment(billInfo);
+		return Response.ok(bill).build();
 	}
 
 }

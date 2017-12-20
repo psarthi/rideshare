@@ -48,6 +48,7 @@ import com.digitusrevolution.rideshare.model.user.domain.FriendRequest;
 import com.digitusrevolution.rideshare.model.user.domain.Preference;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
+import com.digitusrevolution.rideshare.model.user.domain.UserFeedback;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
@@ -211,7 +212,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 			}
 			//This will associate the same virtual account to the user
 			user.getAccounts().add(account);
-			id = create(user);			
+			id = create(user);		
 		}
 		return id;
 	}
@@ -432,6 +433,30 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		//Since token generation is based on the signIn type, so we have excluded this step from common getUserSignInResult function
 		userSignInResult.setToken(token);
 		return userSignInResult;		
+	}
+	
+	public void addUserFeedback(int userId, User givenByUser, Ride ride, RideRequest rideRequest, float rating) {
+		user = getAllData(userId);
+		UserFeedback feedback = new UserFeedback();
+		feedback.setForUser(user);
+		feedback.setGivenByUser(givenByUser);
+		feedback.setRating(rating);
+		feedback.setRide(ride);
+		feedback.setRideRequest(rideRequest);
+		//Since this is a set, it will replace old value of user feedback if it exist, 
+		//which will take care of our feedback updates for the same ride and user
+		user.getFeedbacks().add(feedback);
+		user.setProfileRating(getProfileRating(user));
+		update(user);
+	}
+
+	private float getProfileRating(User user) {
+		float userRating = 0;
+		for (UserFeedback userFeedback: user.getFeedbacks()) {
+			userRating += userFeedback.getRating();	
+		}
+		float profileRating = userRating / user.getFeedbacks().size();
+		return profileRating;
 	}
 	
 }

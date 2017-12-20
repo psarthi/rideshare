@@ -2,8 +2,10 @@ package com.digitusrevolution.rideshare.model.ride.data.core;
 
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -26,10 +29,12 @@ import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
+import com.digitusrevolution.rideshare.model.user.data.UserFeedbackEntity;
 import com.digitusrevolution.rideshare.model.user.data.VehicleCategoryEntity;
 import com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
+import com.digitusrevolution.rideshare.model.user.domain.UserFeedback;
 
 @Entity
 @Table(name="rideRequest")
@@ -93,6 +98,8 @@ public class RideRequestEntity {
 	@OneToOne (mappedBy="rideRequest", cascade=CascadeType.ALL)
 	private BillEntity bill;
 	private String confirmationCode;
+	@OneToMany (mappedBy="rideRequest")
+	private Collection<UserFeedbackEntity> feedbacks = new HashSet<UserFeedbackEntity>();
 	
 	public RideMode getRideMode() {
 		return rideMode;
@@ -310,5 +317,12 @@ public class RideRequestEntity {
 	public void setConfirmationCode(String confirmationCode) {
 		this.confirmationCode = confirmationCode;
 	}
+	public Collection<UserFeedbackEntity> getFeedbacks() {
+		return feedbacks;
+	}
+	public void setFeedbacks(Collection<UserFeedbackEntity> feedbacks) {
+		this.feedbacks = feedbacks;
+	}
+
 
 }

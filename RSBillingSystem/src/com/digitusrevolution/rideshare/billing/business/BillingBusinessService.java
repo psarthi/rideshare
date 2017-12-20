@@ -7,6 +7,7 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.billing.domain.core.BillDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 
@@ -65,14 +66,15 @@ public class BillingBusinessService {
 	}
 
 	//We are using BillInfo from future perspective so that we can add more fields if required
-	public void makePayment(BillInfo billInfo){
+	public Bill makePayment(BillInfo billInfo){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
+		Bill bill = null;
 		try {
 			transaction = session.beginTransaction();
 
 			BillDO billDO = new BillDO();	
-			billDO.makePayment(billInfo.getBillNumber());
+			bill = billDO.makePayment(billInfo.getBillNumber());
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -88,6 +90,7 @@ public class BillingBusinessService {
 				session.close();				
 			}
 		}
+		return bill;
 	}
 }
 

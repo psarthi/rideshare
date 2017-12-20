@@ -14,6 +14,8 @@ import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
+import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
 import com.digitusrevolution.rideshare.model.user.domain.Preference;
@@ -22,6 +24,7 @@ import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.FullUser;
 import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.SignInInfo;
+import com.digitusrevolution.rideshare.model.user.dto.UserFeedbackInfo;
 import com.digitusrevolution.rideshare.model.user.dto.UserSignInResult;
 import com.digitusrevolution.rideshare.model.user.dto.UserStatus;
 import com.digitusrevolution.rideshare.model.user.dto.UserRegistration;
@@ -418,6 +421,41 @@ public class UserBusinessService {
 		return fullUser;
 	}
 	
+	public void addUserFeedback(int userId, UserFeedbackInfo userFeedbackInfo) {
+		
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		try {
+			transaction = session.beginTransaction();
+	
+			UserDO userDO = new UserDO();
+			BasicRide basicRide = userFeedbackInfo.getRide();
+			Ride ride = JsonObjectMapper.getMapper().convertValue(basicRide, Ride.class);
+			
+			BasicRideRequest basicRideRequest = userFeedbackInfo.getRideRequest();
+			RideRequest rideRequest = JsonObjectMapper.getMapper().convertValue(basicRideRequest, RideRequest.class);
+
+			
+			BasicUser basicUser = userFeedbackInfo.getGivenByUser();
+			User givenByUser = JsonObjectMapper.getMapper().convertValue(basicUser, User.class);
+			
+			userDO.addUserFeedback(userId, givenByUser, ride, rideRequest, userFeedbackInfo.getRating());
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+	}
 }
 
 

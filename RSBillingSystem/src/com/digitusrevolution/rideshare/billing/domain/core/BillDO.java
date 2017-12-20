@@ -137,7 +137,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	 * Purpose - Make payment to driver and company from Passenger account
 	 * 
 	 */
-	public void makePayment(int billNumber){
+	public Bill makePayment(int billNumber){
 		bill = getAllData(billNumber);
 		if (bill.getStatus().equals(BillStatus.Approved)){
 			float amount = bill.getAmount();
@@ -160,6 +160,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 		} else {
 			throw new NotAcceptableException("Can't make payment as bill is either not Approved or Paid. Bill current status:"+bill.getStatus());
 		}
+		return bill;
 	}
 	
 	/*

@@ -5,6 +5,7 @@ import java.util.Collection;
 import com.digitusrevolution.rideshare.common.inf.Mapper;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.BillMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.TrustNetworkMapper;
+import com.digitusrevolution.rideshare.common.mapper.user.UserFeedbackMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.VehicleCategoryMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.VehicleSubCategoryMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
@@ -117,6 +118,12 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		//Don't fetch Child as Ride Request has Rides and vice versa
 		rideRequestEntity.setCancelledRides(rideMapper.getEntities(rideRequestEntity.getCancelledRides(), 
 				rideRequest.getCancelledRides(), false));
+		
+		UserFeedbackMapper userFeedbackMapper = new UserFeedbackMapper();
+		//Don't fetch child as User has feedback and feedback has user
+		rideRequestEntity.setFeedbacks(userFeedbackMapper.getEntities(rideRequestEntity.getFeedbacks(), 
+				rideRequest.getFeedbacks(), false));
+
 
 		return rideRequestEntity;
 	}
@@ -204,6 +211,11 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		//Don't fetch Child as Ride Request has Rides and vice versa
 		rideRequest.setCancelledRides(rideMapper.getDomainModels(rideRequest.getCancelledRides(), 
 				rideRequestEntity.getCancelledRides(), false));
+		
+		UserFeedbackMapper userFeedbackMapper = new UserFeedbackMapper();
+		//Don't fetch child as User has feedback and feedback has user
+		rideRequest.setFeedbacks(userFeedbackMapper.getDomainModels(rideRequest.getFeedbacks(), 
+				rideRequestEntity.getFeedbacks(), false));
 
 		return rideRequest;
 	}

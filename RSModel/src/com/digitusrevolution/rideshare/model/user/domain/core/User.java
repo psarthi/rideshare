@@ -51,7 +51,7 @@ public class User {
 	private Collection<Bill> bills = new HashSet<Bill>();
 
 	private Preference preference;
-	private Collection<UserFeedback> feedbacks = new LinkedList<UserFeedback>();
+	private Collection<UserFeedback> feedbacks = new HashSet<UserFeedback>();
 	private Collection<FriendRequest> friendRequests = new HashSet<FriendRequest>();
 	private float profileRating;
 	

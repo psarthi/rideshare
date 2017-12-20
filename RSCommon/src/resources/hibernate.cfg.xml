@@ -54,6 +54,7 @@
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.FormEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.OTPEntity" />
+		<mapping class="com.digitusrevolution.rideshare.model.user.data.UserFeedbackEntity" />
 		
 	
 		<!-- Service Provider System -->

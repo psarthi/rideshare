@@ -12,10 +12,14 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.common.ResponseMessage;
+import com.digitusrevolution.rideshare.model.common.ResponseMessage.Code;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
 import com.digitusrevolution.rideshare.model.user.domain.Preference;
@@ -25,6 +29,7 @@ import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.FullUser;
 import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.SignInInfo;
+import com.digitusrevolution.rideshare.model.user.dto.UserFeedbackInfo;
 import com.digitusrevolution.rideshare.model.user.dto.UserSignInResult;
 import com.digitusrevolution.rideshare.model.user.dto.UserStatus;
 import com.digitusrevolution.rideshare.model.user.dto.UserRegistration;
@@ -262,4 +267,29 @@ public class UserBusinessResource {
 		FullUser user = userBusinessService.get(id, Boolean.valueOf(fetchChild));
 		return Response.ok(user).build();
 	}
+	
+	@POST
+	@Path("/{userId}/feedback")
+	public Response addUserFeedback(@PathParam("userId") int userId, UserFeedbackInfo userFeedbackInfo) {
+		UserBusinessService userBusinessService = new UserBusinessService();
+		userBusinessService.addUserFeedback(userId, userFeedbackInfo);
+		ResponseMessage responseMessage = new ResponseMessage();
+		responseMessage.setResult(Code.OK.toString());
+		return Response.ok(responseMessage).build();
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
