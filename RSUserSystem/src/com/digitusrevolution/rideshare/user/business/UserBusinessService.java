@@ -25,6 +25,7 @@ import com.digitusrevolution.rideshare.model.user.dto.FullUser;
 import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.SignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.UserFeedbackInfo;
+import com.digitusrevolution.rideshare.model.user.dto.UserProfile;
 import com.digitusrevolution.rideshare.model.user.dto.UserSignInResult;
 import com.digitusrevolution.rideshare.model.user.dto.UserStatus;
 import com.digitusrevolution.rideshare.model.user.dto.UserRegistration;
@@ -455,6 +456,34 @@ public class UserBusinessService {
 				session.close();				
 			}
 		}
+	}
+	
+	public UserProfile getUserProfile(int userId, BasicUser signInUser) {
+		
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		UserProfile userProfile = null;
+		try {
+			transaction = session.beginTransaction();
+	
+			UserDO userDO = new UserDO();
+			userProfile = userDO.getUserProfile(userId, signInUser);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return userProfile;
 	}
 }
 

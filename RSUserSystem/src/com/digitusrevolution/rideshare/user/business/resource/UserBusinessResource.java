@@ -30,6 +30,7 @@ import com.digitusrevolution.rideshare.model.user.dto.FullUser;
 import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.SignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.UserFeedbackInfo;
+import com.digitusrevolution.rideshare.model.user.dto.UserProfile;
 import com.digitusrevolution.rideshare.model.user.dto.UserSignInResult;
 import com.digitusrevolution.rideshare.model.user.dto.UserStatus;
 import com.digitusrevolution.rideshare.model.user.dto.UserRegistration;
@@ -276,6 +277,14 @@ public class UserBusinessResource {
 		ResponseMessage responseMessage = new ResponseMessage();
 		responseMessage.setResult(Code.OK.toString());
 		return Response.ok(responseMessage).build();
+	}
+	
+	@POST
+	@Path("/{userId}/profile")
+	public Response getUserProfile(@PathParam("userId") int userId, BasicUser signInUser) {
+		UserBusinessService userBusinessService = new UserBusinessService();
+		UserProfile userProfile = userBusinessService.getUserProfile(userId, signInUser);
+		return Response.ok(userProfile).build();
 	}
 }
 

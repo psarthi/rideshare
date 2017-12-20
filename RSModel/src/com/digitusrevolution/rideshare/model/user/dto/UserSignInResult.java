@@ -6,7 +6,7 @@ import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
 public class UserSignInResult {
 
 	private String token;
-	private BasicUser userProfile;
+	private BasicUser user;
 	private FullRide currentRide;
 	private FullRideRequest currentRideRequest;
 	
@@ -16,11 +16,11 @@ public class UserSignInResult {
 	public void setToken(String token) {
 		this.token = token;
 	}
-	public BasicUser getUserProfile() {
-		return userProfile;
+	public BasicUser getUser() {
+		return user;
 	}
-	public void setUserProfile(BasicUser userProfile) {
-		this.userProfile = userProfile;
+	public void setUser(BasicUser user) {
+		this.user = user;
 	}
 	public FullRide getCurrentRide() {
 		return currentRide;

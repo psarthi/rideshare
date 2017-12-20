@@ -37,6 +37,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.TrustCategoryName;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
@@ -55,6 +56,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.FullUser;
+import com.digitusrevolution.rideshare.model.user.dto.UserProfile;
 import com.digitusrevolution.rideshare.model.user.dto.UserSignInResult;
 import com.digitusrevolution.rideshare.user.data.UserDAO;
 import com.digitusrevolution.rideshare.user.domain.CountryDO;
@@ -414,7 +416,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	private UserSignInResult getUserSignInResult(User user) {
 		UserSignInResult userSignInResult = new UserSignInResult();
 		//Note - You don't have to get just basic profile of user as getUserByEmail has already got basic user profile.
-		userSignInResult.setUserProfile(JsonObjectMapper.getMapper().convertValue(user, BasicUser.class));
+		userSignInResult.setUser(JsonObjectMapper.getMapper().convertValue(user, BasicUser.class));
 		userSignInResult.setCurrentRide(RESTClientUtil.getCurrentRide(user.getId()));
 		userSignInResult.setCurrentRideRequest(RESTClientUtil.getCurrentRideRequest(user.getId()));
 		return userSignInResult;
@@ -457,6 +459,26 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		}
 		float profileRating = userRating / user.getFeedbacks().size();
 		return profileRating;
+	}
+	
+	public UserProfile getUserProfile(int userId, BasicUser signInUser) {
+		
+		user = getAllData(userId);
+		UserProfile userProfile = new UserProfile();
+		userProfile.setUser(JsonObjectMapper.getMapper().convertValue(user, BasicUser.class));
+		
+		int completedRidesCount = 0;
+		for (Ride ride: user.getRidesOffered()) {
+			if (ride.getStatus().equals(RideStatus.Finished)) {
+				completedRidesCount++;
+			}
+		}
+		userProfile.setOfferedRides(completedRidesCount);
+		userProfile.setRidesTaken(user.getRidesTaken().size());
+		
+		//TODO implement mutual friends and common groups later
+		
+		return userProfile;
 	}
 	
 }
