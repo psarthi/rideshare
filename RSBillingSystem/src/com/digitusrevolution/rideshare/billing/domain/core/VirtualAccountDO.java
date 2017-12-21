@@ -19,6 +19,8 @@ import com.digitusrevolution.rideshare.common.inf.GenericDAO;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.AccountMapper;
 import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Purpose;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Remark;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
 import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionType;
 
@@ -105,7 +107,7 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 	}
 	
 	@Override
-	public void debit(int accountNumber, float amount, String remark){
+	public void debit(int accountNumber, float amount, Remark remark){
 		//Its important to get child, else old transaction would get deleted as transactions is part of child
 		//And if you just get account without old transactions, then it will consider only new transaction as part of this account
 		//Since account owns the relationship of transaction, so you need to get all child before updating
@@ -127,7 +129,7 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 	}
 	
 	@Override
-	public void credit(int accountNumber, float amount, String remark){
+	public void credit(int accountNumber, float amount, Remark remark){
 		//Its important to get child, else old transaction would get deleted as transactions is part of child
 		//And if you just get account without old transactions, then it will consider only new transaction as part of this account
 		//Since account owns the relationship of transaction, so you need to get all child before updating
@@ -148,7 +150,9 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 		//TODO Connect with Payment Gateway and on successful transaction, credit to its wallet which is virtual account
 		boolean paymentSuccess=true;
 		if (paymentSuccess) {
-			credit(accountNumber, amount, "Top Up");	
+			Remark remark = new Remark();
+			remark.setPurpose(Purpose.TopUp);
+			credit(accountNumber, amount, remark);	
 		} else {
 			throw new WebApplicationException("Recharge Failed");
 		}
@@ -163,7 +167,9 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 		//TODO Connect with payment gateway and on successful transaction, debit money from its wallet which is virtual account
 		boolean transferSuccess=true;
 		if (transferSuccess) {
-			debit(virtualAccountNumber, amount, "Redemption");
+			Remark remark = new Remark();
+			remark.setPurpose(Purpose.Redeem);
+			debit(virtualAccountNumber, amount, remark);
 		} else {
 			throw new WebApplicationException("Redemption Failed");
 		}

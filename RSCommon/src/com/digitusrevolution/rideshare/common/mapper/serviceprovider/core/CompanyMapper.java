@@ -16,15 +16,21 @@ public class CompanyMapper implements Mapper<Company, CompanyEntity>{
 		companyEntity.setId(company.getId());
 		companyEntity.setName(company.getName());
 		companyEntity.setServiceChargePercentage(company.getServiceChargePercentage());
-		AccountMapper accountMapper = new AccountMapper();
-		companyEntity.setAccounts(accountMapper.getEntities(companyEntity.getAccounts(), company.getAccounts(), fetchChild));
 		CurrencyMapper currencyMapper = new CurrencyMapper();
 		companyEntity.setCurrency(currencyMapper.getEntity(company.getCurrency(), fetchChild));
+		
+		if (fetchChild){
+			companyEntity = getEntityChild(company, companyEntity);
+		}
+
 		return companyEntity;
 	}
 
 	@Override
 	public CompanyEntity getEntityChild(Company company, CompanyEntity companyEntity) {
+		//Don't fetch Child of Account as it has transaction which in turn has bill and bill has copany so it will get into recursive loop
+		AccountMapper accountMapper = new AccountMapper();
+		companyEntity.setAccounts(accountMapper.getEntities(companyEntity.getAccounts(), company.getAccounts(), false));
 		return companyEntity;
 	}
 
@@ -34,15 +40,19 @@ public class CompanyMapper implements Mapper<Company, CompanyEntity>{
 		company.setId(companyEntity.getId());
 		company.setName(companyEntity.getName());
 		company.setServiceChargePercentage(companyEntity.getServiceChargePercentage());
-		AccountMapper accountMapper = new AccountMapper();
-		company.setAccounts(accountMapper.getDomainModels(company.getAccounts(), companyEntity.getAccounts(), fetchChild));
 		CurrencyMapper currencyMapper = new CurrencyMapper();
 		company.setCurrency(currencyMapper.getDomainModel(companyEntity.getCurrency(), fetchChild));
+		if (fetchChild){
+			company = getDomainModelChild(company, companyEntity);
+		}
 		return company;
 	}
 
 	@Override
 	public Company getDomainModelChild(Company company, CompanyEntity companyEntity) {
+		//Don't fetch Child of Account as it has transaction which in turn has bill and bill has copany so it will get into recursive loop
+		AccountMapper accountMapper = new AccountMapper();
+		company.setAccounts(accountMapper.getDomainModels(company.getAccounts(), companyEntity.getAccounts(), false));
 		return company;
 	}
 

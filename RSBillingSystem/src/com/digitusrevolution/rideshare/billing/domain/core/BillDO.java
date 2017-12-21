@@ -19,6 +19,8 @@ import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.domain.core.BillStatus;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Purpose;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Remark;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
@@ -148,7 +150,15 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 			//This is more from future usage if there are multiple types of account associated with user, 
 			//so we can use it for the current usage, we always need to withdraw money from Virtual account
 			AccountDO accountDO = getAccountDO(AccountType.Virtual);
-			String remark = "Bill:"+billNumber+",Ride:"+bill.getRide().getId()+",RideRequest:"+bill.getRideRequest().getId();
+			Remark remark = new Remark();
+			remark.setBillNumber(billNumber);
+			remark.setPaidBy(bill.getPassenger().getFirstName()+" "+bill.getPassenger().getLastName());
+			remark.setPaidTo(bill.getDriver().getFirstName()+ " "+ bill.getDriver().getLastName());
+			remark.setPurpose(Purpose.Ride);
+			remark.setRideId(bill.getRide().getId());
+			remark.setRideRequestId(bill.getRideRequest().getId());
+			String message = "Bill:"+billNumber+",Ride:"+bill.getRide().getId()+",RideRequest:"+bill.getRideRequest().getId();
+			remark.setMessage(message);
 			//This will ensure that we don't do any transaction if the bill amount is ZERO which would be applicable for lets say Free Rides or 100% discounted rides
 			if (amount!=0) {
 				accountDO.debit(bill.getPassenger().getAccount(AccountType.Virtual).getNumber(), amount, remark);

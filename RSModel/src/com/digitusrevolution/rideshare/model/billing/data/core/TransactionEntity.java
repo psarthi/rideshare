@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.model.billing.data.core;
 import java.time.ZonedDateTime;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -11,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.digitusrevolution.rideshare.model.billing.domain.core.Remark;
 import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionType;
 
 @Entity
@@ -24,7 +26,8 @@ public class TransactionEntity {
 	@Enumerated(EnumType.STRING)
 	private TransactionType type;
 	private float amount;
-	private String remark;
+	@Embedded
+	private RemarkEntity remark;
 	
 	public ZonedDateTime getDateTime() {
 		return dateTime;
@@ -43,12 +46,6 @@ public class TransactionEntity {
 	}
 	public void setAmount(float amount) {
 		this.amount = amount;
-	}
-	public String getRemark() {
-		return remark;
-	}
-	public void setRemark(String remark) {
-		this.remark = remark;
 	}
 	public int getId() {
 		return id;
@@ -104,5 +101,11 @@ public class TransactionEntity {
 		}
 		return true;
 	}
-
+	public RemarkEntity getRemark() {
+		return remark;
+	}
+	public void setRemark(RemarkEntity remark) {
+		this.remark = remark;
+	}
+	
 }

@@ -203,6 +203,7 @@ public class RideAction {
 		User passenger = rideRequest.getPassenger();
 		User driver = ride.getDriver();
 		float price = getFare(ride.getVehicle().getVehicleSubCategory(), driver);
+		float ratePerKm = price * 1000;
 		float distance = rideRequest.getTravelDistance();
 		float amount = price * distance;
 		//This is post applying discount
@@ -212,6 +213,7 @@ public class RideAction {
 		Bill bill = new Bill();
 		//Set Bill properties
 		bill.setAmount(amount);
+		bill.setRate(ratePerKm);
 		bill.setDiscountPercentage(discountPercentage);
 		bill.setServiceChargePercentage(serviceChargePercentage);
 		bill.setCompany(company);

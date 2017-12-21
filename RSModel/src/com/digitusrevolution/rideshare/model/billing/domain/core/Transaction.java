@@ -8,7 +8,7 @@ public class Transaction {
 	private ZonedDateTime dateTime;
 	private TransactionType type;
 	private float amount;
-	private String remark;
+	private Remark remark;
 	
 	public ZonedDateTime getDateTime() {
 		return dateTime;
@@ -28,10 +28,10 @@ public class Transaction {
 	public void setAmount(float amount) {
 		this.amount = amount;
 	}
-	public String getRemark() {
+	public Remark getRemark() {
 		return remark;
 	}
-	public void setRemark(String remark) {
+	public void setRemark(Remark remark) {
 		this.remark = remark;
 	}
 	public int getId() {

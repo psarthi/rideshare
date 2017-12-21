@@ -17,6 +17,7 @@ public class Bill {
 	private Ride ride;
 	//Reason for rideRequest field, so that we don't have to search ride request number later on if required
 	private RideRequest rideRequest;
+	private float rate;
 	private float amount;
 	//Reason for storing this value, as if the service charge changes in between, so old bill would not get affected
 	private float serviceChargePercentage;
@@ -122,6 +123,12 @@ public class Bill {
 	}
 	public void setDiscountPercentage(float discountPercentage) {
 		this.discountPercentage = discountPercentage;
+	}
+	public float getRate() {
+		return rate;
+	}
+	public void setRate(float rate) {
+		this.rate = rate;
 	}
 	
 }

@@ -15,7 +15,8 @@ public class TransactionMapper implements Mapper<Transaction, TransactionEntity>
 		transactionEntity.setDateTime(transaction.getDateTime());
 		transactionEntity.setAmount(transaction.getAmount());
 		transactionEntity.setType(transaction.getType());
-		transactionEntity.setRemark(transaction.getRemark());
+		RemarkMapper remarkMapper = new RemarkMapper();
+		transactionEntity.setRemark(remarkMapper.getEntity(transaction.getRemark(), fetchChild));
 		return transactionEntity;
 	}
 
@@ -31,7 +32,8 @@ public class TransactionMapper implements Mapper<Transaction, TransactionEntity>
 		transaction.setDateTime(transactionEntity.getDateTime());
 		transaction.setAmount(transactionEntity.getAmount());
 		transaction.setType(transactionEntity.getType());
-		transaction.setRemark(transactionEntity.getRemark());
+		RemarkMapper remarkMapper = new RemarkMapper();
+		transaction.setRemark(remarkMapper.getDomainModel(transactionEntity.getRemark(), fetchChild));
 		return transaction;
 	}
 

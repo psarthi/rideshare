@@ -41,7 +41,7 @@ public class AccountDataLoader {
 
 			VirtualAccountDO accountDO = new VirtualAccountDO();
 			for(int i=1;i<7;i++){
-				accountDO.credit(i, 1000, "Initial Credit");
+				//accountDO.credit(i, 1000, "Initial Credit");
 			}
 			
 			transaction.commit();

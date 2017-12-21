@@ -33,6 +33,7 @@ public class BillEntity {
 	private RideEntity ride;
 	@OneToOne
 	private RideRequestEntity rideRequest;
+	private float rate;
 	private float amount;
 	private float serviceChargePercentage;
 	private float discountPercentage;
@@ -139,6 +140,12 @@ public class BillEntity {
 	}
 	public void setDiscountPercentage(float discountPercentage) {
 		this.discountPercentage = discountPercentage;
+	}
+	public float getRate() {
+		return rate;
+	}
+	public void setRate(float rate) {
+		this.rate = rate;
 	}
 	
 }
