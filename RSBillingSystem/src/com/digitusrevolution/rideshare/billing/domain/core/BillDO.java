@@ -163,7 +163,9 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 			if (amount!=0) {
 				accountDO.debit(bill.getPassenger().getAccount(AccountType.Virtual).getNumber(), amount, remark);
 				accountDO.credit(bill.getDriver().getAccount(AccountType.Virtual).getNumber(), driverAmount, remark);
-				accountDO.debit(bill.getCompany().getAccount(AccountType.Virtual).getNumber(), serviceCharge, remark);						
+				//This will ensure that paidTo field is updated for service charge
+				remark.setPaidTo(bill.getCompany().getName());
+				accountDO.credit(bill.getCompany().getAccount(AccountType.Virtual).getNumber(), serviceCharge, remark);						
 			}
 			bill.setStatus(BillStatus.Paid);
 			update(bill);
