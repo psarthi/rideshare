@@ -4,6 +4,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -407,13 +408,15 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		UserMapper userMapper = new UserMapper();
 		//We don't need child object of User entity, just the basic user entity is fine as it primarily needs only PK
 		UserEntity driverEntity = userMapper.getEntity(driver, false);
-		Set<RideEntity> rideEntities = rideDAO.getRides(driverEntity, startIndex, endIndex);
+		List<RideEntity> rideEntities = rideDAO.getRides(driverEntity, startIndex, endIndex);
 		List<Ride> rides = new LinkedList<>();
 		for (RideEntity rideEntity : rideEntities) {
 			setRideEntity(rideEntity);
 			//Don't fetch child objects be it from mySQL or MongoDB as it will become very resource intensive job
 			rides.add(ride);
 		}
+		//This will sort the element as per the comparator written in Ride class
+		Collections.sort(rides);
 		return rides;
 	}
 

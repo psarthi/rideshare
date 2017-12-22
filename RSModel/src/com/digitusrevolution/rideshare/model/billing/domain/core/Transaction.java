@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.model.billing.domain.core;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 
 public class Transaction implements Comparable<Transaction>{
@@ -91,7 +92,9 @@ public class Transaction implements Comparable<Transaction>{
 	@Override
 	public int compareTo(Transaction transaction) {
 		//Negative number is desc order, positive is asc order
-		return transaction.getDateTime().getNano() - this.getDateTime().getNano();
+		//return transaction.getDateTime().getNano() - this.getDateTime().getNano();
+		//Unable to compare with date somehow so comparing based on Id which should be changed to datetime
+		return transaction.getId() - this.getId();
 	}
 
 }

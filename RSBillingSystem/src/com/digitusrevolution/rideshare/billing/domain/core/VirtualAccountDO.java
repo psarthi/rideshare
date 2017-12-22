@@ -188,13 +188,9 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 		int endIndex = (page+1)*itemsCount;
 		
 		account = getAllData(accountNumber);
-		List<Transaction> transactions = new ArrayList<>();
-		
-		for (Transaction transaction: account.getTransactions()) {
-			transactions.add(transaction);
-		}
-		
+		List<Transaction> transactions = new ArrayList<>(account.getTransactions());
 		Collections.sort(transactions);
+	
 		return transactions.subList(startIndex, endIndex);
 	}
 }

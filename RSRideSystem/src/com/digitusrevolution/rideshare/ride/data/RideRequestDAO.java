@@ -4,6 +4,9 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -86,16 +89,25 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 	/*
 	 * Purpose - Get sublist of ride request for a user based based on pickupTime
 	 */
-	public Set<RideRequestEntity> getRideRequests(UserEntity passenger, int startIndex, int endIndex){
+	public List<RideRequestEntity> getRideRequests(UserEntity passenger, int startIndex, int endIndex){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
 		//VERY IMP - Get the result in Set else you would get duplicate values
 		@SuppressWarnings("unchecked")
-		Set<RideRequestEntity> rideRequestEntities = new HashSet<> (criteria.add(Restrictions.eq("passenger", passenger))
+		//LinkedHashSet will maintain the order of insertion and we will get proper sublist, so don't user HashSet
+		Set<RideRequestEntity> rideRequestEntities = new LinkedHashSet<> (criteria.add(Restrictions.eq("passenger", passenger))
 				.addOrder(Order.desc("pickupTime"))
-				.list().subList(startIndex, endIndex));		
-		return rideRequestEntities;		
+				.list());
+		
+		logger.debug("Ride Request List Size:"+rideRequestEntities.size());		
+		List<RideRequestEntity> rideRequestEntitiesList = new LinkedList<>(rideRequestEntities);
+		//VERY IMP - Reason for not doing sublist directly there in list in criteria itself as it was having some weired behavior
+		//and it was not returning proper list count and it was varying intermittently
+		List<RideRequestEntity> rideRequestEntitiesSubList = rideRequestEntitiesList.subList(startIndex, endIndex);
+		logger.debug("Ride Request Sub List Size:"+rideRequestEntitiesSubList.size());
+		
+		return rideRequestEntitiesSubList;		
 	}
 
 	

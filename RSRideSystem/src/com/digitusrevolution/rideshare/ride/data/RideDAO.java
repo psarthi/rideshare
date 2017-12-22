@@ -4,6 +4,8 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -87,16 +89,25 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 	/*
 	 * Purpose - Get sublist of rides for a user based on startTime
 	 */
-	public Set<RideEntity> getRides(UserEntity driver, int startIndex, int endIndex){
+	public List<RideEntity> getRides(UserEntity driver, int startIndex, int endIndex){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
 		//VERY IMP - Get the result in Set else you would get duplicate values
 		@SuppressWarnings("unchecked")
-		Set<RideEntity> rideEntities = new HashSet<>(criteria.add(Restrictions.eq("driver", driver))
+		//LinkedHashSet will maintain the order of insertion and we will get proper sublist, so don't user HashSet
+		Set<RideEntity> rideEntities = new LinkedHashSet<>(criteria.add(Restrictions.eq("driver", driver))
 				.addOrder(Order.desc("startTime"))
-				.list().subList(startIndex, endIndex));		
+				.list());		
 
-		return rideEntities;	
+		logger.debug("Ride List Size:"+rideEntities.size());		
+		List<RideEntity> rideEntitiesList = new LinkedList<>(rideEntities);
+		//VERY IMP - Reason for not doing sublist directly there in list in criteria itself as it was having some weired behavior
+		//and it was not returning proper list count and it was varying intermittently
+		List<RideEntity> rideEntitiesSubList = rideEntitiesList.subList(startIndex, endIndex);
+		logger.debug("Ride Sub List Size:"+rideEntitiesSubList.size());
+
+		
+		return rideEntitiesSubList;	
 	}
 
 	
