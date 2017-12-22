@@ -120,7 +120,7 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 		ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
 		RideEntity rideEntity = (RideEntity) criteria.add(Restrictions.eq("driver", driver))
 		.add(Restrictions.or(Restrictions.ge("startTime", currentTime),Restrictions.ge("endTime", currentTime)))
-		.add(Restrictions.or(Restrictions.eq("status", RideStatus.Planned),Restrictions.eq("status", RideStatus.Started),Restrictions.eq("status", RideStatus.Fulfilled)))
+		.add(Restrictions.or(Restrictions.eq("status", RideStatus.Planned),Restrictions.eq("status", RideStatus.Started)))
 		.addOrder(Order.asc("startTime"))
 		.setMaxResults(1).uniqueResult();	 
 

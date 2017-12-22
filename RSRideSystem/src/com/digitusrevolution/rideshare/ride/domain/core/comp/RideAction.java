@@ -138,11 +138,6 @@ public class RideAction {
 					rideRequest.setPassengerStatus(PassengerStatus.Confirmed);
 					ride.getRidePassengers().add(ridePassenger);
 
-					//Updating the ride status in case all seats are filled up
-					if (rideRequest.getSeatRequired() == (ride.getSeatOffered() - seatOccupied)) {
-						ride.setStatus(RideStatus.Fulfilled);
-					}
-
 					//This will get the new status of seat post the acceptance of this ride request 
 					//Seat status may or may not change depending on total seats occupied vs offered 
 					RideSeatStatus newRideSeatStatus = getRideSeatStatusPostAcceptance(rideRequest.getSeatRequired(), ride);
@@ -305,7 +300,7 @@ public class RideAction {
 		//Get child else child properties would get deleted while updating, as Ride Passenger has cascade enabled
 		Ride ride = rideDO.getAllData(rideId);
 		RideStatus rideCurrentStatus = ride.getStatus();
-		if (rideCurrentStatus.equals(RideStatus.Planned) || rideCurrentStatus.equals(RideStatus.Fulfilled)){
+		if (rideCurrentStatus.equals(RideStatus.Planned)){
 			ride.setStatus(RideStatus.Started);
 			rideDO.update(ride);	
 		} else {
@@ -565,8 +560,6 @@ public class RideAction {
 					//Ride seat status would always become available as we are freeing up at least one seat in any case
 					//So even if its Unavailable before cancellation, this will make seat available
 					ride.setSeatStatus(RideSeatStatus.Available);
-					//This will make Ride Status as Planned again in case it was fulfilled earlier
-					ride.setStatus(RideStatus.Planned);
 					//Change ride request status to Unfulfilled
 					rideRequest.setStatus(RideRequestStatus.Unfulfilled);
 					//Note - This is only applicable if we are planning to return update ride and ride request from this function
