@@ -2,7 +2,7 @@ package com.digitusrevolution.rideshare.model.billing.domain.core;
 
 import java.time.ZonedDateTime;
 
-public class Transaction {
+public class Transaction implements Comparable<Transaction>{
 	
 	private int id;
 	private ZonedDateTime dateTime;
@@ -87,6 +87,11 @@ public class Transaction {
 			return false;
 		}
 		return true;
+	}
+	@Override
+	public int compareTo(Transaction transaction) {
+		//Negative number is desc order, positive is asc order
+		return transaction.getDateTime().getNano() - this.getDateTime().getNano();
 	}
 
 }

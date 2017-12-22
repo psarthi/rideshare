@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.billing.domain.core;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.management.openmbean.InvalidKeyException;
@@ -152,6 +153,9 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 		if (paymentSuccess) {
 			Remark remark = new Remark();
 			remark.setPurpose(Purpose.TopUp);
+			remark.setPaidBy("Self");
+			remark.setPaidTo("Self");
+			remark.setMessage(Purpose.TopUp.toString());
 			credit(accountNumber, amount, remark);	
 		} else {
 			throw new WebApplicationException("Recharge Failed");
@@ -173,6 +177,25 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 		} else {
 			throw new WebApplicationException("Redemption Failed");
 		}
+	}
+	
+	//This will get transaction sublist in ascending order
+	public List<Transaction> getTransactions(int accountNumber, int page){
+		
+		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
+		int itemsCount = 10;
+		int startIndex = page*itemsCount; 
+		int endIndex = (page+1)*itemsCount;
+		
+		account = getAllData(accountNumber);
+		List<Transaction> transactions = new ArrayList<>();
+		
+		for (Transaction transaction: account.getTransactions()) {
+			transactions.add(transaction);
+		}
+		
+		Collections.sort(transactions);
+		return transactions.subList(startIndex, endIndex);
 	}
 }
 

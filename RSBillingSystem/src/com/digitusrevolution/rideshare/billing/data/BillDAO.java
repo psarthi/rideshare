@@ -28,5 +28,5 @@ public class BillDAO extends GenericDAOImpl<BillEntity, Integer>{
 				.setProjection(Projections.property("status")).uniqueResult();
 		return status;
 	}
-
+	
 }

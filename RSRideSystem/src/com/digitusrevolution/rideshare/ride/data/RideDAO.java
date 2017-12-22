@@ -85,14 +85,16 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 	}
 	
 	/*
-	 * Purpose - Get all rides of a user
+	 * Purpose - Get sublist of rides for a user based on startTime
 	 */
-	public Set<RideEntity> getAllRides(UserEntity driver){
+	public Set<RideEntity> getRides(UserEntity driver, int startIndex, int endIndex){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
 		//VERY IMP - Get the result in Set else you would get duplicate values
 		@SuppressWarnings("unchecked")
-		Set<RideEntity> rideEntities = new HashSet<>(criteria.add(Restrictions.eq("driver", driver)).list());		
+		Set<RideEntity> rideEntities = new HashSet<>(criteria.add(Restrictions.eq("driver", driver))
+				.addOrder(Order.desc("startTime"))
+				.list().subList(startIndex, endIndex));		
 
 		return rideEntities;	
 	}

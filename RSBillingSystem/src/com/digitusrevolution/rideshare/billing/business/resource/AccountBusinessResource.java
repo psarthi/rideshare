@@ -1,16 +1,22 @@
 package com.digitusrevolution.rideshare.billing.business.resource;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.billing.business.AccountBusinessService;
 import com.digitusrevolution.rideshare.billing.domain.service.AccountDomainService;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
+import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 
 @Path("/accounts")
 @Produces(MediaType.APPLICATION_JSON)
@@ -31,4 +37,14 @@ public class AccountBusinessResource {
 		Account account = accountDomainService.get(accountNumber, true);
 		return Response.ok(account).build();
 	}
+	
+	@GET
+	@Path("/{accountNumber}/transactions")
+	public Response getRides(@PathParam("accountNumber") int accountNumber, @QueryParam("page") int page){
+		AccountBusinessService accountBusinessService = new AccountBusinessService();
+		List<Transaction> transactions = accountBusinessService.getTransactions(accountNumber, page);
+		GenericEntity<List<Transaction>> entity = new GenericEntity<List<Transaction>>(transactions) {};
+		return Response.ok(entity).build();
+	}
+
 }

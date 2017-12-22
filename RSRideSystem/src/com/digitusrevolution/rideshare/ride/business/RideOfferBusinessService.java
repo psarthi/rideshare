@@ -125,15 +125,9 @@ public class RideOfferBusinessService {
 			transaction = session.beginTransaction();
 	
 			RideDO rideDO = new RideDO();
-			List<Ride> rides = rideDO.getAllRides(driverId);
-			//This will sort in descending order
-			Collections.sort(rides);
-			
-			int itemsCount = 10;
-			//This will return the result from lets say 0 to 9, 10 to 19, 20 to 29 etc.
-			List<Ride> subRides = rides.subList(page*itemsCount, (page+1)*itemsCount);
-			
-			for (Ride ride: subRides) {
+			List<Ride> rides = rideDO.getRides(driverId,page);
+
+			for (Ride ride: rides) {
 				basicRides.add(JsonObjectMapper.getMapper().convertValue(ride, BasicRide.class));
 			}
 			

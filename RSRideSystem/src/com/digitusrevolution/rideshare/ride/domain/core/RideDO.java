@@ -397,12 +397,17 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		return null;
 	}
 	
-	public List<Ride> getAllRides(int driverId){
+	public List<Ride> getRides(int driverId, int page){
+		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
+		int itemsCount = 10;
+		int startIndex = page*itemsCount; 
+		int endIndex = (page+1)*itemsCount;
+		
 		User driver = RESTClientUtil.getUser(driverId);
 		UserMapper userMapper = new UserMapper();
 		//We don't need child object of User entity, just the basic user entity is fine as it primarily needs only PK
 		UserEntity driverEntity = userMapper.getEntity(driver, false);
-		Set<RideEntity> rideEntities = rideDAO.getAllRides(driverEntity);
+		Set<RideEntity> rideEntities = rideDAO.getRides(driverEntity, startIndex, endIndex);
 		List<Ride> rides = new LinkedList<>();
 		for (RideEntity rideEntity : rideEntities) {
 			setRideEntity(rideEntity);

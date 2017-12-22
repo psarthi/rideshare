@@ -118,17 +118,11 @@ public class RideRequestBusinessService {
 		List<BasicRideRequest> basicRideRequests = new ArrayList<>();
 		try {
 			transaction = session.beginTransaction();
-	
+			
 			RideRequestDO rideRequestDO = new RideRequestDO();
-			List<RideRequest> rideRequests = rideRequestDO.getAllRideRequests(passengerId);
-			//This will sort in descending order
-			Collections.sort(rideRequests);
-			
-			int itemsCount = 10;
-			//This will return the result from lets say 0 to 9, 10 to 19, 20 to 29 etc.
-			List<RideRequest> subRideRequests = rideRequests.subList(page*itemsCount, (page+1)*itemsCount);
-			
-			for (RideRequest rideRequest: subRideRequests) {
+			List<RideRequest> rideRequests = rideRequestDO.getRideRequests(passengerId, page);
+
+			for (RideRequest rideRequest: rideRequests) {
 				basicRideRequests.add(JsonObjectMapper.getMapper().convertValue(rideRequest, BasicRideRequest.class));
 			}
 			

@@ -239,6 +239,7 @@ public class Ride implements Comparable<Ride>{
 	}
 	@Override
 	public int compareTo(Ride ride) {
+		//Negative number is desc order, positive is asc order
 		//ascending order
 		//return this.id - ride.id;
 
