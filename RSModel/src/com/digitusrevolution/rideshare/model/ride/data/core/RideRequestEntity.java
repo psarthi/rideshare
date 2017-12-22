@@ -98,7 +98,7 @@ public class RideRequestEntity {
 	@OneToOne (mappedBy="rideRequest", cascade=CascadeType.ALL)
 	private BillEntity bill;
 	private String confirmationCode;
-	@OneToMany (mappedBy="rideRequest")
+	@OneToMany (mappedBy="rideRequest", cascade=CascadeType.PERSIST)
 	private Collection<UserFeedbackEntity> feedbacks = new HashSet<UserFeedbackEntity>();
 	
 	public RideMode getRideMode() {

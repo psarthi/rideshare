@@ -18,12 +18,14 @@ import com.digitusrevolution.rideshare.common.exception.RideRequestUnavailableEx
 import com.digitusrevolution.rideshare.common.exception.RideUnavailableException;
 import com.digitusrevolution.rideshare.common.util.GoogleUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
+import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.common.util.RESTClientImpl;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.domain.core.BillStatus;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
+import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
 import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
@@ -32,6 +34,8 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
+import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
+import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RidesInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleGeocode;
@@ -39,8 +43,11 @@ import com.digitusrevolution.rideshare.model.ride.dto.google.Result;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.user.domain.Fuel;
 import com.digitusrevolution.rideshare.model.user.domain.FuelType;
+import com.digitusrevolution.rideshare.model.user.domain.UserFeedback;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
+import com.digitusrevolution.rideshare.model.user.dto.UserFeedbackInfo;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RidePassengerDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
@@ -406,7 +413,7 @@ public class RideAction {
 							throw new NotAcceptableException("Payment code is invalid for the ride request"+rideRequest.getId());
 						}
 					}
-					
+
 					rideRequest.setPassengerStatus(PassengerStatus.Dropped);
 					//Update the status in the db
 					rideRequestDO.update(rideRequest);												
@@ -478,7 +485,7 @@ public class RideAction {
 					//We can also ask driver to cancel all ride request, but for convenience system would take care of it 
 					//as it doesn't change anything from driver end 
 					//Note - Reason for passing the cancelRideRequest as false, as we don't want ride request to be cancelled as well
-					cancelAcceptedRideRequest(rideId, rideRequest.getId(), false);
+					cancelAcceptedRideRequest(rideId, rideRequest.getId(), CancellationType.Ride);
 				}
 			}
 
@@ -532,7 +539,7 @@ public class RideAction {
 	 * e.g ride should be updated with ride request and vice versa
 	 * 
 	 */
-	public void cancelAcceptedRideRequest(int rideId, int rideRequestId, boolean cancelRideRequest){
+	public void cancelAcceptedRideRequest(int rideId, int rideRequestId, CancellationType cancellationType){
 		logger.debug("Cancelling Accepted Ride Request - ride Id/Ride Request Id:"+rideId+","+rideRequestId);
 		RidesInfo ridesInfo = new RidesInfo();
 		Ride ride = rideDO.getAllData(rideId);
@@ -586,10 +593,10 @@ public class RideAction {
 					//and since we are trying to do cancellation of ride request in Ride RequestDO this may become challenge
 					//so cleaner approach is to do all in one go
 
-					if (cancelRideRequest) {
+					if (cancellationType.equals(CancellationType.RideRequest)) {
 						rideRequest.setStatus(RideRequestStatus.Cancelled);
 					}
-
+					
 					//This will update ride and ride request in db
 					rideRequestDO.update(rideRequest);
 					rideDO.update(ride); 
@@ -648,7 +655,7 @@ public class RideAction {
 			Collection<RideRequest> acceptedRideRequests = ride.getAcceptedRideRequests();
 			for (RideRequest rideRequest : acceptedRideRequests) {
 				//Note - Reason for passing the cancelRideRequest as false, as we don't want ride request to be cancelled as well
-				cancelAcceptedRideRequest(rideId, rideRequest.getId(), false);
+				cancelAcceptedRideRequest(rideId, rideRequest.getId(), CancellationType.Ride);
 				//This will take care of re-matching effected ride requests
 				//IMP - I am not doing this inside canceAcceptedRideRequest as that function is called by even cancelRideRequest
 				//and if i do auto match there then for cancel ride request case, first it will cancel the ride request and then do 

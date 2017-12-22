@@ -14,6 +14,7 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
+import com.digitusrevolution.rideshare.model.common.ResponseMessage;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
@@ -25,6 +26,7 @@ import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
+import com.digitusrevolution.rideshare.model.user.dto.UserFeedbackInfo;
 
 /**
  * 
@@ -169,7 +171,7 @@ public class RESTClientUtil {
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
 		URI uri = uriBuilder.build();
 		Response response = restClientUtil.get(uri);
-		if (response.getStatus() == Status.ACCEPTED.getStatusCode()) {
+		if (response.getStatus() == Status.OK.getStatusCode()) {
 			Account virtualAccount = response.readEntity(Account.class);
 			return virtualAccount;
 		} else {
@@ -211,7 +213,7 @@ public class RESTClientUtil {
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
 		URI uri = uriBuilder.build();
 		Response response = restClientUtil.post(uri, billInfo);
-		if (response.getStatus() == Status.ACCEPTED.getStatusCode()) {
+		if (response.getStatus() == Status.OK.getStatusCode()) {
 			return true;
 		} 
 		return false;
@@ -223,11 +225,24 @@ public class RESTClientUtil {
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
 		URI uri = uriBuilder.build(Integer.toString(accountNumber), Float.toString(amount));
 		Response response = restClientUtil.get(uri);
-		if (response.getStatus() == Status.ACCEPTED.getStatusCode()) {
+		if (response.getStatus() == Status.OK.getStatusCode()) {
 			Account account= response.readEntity(Account.class);
 			return account;
 		} 
 		return null;
+	}
+	
+	public static boolean userFeedback(int userId, UserFeedbackInfo userFeedbackInfo){
+		RESTClientImpl<UserFeedbackInfo> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("POST_USER_FEEDBACK");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Integer.toString(userId));
+		
+		Response response = restClientUtil.post(uri, userFeedbackInfo);
+		if (response.getStatus() == Status.OK.getStatusCode()) {
+			return true;
+		} 
+		return false;
 	}
 }
 

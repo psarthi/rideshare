@@ -11,9 +11,14 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.user.domain.FuelType;
+import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
+import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.user.data.UserDAO;
 import com.digitusrevolution.rideshare.user.domain.OTPDO;
+import com.digitusrevolution.rideshare.user.domain.VehicleCategoryDO;
+import com.digitusrevolution.rideshare.user.domain.VehicleSubCategoryDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
 public class UserSystemTest {
@@ -54,9 +59,28 @@ public class UserSystemTest {
 	}	
 	
 	public void test(){
-		OTPDO otpdo = new OTPDO();
-		String otpNumber = otpdo.getOTP("+91 8123110015");
-		System.out.println("OTP Validation status:" + otpdo.validateOTP("+91 8123110015", otpNumber));
+	
+		VehicleCategory vehicleCategory = new VehicleCategory();
+		vehicleCategory.setName("All");
+		
+		VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();
+		int catId = vehicleCategoryDO.create(vehicleCategory);
+
+		
+		VehicleSubCategory vehicleSubCategory = new VehicleSubCategory();
+		vehicleSubCategory.setName("All");
+		vehicleSubCategory.setAirConditioner(true);
+		vehicleSubCategory.setFuelType(FuelType.Petrol);
+		vehicleSubCategory.setAverageMileage(12);
+		
+		VehicleSubCategoryDO vehicleSubCategoryDO = new VehicleSubCategoryDO();
+		int id = vehicleSubCategoryDO.create(vehicleSubCategory);
+		vehicleSubCategory = vehicleSubCategoryDO.get(id);
+		
+		vehicleCategory = vehicleCategoryDO.getAllData(catId);
+		
+		vehicleCategory.getSubCategories().add(vehicleSubCategory);
+		vehicleCategoryDO.update(vehicleCategory);
 		
 	}
 

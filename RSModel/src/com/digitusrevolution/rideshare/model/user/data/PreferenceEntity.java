@@ -37,8 +37,6 @@ public class PreferenceEntity {
 	private int luggageCapacityRequired;
 	
 	//Ride Preference
-	private int seatOffered;
-	private int luggageCapacityOffered;
 	@OneToOne
 	private VehicleEntity defaultVehicle;
 
@@ -99,18 +97,6 @@ public class PreferenceEntity {
 	}
 	public void setLuggageCapacityRequired(int luggageCapacityRequired) {
 		this.luggageCapacityRequired = luggageCapacityRequired;
-	}
-	public int getSeatOffered() {
-		return seatOffered;
-	}
-	public void setSeatOffered(int seatOffered) {
-		this.seatOffered = seatOffered;
-	}
-	public int getLuggageCapacityOffered() {
-		return luggageCapacityOffered;
-	}
-	public void setLuggageCapacityOffered(int luggageCapacityOffered) {
-		this.luggageCapacityOffered = luggageCapacityOffered;
 	}
 	public Sex getSexPreference() {
 		return sexPreference;

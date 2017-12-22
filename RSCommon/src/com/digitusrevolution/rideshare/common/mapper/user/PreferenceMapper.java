@@ -23,8 +23,6 @@ public class PreferenceMapper implements Mapper<Preference, PreferenceEntity> {
 		preferenceEntity.setDropPointVariation(preference.getDropPointVariation());
 		preferenceEntity.setSeatRequired(preference.getSeatRequired());
 		preferenceEntity.setLuggageCapacityRequired(preference.getLuggageCapacityRequired());
-		preferenceEntity.setSeatOffered(preference.getSeatOffered());
-		preferenceEntity.setLuggageCapacityOffered(preference.getLuggageCapacityOffered());
 		TrustCategoryMapper trustCategoryMapper = new TrustCategoryMapper();
 		preferenceEntity.setTrustCategory(trustCategoryMapper.getEntity(preference.getTrustCategory(), fetchChild));
 		preferenceEntity.setSexPreference(preference.getSexPreference());
@@ -53,8 +51,6 @@ public class PreferenceMapper implements Mapper<Preference, PreferenceEntity> {
 		preference.setDropPointVariation(preferenceEntity.getDropPointVariation());
 		preference.setSeatRequired(preferenceEntity.getSeatRequired());
 		preference.setLuggageCapacityRequired(preferenceEntity.getLuggageCapacityRequired());
-		preference.setSeatOffered(preferenceEntity.getSeatOffered());
-		preference.setLuggageCapacityOffered(preferenceEntity.getLuggageCapacityOffered());
 		TrustCategoryMapper trustCategoryMapper = new TrustCategoryMapper();
 		preference.setTrustCategory(trustCategoryMapper.getDomainModel(preferenceEntity.getTrustCategory(), fetchChild));
 		preference.setSexPreference(preferenceEntity.getSexPreference());

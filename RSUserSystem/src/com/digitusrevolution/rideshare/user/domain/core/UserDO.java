@@ -239,9 +239,6 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		preference.setSeatRequired(Integer.parseInt(PropertyReader.getInstance().getProperty("USER_DEFAULT_PREFS_SEAT_REQUIRED")));
 		preference.setLuggageCapacityRequired(Integer.parseInt(PropertyReader.getInstance().getProperty("USER_DEFAULT_PREFS_LUGGAGE_REQUIRED")));
 		
-		preference.setSeatOffered(Integer.parseInt(PropertyReader.getInstance().getProperty("USER_DEFAULT_PREFS_SEAT_OFFERED")));
-		preference.setLuggageCapacityOffered(Integer.parseInt(PropertyReader.getInstance().getProperty("USER_DEFAULT_PREFS_LUGGAGE_OFFERED")));
-		
 		preference.setMinProfileRating(Integer.parseInt(PropertyReader.getInstance().getProperty("USER_DEFAULT_PREFS_MIN_PROFILE_RATING")));
 		
 		TrustCategory trustCategory = new TrustCategory();

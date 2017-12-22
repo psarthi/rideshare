@@ -7,11 +7,17 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
+import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRidesInfo;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
+import com.digitusrevolution.rideshare.model.user.dto.UserFeedbackInfo;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
 
@@ -51,7 +57,25 @@ public class RideSystemBusinessService {
 		return fullRidesInfo;
 	}
 
+	public boolean giveUserFeedback(int rideId, int rideRequestId, float rating) {
+		RideDO rideDO = new RideDO();
+		Ride ride = rideDO.get(rideId);
+		RideRequestDO requestDO = new RideRequestDO();
+		RideRequest rideRequest = requestDO.get(rideRequestId);
+		User givenByUser = rideRequest.getPassenger();
 
+		UserFeedbackInfo feedbackInfo = new UserFeedbackInfo();
+		BasicRide basicRide = JsonObjectMapper.getMapper().convertValue(ride, BasicRide.class);
+		BasicRideRequest basicRideRequest = JsonObjectMapper.getMapper().convertValue(rideRequest, BasicRideRequest.class);
+		BasicUser basicUser = JsonObjectMapper.getMapper().convertValue(givenByUser, BasicUser.class);
+
+		feedbackInfo.setRide(basicRide);
+		feedbackInfo.setRideRequest(basicRideRequest);
+		feedbackInfo.setRating(rating);
+		feedbackInfo.setGivenByUser(basicUser);
+		boolean status = RESTClientUtil.userFeedback(ride.getDriver().getId(), feedbackInfo);
+		return status;
+	}
 
 
 }

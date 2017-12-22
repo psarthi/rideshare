@@ -41,6 +41,7 @@ import com.digitusrevolution.rideshare.common.util.external.LatLngBounds;
 import com.digitusrevolution.rideshare.common.util.external.RouteBoxer;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
@@ -944,7 +945,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			RideDO rideDO = new RideDO();
 			if (rideRequest.getPassengerStatus().equals(PassengerStatus.Confirmed)){
 				//This will cancel the ride request from confirmed ride as well as update the cancellation status in ride request
-				rideDO.cancelAcceptedRideRequest(rideId, rideRequestId, true);
+				rideDO.cancelAcceptedRideRequest(rideId, rideRequestId, CancellationType.RideRequest);
 				//This will just ensure that we do auto match for the Ride which has got affected because of this
 				autoMatchRideRequest(rideId);
 			} else {

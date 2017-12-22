@@ -29,6 +29,7 @@ import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePointProperty;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
@@ -624,9 +625,9 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		rideAction.endRide(rideId);
 	}
 
-	public void cancelAcceptedRideRequest(int rideId, int rideRequestId, boolean cancelRideRequest){
+	public void cancelAcceptedRideRequest(int rideId, int rideRequestId, CancellationType cancellationType){
 		RideAction rideAction = new RideAction(this);
-		rideAction.cancelAcceptedRideRequest(rideId, rideRequestId, cancelRideRequest);
+		rideAction.cancelAcceptedRideRequest(rideId, rideRequestId, cancellationType);
 	}
 
 	public void cancelRide(int rideId){
