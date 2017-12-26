@@ -55,11 +55,6 @@ public class UserDataLoader {
 			dataLoader.loadVehicleCategory();
 			dataLoader.loadVehicleSubCategory();
 			
-			dataLoader.loadUser();
-			dataLoader.loadVehicle();
-			dataLoader.addAccount();
-			
-			
 			transaction.commit();
 
 			/*
@@ -124,44 +119,6 @@ public class UserDataLoader {
 	
 	}
 	
-	public void loadUser(){
-		logger.entry();
-		UserDO userDO = new UserDO();
-		CityDO cityDO = new CityDO();
-		RoleDO roleDO = new RoleDO();
-		User user = new User();
-		City city = new City();
-		Role role = new Role();
-		role = roleDO.get(RoleName.Passenger.toString());
-		user.getRoles().add(role);
-
-	
-		for (int i=1; i<6; i++){
-	
-			user.setFirstName("firstName-"+i);
-			user.setLastName("lastName-"+i);
-			user.setEmail("email-"+i);
-			user.setMobileNumber("mobileNumber-"+i);
-			if ((i & 1)==0){
-				user.setSex(Sex.Male);				
-			}else {
-				user.setSex(Sex.Female);
-			}			
-			CountryDO countryDO = new CountryDO();
-			Country country = countryDO.get("India");
-			city = cityDO.get(1);
-			StateDO stateDO = new StateDO();
-			State state = stateDO.get(1);
-			user.setCity(city);
-			user.setState(state);
-			user.setCountry(country);
-			
-			userDO.create(user);
-
-		}
-		
-	}
-	
 	public void loadVehicleCategory(){
 		logger.entry();
 		VehicleCategory vehicleCategory = new VehicleCategory();
@@ -179,47 +136,34 @@ public class UserDataLoader {
 		vehicleSubCategory.setFuelType(FuelType.Petrol);
 		vehicleSubCategory.setAverageMileage(12);
 		
+		VehicleSubCategory vehicleSubCategory1 = new VehicleSubCategory();
+		vehicleSubCategory1.setName("All");
+		vehicleSubCategory1.setAirConditioner(true);
+		vehicleSubCategory1.setFuelType(FuelType.Petrol);
+		vehicleSubCategory1.setAverageMileage(12);
+
+		VehicleSubCategory vehicleSubCategory2 = new VehicleSubCategory();
+		vehicleSubCategory2.setName("Hatchback");
+		vehicleSubCategory2.setAirConditioner(true);
+		vehicleSubCategory2.setFuelType(FuelType.Petrol);
+		vehicleSubCategory2.setAverageMileage(12);
+		
 		VehicleSubCategoryDO vehicleSubCategoryDO = new VehicleSubCategoryDO();
-		vehicleSubCategoryDO.create(vehicleSubCategory);
-		vehicleSubCategory = vehicleSubCategoryDO.get(1);
+		int id = vehicleSubCategoryDO.create(vehicleSubCategory);
+		vehicleSubCategory = vehicleSubCategoryDO.get(id);
+		
+		id = vehicleSubCategoryDO.create(vehicleSubCategory1);
+		vehicleSubCategory1 = vehicleSubCategoryDO.get(id);
+		
+		id = vehicleSubCategoryDO.create(vehicleSubCategory2);
+		vehicleSubCategory2 = vehicleSubCategoryDO.get(id);
 		
 		VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();	
 		VehicleCategory vehicleCategory = vehicleCategoryDO.get(1);
 		
 		vehicleCategory.getSubCategories().add(vehicleSubCategory);
+		vehicleCategory.getSubCategories().add(vehicleSubCategory1);
+		vehicleCategory.getSubCategories().add(vehicleSubCategory2);
 		vehicleCategoryDO.update(vehicleCategory);
 	}
-
-		
-	public void loadVehicle(){
-		logger.entry(); 		
-		
-		VehicleCategoryDO vehicleCategoryDO = new VehicleCategoryDO();
-		VehicleCategory vehicleCategory = vehicleCategoryDO.get(1);		
-		
-		VehicleSubCategoryDO vehicleSubCategoryDO = new VehicleSubCategoryDO();
-		VehicleSubCategory vehicleSubCategory = vehicleSubCategoryDO.get(1);
-
-		Vehicle vehicle = new Vehicle();
-		vehicle.setVehicleCategory(vehicleCategory);
-		vehicle.setVehicleSubCategory(vehicleSubCategory);
-		
-		for (int i=1;i<3;i++){
-			UserDO userDO = new UserDO();
-			User user = userDO.getAllData(i);
-			userDO.setUser(user);			
-			userDO.addVehicle(vehicle);
-		}	
-	}
-	
-	public void addAccount(){
-		UserDO userDO = new UserDO();
-		for (int i=1; i<6; i++){
-			Account account = RESTClientUtil.getVirtualAccount(i);
-			userDO.addAccount(i, account);			
-		}
-
-	}
-
-	
 }

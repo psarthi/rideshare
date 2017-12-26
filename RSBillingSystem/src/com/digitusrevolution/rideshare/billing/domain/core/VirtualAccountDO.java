@@ -190,6 +190,12 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 		account = getAllData(accountNumber);
 		List<Transaction> transactions = new ArrayList<>(account.getTransactions());
 		Collections.sort(transactions);
+
+		//This will take care of issue - java.lang.IndexOutOfBoundsException: toIndex = 10 when size is less than 10
+		if (endIndex > transactions.size()) endIndex = transactions.size();
+		//This is required to handle those scenario where you get request your startindex itself is more than the size e.g. on scroll of rides list it may send additional request
+		if (startIndex > transactions.size()) startIndex = transactions.size();
+
 	
 		return transactions.subList(startIndex, endIndex);
 	}

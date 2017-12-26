@@ -1,11 +1,14 @@
 package com.digitusrevolution.rideshare.billing.business.resource;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -13,6 +16,8 @@ import com.digitusrevolution.rideshare.billing.business.BillingBusinessService;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
+import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
+import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 
 @Path("/billing")
 @Produces(MediaType.APPLICATION_JSON)
@@ -57,7 +62,20 @@ public class BillingBusinessResource {
 		Bill bill = billingBusinessService.makePayment(billInfo);
 		return Response.ok(bill).build();
 	}
-
+	
+	/**
+	 * 
+	 * @param Passenger
+	 * @return List of pending bills
+	 */
+	@POST
+	@Path("/pending")
+	public Response getPendingBills(BasicUser passenger){
+		BillingBusinessService billingBusinessService = new BillingBusinessService();
+		List<Bill> pendingBills = billingBusinessService.getPendingBills(passenger);
+		GenericEntity<List<Bill>> entity = new GenericEntity<List<Bill>>(pendingBills) {};
+		return Response.ok(entity).build();
+	}
 }
 
 

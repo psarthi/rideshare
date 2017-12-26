@@ -206,6 +206,9 @@ public class UserDO implements DomainObjectPKInteger<User>{
 			Country country = countryDO.get(user.getCountry().getName());
 			user.setCountry(country);
 			user.setPreference(getDefaultPreference());
+			Role role = new Role();
+			role.setName(RoleName.Passenger);
+			user.getRoles().add(role);
 			//This will create virtual account
 			Account account = RESTClientUtil.createVirtualAccount();
 			//This will take care of exception thrown by the Billing system if any
@@ -245,7 +248,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		trustCategory.setName(TrustCategoryName.Anonymous);
 		preference.setTrustCategory(trustCategory);
 		
-		preference.setRideMode(RideMode.Paid);
+		preference.setRideMode(RideMode.Free);
 
 		return preference;
 	}

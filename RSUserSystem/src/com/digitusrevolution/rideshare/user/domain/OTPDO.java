@@ -107,6 +107,7 @@ public class OTPDO implements DomainObjectPKString<OTP>{
 		otp.setOTP(otpNumber);
 		String otp_expiry_time = PropertyReader.getInstance().getProperty("OTP_EXPIRY_TIME");
 		otp.setExpirationTime(ZonedDateTime.now().plusMinutes(Long.parseLong(otp_expiry_time)));
+		logger.debug("Mobile Number & OTP is:" + otp.getMobileNumber() +","+ otp.getOTP());
 		logger.debug("Current Time is:" + ZonedDateTime.now());
 		logger.debug("OTP Expiry Time is:" + otp.getExpirationTime());
 		//Reason behind update and not create is: We want to have only one entry into the DB for each mobile number, 

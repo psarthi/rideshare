@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.billing.domain.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotAcceptableException;
@@ -14,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import com.digitusrevolution.rideshare.billing.data.BillDAO;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.BillMapper;
+import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
@@ -24,6 +26,7 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Remark;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
+import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Fuel;
 import com.digitusrevolution.rideshare.model.user.domain.FuelType;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
@@ -183,6 +186,18 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 			return new VirtualAccountDO();
 		}
 		throw new NotFoundException("No appropriate account DO found for account type:"+accountType);
+	}
+	
+	public List<Bill> getPendingBills(User passenger){
+		UserMapper userMapper = new UserMapper();
+		UserEntity userEntity = userMapper.getEntity(passenger, false);
+		Set<BillEntity> billEntities = billDAO.getPendingBills(userEntity);
+		List<Bill> bills = new ArrayList<>();
+		for (BillEntity entity: billEntities) {
+			setBillEntity(entity);
+			bills.add(bill);
+		}
+		return bills;
 	}
 
 }

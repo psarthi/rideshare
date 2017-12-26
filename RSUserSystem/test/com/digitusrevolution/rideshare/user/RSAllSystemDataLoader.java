@@ -11,12 +11,8 @@ public class RSAllSystemDataLoader {
 	public static void main(String[] args) {
 		
 		RESTClientImpl<Object> restClientImpl = new RESTClientImpl<>();
-		String url = "http://localhost:8080/RSBillingSystem/api/domain/loaddata/account";
+		String url = "http://localhost:8080/RSUserSystem/api/domain/loaddata/user";
 		URI uri = UriBuilder.fromUri(url).build();
-		restClientImpl.get(uri);		
-
-		url = "http://localhost:8080/RSUserSystem/api/domain/loaddata/user";
-		uri = UriBuilder.fromUri(url).build();
 		restClientImpl.get(uri);
 		
 		url = "http://localhost:8080/RSServiceProviderSystem/api/domain/loaddata/serviceprovider";

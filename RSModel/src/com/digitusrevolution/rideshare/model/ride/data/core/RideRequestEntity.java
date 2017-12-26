@@ -95,7 +95,7 @@ public class RideRequestEntity {
 	@Column (name="rideMode")
 	@Enumerated(EnumType.STRING)
 	private RideMode rideMode;
-	@OneToOne (mappedBy="rideRequest", cascade=CascadeType.ALL)
+	@OneToOne (cascade=CascadeType.ALL)
 	private BillEntity bill;
 	private String confirmationCode;
 	@OneToMany (mappedBy="rideRequest", cascade=CascadeType.PERSIST)

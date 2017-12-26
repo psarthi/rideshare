@@ -87,7 +87,7 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 	}
 	
 	/*
-	 * Purpose - Get sublist of ride request for a user based based on pickupTime
+	 * Purpose - Get sublist of ride request for a user sorted by pickupTime
 	 */
 	public List<RideRequestEntity> getRideRequests(UserEntity passenger, int startIndex, int endIndex){
 
@@ -101,6 +101,10 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 				.list());
 		
 		logger.debug("Ride Request List Size:"+rideRequestEntities.size());		
+		//This will take care of issue - java.lang.IndexOutOfBoundsException: toIndex = 10 when size is less than 10
+		if (endIndex > rideRequestEntities.size()) endIndex = rideRequestEntities.size();
+		//This is required to handle those scenario where you get request your startindex itself is more than the size e.g. on scroll of rides list it may send additional request
+		if (startIndex > rideRequestEntities.size()) startIndex = rideRequestEntities.size();
 		List<RideRequestEntity> rideRequestEntitiesList = new LinkedList<>(rideRequestEntities);
 		//VERY IMP - Reason for not doing sublist directly there in list in criteria itself as it was having some weired behavior
 		//and it was not returning proper list count and it was varying intermittently
@@ -109,8 +113,6 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 		
 		return rideRequestEntitiesSubList;		
 	}
-
-	
 
 	/*
 	 * Purpose - Get the status of ride request, this is required many times, so instead of using get and then fetching the status

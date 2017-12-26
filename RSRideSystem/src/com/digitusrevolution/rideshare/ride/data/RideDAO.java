@@ -87,7 +87,7 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 	}
 	
 	/*
-	 * Purpose - Get sublist of rides for a user based on startTime
+	 * Purpose - Get sublist of rides for a user sorted by startTime
 	 */
 	public List<RideEntity> getRides(UserEntity driver, int startIndex, int endIndex){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -99,7 +99,11 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 				.addOrder(Order.desc("startTime"))
 				.list());		
 
-		logger.debug("Ride List Size:"+rideEntities.size());		
+		logger.debug("Ride List Size:"+rideEntities.size());
+		//This will take care of issue - java.lang.IndexOutOfBoundsException: toIndex = 10 when size is less than 10
+		if (endIndex > rideEntities.size()) endIndex = rideEntities.size();
+		//This is required to handle those scenario where you get request your startindex itself is more than the size e.g. on scroll of rides list it may send additional request
+		if (startIndex > rideEntities.size()) startIndex = rideEntities.size();
 		List<RideEntity> rideEntitiesList = new LinkedList<>(rideEntities);
 		//VERY IMP - Reason for not doing sublist directly there in list in criteria itself as it was having some weired behavior
 		//and it was not returning proper list count and it was varying intermittently

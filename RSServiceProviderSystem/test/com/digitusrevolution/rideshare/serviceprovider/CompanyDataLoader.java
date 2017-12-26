@@ -2,6 +2,7 @@ package com.digitusrevolution.rideshare.serviceprovider;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,13 +60,18 @@ public class CompanyDataLoader {
 		company.setName("Digitus Revolution");
 		Currency currency = RESTClientUtil.getCurrency(1);
 		company.setCurrency(currency);
-		company.setServiceChargePercentage(0.1f);
+		company.setServiceChargePercentage(10);
 		CompanyDO companyDO = new CompanyDO();
 		companyDO.create(company);		
 	}
 	
 	public void addAccount(){
-		Account account = RESTClientUtil.getVirtualAccount(6);
+		//This will create virtual account
+		Account account = RESTClientUtil.createVirtualAccount();
+		//This will take care of exception thrown by the Billing system if any
+		if (account==null) {
+			throw new WebApplicationException("Unable to create Virtual account for the company");
+		}
 		CompanyDO companyDO = new CompanyDO();
 		companyDO.addAccount(1, account);
 	}
