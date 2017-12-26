@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.common.util;
 import java.net.URI;
 import java.time.ZonedDateTime;
 import java.util.Collection;
+import java.util.List;
 
 import javax.swing.TransferHandler.TransferSupport;
 import javax.ws.rs.core.GenericType;
@@ -24,8 +25,10 @@ import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
+import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
+import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.UserFeedbackInfo;
 
 /**
@@ -130,6 +133,18 @@ public class RESTClientUtil {
 		VehicleCategory vehicleCategory = response.readEntity(VehicleCategory.class);
 		return vehicleCategory;
 	}
+	
+	public static VehicleSubCategory getVehicleSubCategory(int id){
+
+		RESTClientImpl<VehicleCategory> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_VEHICLE_SUB_CATEGORY_URL");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Integer.toString(id));
+		Response response = restClientUtil.get(uri);
+		VehicleSubCategory vehicleSubCategory = response.readEntity(VehicleSubCategory.class);
+		return vehicleSubCategory;
+	}
+
 	
 	public static Account getVirtualAccount(int number){
 
@@ -243,6 +258,17 @@ public class RESTClientUtil {
 			return true;
 		} 
 		return false;
+	}
+	
+	public static List<Bill> getPendingBills(BasicUser passenger){
+		RESTClientImpl<BasicUser> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_PENDING_BILLS");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build();
+		
+		Response response = restClientUtil.post(uri, passenger);
+		List<Bill> bills = response.readEntity(new GenericType<List<Bill>>() {});
+		return bills;
 	}
 }
 

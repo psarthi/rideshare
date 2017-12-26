@@ -19,6 +19,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
+import com.digitusrevolution.rideshare.model.ride.dto.PreBookingRideRequestResult;
 import com.digitusrevolution.rideshare.model.ride.dto.RideRequestResult;
 import com.digitusrevolution.rideshare.model.ride.dto.google.Element;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDistance;
@@ -271,6 +272,33 @@ public class RideRequestBusinessService {
 		return false;
 	}
 
+	public PreBookingRideRequestResult getPreBookingInfo(BasicRideRequest basicRideRequest) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		PreBookingRideRequestResult preBookingRideRequestResult = null;
+		try {
+			transaction = session.beginTransaction();
+
+			RideRequestDO rideRequestDO = new RideRequestDO();
+			RideRequest rideRequest = JsonObjectMapper.getMapper().convertValue(basicRideRequest, RideRequest.class);
+			preBookingRideRequestResult = rideRequestDO.getPreBookingInfo(rideRequest);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return preBookingRideRequestResult;
+	}
 }
 
 

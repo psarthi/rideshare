@@ -34,9 +34,20 @@ public class AccountBusinessResource {
 		AccountBusinessService accountBusinessService = new AccountBusinessService();
 		accountBusinessService.addMoneyToWallet(accountNumber, amount);
 		AccountDomainService accountDomainService = new AccountDomainService();
-		Account account = accountDomainService.get(accountNumber, true);
+		Account account = accountDomainService.get(accountNumber, false);
 		return Response.ok(account).build();
 	}
+	
+	@GET
+	@Path("/{accountNumber}/redeem/{amount}")
+	public Response redeemFromWallet(@PathParam("accountNumber") int accountNumber, @PathParam("amount") float amount) {
+		AccountBusinessService accountBusinessService = new AccountBusinessService();
+		accountBusinessService.redeemFromWallet(accountNumber, amount);
+		AccountDomainService accountDomainService = new AccountDomainService();
+		Account account = accountDomainService.get(accountNumber, false);
+		return Response.ok(account).build();
+	}
+
 	
 	@GET
 	@Path("/{accountNumber}/transactions")

@@ -21,6 +21,7 @@ import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRidesInfo;
+import com.digitusrevolution.rideshare.model.ride.dto.PreBookingRideRequestResult;
 import com.digitusrevolution.rideshare.model.ride.dto.RideRequestResult;
 import com.digitusrevolution.rideshare.ride.business.RideOfferBusinessService;
 import com.digitusrevolution.rideshare.ride.business.RideRequestBusinessService;
@@ -126,6 +127,19 @@ public class RideRequestBusinessResource {
 		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
 		boolean status = rideRequestBusinessService.validatePaymentConfirmationCode(rideRequestId, code);
 		return Response.ok(status).build();
+	}
+	
+	/**
+	 * 
+	 * @param rideRequest
+	 * @return PrebookingResult
+	 */
+	@POST
+	@Path("/prebookinginfo")
+	public Response getPreBookingInfo(BasicRideRequest basicRideRequest) {
+		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
+		PreBookingRideRequestResult preBookingRideRequestResult = rideRequestBusinessService.getPreBookingInfo(basicRideRequest);
+		return Response.ok(preBookingRideRequestResult).build();
 	}
 
 

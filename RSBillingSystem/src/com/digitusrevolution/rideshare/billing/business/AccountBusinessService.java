@@ -41,6 +41,31 @@ public class AccountBusinessService {
 		}
 	}
 	
+	public void redeemFromWallet(int accountNumber, float amount) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		try {
+			transaction = session.beginTransaction();
+
+			VirtualAccountDO virtualAccountDO = new VirtualAccountDO();	
+			virtualAccountDO.redeemFromWallet(accountNumber, amount);
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+	}
+	
 	public List<com.digitusrevolution.rideshare.model.billing.domain.core.Transaction> getTransactions(int accountNumber, int page) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;

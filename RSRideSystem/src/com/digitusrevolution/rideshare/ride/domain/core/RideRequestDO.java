@@ -35,10 +35,12 @@ import com.digitusrevolution.rideshare.common.math.google.SphericalUtil;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
+import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.common.util.external.LatLngBounds;
 import com.digitusrevolution.rideshare.common.util.external.RouteBoxer;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
@@ -52,14 +54,22 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
+import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
+import com.digitusrevolution.rideshare.model.ride.dto.PreBookingRideRequestResult;
 import com.digitusrevolution.rideshare.model.ride.dto.RideRequestSearchResult;
 import com.digitusrevolution.rideshare.model.ride.dto.RidesInfo;
+import com.digitusrevolution.rideshare.model.ride.dto.google.Element;
+import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDistance;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
+import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
+import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
+import com.digitusrevolution.rideshare.ride.domain.RouteDO;
 import com.digitusrevolution.rideshare.ride.domain.TrustNetworkDO;
 import com.digitusrevolution.rideshare.ride.domain.core.comp.RideRequestGeoJSON;
 
@@ -1010,6 +1020,31 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			logger.debug("No Matching Ride Request Found for Ride ID:"+rideId);
 			return null;
 		}		
+	}
+	
+	public PreBookingRideRequestResult getPreBookingInfo(RideRequest rideRequest) {
+		
+		BasicUser passenger = JsonObjectMapper.getMapper().convertValue(rideRequest.getPassenger(), BasicUser.class);
+		List<Bill> pendingBills = RESTClientUtil.getPendingBills(passenger);
+		RideDO rideDO = new RideDO();	
+		float farePerMeter = rideDO.getFare(rideRequest.getVehicleSubCategory(), rideRequest.getPassenger());
+		RouteDO routeDO = new RouteDO();
+		ZonedDateTime pickupTimeUTC = rideRequest.getPickupTime().withZoneSameInstant(ZoneOffset.UTC);
+		GoogleDistance googleDistance = routeDO.getDistance(rideRequest.getPickupPoint().getPoint(), rideRequest.getDropPoint().getPoint(),pickupTimeUTC);
+		//This will get first element
+		Element element = googleDistance.getRows().get(0).getElements().get(0);
+		int travelDistance = element.getDistance().getValue();
+		float maxFare = travelDistance * farePerMeter;
+
+		//Note - Reason for not sending googleDistance back to the client and resending 
+		//along with confirmation request is to avoid unnecessary implication if the user 
+		//changes the date/time then distance is no more valid so its better to take gogle distance 
+		//time etc. post final confirmation in the backend
+		PreBookingRideRequestResult preBookingRideRequestResult = new PreBookingRideRequestResult();
+		preBookingRideRequestResult.setMaxFare(maxFare);
+		preBookingRideRequestResult.setPendingBills(pendingBills);
+		
+		return preBookingRideRequestResult;
 	}
 
 }

@@ -47,6 +47,7 @@ import com.digitusrevolution.rideshare.model.ride.dto.google.Leg;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
+import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.ride.data.RideDAO;
 import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
@@ -633,6 +634,11 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	public void cancelRide(int rideId){
 		RideAction rideAction = new RideAction(this);
 		rideAction.cancelRide(rideId);
+	}
+	
+	public float getFare(VehicleSubCategory vehicleSubCategory, User driver) {
+		RideAction rideAction = new RideAction(this);
+		return rideAction.getFare(vehicleSubCategory, driver);
 	}
 }
 

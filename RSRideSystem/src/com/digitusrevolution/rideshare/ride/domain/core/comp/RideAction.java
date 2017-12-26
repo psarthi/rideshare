@@ -231,7 +231,7 @@ public class RideAction {
 	 * Purpose - Get fare rate per meter basis (Note - Its not per Km as all data in the system is in meters)
 	 * 
 	 */
-	private float getFare(VehicleSubCategory vehicleSubCategory, User driver){
+	public float getFare(VehicleSubCategory vehicleSubCategory, User driver){
 		FuelType fuelType = vehicleSubCategory.getFuelType();
 		int averageMileage = vehicleSubCategory.getAverageMileage();
 		Collection<Fuel> fuels = driver.getCountry().getFuels(); 
