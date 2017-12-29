@@ -265,6 +265,9 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		rideRequest.getPickupPoint().setDistanceVariation(rideRequest.getPickupPointVariation());
 		rideRequest.getDropPoint().setDistanceVariation(rideRequest.getDropPointVariation());
 		rideRequest.getPickupPoint().setTimeVariation(rideRequest.getPickupTimeVariation());
+		//This will add buffer to the user defined variation for the drop point so that we are able to match rides
+		//So logically while searching e.g. 9:00 with 15 Mins user variation and 30 Mins system buffer
+		//we will search rides between 8:15 to 9:45 for drop point only. Note - This buffer is not applicable to pickup point
 		long dropTimeBuffer = Long.parseLong(PropertyReader.getInstance().getProperty("DROP_TIME_BUFFER"));
 		rideRequest.getDropPoint().setTimeVariation(rideRequest.getPickupTimeVariation().plusSeconds(dropTimeBuffer));
 	}
@@ -1022,6 +1025,10 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		}		
 	}
 	
+	/*
+	 * This function is not in use as in Android, we are calculating fare there itself and calling pending bills url to get pending bills seperately 
+	 * 
+	 */
 	public PreBookingRideRequestResult getPreBookingInfo(RideRequest rideRequest) {
 		
 		BasicUser passenger = JsonObjectMapper.getMapper().convertValue(rideRequest.getPassenger(), BasicUser.class);

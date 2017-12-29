@@ -33,6 +33,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 			exception.printStackTrace();
 			errorMessage = new ErrorMessage(errorCode, exception.getClass().getSimpleName(), exception.getMessage());			
 		}
+		logger.debug("Error Msg:"+errorMessage.toString());
 		Response response = Response.status(errorCode).entity(errorMessage).build();
 		return response;
 	}

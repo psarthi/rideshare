@@ -48,7 +48,10 @@ public class RideRequestBusinessService {
 			//This will get first element
 			Element element = googleDistance.getRows().get(0).getElements().get(0);
 			int travelDistance = element.getDistance().getValue();
-			int travelTime = element.getDuration().getValue();
+			//IMP - Its important to get duration in traffic instead of using standard duration as traffic duration would cover actual time in traffic condition
+			//This is not applicable for Ride Offer as we are calculating time of each point based on speed and distance and for google route api as 
+			//there is no traffic time for each steps, its only at higher level on the overall time in traffic which would not be applicable for offer ride
+			int travelTime = element.getDurationInTraffic().getValue();
 
 			//This will set Pickup and Drop address
 			rideRequest.setPickupPointAddress(googleDistance.getOriginAddresses().get(0));

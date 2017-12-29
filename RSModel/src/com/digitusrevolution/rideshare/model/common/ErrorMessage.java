@@ -57,5 +57,11 @@ public class ErrorMessage {
 	public void setErrorCause(String errorCause) {
 		this.errorCause = errorCause;
 	}
+	
+	@Override
+	public String toString() {
+		String errorMsg = "errorCode:errorType:errorMessage:errorCause -"+errorCode+":"+errorType+":"+errorMessage+":"+errorCause;
+		return errorMsg;
+	}
 
 }

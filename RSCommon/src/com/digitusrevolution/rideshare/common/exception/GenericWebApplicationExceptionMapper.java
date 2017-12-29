@@ -2,6 +2,7 @@ package com.digitusrevolution.rideshare.common.exception;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
@@ -28,6 +29,7 @@ public class GenericWebApplicationExceptionMapper implements ExceptionMapper<Web
 			exception.printStackTrace();
 			errorMessage = new ErrorMessage(exception.getResponse().getStatus(), exception.getClass().getSimpleName(), exception.getMessage());			
 		}
+		logger.debug("Error Msg:"+errorMessage.toString());
 		Response response = Response.status(exception.getResponse().getStatus()).entity(errorMessage).build();
 		return response;
 	}

@@ -270,6 +270,34 @@ public class RESTClientUtil {
 		List<Bill> bills = response.readEntity(new GenericType<List<Bill>>() {});
 		return bills;
 	}
+	
+	public static Ride getRide(int rideId) {
+		RESTClientImpl<Ride> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_RIDE");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Integer.toString(rideId));
+		Response response = restClientUtil.get(uri);
+		if (response.getStatus() == Status.OK.getStatusCode()) {
+			Ride ride= response.readEntity(Ride.class);
+			return ride;
+		} 
+		return null;
+	}
+	
+	public static RideRequest getRideRequest(int rideRequestId) {
+		RESTClientImpl<RideRequest> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_RIDE_REQUEST");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Integer.toString(rideRequestId));
+		Response response = restClientUtil.get(uri);
+		if (response.getStatus() == Status.OK.getStatusCode()) {
+			RideRequest rideRequest = response.readEntity(RideRequest.class);
+			return rideRequest;
+		} 
+		return null;
+	}
+
+	
 }
 
 

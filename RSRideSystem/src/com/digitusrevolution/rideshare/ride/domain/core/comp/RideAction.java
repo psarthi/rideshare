@@ -207,7 +207,7 @@ public class RideAction {
 		float price = getFare(ride.getVehicle().getVehicleSubCategory(), driver);
 		float ratePerKm = price * 1000;
 		float distance = rideRequest.getTravelDistance();
-		float amount = price * distance;
+		float amount = price * distance * rideRequest.getSeatRequired();
 		//This is post applying discount
 		amount = amount * (100 - discountPercentage) / 100;
 		Company company = RESTClientUtil.getCompany(1);

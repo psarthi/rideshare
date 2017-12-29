@@ -3,7 +3,6 @@ package com.digitusrevolution.rideshare.model.ride.dto.google;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -12,10 +11,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Generated("org.jsonschema2pojo")
 @JsonPropertyOrder({
     "distance",
     "duration",
+    "duration_in_traffic",
     "status"
 })
 public class Element {
@@ -24,66 +23,48 @@ public class Element {
     private Distance distance;
     @JsonProperty("duration")
     private Duration duration;
+    @JsonProperty("duration_in_traffic")
+    private DurationInTraffic durationInTraffic;
     @JsonProperty("status")
     private String status;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    /**
-     * 
-     * @return
-     *     The distance
-     */
     @JsonProperty("distance")
     public Distance getDistance() {
         return distance;
     }
 
-    /**
-     * 
-     * @param distance
-     *     The distance
-     */
     @JsonProperty("distance")
     public void setDistance(Distance distance) {
         this.distance = distance;
     }
 
-    /**
-     * 
-     * @return
-     *     The duration
-     */
     @JsonProperty("duration")
     public Duration getDuration() {
         return duration;
     }
 
-    /**
-     * 
-     * @param duration
-     *     The duration
-     */
     @JsonProperty("duration")
     public void setDuration(Duration duration) {
         this.duration = duration;
     }
 
-    /**
-     * 
-     * @return
-     *     The status
-     */
+    @JsonProperty("duration_in_traffic")
+    public DurationInTraffic getDurationInTraffic() {
+        return durationInTraffic;
+    }
+
+    @JsonProperty("duration_in_traffic")
+    public void setDurationInTraffic(DurationInTraffic durationInTraffic) {
+        this.durationInTraffic = durationInTraffic;
+    }
+
     @JsonProperty("status")
     public String getStatus() {
         return status;
     }
 
-    /**
-     * 
-     * @param status
-     *     The status
-     */
     @JsonProperty("status")
     public void setStatus(String status) {
         this.status = status;

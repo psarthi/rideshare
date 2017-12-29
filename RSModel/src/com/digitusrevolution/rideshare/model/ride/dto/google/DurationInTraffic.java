@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "text",
     "value"
 })
-public class Distance {
+public class DurationInTraffic {
 
     @JsonProperty("text")
     private String text;

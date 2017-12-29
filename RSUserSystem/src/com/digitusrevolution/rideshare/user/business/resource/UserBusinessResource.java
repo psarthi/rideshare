@@ -16,10 +16,13 @@ import javax.ws.rs.core.Response.Status;
 
 import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.common.ResponseMessage;
 import com.digitusrevolution.rideshare.model.common.ResponseMessage.Code;
+import com.digitusrevolution.rideshare.model.ride.domain.RideType;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
 import com.digitusrevolution.rideshare.model.user.domain.Preference;
@@ -271,12 +274,19 @@ public class UserBusinessResource {
 	
 	@POST
 	@Path("/{userId}/feedback")
-	public Response addUserFeedback(@PathParam("userId") int userId, UserFeedbackInfo userFeedbackInfo) {
+	public Response addUserFeedback(@PathParam("userId") int userId, UserFeedbackInfo userFeedbackInfo, @QueryParam("rideType") RideType rideType) {
 		UserBusinessService userBusinessService = new UserBusinessService();
 		userBusinessService.addUserFeedback(userId, userFeedbackInfo);
-		ResponseMessage responseMessage = new ResponseMessage();
-		responseMessage.setResult(Code.OK.toString());
-		return Response.ok(responseMessage).build();
+		//We are fetching the updated Ride / Ride Request so that we can refresh the page accordingly
+		if (rideType.equals(RideType.OfferRide)) {
+			Ride ride = RESTClientUtil.getRide(userFeedbackInfo.getRide().getId());
+			FullRide fullRide = JsonObjectMapper.getMapper().convertValue(ride, FullRide.class);
+			return Response.ok(fullRide).build();
+		} else {
+			RideRequest rideRequest = RESTClientUtil.getRideRequest(userFeedbackInfo.getRideRequest().getId());
+			FullRideRequest fullRideRequest = JsonObjectMapper.getMapper().convertValue(rideRequest, FullRideRequest.class);
+			return Response.ok(fullRideRequest).build();
+		}
 	}
 	
 	@POST
