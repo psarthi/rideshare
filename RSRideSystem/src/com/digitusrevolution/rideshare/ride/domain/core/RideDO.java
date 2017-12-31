@@ -22,6 +22,8 @@ import org.bson.types.ObjectId;
 import org.geojson.Feature;
 import org.geojson.FeatureCollection;
 
+import com.digitusrevolution.rideshare.common.exception.InSufficientBalanceException;
+import com.digitusrevolution.rideshare.common.exception.RideUnavailableException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
@@ -255,7 +257,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 				ZonedDateTime endTimeUTC = startTimeUTC.plusSeconds(travelDuration);
 				ride.setStartTime(startTimeUTC);
 				ride.setEndTime(endTimeUTC);
-				
+
 				//This will set Start and End Address
 				ride.setStartPointAddress(leg.getStartAddress());
 				ride.setEndPointAddress(leg.getEndAddress());
@@ -399,13 +401,13 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		}
 		return null;
 	}
-	
+
 	public List<Ride> getRides(int driverId, int page){
 		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
 		int itemsCount = 10;
 		int startIndex = page*itemsCount; 
 		int endIndex = (page+1)*itemsCount;
-		
+
 		User driver = RESTClientUtil.getUser(driverId);
 		UserMapper userMapper = new UserMapper();
 		//We don't need child object of User entity, just the basic user entity is fine as it primarily needs only PK
@@ -468,14 +470,14 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		logger.debug("[Valid Drop Rides: Based on Sequence of Pickup and Drop Points]:"+dropRidePoints.keySet());
 
 		Set<Integer> rideIds = pickupRidePoints.keySet(); 
-		
+
 		Collection<Ride> cancelledRides = rideRequest.getCancelledRides();
 		Set<Integer> cancelledRideIds = new HashSet<>();
-		
+
 		for (Ride ride: cancelledRides) {
 			cancelledRideIds.add(ride.getId());
 		}
-		
+
 		logger.debug("Cancelled Rides List:"+cancelledRideIds);
 		rideIds.removeAll(cancelledRideIds);
 		logger.debug("Valid Rides List after exclusion of cancelled Rides:"+rideIds);
@@ -495,7 +497,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 
 		iterator = pickupRidePoints.keySet().iterator();
 		List<MatchedTripInfo> matchedTripInfos = new ArrayList<>();
-		
+
 		//Step 4 - This will create matching trip info for all valid rides
 		while (iterator.hasNext()) {			
 			Integer rideId = iterator.next();
@@ -548,15 +550,27 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	public MatchedTripInfo autoMatchRide(int rideRequestId) {		
 		List<MatchedTripInfo> matchedTripInfos = searchRides(rideRequestId);
 		if (matchedTripInfos.size() > 0) {
-			//This will match the first ride request
-			MatchedTripInfo matchedTripInfo = matchedTripInfos.get(0);
-			acceptRideRequest(matchedTripInfo);
-			logger.debug("Found Matching Ride for Ride Request ID:"+rideRequestId);
-			return matchedTripInfo;
-		} else {
-			logger.debug("No Matching Ride Found for Ride Request ID:"+rideRequestId);
-			return null;
-		}		
+			for (int i=0; i < matchedTripInfos.size(); i++) {
+				//We will try to match with the first one in the list which can be customized later
+				MatchedTripInfo matchedTripInfo = matchedTripInfos.get(i);
+				try {
+					acceptRideRequest(matchedTripInfo);
+					logger.debug("Found Matching Ride for Ride Request ID:"+rideRequestId);
+					return matchedTripInfo;				
+				} catch (Exception e) {
+					if (e instanceof RideUnavailableException || e instanceof InSufficientBalanceException) {
+						continue;
+					}
+					//This will only come into effect when ride request itself has become unavailable which can happen 
+					//if we are trying to match the ride request with multiple ride at the same ride. This may be the scenario of future
+					else {
+						throw e;
+					}
+				}
+			}
+		} 
+		logger.debug("No Matching Ride Found for Ride Request ID:"+rideRequestId);
+		return null;
 	}
 
 	public List<RidePoint> getAllRidePointsOfRide(int rideId) {
@@ -635,7 +649,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		RideAction rideAction = new RideAction(this);
 		rideAction.cancelRide(rideId);
 	}
-	
+
 	public float getFare(VehicleSubCategory vehicleSubCategory, User driver) {
 		RideAction rideAction = new RideAction(this);
 		return rideAction.getFare(vehicleSubCategory, driver);

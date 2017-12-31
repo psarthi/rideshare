@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.auth.AuthService;
+import com.digitusrevolution.rideshare.common.exception.InSufficientBalanceException;
 import com.digitusrevolution.rideshare.common.exception.RideRequestUnavailableException;
 import com.digitusrevolution.rideshare.common.exception.RideUnavailableException;
 import com.digitusrevolution.rideshare.common.util.GoogleUtil;
@@ -21,6 +22,7 @@ import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.common.util.RESTClientImpl;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.domain.core.BillStatus;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
@@ -167,13 +169,17 @@ public class RideAction {
 
 					//This will act as payment confirmation code for debiting money from passenger account
 					rideRequest.setConfirmationCode(AuthService.getInstance().getVerificationCode());
-
-					//Update all the changes in DB for ride and ride request
-					rideDO.update(ride);
-					//This is required to update accepted ride as well as status update on ride request table
-					rideRequestDO.update(rideRequest);
-					//TODO Implement notification here
-					logger.debug("Ride Request Accepted. Send Notification to Ride Owner & Requester on new Match. [Ride Id/Ride Request Id]:"+rideId+","+rideRequestId);
+					if (checkSufficientBalance(rideRequest)) {
+						//Update all the changes in DB for ride and ride request
+						rideDO.update(ride);
+						//This is required to update accepted ride as well as status update on ride request table
+						rideRequestDO.update(rideRequest);
+						//TODO Implement notification here
+						sendNotification("Ride Request Accepted. Send Notification to Ride Owner & Requester on new Match. [Ride Id/Ride Request Id]:"+rideId+","+rideRequestId);						
+					} else {
+						sendNotification("Ride Request can't be accepted due to insufficient balance.[Ride Id/Ride Request Id]:"+rideId+","+rideRequestId);
+						throw new InSufficientBalanceException("Not enough balance to pay for the bill of ride request Id:"+rideRequestId);
+					}
 				}
 				else{
 					throw new RideUnavailableException("Ride doesn't have sufficient seats available with id:"+rideId);
@@ -186,6 +192,32 @@ public class RideAction {
 		else{
 			throw new RideRequestUnavailableException("Ride Request is not available anymore with id:"+rideRequestId);
 		}			
+	}
+	
+	//This function needs to be modified depending on the kind of parameters needs to be passed for sending notification
+	public void sendNotification(String message) {
+		logger.debug(message);
+	}
+
+	/*
+	 * Purpose - This will check if the balance is sufficient enough to pay for this ride request
+	 */
+	private boolean checkSufficientBalance(RideRequest rideRequest) {
+		BasicUser passenger = JsonObjectMapper.getMapper().convertValue(rideRequest.getPassenger(), BasicUser.class);
+		List<Bill> pendingBills = RESTClientUtil.getPendingBills(passenger);
+		float pendingAmount = 0;
+		for (Bill bill: pendingBills) {
+			pendingAmount+=bill.getAmount();
+		}
+
+		ArrayList<Account> accounts = (ArrayList<Account>) passenger.getAccounts();
+		float balance = accounts.get(0).getBalance();
+
+		float requiredBalance = pendingAmount + rideRequest.getBill().getAmount();
+		if (balance >= requiredBalance) {
+			return true;
+		} 
+		return false;
 	}
 
 	/*
@@ -596,7 +628,7 @@ public class RideAction {
 					if (cancellationType.equals(CancellationType.RideRequest)) {
 						rideRequest.setStatus(RideRequestStatus.Cancelled);
 					}
-					
+
 					//This will update ride and ride request in db
 					rideRequestDO.update(rideRequest);
 					rideDO.update(ride); 

@@ -27,6 +27,9 @@ import org.geojson.LineString;
 import org.geojson.MultiPolygon;
 import org.geojson.Polygon;
 
+import com.digitusrevolution.rideshare.common.exception.InSufficientBalanceException;
+import com.digitusrevolution.rideshare.common.exception.RideRequestUnavailableException;
+import com.digitusrevolution.rideshare.common.exception.RideUnavailableException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
@@ -490,7 +493,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			Map<Integer, List<RideRequestPoint>> rideRequestsMap, List<MatchedTripInfo> validMatchedTripInfos) {
 
 		//Note - Don't reinitialize the validMatedTripInfos otherwise previous valid result would be lost
-		
+
 		//Reason for doing this as Phase - 0 so that we remove all invalid ride request's initially itself
 		//and save unnecessary processing of them in next step which is an extensive operation
 		validateBusinessCriteria(ride, rideRequestsMap);
@@ -601,7 +604,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 					logger.debug("Valid Ride Request Id based on ride direction:"+entry.getKey());
 					logger.debug("Ride Pickup and Drop Sequence number:"+matchedTripInfo.getRidePickupPoint().getSequence()+","
 							+matchedTripInfo.getRideDropPoint().getSequence());
-					
+
 					//Get Ride Request Points from Request Map
 					RideRequestPoint pickupPoint = null;
 					RideRequestPoint dropPoint = null;
@@ -653,7 +656,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		Collection<RideRequest> cancelledRideRequests = ride.getCancelledRideRequests();
 		Collection<RideRequest> rejectedRideRequests = ride.getRejectedRideRequests();
 		Set<Integer> cancelledRideRequestIds = new HashSet<>();
-		
+
 		for (RideRequest rideRequest: cancelledRideRequests) {
 			cancelledRideRequestIds.add(rideRequest.getId());
 		}
@@ -666,11 +669,11 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		excludedRideRequestIds.addAll(rejectedRideRequestIds);
 		excludedRideRequestIds.addAll(cancelledRideRequestIds);
 		logger.debug("Excluded List of Ride Request Ids:"+excludedRideRequestIds);
-		
+
 		//IMP - This will remove all the entries of excluded list of ride requests from the ride requestMap
 		rideRequestsMap.keySet().removeAll(excludedRideRequestIds);
 		logger.debug("Final List of Ride Request Ids for validation:"+rideRequestsMap.keySet());
-		
+
 		if (!rideRequestsMap.keySet().isEmpty()){
 			int seatOccupied = 0;
 			for (RideRequest acceptedRideRequest : ride.getAcceptedRideRequests()) {
@@ -1014,23 +1017,35 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		List<MatchedTripInfo> matchedTripInfos = searchRideRequests.getMatchedTripInfos();
 		if (matchedTripInfos.size() > 0) {
 			RideDO rideDO = new RideDO();
-			//This will match the first ride request
-			MatchedTripInfo matchedTripInfo = matchedTripInfos.get(0);
-			rideDO.acceptRideRequest(matchedTripInfo);
-			logger.debug("Found Matching Ride Request for Ride ID:"+rideId);
-			return matchedTripInfo;
-		} else {
-			logger.debug("No Matching Ride Request Found for Ride ID:"+rideId);
-			return null;
-		}		
+			for (int i=0; i < matchedTripInfos.size(); i++) {
+				//We will try to match with the first one in the list which can be customized later
+				MatchedTripInfo matchedTripInfo = matchedTripInfos.get(i);
+				try {
+					rideDO.acceptRideRequest(matchedTripInfo);
+					logger.debug("Found Matching Ride Request for Ride ID:"+rideId);
+					return matchedTripInfo;				
+				} catch (Exception e) {
+					if (e instanceof RideRequestUnavailableException || e instanceof InSufficientBalanceException) {
+						continue;
+					}
+					//This will only come into effect when ride itself has become unavailable which can happen 
+					//if we are trying to match the ride request with multiple ride at the same ride. This may be the scenario of future
+					else {
+						throw e;
+					}
+				}
+			}
+		} 
+		logger.debug("No Matching Ride Request Found for Ride ID:"+rideId);
+		return null;
 	}
-	
+
 	/*
 	 * This function is not in use as in Android, we are calculating fare there itself and calling pending bills url to get pending bills seperately 
 	 * 
 	 */
 	public PreBookingRideRequestResult getPreBookingInfo(RideRequest rideRequest) {
-		
+
 		BasicUser passenger = JsonObjectMapper.getMapper().convertValue(rideRequest.getPassenger(), BasicUser.class);
 		List<Bill> pendingBills = RESTClientUtil.getPendingBills(passenger);
 		RideDO rideDO = new RideDO();	
@@ -1050,7 +1065,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		PreBookingRideRequestResult preBookingRideRequestResult = new PreBookingRideRequestResult();
 		preBookingRideRequestResult.setMaxFare(maxFare);
 		preBookingRideRequestResult.setPendingBills(pendingBills);
-		
+
 		return preBookingRideRequestResult;
 	}
 
