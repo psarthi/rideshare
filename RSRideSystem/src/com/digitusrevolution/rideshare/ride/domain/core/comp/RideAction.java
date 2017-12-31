@@ -20,6 +20,7 @@ import com.digitusrevolution.rideshare.common.exception.RideUnavailableException
 import com.digitusrevolution.rideshare.common.util.GoogleUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientImpl;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
@@ -156,7 +157,17 @@ public class RideAction {
 					//If we go to Billing system, then it has to be done post commit which will force to have another transaction 
 					//and we need to do too many things to rollback manually
 					float discountPercentage = 0;
-					if (ride.getRideMode().equals(RideMode.Free)) discountPercentage = 100;
+					if (ride.getRideMode().equals(RideMode.Free)) {
+						discountPercentage = 100;
+					}
+					//This is for paid mode and for long distance, where fuel cost is shared
+					//IMP - If we don't share the fuel cost, then travel cost would be much higher than public transports
+					else {
+						int longDistance = Integer.parseInt(PropertyReader.getInstance().getProperty("LONG_DISTANCE"));
+						if (rideRequest.getTravelDistance() >= longDistance) {
+							discountPercentage = 50;
+						}
+					}
 					Bill bill = generateBill(ride, rideRequest, discountPercentage);
 
 					if (rideRequest.getBill()!=null) {
