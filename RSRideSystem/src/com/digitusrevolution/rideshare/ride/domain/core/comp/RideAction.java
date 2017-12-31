@@ -163,7 +163,7 @@ public class RideAction {
 					//This is for paid mode and for long distance, where fuel cost is shared
 					//IMP - If we don't share the fuel cost, then travel cost would be much higher than public transports
 					else {
-						int longDistance = Integer.parseInt(PropertyReader.getInstance().getProperty("LONG_DISTANCE"));
+						int longDistance = Integer.parseInt(PropertyReader.getInstance().getProperty("LONG_DISTANCE_IN_METERS"));
 						if (rideRequest.getTravelDistance() >= longDistance) {
 							discountPercentage = 50;
 						}
