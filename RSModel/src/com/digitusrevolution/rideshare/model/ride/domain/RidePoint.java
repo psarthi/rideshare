@@ -6,7 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
-public class RidePoint{
+public class RidePoint implements Comparable<RidePoint>{
 	
 	private String _id;
 	//Don't change this to HashMap as serialization / deserialization to JSON would be a problem as 
@@ -77,5 +77,12 @@ public class RidePoint{
 		}
 		return true;
 	}
+	@Override
+	public int compareTo(RidePoint ridePoint) {
+		//Negative number is desc order, positive is asc order
+		return this.sequence - ridePoint.sequence;
+	}
+	
+	
 	
 }

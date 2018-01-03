@@ -178,8 +178,12 @@ public class RideAction {
 					} 
 					rideRequest.setBill(bill);
 
-					//This will act as payment confirmation code for debiting money from passenger account
-					rideRequest.setConfirmationCode(AuthService.getInstance().getVerificationCode());
+					//Payment Verification code is only applicable if ride is paid mode
+					if (ride.getRideMode().equals(RideMode.Paid)) {
+						//This will act as payment confirmation code for debiting money from passenger account
+						rideRequest.setConfirmationCode(AuthService.getInstance().getVerificationCode());						
+					}
+
 					if (checkSufficientBalance(rideRequest)) {
 						//Update all the changes in DB for ride and ride request
 						rideDO.update(ride);
@@ -204,7 +208,7 @@ public class RideAction {
 			throw new RideRequestUnavailableException("Ride Request is not available anymore with id:"+rideRequestId);
 		}			
 	}
-	
+
 	//This function needs to be modified depending on the kind of parameters needs to be passed for sending notification
 	public void sendNotification(String message) {
 		logger.debug(message);
@@ -266,7 +270,11 @@ public class RideAction {
 		bill.setPassenger(passenger);
 		bill.setRide(ride);
 		bill.setRideRequest(rideRequest);
-		bill.setStatus(BillStatus.Pending);
+		if (discountPercentage==100) {
+			bill.setStatus(BillStatus.Free);
+		} else {
+			bill.setStatus(BillStatus.Pending);	
+		}
 		return bill;
 	}
 
@@ -435,25 +443,28 @@ public class RideAction {
 				passengerNotFound = false;
 				//Check if passenger states is picked up
 				if (rideRequest.getPassengerStatus().equals(PassengerStatus.Picked)){
-
-					//This will take care in case of change of ride mode at the time of dropping
-					if (rideMode.equals(RideMode.Free)) {
-						rideRequest.getBill().setDiscountPercentage(100);
-						rideRequest.getBill().setAmount(0);
-						//Payment not required here as its a free ride, so calls to billing system to makePayment, 
-						//only we need to updated the BillStatus without any transaction
-						rideRequest.getBill().setStatus(BillStatus.Paid);
-						logger.debug("Its a Free Ride, so no payment is required for Ride Request Id:"+rideRequestId);
-					} 
-					//This is scenario for Paid ride
-					else {
-						if(rideRequest.getConfirmationCode().equals(paymentCode)){
-							//Not doing payment here to avoid any transactional failures in between, 
-							//instead we will do payment post successful drop in separate transaction
-							rideRequest.getBill().setStatus(BillStatus.Approved);
-							logger.debug("Its a Paid Ride, and payment is approved for Ride Request Id:"+rideRequestId);
-						} else {
-							throw new NotAcceptableException("Payment code is invalid for the ride request"+rideRequest.getId());
+						
+					//If its a Free Ride originally, then no need to do any payment or change the bill status
+					if (!rideRequest.getBill().getStatus().equals(BillStatus.Free)) {
+						//This will take care in case of change of ride mode at the time of dropping
+						if (rideMode.equals(RideMode.Free)) {
+							rideRequest.getBill().setDiscountPercentage(100);
+							rideRequest.getBill().setAmount(0);
+							//Payment not required here as its a free ride, so calls to billing system to makePayment, 
+							//only we need to updated the BillStatus without any transaction
+							rideRequest.getBill().setStatus(BillStatus.Paid);
+							logger.debug("Its a Free Ride, so no payment is required for Ride Request Id:"+rideRequestId);
+						} 
+						//This is scenario for Paid ride
+						else {
+							if(rideRequest.getConfirmationCode().equals(paymentCode)){
+								//Not doing payment here to avoid any transactional failures in between, 
+								//instead we will do payment post successful drop in separate transaction
+								rideRequest.getBill().setStatus(BillStatus.Approved);
+								logger.debug("Its a Paid Ride, and payment is approved for Ride Request Id:"+rideRequestId);
+							} else {
+								throw new NotAcceptableException("Payment code is invalid for the ride request"+rideRequest.getId());
+							}
 						}
 					}
 

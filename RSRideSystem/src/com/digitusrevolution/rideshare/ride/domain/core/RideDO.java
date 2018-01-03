@@ -259,8 +259,9 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 				ride.setEndTime(endTimeUTC);
 
 				//This will set Start and End Address
-				ride.setStartPointAddress(leg.getStartAddress());
-				ride.setEndPointAddress(leg.getEndAddress());
+				//Actually address should be set from Places API in Android itself, to avoid ambiguity
+				if (ride.getStartPointAddress()==null) ride.setStartPointAddress(leg.getStartAddress());
+				if (ride.getEndPointAddress()==null) ride.setEndPointAddress(leg.getEndAddress());
 
 				//**IMP Problem - Trustnetwork gets created while creating the ride but we don't have its id and without id it will 
 				//recreate the trust network while updating the ride at later part of the this function as trust network id is the primary key

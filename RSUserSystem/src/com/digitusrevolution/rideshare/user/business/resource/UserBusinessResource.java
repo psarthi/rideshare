@@ -227,7 +227,9 @@ public class UserBusinessResource {
 	public Response getOTP(@PathParam("mobileNumber") String mobileNumber){
 		UserBusinessService userBusinessService = new UserBusinessService();
 		String OTP = userBusinessService.getOTP(mobileNumber);
-		return Response.ok().entity(OTP).build();			
+		ResponseMessage responseMessage = new ResponseMessage();
+		responseMessage.setResult(OTP);
+		return Response.ok().entity(responseMessage).build();			
 	}
 	
 	/**
@@ -243,7 +245,9 @@ public class UserBusinessResource {
 			@PathParam("otp") String otp){
 		UserBusinessService userBusinessService = new UserBusinessService();
 		boolean status = userBusinessService.validateOTP(mobileNumber, otp);
-		return Response.ok().entity(status).build();
+		ResponseMessage responseMessage = new ResponseMessage();
+		responseMessage.setResult(Boolean.toString(status));
+		return Response.ok().entity(responseMessage).build();
 	}
 
 	/**

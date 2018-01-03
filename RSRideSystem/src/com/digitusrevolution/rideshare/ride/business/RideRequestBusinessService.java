@@ -54,8 +54,9 @@ public class RideRequestBusinessService {
 			int travelTime = element.getDurationInTraffic().getValue();
 
 			//This will set Pickup and Drop address
-			rideRequest.setPickupPointAddress(googleDistance.getOriginAddresses().get(0));
-			rideRequest.setDropPointAddress(googleDistance.getDestinationAddresses().get(0));
+			//Actually address should be set from Places API in Android itself, to avoid ambiguity
+			if (rideRequest.getPickupPointAddress()==null) rideRequest.setPickupPointAddress(googleDistance.getOriginAddresses().get(0));
+			if (rideRequest.getDropPointAddress()==null) rideRequest.setDropPointAddress(googleDistance.getDestinationAddresses().get(0));
 
 			rideRequest.setTravelDistance(travelDistance);
 			rideRequest.setTravelTime(travelTime);
