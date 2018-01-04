@@ -153,22 +153,7 @@ public class RideAction {
 					RideSeatStatus newRideSeatStatus = getRideSeatStatusPostAcceptance(rideRequest.getSeatRequired(), ride);
 					ride.setSeatStatus(newRideSeatStatus);
 
-					//VERY Imp. - We are generating bill directly from here instead of going to Billing system so that we can do all this in one transaction
-					//If we go to Billing system, then it has to be done post commit which will force to have another transaction 
-					//and we need to do too many things to rollback manually
-					float discountPercentage = 0;
-					if (ride.getRideMode().equals(RideMode.Free)) {
-						discountPercentage = 100;
-					}
-					//This is for paid mode and for long distance, where fuel cost is shared
-					//IMP - If we don't share the fuel cost, then travel cost would be much higher than public transports
-					else {
-						int longDistance = Integer.parseInt(PropertyReader.getInstance().getProperty("LONG_DISTANCE_IN_METERS"));
-						if (rideRequest.getTravelDistance() >= longDistance) {
-							discountPercentage = 50;
-						}
-					}
-					Bill bill = generateBill(ride, rideRequest, discountPercentage);
+					Bill bill = generateBill(ride, rideRequest);
 
 					if (rideRequest.getBill()!=null) {
 						//IMP - This will update the bill instead of regeneration
@@ -247,22 +232,22 @@ public class RideAction {
 	 * - Create bill in the system
 	 * 
 	 */
-	public Bill generateBill(Ride ride, RideRequest rideRequest, float discountPercentage){
+	public Bill generateBill(Ride ride, RideRequest rideRequest){
 
 		User passenger = rideRequest.getPassenger();
 		User driver = ride.getDriver();
-		float price = getFare(ride.getVehicle().getVehicleSubCategory(), driver);
-		float ratePerKm = price * 1000;
-		float distance = rideRequest.getTravelDistance();
-		float amount = price * distance * rideRequest.getSeatRequired();
-		//This is post applying discount
-		amount = amount * (100 - discountPercentage) / 100;
+		float amount = getPrice(rideRequest);
 		Company company = RESTClientUtil.getCompany(1);
 		float serviceChargePercentage = company.getServiceChargePercentage();
+		//Note - Fare and Discount is used here just to store in the bill but calculation
+		//of the discount is already taken care as part of price calculation
+		float farePerMeter = getFarePerMeter(rideRequest.getVehicleSubCategory(), rideRequest.getPassenger());
+		float farePerKm = farePerMeter * 1000;
+		float discountPercentage = getDiscountPercentage(rideRequest);
 		Bill bill = new Bill();
 		//Set Bill properties
 		bill.setAmount(amount);
-		bill.setRate(ratePerKm);
+		bill.setRate(farePerKm);
 		bill.setDiscountPercentage(discountPercentage);
 		bill.setServiceChargePercentage(serviceChargePercentage);
 		bill.setCompany(company);
@@ -278,11 +263,41 @@ public class RideAction {
 		return bill;
 	}
 
+	public float getPrice(RideRequest rideRequest) {
+		float farePerMeter = getFarePerMeter(rideRequest.getVehicleSubCategory(), rideRequest.getPassenger());
+		//Distance is in meters
+		float distance = rideRequest.getTravelDistance();
+		float amount = farePerMeter * distance * rideRequest.getSeatRequired();
+		float discountPercentage = getDiscountPercentage(rideRequest);
+		//This is post applying discount
+		amount = amount * (100 - discountPercentage) / 100;
+		return amount;
+	}
+
+	private float getDiscountPercentage(RideRequest rideRequest) {
+		//VERY Imp. - We are generating bill directly from here instead of going to Billing system so that we can do all this in one transaction
+		//If we go to Billing system, then it has to be done post commit which will force to have another transaction 
+		//and we need to do too many things to rollback manually
+		float discountPercentage = 0;
+		if (rideRequest.getRideMode().equals(RideMode.Free)) {
+			discountPercentage = 100;
+		}
+		//This is for paid mode and for long distance, where fuel cost is shared
+		//IMP - If we don't share the fuel cost, then travel cost would be much higher than public transports
+		else {
+			int longDistance = Integer.parseInt(PropertyReader.getInstance().getProperty("LONG_DISTANCE_IN_METERS"));
+			if (rideRequest.getTravelDistance() >= longDistance) {
+				discountPercentage = 50;
+			}
+		}
+		return discountPercentage;
+	}
+	
 	/*
 	 * Purpose - Get fare rate per meter basis (Note - Its not per Km as all data in the system is in meters)
 	 * 
 	 */
-	public float getFare(VehicleSubCategory vehicleSubCategory, User driver){
+	private float getFarePerMeter(VehicleSubCategory vehicleSubCategory, User driver){
 		FuelType fuelType = vehicleSubCategory.getFuelType();
 		int averageMileage = vehicleSubCategory.getAverageMileage();
 		Collection<Fuel> fuels = driver.getCountry().getFuels(); 
@@ -452,7 +467,7 @@ public class RideAction {
 							rideRequest.getBill().setAmount(0);
 							//Payment not required here as its a free ride, so calls to billing system to makePayment, 
 							//only we need to updated the BillStatus without any transaction
-							rideRequest.getBill().setStatus(BillStatus.Paid);
+							rideRequest.getBill().setStatus(BillStatus.Free);
 							logger.debug("Its a Free Ride, so no payment is required for Ride Request Id:"+rideRequestId);
 						} 
 						//This is scenario for Paid ride

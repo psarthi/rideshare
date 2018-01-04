@@ -276,6 +276,11 @@ public class UserBusinessResource {
 		return Response.ok(user).build();
 	}
 	
+	/*
+	 * userId is the Id of the user for which feedback is given
+	 * userFeedbackInfo will contain the information about who has given the feedback, ride, ride request etc.
+	 * 
+	 */
 	@POST
 	@Path("/{userId}/feedback")
 	public Response addUserFeedback(@PathParam("userId") int userId, UserFeedbackInfo userFeedbackInfo, @QueryParam("rideType") RideType rideType) {

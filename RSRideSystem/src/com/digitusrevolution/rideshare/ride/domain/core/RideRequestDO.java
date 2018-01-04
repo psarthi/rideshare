@@ -1048,22 +1048,22 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 
 		BasicUser passenger = JsonObjectMapper.getMapper().convertValue(rideRequest.getPassenger(), BasicUser.class);
 		List<Bill> pendingBills = RESTClientUtil.getPendingBills(passenger);
-		RideDO rideDO = new RideDO();	
-		float farePerMeter = rideDO.getFare(rideRequest.getVehicleSubCategory(), rideRequest.getPassenger());
+		RideDO rideDO = new RideDO();
 		RouteDO routeDO = new RouteDO();
 		ZonedDateTime pickupTimeUTC = rideRequest.getPickupTime().withZoneSameInstant(ZoneOffset.UTC);
 		GoogleDistance googleDistance = routeDO.getDistance(rideRequest.getPickupPoint().getPoint(), rideRequest.getDropPoint().getPoint(),pickupTimeUTC);
 		//This will get first element
 		Element element = googleDistance.getRows().get(0).getElements().get(0);
 		int travelDistance = element.getDistance().getValue();
-		float maxFare = travelDistance * farePerMeter;
-
+		rideRequest.setTravelDistance(travelDistance);
+		float price = rideDO.getPrice(rideRequest);
+	
 		//Note - Reason for not sending googleDistance back to the client and resending 
 		//along with confirmation request is to avoid unnecessary implication if the user 
 		//changes the date/time then distance is no more valid so its better to take gogle distance 
 		//time etc. post final confirmation in the backend
 		PreBookingRideRequestResult preBookingRideRequestResult = new PreBookingRideRequestResult();
-		preBookingRideRequestResult.setMaxFare(maxFare);
+		preBookingRideRequestResult.setMaxFare(price);
 		preBookingRideRequestResult.setPendingBills(pendingBills);
 
 		return preBookingRideRequestResult;

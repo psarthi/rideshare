@@ -16,6 +16,7 @@ import org.hibernate.Transaction;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
+import com.digitusrevolution.rideshare.model.ride.domain.RideType;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
@@ -243,7 +244,7 @@ public class RideRequestBusinessService {
 			transaction = session.beginTransaction();
 
 			RideSystemBusinessService systemBusinessService = new RideSystemBusinessService();
-			boolean status = systemBusinessService.giveUserFeedback(rideId, rideRequestId, rating);
+			boolean status = systemBusinessService.giveUserFeedback(rideId, rideRequestId, rating, RideType.RequestRide);
 			if (status) {
 				logger.debug("Cancelling Driver for ride Id/Ride Request Id:"+rideId+","+rideRequestId);
 				RideDO rideDO = new RideDO();

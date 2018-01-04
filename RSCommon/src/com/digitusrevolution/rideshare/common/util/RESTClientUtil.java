@@ -16,6 +16,7 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 import com.digitusrevolution.rideshare.model.common.ResponseMessage;
+import com.digitusrevolution.rideshare.model.ride.domain.RideType;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
@@ -247,11 +248,11 @@ public class RESTClientUtil {
 		return null;
 	}
 	
-	public static boolean userFeedback(int userId, UserFeedbackInfo userFeedbackInfo){
+	public static boolean userFeedback(int userId, UserFeedbackInfo userFeedbackInfo, RideType rideType){
 		RESTClientImpl<UserFeedbackInfo> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("POST_USER_FEEDBACK");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(Integer.toString(userId));
+		URI uri = uriBuilder.build(Integer.toString(userId), rideType.toString());
 		
 		Response response = restClientUtil.post(uri, userFeedbackInfo);
 		if (response.getStatus() == Status.OK.getStatusCode()) {

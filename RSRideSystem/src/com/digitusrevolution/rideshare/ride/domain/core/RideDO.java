@@ -651,9 +651,9 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		rideAction.cancelRide(rideId);
 	}
 
-	public float getFare(VehicleSubCategory vehicleSubCategory, User driver) {
+	public float getPrice(RideRequest rideRequest) {
 		RideAction rideAction = new RideAction(this);
-		return rideAction.getFare(vehicleSubCategory, driver);
+		return rideAction.getPrice(rideRequest);
 	}
 }
 

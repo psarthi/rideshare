@@ -16,6 +16,7 @@ import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
+import com.digitusrevolution.rideshare.model.ride.domain.RideType;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
@@ -347,7 +348,7 @@ public class RideOfferBusinessService {
 			transaction = session.beginTransaction();
 			
 			RideSystemBusinessService systemBusinessService = new RideSystemBusinessService();
-			boolean status = systemBusinessService.giveUserFeedback(rideId, rideRequestId, rating);
+			boolean status = systemBusinessService.giveUserFeedback(rideId, rideRequestId, rating, RideType.OfferRide);
 			if (status) {
 				logger.debug("Cancelling Passenger for ride Id/Ride Request Id:"+rideId+","+rideRequestId);
 				RideDO rideDO = new RideDO();

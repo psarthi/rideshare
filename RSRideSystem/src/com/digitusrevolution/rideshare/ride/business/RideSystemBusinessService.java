@@ -8,6 +8,7 @@ import org.hibernate.Transaction;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
+import com.digitusrevolution.rideshare.model.ride.domain.RideType;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
@@ -57,23 +58,31 @@ public class RideSystemBusinessService {
 		return fullRidesInfo;
 	}
 
-	public boolean giveUserFeedback(int rideId, int rideRequestId, float rating) {
+	public boolean giveUserFeedback(int rideId, int rideRequestId, float rating, RideType rideType) {
 		RideDO rideDO = new RideDO();
 		Ride ride = rideDO.get(rideId);
 		RideRequestDO requestDO = new RideRequestDO();
 		RideRequest rideRequest = requestDO.get(rideRequestId);
-		User givenByUser = rideRequest.getPassenger();
+		User givenByUser;
+		int forUserId;
+		if (rideType.equals(RideType.OfferRide)) {
+			givenByUser = ride.getDriver();
+			forUserId = rideRequest.getPassenger().getId();
+		} else {
+			givenByUser = rideRequest.getPassenger();
+			forUserId = ride.getDriver().getId();
+		}
 
 		UserFeedbackInfo feedbackInfo = new UserFeedbackInfo();
 		BasicRide basicRide = JsonObjectMapper.getMapper().convertValue(ride, BasicRide.class);
 		BasicRideRequest basicRideRequest = JsonObjectMapper.getMapper().convertValue(rideRequest, BasicRideRequest.class);
-		BasicUser basicUser = JsonObjectMapper.getMapper().convertValue(givenByUser, BasicUser.class);
+		BasicUser givenByBasicUser = JsonObjectMapper.getMapper().convertValue(givenByUser, BasicUser.class);
 
 		feedbackInfo.setRide(basicRide);
 		feedbackInfo.setRideRequest(basicRideRequest);
 		feedbackInfo.setRating(rating);
-		feedbackInfo.setGivenByUser(basicUser);
-		boolean status = RESTClientUtil.userFeedback(ride.getDriver().getId(), feedbackInfo);
+		feedbackInfo.setGivenByUser(givenByBasicUser);
+		boolean status = RESTClientUtil.userFeedback(forUserId, feedbackInfo, rideType);
 		return status;
 	}
 
