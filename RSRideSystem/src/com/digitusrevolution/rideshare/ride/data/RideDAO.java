@@ -41,7 +41,7 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 	 * e.g. user rating, preference, trust category etc.
 	 * 
 	 */
-	public Set<RideEntity> getValidRides(Set<Integer> rideIds, int seatRequired, RideMode rideRequestMode){
+	public Set<RideEntity> getValidRides(Set<Integer> rideIds, int seatRequired, RideMode rideRequestMode, UserEntity passenger){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
@@ -50,6 +50,7 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 		Set<RideEntity> rideEntities = new HashSet<>(criteria.add(Restrictions.in("id", rideIds))
 		.add(Restrictions.or(Restrictions.eq("status", RideStatus.Planned), Restrictions.eq("status", RideStatus.Started)))
 		.add(Restrictions.eq("seatStatus", RideSeatStatus.Available))
+		.add(Restrictions.ne("driver", passenger))
 		.add(Restrictions.ge("seatOffered", seatRequired)).list());
 		
 		//We will get Free Rides for Free Ride Request and get Free/Paid Rides for Paid Ride Request

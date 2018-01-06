@@ -485,7 +485,7 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 
 		//Step 3 - This will remove all rides which doesn't match the business criteria e.g. if its not available
 		if (!rideIds.isEmpty()){
-			Set<Integer> validRideIds = getValidRides(rideIds, rideRequest.getSeatRequired(), rideRequest.getRideMode());
+			Set<Integer> validRideIds = getValidRides(rideIds, rideRequest.getSeatRequired(), rideRequest.getRideMode(), rideRequest.getPassenger());
 			logger.debug("[Valid Rides Based on Business Criteria]:"+validRideIds);
 			//This will remove all invalid rides from the list
 			pickupRidePoints.keySet().retainAll(validRideIds);
@@ -539,8 +539,10 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	 * e.g. user rating, preference, trust category etc.
 	 * 
 	 */
-	private Set<Integer> getValidRides(Set<Integer> rideIds, int seatRequired, RideMode rideRequestMode){
-		Set<RideEntity> validRideEntities = rideDAO.getValidRides(rideIds, seatRequired, rideRequestMode);
+	private Set<Integer> getValidRides(Set<Integer> rideIds, int seatRequired, RideMode rideRequestMode, User passenger){
+		UserMapper userMapper = new UserMapper();
+		UserEntity passengerEntity = userMapper.getEntity(passenger, false); 
+		Set<RideEntity> validRideEntities = rideDAO.getValidRides(rideIds, seatRequired, rideRequestMode, passengerEntity);
 		Set<Integer> validRideIds = new HashSet<>();
 		for (RideEntity rideEntity : validRideEntities) {
 			validRideIds.add(rideEntity.getId());

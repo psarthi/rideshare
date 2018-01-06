@@ -1,15 +1,16 @@
-var getURL = "http://localhost:8080/RSUserSystem/api/domain/users/1/roles";
-var postURL = "http://localhost:8080/RSRideSystem/api/domain/ridesystem/dummypost";
-var getJSONFormatURL = "http://localhost:8080/RSRideSystem/api/domain/ridesystem/model/ride";
-var getRideJSONFormatURL = "http://localhost:8080/RSRideSystem/api/domain/ridesystem/model/ride";
-var postRideURL = "http://localhost:8080/RSRideSystem/api/domain/ridesystem/ride";
-var getRideRequestJSONFormatURL = "http://localhost:8080/RSRideSystem/api/domain/ridesystem/model/riderequest";
-var postRideRequestURL = "http://localhost:8080/RSRideSystem/api/domain/ridesystem/riderequest";
+var url="http://localhost:8080/"
+var getURL = url+"RSUserSystem/api/domain/users/1/roles";
+var postURL = url+"RSRideSystem/api/domain/ridesystem/dummypost";
+var getJSONFormatURL = url+"RSRideSystem/api/domain/ridesystem/model/ride";
+var getRideJSONFormatURL = url+"RSRideSystem/api/domain/ridesystem/model/ride";
+var postRideURL = url+"RSRideSystem/api/domain/ridesystem/ride";
+var getRideRequestJSONFormatURL = url+"RSRideSystem/api/domain/ridesystem/model/riderequest";
+var postRideRequestURL = url+"RSRideSystem/api/domain/ridesystem/riderequest";
 var postData = { City: 'Bangalore', Age: 25 };
-var getAllRidesURL = "http://localhost:8080/RSRideSystem/api/domain/ridesystem/ride/allpoints";
-var getAllRideRequestURL = "http://localhost:8080/RSRideSystem/api/domain/ridesystem/riderequest/allpoints";
-var searchRidesURL = "http://localhost:8080/RSRideSystem/api/domain/ridesystem/ride/search/{rideRequestId}";
-var searchRideRequestsURL = "http://localhost:8080/RSRideSystem/api/domain/ridesystem/riderequest/search/{rideId}/0/0";
+var getAllRidesURL = url+"RSRideSystem/api/domain/ridesystem/ride/allpoints";
+var getAllRideRequestURL = url+"RSRideSystem/api/domain/ridesystem/riderequest/allpoints";
+var searchRidesURL = url+"RSRideSystem/api/domain/ridesystem/ride/search/{rideRequestId}";
+var searchRideRequestsURL = url+"RSRideSystem/api/domain/ridesystem/riderequest/search/{rideId}/0/0";
 var rideOfferDTO = { ride:'', googleDirection:null};
 
 /*

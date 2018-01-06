@@ -160,16 +160,26 @@ public class RidePointDAO{
 		logger.trace("Time Variation in Seconds:" + variationInSeconds);
 		double minDistance = Double.parseDouble(PropertyReader.getInstance().getProperty("RIDE_SEARCH_MIN_DISTANCE"));
 		Document query;
+		long earliestTimeEpocSecond = rideRequestPoint.getDateTime().minusSeconds(variationInSeconds).toEpochSecond();
+		long latestTimeEpochSecond = rideRequestPoint.getDateTime().plusSeconds(variationInSeconds).toEpochSecond();
+		long currentTimeEpochSecond = DateTimeUtil.getCurrentTimeInUTC().toEpochSecond();
+		//This will set the earliest time to current time which include variation, so that we don't match for the past time
+		//No need to do this for latestTime as while validation it validates for gt and le and if one of them is updated to current time, then other condition is already taken care
+		//e.g. if condition is - time > 9:15 and < 9:00. So if 9:15 is matched to current time, then it doesn't matter what the other condition is as until both condition is valid
+		//result would not come up
+		if (currentTimeEpochSecond >= earliestTimeEpocSecond) {
+			earliestTimeEpocSecond = currentTimeEpochSecond;
+		}
 
 		//***This is important, as depending on the input of rideId, it will either get all matching rides or specific ride
 		//This will get all ride points based on ride request point date time and its variation
 		//Note - we don't have to specifically add drop buffer as its already included while creating the ride request
 		if (rideId==-1){
-			query = new Document("rides.dateTime", new Document("$gte", rideRequestPoint.getDateTime().minusSeconds(variationInSeconds).toEpochSecond())
-					.append("$lte", rideRequestPoint.getDateTime().plusSeconds(variationInSeconds).toEpochSecond()));			
+			query = new Document("rides.dateTime", new Document("$gte", earliestTimeEpocSecond)
+					.append("$lte", latestTimeEpochSecond));			
 		} else {
-			query = new Document("rides.dateTime", new Document("$gte", rideRequestPoint.getDateTime().minusSeconds(variationInSeconds).toEpochSecond())
-					.append("$lte", rideRequestPoint.getDateTime().plusSeconds(variationInSeconds).toEpochSecond())).append("rides.id", rideId);			
+			query = new Document("rides.dateTime", new Document("$gte", earliestTimeEpocSecond)
+					.append("$lte", latestTimeEpochSecond)).append("rides.id", rideId);			
 		}
 
 		Point point = rideRequestPoint.getPoint();

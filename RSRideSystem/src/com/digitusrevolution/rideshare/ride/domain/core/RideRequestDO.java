@@ -681,7 +681,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			}
 			int availableSeats = ride.getSeatOffered() - seatOccupied;
 			//Getting valid ride request Ids based on all business criteria
-			Set<Integer> validRideRequestIds = getValidRideRequests(rideRequestsMap.keySet(), availableSeats, ride.getRideMode());
+			Set<Integer> validRideRequestIds = getValidRideRequests(rideRequestsMap.keySet(), availableSeats, ride.getRideMode(), ride.getDriver());
 			//Removing all the invalid ride request Ids
 			rideRequestsMap.keySet().retainAll(validRideRequestIds);
 			logger.debug("Phase 0 - Valid Ride Request Ids based on all business criteria of Ride Id["+ride.getId()+"]:"+rideRequestsMap.keySet());
@@ -692,8 +692,16 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 
 		//Check if Ride Pickup time is within range
 		long variationInSeconds = DateTimeUtil.getSeconds(rideRequestPoint.getTimeVariation());
+		ZonedDateTime currentTimeInUTC = DateTimeUtil.getCurrentTimeInUTC();
 		ZonedDateTime rideRequestPointEarliestTime = rideRequestPoint.getDateTime().minusSeconds(variationInSeconds);
 		ZonedDateTime rideRequestPointLatestTime = rideRequestPoint.getDateTime().plusSeconds(variationInSeconds);
+		//Imp. No need to overwrite latestTime as during validation it checks for both times and if one fails, other has no meaning
+		//e.g. validation condition below - ridePointTime.isAfter(rideRequestPointEarliestTime) && ridePointTime.isBefore(rideRequestPointLatestTime)
+		//This will take care of not matching any ride request before the current time
+		if (currentTimeInUTC.isAfter(rideRequestPointEarliestTime)) {
+			rideRequestPointEarliestTime = currentTimeInUTC;
+		}
+		
 		int distanceVariation = rideRequestPoint.getDistanceVariation();
 
 		//Check if Ride Pickup distance is within range
@@ -823,8 +831,10 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * e.g. user rating, preference, trust category etc.
 	 * 
 	 */
-	private Set<Integer> getValidRideRequests(Set<Integer> rideRequestIds, int availableSeats, RideMode createdRideMode){		
-		Set<RideRequestEntity> validRideRequestEntities = rideRequestDAO.getValidRideRequests(rideRequestIds, availableSeats, createdRideMode);
+	private Set<Integer> getValidRideRequests(Set<Integer> rideRequestIds, int availableSeats, RideMode createdRideMode, User driver){
+		UserMapper userMapper = new UserMapper();
+		UserEntity driverEntity = userMapper.getEntity(driver, false); 
+		Set<RideRequestEntity> validRideRequestEntities = rideRequestDAO.getValidRideRequests(rideRequestIds, availableSeats, createdRideMode, driverEntity);
 		Set<Integer> validRideRequestIds = new HashSet<>();
 		for (RideRequestEntity rideRequestEntity : validRideRequestEntities) {
 			validRideRequestIds.add(rideRequestEntity.getId());
@@ -940,7 +950,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * 
 	 * - Check if the ride is unfulfilled, if yes, then you can cancel
 	 * - Update the status of ride request as cancelled
-	 * - If its fulfilled, then check if the passenger has been picked
+	 * - If its fulfilled, then check if the passenger has not been dropped (Allow user to cancel even he/she has been picked to avoid unnecessary blocking of their money and misuse from driver side)
 	 * - If its not picked, then you can cancel, else it can't be cancelled
 	 * - If not picked, then call Cancel Ride Request function of ride and Update the status of ride request as cancelled 
 	 * 
@@ -959,13 +969,13 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		} else {
 			int rideId = rideRequest.getAcceptedRide().getId();
 			RideDO rideDO = new RideDO();
-			if (rideRequest.getPassengerStatus().equals(PassengerStatus.Confirmed)){
+			if (!rideRequest.getPassengerStatus().equals(PassengerStatus.Dropped)){
 				//This will cancel the ride request from confirmed ride as well as update the cancellation status in ride request
 				rideDO.cancelAcceptedRideRequest(rideId, rideRequestId, CancellationType.RideRequest);
 				//This will just ensure that we do auto match for the Ride which has got affected because of this
 				autoMatchRideRequest(rideId);
 			} else {
-				throw new NotAcceptableException("Ride request can't be cancelled as its already picked up. "
+				throw new NotAcceptableException("Ride request can't be cancelled as passenger has already been dropped"
 						+ "Passenger current status:"+rideRequest.getPassengerStatus());
 			}
 		}
@@ -1065,6 +1075,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		PreBookingRideRequestResult preBookingRideRequestResult = new PreBookingRideRequestResult();
 		preBookingRideRequestResult.setMaxFare(price);
 		preBookingRideRequestResult.setPendingBills(pendingBills);
+		preBookingRideRequestResult.setGoogleDistance(googleDistance);
 
 		return preBookingRideRequestResult;
 	}

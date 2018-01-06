@@ -593,7 +593,7 @@ public class RideAction {
 	 * High level logic -
 	 * 
 	 * - Check if ride request has been accepted
-	 * - Check if ride passenger state is in confirmed
+	 * - Check if ride passenger has not been dropped (Allow user to cancel even he/she has been picked to avoid unnecessary blocking of their money and misuse from driver side)
 	 * - If yes, then add ride request in cancelled ride requests collection
 	 * - Remove passenger of that ride request from ride passenger collection
 	 * - Change the ride seat status to available - This would always become available as we are freeing up at least one seat in any case,
@@ -623,8 +623,8 @@ public class RideAction {
 		if (rideRequest.getAcceptedRide() !=null ? rideRequest.getAcceptedRide().getId() == ride.getId() : false){
 			//Check if ride has not been cancelled or finished
 			if (!rideStatus.equals(RideStatus.Cancelled) || !rideStatus.equals(RideStatus.Finished)){
-				//Check if passenger is in confirmed state
-				if (passengerStatus.equals(PassengerStatus.Confirmed)){
+				//Check if passenger has not been dropped
+				if (!passengerStatus.equals(PassengerStatus.Dropped)){
 					//IMP - Remove passenger from the list, else it would add again due to cascade effect
 					//Reason for deleting using RidePassengerDO and not just by removing from the ride list
 					//as deletion is not working and it may be because we are not updating ride passenger of passenger 
@@ -673,7 +673,7 @@ public class RideAction {
 					ridesInfo.setRide(ride);
 					ridesInfo.setRideRequest(rideRequest);
 				} else {
-					throw new NotAcceptableException("Ride request can't be cancelled as Passenger has already been picked up. "
+					throw new NotAcceptableException("Ride request can't be cancelled as Passenger has already been dropped."
 							+ "Passenger current status:"+passengerStatus);
 				}
 			} else {

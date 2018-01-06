@@ -41,7 +41,7 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 	 * e.g. user rating, preference, trust category etc.
 	 * 
 	 */
-	public Set<RideRequestEntity> getValidRideRequests(Set<Integer> rideRequestIds, int availableSeats, RideMode createdRideMode){
+	public Set<RideRequestEntity> getValidRideRequests(Set<Integer> rideRequestIds, int availableSeats, RideMode createdRideMode, UserEntity driver){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
@@ -49,6 +49,7 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 		@SuppressWarnings("unchecked")
 		Set<RideRequestEntity> rideRequestEntities = new HashSet<>(criteria.add(Restrictions.in("id", rideRequestIds))
 				.add(Restrictions.eq("status", RideRequestStatus.Unfulfilled))
+				.add(Restrictions.ne("passenger", driver))
 				.add(Restrictions.le("seatRequired", availableSeats)).list());
 		
 		//This will ensure we only get Paid Rides for paid Ride Request
