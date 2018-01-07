@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 
 import org.apache.logging.log4j.LogManager;
@@ -48,25 +49,29 @@ public class RideRequestBusinessService {
 			GoogleDistance googleDistance = routeDO.getDistance(rideRequest.getPickupPoint().getPoint(), rideRequest.getDropPoint().getPoint(),pickupTimeUTC);
 			//This will get first element
 			Element element = googleDistance.getRows().get(0).getElements().get(0);
-			int travelDistance = element.getDistance().getValue();
-			//IMP - Its important to get duration in traffic instead of using standard duration as traffic duration would cover actual time in traffic condition
-			//This is not applicable for Ride Offer as we are calculating time of each point based on speed and distance and for google route api as 
-			//there is no traffic time for each steps, its only at higher level on the overall time in traffic which would not be applicable for offer ride
-			int travelTime = element.getDurationInTraffic().getValue();
+			if (element.getStatus().equals("OK")) {
+				//No need to set the travel distance again as its already set from frontend and we there is any change in distance it may affect the fair price
+				//which is not appropriate as we have already confirmed the fair to customer
+				//int travelDistance = element.getDistance().getValue();
+				//rideRequest.setTravelDistance(travelDistance);
+				//IMP - Its important to get duration in traffic instead of using standard duration as traffic duration would cover actual time in traffic condition
+				//This is not applicable for Ride Offer as we are calculating time of each point based on speed and distance and for google route api as 
+				//there is no traffic time for each steps, its only at higher level on the overall time in traffic which would not be applicable for offer ride
+				int travelTime = element.getDurationInTraffic().getValue();
+				rideRequest.setTravelTime(travelTime);
+				
+				//This will set Pickup and Drop address
+				//Actually address should be set from Places API in Android itself, to avoid ambiguity
+				if (rideRequest.getPickupPointAddress()==null) rideRequest.setPickupPointAddress(googleDistance.getOriginAddresses().get(0));
+				if (rideRequest.getDropPointAddress()==null) rideRequest.setDropPointAddress(googleDistance.getDestinationAddresses().get(0));
 
-			//This will set Pickup and Drop address
-			//Actually address should be set from Places API in Android itself, to avoid ambiguity
-			if (rideRequest.getPickupPointAddress()==null) rideRequest.setPickupPointAddress(googleDistance.getOriginAddresses().get(0));
-			if (rideRequest.getDropPointAddress()==null) rideRequest.setDropPointAddress(googleDistance.getDestinationAddresses().get(0));
-
-			rideRequest.setTravelDistance(travelDistance);
-			rideRequest.setTravelTime(travelTime);
-
-			RideRequestDO rideRequestDO = new RideRequestDO();
-			rideRequestId = rideRequestDO.requestRide(JsonObjectMapper.getMapper().convertValue(rideRequest, RideRequest.class));
-			RideDO rideDO = new RideDO();
-			rideDO.autoMatchRide(rideRequestId);
-
+				RideRequestDO rideRequestDO = new RideRequestDO();
+				rideRequestId = rideRequestDO.requestRide(JsonObjectMapper.getMapper().convertValue(rideRequest, RideRequest.class));
+				RideDO rideDO = new RideDO();
+				rideDO.autoMatchRide(rideRequestId);				
+			} else {
+				throw new NotFoundException("No Valid Route Found");
+			}
 			transaction.commit();
 		} catch (RuntimeException e) {
 			if (transaction!=null){
