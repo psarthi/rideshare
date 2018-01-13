@@ -13,7 +13,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 
 public class FullUser extends BasicUser {
 	
-	private Collection<FullGroup> groups = new HashSet<FullGroup>();
+	private Collection<BasicGroup> groups = new HashSet<BasicGroup>();
 	private Collection<BasicUser> friends = new HashSet<BasicUser>();
 	//Don't change this to FullRide or FullRideRequest as it will unnecessarily cause load on the system 
 	//which is not required as if we need details Ride Request or Ride, then we should call Ride Server and not User Service
@@ -23,22 +23,22 @@ public class FullUser extends BasicUser {
 	private Collection<Bill> bills = new HashSet<Bill>();
 	private Collection<UserFeedback> feedbacks = new LinkedList<UserFeedback>();
 	private Collection<FriendRequest> friendRequests = new HashSet<FriendRequest>();	
-	private Collection<FullGroup> groupInvites = new HashSet<FullGroup>();
+	private Collection<BasicGroup> groupInvites = new HashSet<BasicGroup>();
 
 
-	public Collection<FullGroup> getGroups() {
+	public Collection<BasicGroup> getGroups() {
 		return groups;
 	}
 
-	public void setGroups(Collection<FullGroup> groups) {
+	public void setGroups(Collection<BasicGroup> groups) {
 		this.groups = groups;
 	}
 
-	public Collection<FullGroup> getGroupInvites() {
+	public Collection<BasicGroup> getGroupInvites() {
 		return groupInvites;
 	}
 
-	public void setGroupInvites(Collection<FullGroup> groupInvites) {
+	public void setGroupInvites(Collection<BasicGroup> groupInvites) {
 		this.groupInvites = groupInvites;
 	}
 

@@ -64,6 +64,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.FullUser;
+import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
 import com.digitusrevolution.rideshare.model.user.dto.UserProfile;
 import com.digitusrevolution.rideshare.model.user.dto.UserSignInResult;
 import com.digitusrevolution.rideshare.user.data.GroupDAO;
@@ -484,7 +485,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		return userProfile;
 	}
 	
-	public List<BasicGroup> getBasicGroups(int userId, int page){
+	public List<GroupDetail> getGroups(int userId, int page){
 		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
 		int itemsCount = 10;
 		int startIndex = page*itemsCount; 
@@ -495,15 +496,15 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		groupMapper.getDomainModels(groups, groupEntities, false);
 		//this will sort the list further
 		Collections.sort(groups);
-		LinkedList<BasicGroup> basicGroups = new LinkedList<>();
+		LinkedList<GroupDetail> groupDetails = new LinkedList<>();
 		GroupDAO groupDAO = new GroupDAO();
 		for (Group group: groups) {
-			BasicGroup basicGroup = new BasicGroup();
-			basicGroup = JsonObjectMapper.getMapper().convertValue(group, BasicGroup.class);
-			basicGroup.setMemberCount(groupDAO.getMemberCount(group.getId()));
-			basicGroups.add(basicGroup);
+			GroupDetail groupDetail = new GroupDetail();
+			groupDetail = JsonObjectMapper.getMapper().convertValue(group, GroupDetail.class);
+			groupDetail.setMemberCount(groupDAO.getMemberCount(group.getId()));
+			groupDetails.add(groupDetail);
 		}
-		return basicGroups;
+		return groupDetails;
 	}
 	
 }

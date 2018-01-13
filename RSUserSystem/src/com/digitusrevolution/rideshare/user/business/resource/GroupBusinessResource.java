@@ -15,9 +15,8 @@ import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
-import com.digitusrevolution.rideshare.model.user.dto.FullGroup;
+import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
 import com.digitusrevolution.rideshare.user.business.GroupBusinessService;
-import com.digitusrevolution.rideshare.user.business.UserBusinessService;
 
 @Path("/groups")
 @Produces(MediaType.APPLICATION_JSON)
@@ -37,16 +36,17 @@ public class GroupBusinessResource {
 	public Response createGroup(BasicGroup group){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		int id = groupBusinessService.createGroup(group);
-		//Since we are trying to get all data before even committing, all child objects may not come so its cleaner to have getAllData post commit in different transaction
-		FullGroup createdGroup = groupBusinessService.getGroup(id);
+		//Since we are trying to get all data before even committing, all child objects may not come 
+		//so its cleaner to have get All updated data post commit in different transaction
+		GroupDetail createdGroup = groupBusinessService.getGroupDetails(id);
 		return Response.ok().entity(createdGroup).build();
 	}
 
 	@GET
 	@Path("/{id}")
-	public Response getGroup(@PathParam("id") int groupId){
+	public Response getGroupDetails(@PathParam("id") int groupId){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
-		FullGroup group = groupBusinessService.getGroup(groupId);
+		GroupDetail group = groupBusinessService.getGroupDetails(groupId);
 		return Response.ok().entity(group).build();
 	}
 

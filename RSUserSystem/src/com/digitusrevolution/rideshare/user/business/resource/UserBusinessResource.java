@@ -32,6 +32,7 @@ import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.FullUser;
 import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInInfo;
+import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
 import com.digitusrevolution.rideshare.model.user.dto.SignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.UserFeedbackInfo;
 import com.digitusrevolution.rideshare.model.user.dto.UserProfile;
@@ -324,10 +325,10 @@ public class UserBusinessResource {
 	
 	@GET
 	@Path("/{userId}/groups")
-	public Response getBasicGroups(@PathParam("userId") int userId, @QueryParam("page") int page) {
+	public Response getGroups(@PathParam("userId") int userId, @QueryParam("page") int page) {
 		UserBusinessService userBusinessService = new UserBusinessService();
-		List<BasicGroup> groups = userBusinessService.getBasicGroups(userId, page);
-		GenericEntity<List<BasicGroup>> entity = new GenericEntity<List<BasicGroup>>(groups) {};
+		List<GroupDetail> groups = userBusinessService.getGroups(userId, page);
+		GenericEntity<List<GroupDetail>> entity = new GenericEntity<List<GroupDetail>>(groups) {};
 		return Response.ok(entity).build();
 	}
 

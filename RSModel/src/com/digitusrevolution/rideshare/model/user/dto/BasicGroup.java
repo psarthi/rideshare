@@ -21,9 +21,6 @@ public class BasicGroup {
 	private String information;
 	private int genuineVotes;
 	private int fakeVotes;
-	//This is an additional property than DO reason for having this 
-	//so that we don't have to get full list of member to get the count
-	private int memberCount;
 
 	public int getId() {
 		return id;
@@ -145,14 +142,6 @@ public class BasicGroup {
 
 	public void setFakeVotes(int fakeVotes) {
 		this.fakeVotes = fakeVotes;
-	}
-
-	public int getMemberCount() {
-		return memberCount;
-	}
-
-	public void setMemberCount(int memberCount) {
-		this.memberCount = memberCount;
 	}
 }
 

@@ -21,6 +21,7 @@ import com.digitusrevolution.rideshare.common.mapper.user.MembershipRequestMappe
 import com.digitusrevolution.rideshare.common.mapper.user.core.GroupMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
+import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
 import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
@@ -31,6 +32,8 @@ import com.digitusrevolution.rideshare.model.user.domain.GroupFeedback;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
+import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
 import com.digitusrevolution.rideshare.user.data.GroupDAO;
 import com.digitusrevolution.rideshare.user.domain.MembershipRequestDO;
 
@@ -420,6 +423,12 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		return users;
 	}
 
+	public GroupDetail getGroupDetails(int groupId) {
+		Group group = get(groupId);
+		GroupDetail groupDetail = JsonObjectMapper.getMapper().convertValue(group, GroupDetail.class);
+		groupDetail.setMemberCount(groupDAO.getMemberCount(groupId));
+		return groupDetail;
+	}
 
 }
 

@@ -15,6 +15,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.FullGroup;
+import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
 import com.digitusrevolution.rideshare.user.domain.core.GroupDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
@@ -50,17 +51,16 @@ public class GroupBusinessService {
 		return id;
 	}
 	
-	public FullGroup getGroup(int groupId){
+	public GroupDetail getGroupDetails(int groupId){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		FullGroup fullGroup = null;
+		GroupDetail groupDetail = null;
 		try {
 			transaction = session.beginTransaction();
 			
 			GroupDO groupDO = new GroupDO();
-			Group group = groupDO.getAllData(groupId);
-			fullGroup = JsonObjectMapper.getMapper().convertValue(group, FullGroup.class);
+			groupDetail = groupDO.getGroupDetails(groupId);
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -76,7 +76,7 @@ public class GroupBusinessService {
 				session.close();				
 			}
 		}
-		return fullGroup;
+		return groupDetail;
 	}
 	
 	public List<BasicUser> getMembers(int groupId, int page){
