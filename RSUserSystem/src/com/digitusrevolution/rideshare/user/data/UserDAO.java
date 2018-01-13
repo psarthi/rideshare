@@ -1,18 +1,25 @@
 package com.digitusrevolution.rideshare.user.data;
 
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
+import com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
+import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
 public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
@@ -74,6 +81,35 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 				.setProjection(Projections.rowCount());
 		int size = (int) Long.parseLong(criteria.uniqueResult().toString());
 		return size;
+	}
+	
+	/*
+	 * Purpose - This will get list of groups based on startIndex to support pagination
+	 * 
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public List<GroupEntity> getGroups(int userId, int startIndex){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
+		Criteria criteria = session.createCriteria(entityClass)
+				.add(Restrictions.eq("id", userId))
+				.createCriteria("groups", "grp",JoinType.RIGHT_OUTER_JOIN)
+					.addOrder(Order.asc("name"))
+					.setFirstResult(startIndex)
+					.setMaxResults(resultLimit)
+					.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		
+		//VERY IMP - Get the result in Set else you would get duplicate values
+		Set list = new HashSet<>(criteria.list());
+		List<GroupEntity> groupEntities = new LinkedList<>();
+		Iterator iter = list.iterator();
+		while (iter.hasNext() ) {
+		    Map map = (Map) iter.next();
+		    GroupEntity groupEntity = (GroupEntity) map.get("grp");
+		    groupEntities.add(groupEntity);
+		}
+		
+		return groupEntities;
 	}
 
 }

@@ -1,15 +1,13 @@
 package com.digitusrevolution.rideshare.model.user.dto;
 
 import java.time.ZonedDateTime;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
 
 import com.digitusrevolution.rideshare.model.user.domain.MembershipForm;
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
-import com.digitusrevolution.rideshare.model.user.domain.GroupFeedback;
-import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+//Reason behind this jsonignore so that it doesn't throw error while converting from Domain Model to DTO which has less fields
+@JsonIgnoreProperties (ignoreUnknown=true)
 public class BasicGroup {
 
 	private int id;
@@ -23,6 +21,9 @@ public class BasicGroup {
 	private String information;
 	private int genuineVotes;
 	private int fakeVotes;
+	//This is an additional property than DO reason for having this 
+	//so that we don't have to get full list of member to get the count
+	private int memberCount;
 
 	public int getId() {
 		return id;
@@ -144,6 +145,14 @@ public class BasicGroup {
 
 	public void setFakeVotes(int fakeVotes) {
 		this.fakeVotes = fakeVotes;
+	}
+
+	public int getMemberCount() {
+		return memberCount;
+	}
+
+	public void setMemberCount(int memberCount) {
+		this.memberCount = memberCount;
 	}
 }
 

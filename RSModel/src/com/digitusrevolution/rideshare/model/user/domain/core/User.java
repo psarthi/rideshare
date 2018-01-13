@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 //This would enable deserialization from DTO to Domain model e.g. UserDTO contain otp field which is not here, so it would be ignored
 //we don't want use jsonignore for otp field in userDTO else deserialization of userRegistration would remove otp and you would get null value for that
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class User {
+public class User implements Comparable<User>{
 	
 	private int id;
 	private String firstName;
@@ -328,6 +328,13 @@ public class User {
 
 	public void setRegistrationType(RegistrationType registrationType) {
 		this.registrationType = registrationType;
+	}
+
+	@Override
+	public int compareTo(User user) {
+		//Negative number is desc order, positive is asc order
+		//This will return in assending order
+		return this.firstName.compareTo(user.firstName);
 	}
 
 }

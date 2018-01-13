@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,13 +26,17 @@ import com.digitusrevolution.rideshare.common.exception.EmailExistException;
 import com.digitusrevolution.rideshare.common.exception.OTPFailedException;
 import com.digitusrevolution.rideshare.common.exception.SignInFailedException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
+import com.digitusrevolution.rideshare.common.mapper.billing.core.TransactionMapper;
+import com.digitusrevolution.rideshare.common.mapper.user.core.GroupMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientImpl;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
+import com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategoryName;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
@@ -42,6 +47,7 @@ import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
+import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
@@ -52,12 +58,15 @@ import com.digitusrevolution.rideshare.model.user.domain.RoleName;
 import com.digitusrevolution.rideshare.model.user.domain.UserFeedback;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
+import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
+import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.FullUser;
 import com.digitusrevolution.rideshare.model.user.dto.UserProfile;
 import com.digitusrevolution.rideshare.model.user.dto.UserSignInResult;
+import com.digitusrevolution.rideshare.user.data.GroupDAO;
 import com.digitusrevolution.rideshare.user.data.UserDAO;
 import com.digitusrevolution.rideshare.user.domain.CountryDO;
 import com.digitusrevolution.rideshare.user.domain.OTPDO;
@@ -473,6 +482,28 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		//TODO implement mutual friends and common groups later
 		
 		return userProfile;
+	}
+	
+	public List<BasicGroup> getBasicGroups(int userId, int page){
+		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
+		int itemsCount = 10;
+		int startIndex = page*itemsCount; 
+		List<GroupEntity> groupEntities = userDAO.getGroups(userId, startIndex);
+		GroupMapper groupMapper = new GroupMapper();
+		LinkedList<Group> groups = new LinkedList<>();
+		//We need just basic group information, so no need to fetch child
+		groupMapper.getDomainModels(groups, groupEntities, false);
+		//this will sort the list further
+		Collections.sort(groups);
+		LinkedList<BasicGroup> basicGroups = new LinkedList<>();
+		GroupDAO groupDAO = new GroupDAO();
+		for (Group group: groups) {
+			BasicGroup basicGroup = new BasicGroup();
+			basicGroup = JsonObjectMapper.getMapper().convertValue(group, BasicGroup.class);
+			basicGroup.setMemberCount(groupDAO.getMemberCount(group.getId()));
+			basicGroups.add(basicGroup);
+		}
+		return basicGroups;
 	}
 	
 }

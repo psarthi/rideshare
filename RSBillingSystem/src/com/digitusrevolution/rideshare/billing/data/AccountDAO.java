@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.billing.data;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -63,7 +64,7 @@ public class AccountDAO extends GenericDAOImpl<AccountEntity, Integer>{
 	 * 
 	 * 
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List<TransactionEntity> getTransactions(int accountNumber, int startIndex){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
@@ -75,7 +76,8 @@ public class AccountDAO extends GenericDAOImpl<AccountEntity, Integer>{
 					.setMaxResults(resultLimit)
 					.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
 		
-		List list = criteria.list();
+		//VERY IMP - Get the result in Set else you would get duplicate values
+		Set list = new HashSet<>(criteria.list());
 		List<TransactionEntity> transactionEntitiesList = new LinkedList<>();
 		Iterator iter = list.iterator();
 		while (iter.hasNext() ) {

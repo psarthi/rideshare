@@ -3,6 +3,8 @@ package com.digitusrevolution.rideshare.user.domain.core;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.management.openmbean.InvalidKeyException;
@@ -14,10 +16,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
+import com.digitusrevolution.rideshare.common.mapper.billing.core.TransactionMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.MembershipRequestMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.GroupMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
+import com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
 import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
@@ -396,10 +401,25 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 			throw new WebApplicationException("User can't vote for this group as you are not a member. Group id, User id:"+groupId+","+memberUserId);
 		}
 	}
-
-	public void searchGroup(){
-
+	
+	public int getMemberCount(int groupId) {
+		return groupDAO.getMemberCount(groupId);
 	}
+	
+	public List<User> getMembers(int groupId, int page){
+		
+		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
+		int itemsCount = 10;
+		int startIndex = page*itemsCount; 
+		List<UserEntity> userEntities = groupDAO.getMembers(groupId, startIndex);
+		UserMapper userMapper = new UserMapper();
+		LinkedList<User> users = new LinkedList<>();
+		userMapper.getDomainModels(users, userEntities, false);
+		//this will sort the list further
+		Collections.sort(users);
+		return users;
+	}
+
 
 }
 

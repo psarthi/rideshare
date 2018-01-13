@@ -1,14 +1,23 @@
 package com.digitusrevolution.rideshare.user.data;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
@@ -64,5 +73,31 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 		int size = (int) Long.parseLong(criteria.uniqueResult().toString());
 		return size;
 	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public List<UserEntity> getMembers(int groupId, int startIndex){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
+		Criteria criteria = session.createCriteria(entityClass)
+				.add(Restrictions.eq("id", groupId))
+				.createCriteria("members", "mbr",JoinType.RIGHT_OUTER_JOIN)
+					.addOrder(Order.asc("firstName"))
+					.setFirstResult(startIndex)
+					.setMaxResults(resultLimit)
+					.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+
+		//VERY IMP - Get the result in Set else you would get duplicate values
+		Set list = new HashSet<>(criteria.list());
+		List<UserEntity> userEntities = new LinkedList<>();
+		Iterator iter = list.iterator();
+		while (iter.hasNext() ) {
+		    Map map = (Map) iter.next();
+		    UserEntity userEntity = (UserEntity) map.get("mbr");
+		    userEntities.add(userEntity);
+		}
+		
+		return userEntities;
+	}
+
 
 }

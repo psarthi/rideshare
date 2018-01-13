@@ -10,7 +10,7 @@ import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.GroupFeedback;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 
-public class Group {
+public class Group implements Comparable<Group>{
 
 	private int id;
 	private String name;
@@ -190,6 +190,13 @@ public class Group {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public int compareTo(Group group) {
+		//Negative number is desc order, positive is asc order
+		//This will return in assending order
+		return this.name.compareTo(group.name);
 	}
 }
 

@@ -126,11 +126,12 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
 		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
-		List rideRequestEntities = criteria.add(Restrictions.eq("passenger", passenger))
+		//VERY IMP - Get the result in Set else you would get duplicate values
+		Set rideRequestEntities = new HashSet<>(criteria.add(Restrictions.eq("passenger", passenger))
 				.addOrder(Order.desc("pickupTime"))
 				.setFirstResult(startIndex)
 				.setMaxResults(resultLimit)
-				.list();
+				.list());
 		
 		logger.debug("Ride Request List Size:"+rideRequestEntities.size());		
 		List<RideRequestEntity> rideRequestEntitiesList = new LinkedList<>(rideRequestEntities);

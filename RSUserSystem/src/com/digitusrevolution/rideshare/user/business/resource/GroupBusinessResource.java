@@ -1,17 +1,23 @@
 package com.digitusrevolution.rideshare.user.business.resource;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
+import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.FullGroup;
 import com.digitusrevolution.rideshare.user.business.GroupBusinessService;
+import com.digitusrevolution.rideshare.user.business.UserBusinessService;
 
 @Path("/groups")
 @Produces(MediaType.APPLICATION_JSON)
@@ -42,6 +48,15 @@ public class GroupBusinessResource {
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		FullGroup group = groupBusinessService.getGroup(groupId);
 		return Response.ok().entity(group).build();
+	}
+
+	@GET
+	@Path("/{id}/members")
+	public Response getMembers(@PathParam("id") int groupId, @QueryParam("page") int page) {
+		GroupBusinessService groupBusinessService = new GroupBusinessService();
+		List<BasicUser> users = groupBusinessService.getMembers(groupId, page);
+		GenericEntity<List<BasicUser>> entity = new GenericEntity<List<BasicUser>>(users) {};
+		return Response.ok(entity).build();
 	}
 
 }
