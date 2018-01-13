@@ -114,11 +114,11 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	/*
 	 * Purpose - Create group by setting additional properties such as createdDate, Owner etc.
 	 */
-	public int createGroup(Group group, int userId){
+	public int createGroup(Group group){
 		ZonedDateTime currentTimeInUTC = DateTimeUtil.getCurrentTimeInUTC();
 		group.setCreatedDateTime(currentTimeInUTC);
 		UserDO userDO = new UserDO();
-		User user = userDO.get(userId);
+		User user = userDO.get(group.getOwner().getId());
 		group.setOwner(user);
 		//Its important to add owner as group member as well
 		group.getMembers().add(user);

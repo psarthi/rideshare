@@ -4,6 +4,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.management.openmbean.InvalidKeyException;
@@ -13,12 +14,13 @@ import javax.ws.rs.WebApplicationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
+import com.digitusrevolution.rideshare.billing.data.AccountDAO;
 import com.digitusrevolution.rideshare.common.exception.InSufficientBalanceException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
-import com.digitusrevolution.rideshare.common.inf.GenericDAO;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.AccountMapper;
+import com.digitusrevolution.rideshare.common.mapper.billing.core.TransactionMapper;
 import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
+import com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Purpose;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Remark;
@@ -31,14 +33,14 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 	private Account account;
 	private AccountEntity accountEntity;
 	private AccountMapper accountMapper;
-	private final GenericDAO<AccountEntity, Integer> genericDAO; 
+	private AccountDAO accountDAO;
 	private static final Logger logger = LogManager.getLogger(VirtualAccountDO.class.getName());
 	
 	public VirtualAccountDO() {
 		account = new Account();
 		accountEntity = new AccountEntity();
 		accountMapper = new AccountMapper();
-		genericDAO = new GenericDAOImpl<>(AccountEntity.class);
+		accountDAO = new AccountDAO();
 	}
 
 	public void setAccount(Account account) {
@@ -54,7 +56,7 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 	@Override
 	public List<Account> getAll() {
 		List<Account> accounts = new ArrayList<>();
-		List<AccountEntity> accountEntities = genericDAO.getAll();
+		List<AccountEntity> accountEntities = accountDAO.getAll();
 		for (AccountEntity accountEntity : accountEntities) {
 			setAccountEntity(accountEntity);
 			accounts.add(account);
@@ -68,7 +70,7 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+account.getNumber());
 		}
 		setAccount(account);
-		genericDAO.update(accountEntity);
+		accountDAO.update(accountEntity);
 	}
 
 	@Override
@@ -79,13 +81,13 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 	@Override
 	public int create(Account account) {
 		setAccount(account);
-		int id = genericDAO.create(accountEntity);
+		int id = accountDAO.create(accountEntity);
 		return id;
 	}
 
 	@Override
 	public Account get(int number) {
-		accountEntity = genericDAO.get(number);
+		accountEntity = accountDAO.get(number);
 		if (accountEntity == null){
 			throw new NotFoundException("No Data found with number: "+number);
 		}
@@ -104,7 +106,7 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 	public void delete(int number) {
 		account = get(number);
 		setAccount(account);
-		genericDAO.delete(accountEntity);
+		accountDAO.delete(accountEntity);
 	}
 	
 	@Override
@@ -188,19 +190,13 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
 		int itemsCount = 10;
 		int startIndex = page*itemsCount; 
-		int endIndex = (page+1)*itemsCount;
-		
-		account = getAllData(accountNumber);
-		List<Transaction> transactions = new ArrayList<>(account.getTransactions());
+		List<TransactionEntity> transactionEntities = accountDAO.getTransactions(accountNumber, startIndex);
+		TransactionMapper transactionMapper = new TransactionMapper();
+		LinkedList<Transaction> transactions = new LinkedList<>();
+		transactionMapper.getDomainModels(transactions, transactionEntities, true);
+		//this will sort the list further
 		Collections.sort(transactions);
-
-		//This will take care of issue - java.lang.IndexOutOfBoundsException: toIndex = 10 when size is less than 10
-		if (endIndex > transactions.size()) endIndex = transactions.size();
-		//This is required to handle those scenario where you get request your startindex itself is more than the size e.g. on scroll of rides list it may send additional request
-		if (startIndex > transactions.size()) startIndex = transactions.size();
-
-	
-		return transactions.subList(startIndex, endIndex);
+		return transactions;
 	}
 }
 

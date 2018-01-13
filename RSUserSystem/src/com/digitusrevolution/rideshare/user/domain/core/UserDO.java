@@ -461,20 +461,14 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		return profileRating;
 	}
 	
-	public UserProfile getUserProfile(int userId, BasicUser signInUser) {
+	public UserProfile getUserProfile(int userId) {
 		
-		user = getAllData(userId);
+		user = get(userId);
 		UserProfile userProfile = new UserProfile();
 		userProfile.setUser(JsonObjectMapper.getMapper().convertValue(user, BasicUser.class));
 		
-		int completedRidesCount = 0;
-		for (Ride ride: user.getRidesOffered()) {
-			if (ride.getStatus().equals(RideStatus.Finished)) {
-				completedRidesCount++;
-			}
-		}
-		userProfile.setOfferedRides(completedRidesCount);
-		userProfile.setRidesTaken(user.getRidesTaken().size());
+		userProfile.setOfferedRides(userDAO.getRidesOffered(userId));	
+		userProfile.setRidesTaken(userDAO.getRidesTaken(userId));
 		
 		//TODO implement mutual friends and common groups later
 		

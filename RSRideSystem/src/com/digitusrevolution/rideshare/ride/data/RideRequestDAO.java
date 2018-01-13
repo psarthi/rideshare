@@ -19,6 +19,7 @@ import org.hibernate.criterion.Restrictions;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
@@ -88,8 +89,11 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 	}
 	
 	/*
+	 * Commented this as we have found a better way to get the result set as shown in another function below
+	 * Keeping it here for reference purpose and in case in future if required
+	 * 
 	 * Purpose - Get sublist of ride request for a user sorted by pickupTime
-	 */
+	 * 
 	public List<RideRequestEntity> getRideRequests(UserEntity passenger, int startIndex, int endIndex){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -114,6 +118,25 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Integer>{
 		
 		return rideRequestEntitiesSubList;		
 	}
+	 */
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public List<RideRequestEntity> getRideRequests(UserEntity passenger, int startIndex){
+
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass);
+		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
+		List rideRequestEntities = criteria.add(Restrictions.eq("passenger", passenger))
+				.addOrder(Order.desc("pickupTime"))
+				.setFirstResult(startIndex)
+				.setMaxResults(resultLimit)
+				.list();
+		
+		logger.debug("Ride Request List Size:"+rideRequestEntities.size());		
+		List<RideRequestEntity> rideRequestEntitiesList = new LinkedList<>(rideRequestEntities);
+		return rideRequestEntitiesList;		
+	}
+
 
 	/*
 	 * Purpose - Get the status of ride request, this is required many times, so instead of using get and then fetching the status

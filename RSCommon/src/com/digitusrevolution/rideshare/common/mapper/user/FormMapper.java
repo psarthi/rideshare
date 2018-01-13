@@ -13,7 +13,7 @@ public class FormMapper implements Mapper<MembershipForm, FormEntity>{
 		FormEntity formEntity = new FormEntity();
 		formEntity.setId(form.getId());
 		formEntity.setUserUniqueIdentifierName(form.getUserUniqueIdentifierName());
-		formEntity.setQuestions(form.getQuestions());
+		if (form.getQuestions()!=null) formEntity.setQuestions(form.getQuestions());
 		formEntity.setRemark(form.getRemark());
 		return formEntity;
 	}
@@ -28,7 +28,7 @@ public class FormMapper implements Mapper<MembershipForm, FormEntity>{
 		MembershipForm form = new MembershipForm();
 		form.setId(formEntity.getId());
 		form.setUserUniqueIdentifierName(formEntity.getUserUniqueIdentifierName());
-		form.setQuestions(formEntity.getQuestions());
+		if (formEntity.getQuestions()!=null) form.setQuestions(formEntity.getQuestions());
 		form.setRemark(formEntity.getRemark());
 		return form;
 	}

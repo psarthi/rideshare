@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,7 +23,9 @@ public class FormEntity {
 	private int id;
 	//This would be visible to all group members e.g. employee id, flat number etc
 	private String userUniqueIdentifierName;
-	@ElementCollection
+	//IMP - Its important to set fetch type as EAGER, else it fails to load when you are trying to get Forms while getting user
+	//but this will not have an issue if you get group directly, so we need to set the fetch type here so that it works from everywhere
+	@ElementCollection(fetch = FetchType.EAGER)
 	@JoinTable(name="group_membership_form_question",joinColumns=@JoinColumn(name="form_id"))
 	private Collection<String> questions = new HashSet<String>();
 	private String remark;

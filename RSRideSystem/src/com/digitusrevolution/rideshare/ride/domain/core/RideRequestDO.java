@@ -1004,13 +1004,14 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
 		int itemsCount = 10;
 		int startIndex = page*itemsCount; 
-		int endIndex = (page+1)*itemsCount;
+		//Not required as we are fetching the result with max result set defined
+		//int endIndex = (page+1)*itemsCount;
 
 		User passenger = RESTClientUtil.getUser(passengerId);
 		UserMapper userMapper = new UserMapper();
 		//We don't need child object of User entity, just the basic user entity is fine as it primarily needs only PK
 		UserEntity passengerEntity = userMapper.getEntity(passenger, false);
-		List<RideRequestEntity> rideRequestEntities = rideRequestDAO.getRideRequests(passengerEntity, startIndex, endIndex);
+		List<RideRequestEntity> rideRequestEntities = rideRequestDAO.getRideRequests(passengerEntity, startIndex);
 		List<RideRequest> rideRequests = new LinkedList<>();
 		for (RideRequestEntity rideRequestEntity : rideRequestEntities) {
 			setRideRequestEntity(rideRequestEntity);

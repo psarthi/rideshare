@@ -59,7 +59,14 @@ public class UserSystemTest {
 	}	
 	
 	public void test(){
-	
+		
+		UserDAO userDAO = new UserDAO();
+		int count = userDAO.getRidesOffered(2);
+		System.out.println("Rides Offered is:"+count);
+		count = userDAO.getRidesTaken(2);
+		System.out.println("Rides Taken is:"+count);
+
+		/*
 		VehicleCategory vehicleCategory = new VehicleCategory();
 		vehicleCategory.setName("All");
 		
@@ -81,6 +88,7 @@ public class UserSystemTest {
 		
 		vehicleCategory.getSubCategories().add(vehicleSubCategory);
 		vehicleCategoryDO.update(vehicleCategory);
+		*/
 		
 	}
 

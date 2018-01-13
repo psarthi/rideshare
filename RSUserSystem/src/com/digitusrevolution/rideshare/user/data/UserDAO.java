@@ -6,10 +6,13 @@ import java.util.Set;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
 public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
@@ -50,6 +53,27 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 				Restrictions.in("mobileNumber", mobileNumbers)))
 		.add(Restrictions.ne("id", userId)).list());
 		return userEntities;
+	}
+	
+	public int getRidesOffered(int userId) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass)
+				.add(Restrictions.eq("id", userId))
+				.createCriteria("ridesOffered", JoinType.RIGHT_OUTER_JOIN)
+					.add(Restrictions.eq("status", RideStatus.Finished))
+				.setProjection(Projections.rowCount());
+		int size = (int) Long.parseLong(criteria.uniqueResult().toString());
+		return size;
+	}
+	
+	public int getRidesTaken(int userId) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass)
+				.add(Restrictions.eq("id", userId))
+				.createCriteria("ridesTaken", JoinType.RIGHT_OUTER_JOIN)
+				.setProjection(Projections.rowCount());
+		int size = (int) Long.parseLong(criteria.uniqueResult().toString());
+		return size;
 	}
 
 }

@@ -83,6 +83,21 @@ public class UserBusinessResource {
 	public VehicleBusinessResource getVehicleBusinessResource(){
 		return new VehicleBusinessResource();
 	}
+	
+	/**
+	 * This will get GroupBusinessResource Object which can be accessed via UserBusinessResource 
+	 * and your path for all GroupBusinessResource should have prefix of this function path
+	 *  
+	 * @return GroupBusinessResource Object
+	 */
+	/*
+	@Path("/{id}/groups")
+	public GroupBusinessResource getGroupBusinessResource(){
+		return new GroupBusinessResource();
+	}
+	*/
+	
+
 
 	/**
 	 * 
@@ -298,11 +313,11 @@ public class UserBusinessResource {
 		}
 	}
 	
-	@POST
+	@GET
 	@Path("/{userId}/profile")
-	public Response getUserProfile(@PathParam("userId") int userId, BasicUser signInUser) {
+	public Response getUserProfile(@PathParam("userId") int userId) {
 		UserBusinessService userBusinessService = new UserBusinessService();
-		UserProfile userProfile = userBusinessService.getUserProfile(userId, signInUser);
+		UserProfile userProfile = userBusinessService.getUserProfile(userId);
 		return Response.ok(userProfile).build();
 	}
 }

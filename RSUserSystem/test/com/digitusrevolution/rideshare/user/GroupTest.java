@@ -59,12 +59,21 @@ public class GroupTest {
 	private void test(){
 		
 		GroupDAO groupDAO = new GroupDAO();
+		int size = groupDAO.getMemberCount(3);
+		System.out.println("Size is:"+size);
+
+		/*
+		GroupDAO groupDAO = new GroupDAO();
 	//	groupDAO.getMember(1, 4);
 		
 		GroupDO groupDO = new GroupDO();
 		Group group = new Group();
 		group.setName("Group-1");
 		group.setUrl("url-1");
+		
+		UserDO userDO = new UserDO();
+		User user = userDO.get(1);
+		group.setOwner(user);
 		
 		MembershipForm form = new MembershipForm();
 		form.getQuestions().add("Question-1");
@@ -73,8 +82,9 @@ public class GroupTest {
 		form.getQuestions().add("Question-4");
 		form.setUserUniqueIdentifierName("Employee Id");
 		group.setMembershipForm(form);
-//		groupDO.createGroup(group, 1);
+		groupDO.createGroup(group);
 			
+		/*
 		MembershipRequest membershipRequest = new MembershipRequest();
 		membershipRequest.getQuestionAnswers().put("Question-1", "Answer-1");
 		membershipRequest.getQuestionAnswers().put("Question-2", "Answer-2");
@@ -96,7 +106,7 @@ public class GroupTest {
 		GroupFeedback feedback = new GroupFeedback();
 		feedback.setVote(Vote.Fake);
 		groupDO.giveFeedback(1, 3, feedback);
-		
+		*/
 	}
 }
 

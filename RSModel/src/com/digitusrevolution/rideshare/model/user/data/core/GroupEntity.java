@@ -28,7 +28,7 @@ import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
 @Entity
 @Table(name="group_detail")
 //Its important to select request else without that, it will fetch two object, one if group entity and 2nd one is membership request
-//Don't use group, member keyword as its reserved in db i.e. don't use any reserved keyword in hql 
+//Don't use group, member keyword as its reserved in db i.e. don't use any reserved keyword in sql 
 //Note - Join works only with entity and not element collection
 @NamedQueries({
 	@NamedQuery(name="MembershipRequest.byGroupIdAndUserId", 

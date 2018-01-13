@@ -19,6 +19,7 @@ import org.hibernate.criterion.Restrictions;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
@@ -88,8 +89,13 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 	}
 	
 	/*
+	 * 
+	 * Commented this as we have found a better way to get the result set as shown in another function below
+	 * Keeping it here for reference purpose and in case in future if required
+	 * 
 	 * Purpose - Get sublist of rides for a user sorted by startTime
-	 */
+	 *
+	 *
 	public List<RideEntity> getRides(UserEntity driver, int startIndex, int endIndex){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
@@ -113,6 +119,27 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 
 		
 		return rideEntitiesSubList;	
+	}
+	*/
+	
+	/*
+	 * Purpose - Get list of rides based on startindex with max result count to support pagination
+	 * 
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public List<RideEntity> getRides(UserEntity driver, int startIndex){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass);
+		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
+		List rideEntities = criteria.add(Restrictions.eq("driver", driver))
+				.addOrder(Order.desc("startTime"))
+				.setFirstResult(startIndex)
+				.setMaxResults(resultLimit)
+				.list();		
+		
+		logger.debug("Ride List Size:"+rideEntities.size());
+		List<RideEntity> rideEntitiesList = new LinkedList<>(rideEntities);
+		return rideEntitiesList;	
 	}
 
 	
