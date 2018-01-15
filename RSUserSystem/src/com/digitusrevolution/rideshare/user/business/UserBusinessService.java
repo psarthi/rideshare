@@ -25,6 +25,7 @@ import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.FullUser;
 import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
+import com.digitusrevolution.rideshare.model.user.dto.GroupListType;
 import com.digitusrevolution.rideshare.model.user.dto.SignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.UserFeedbackInfo;
 import com.digitusrevolution.rideshare.model.user.dto.UserProfile;
@@ -488,7 +489,7 @@ public class UserBusinessService {
 		return userProfile;
 	}
 	
-	public List<GroupDetail> getGroups(int userId, int page){
+	public List<GroupDetail> getGroups(int userId, GroupListType listType, int page){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		List<GroupDetail> groupDetails = null;
@@ -496,7 +497,7 @@ public class UserBusinessService {
 			transaction = session.beginTransaction();
 			
 			UserDO userDO = new UserDO();
-			groupDetails = userDO.getGroups(userId, page);
+			groupDetails = userDO.getGroups(userId, listType, page);
 			
 			transaction.commit();
 		} catch (RuntimeException e) {

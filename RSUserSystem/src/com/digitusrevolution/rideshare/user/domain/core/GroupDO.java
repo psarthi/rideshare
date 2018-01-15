@@ -33,7 +33,11 @@ import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
+import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
+import com.digitusrevolution.rideshare.model.user.dto.GroupMember;
+import com.digitusrevolution.rideshare.model.user.dto.MembershipStatus;
+import com.digitusrevolution.rideshare.model.user.dto.UserListType;
 import com.digitusrevolution.rideshare.user.data.GroupDAO;
 import com.digitusrevolution.rideshare.user.domain.MembershipRequestDO;
 
@@ -309,8 +313,9 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	public void addAdmin(int groupId, int memberUserId){ 	
 		User member = getMember(groupId, memberUserId);
 		if (member!=null){
+			//TODO This is a very expensive operation as it will get all members etc. we need to find better way to avoid getAllData for group/user etc.
 			group = getAllData(groupId);
-			if (!group.isMemberAdmin(memberUserId)){
+			if (!isAdmin(groupId, memberUserId)){
 				group.getAdmins().add(member);
 				update(group);
 			} else {
@@ -336,6 +341,29 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		}
 		//don't throw exception, let business logic handle this
 		return null;
+	}
+	
+	/*
+	 * Purpose - Return true/false if user is a member or not
+	 * 
+	 * This is just a convinience method similar to getMember which avoids any further sql queries while doing mapping
+	 */
+	public boolean isMember(int groupId, int userId) {
+		UserEntity memberEntity = groupDAO.getMember(groupId, userId);
+		if (memberEntity!=null){
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/*
+	 * Purpose - Return true/false if user is an admin of the group
+	 * This function should be used when you just need to know the status of admin as its a very less resource intesive function 
+	 * as compared to getAllData of group and then find out in the list of admin if it exist or not
+	 */
+	public boolean isAdmin(int groupId, int memberUserId) {
+		return groupDAO.isAdmin(groupId, memberUserId);
 	}
 
 	/*
@@ -409,25 +437,54 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		return groupDAO.getMemberCount(groupId);
 	}
 	
-	public List<User> getMembers(int groupId, int page){
+	public List<GroupMember> getMembers(int groupId, int page){
 		
 		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
 		int itemsCount = 10;
 		int startIndex = page*itemsCount; 
 		List<UserEntity> userEntities = groupDAO.getMembers(groupId, startIndex);
 		UserMapper userMapper = new UserMapper();
-		LinkedList<User> users = new LinkedList<>();
-		userMapper.getDomainModels(users, userEntities, false);
+		LinkedList<User> members = new LinkedList<>();
+		members = (LinkedList<User>) userMapper.getDomainModels(members, userEntities, false);
 		//this will sort the list further
-		Collections.sort(users);
-		return users;
+		Collections.sort(members);
+
+		LinkedList<GroupMember> groupMembers = new LinkedList<>();
+		for (User user: members) {
+			GroupMember groupMember = new GroupMember();
+			groupMember = JsonObjectMapper.getMapper().convertValue(user, GroupMember.class);
+			groupMember.setAdmin(isAdmin(groupId, user.getId()));
+			groupMembers.add(groupMember);
+		}
+		
+		return groupMembers;
 	}
 
-	public GroupDetail getGroupDetails(int groupId) {
+	/*
+	 * This will get group details with membership status 
+	 * 
+	 */
+	public GroupDetail getGroupDetails(int groupId, int userId) {
 		Group group = get(groupId);
 		GroupDetail groupDetail = JsonObjectMapper.getMapper().convertValue(group, GroupDetail.class);
 		groupDetail.setMemberCount(groupDAO.getMemberCount(groupId));
+		groupDetail.setMembershipStatus(getMembershipStatus(groupId, userId));
 		return groupDetail;
+	}
+	
+	/*
+	 * This will get membership status of any user for a specific group
+	 * 
+	 */
+	public MembershipStatus getMembershipStatus(int groupId, int userId) {
+		MembershipStatus membershipStatus = new MembershipStatus();
+		boolean memberStatus = isMember(groupId, userId);
+		membershipStatus.setMember(memberStatus);
+		if (memberStatus) {
+			boolean adminStatus = isAdmin(groupId, userId);
+			membershipStatus.setAdmin(adminStatus);
+		}
+		return membershipStatus;
 	}
 
 }

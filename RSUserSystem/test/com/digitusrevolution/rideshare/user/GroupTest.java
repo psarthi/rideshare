@@ -61,7 +61,12 @@ public class GroupTest {
 		GroupDAO groupDAO = new GroupDAO();
 		int size = groupDAO.getMemberCount(3);
 		System.out.println("Size is:"+size);
-
+		
+		size = groupDAO.getAdmins(2).size();
+		System.out.println("Group Admins Counts is:"+size);
+		System.out.println("User is Admin:"+groupDAO.isAdmin(2, 2));
+		System.out.println("User is Member:"+groupDAO.isAdmin(2, 1));
+		
 		/*
 		GroupDAO groupDAO = new GroupDAO();
 	//	groupDAO.getMember(1, 4);

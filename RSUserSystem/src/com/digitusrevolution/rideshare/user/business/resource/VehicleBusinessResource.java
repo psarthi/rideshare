@@ -15,7 +15,6 @@ import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.user.business.VehicleBusinessService;
 import com.digitusrevolution.rideshare.user.domain.service.UserDomainService;
 
-@Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class VehicleBusinessResource {
@@ -29,7 +28,7 @@ public class VehicleBusinessResource {
 	 * @return status OK
 	 */
 	@POST
-	public Response addVehicle(@PathParam("id") int userId, Vehicle vehicle){
+	public Response addVehicle(@PathParam("userId") int userId, Vehicle vehicle){
 
 		VehicleBusinessService vehicleBusinessService = new VehicleBusinessService();
 		vehicleBusinessService.addVehicle(userId, vehicle);

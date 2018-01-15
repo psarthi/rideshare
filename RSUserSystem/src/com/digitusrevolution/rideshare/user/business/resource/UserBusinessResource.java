@@ -33,12 +33,14 @@ import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.FullUser;
 import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
+import com.digitusrevolution.rideshare.model.user.dto.GroupListType;
 import com.digitusrevolution.rideshare.model.user.dto.SignInInfo;
 import com.digitusrevolution.rideshare.model.user.dto.UserFeedbackInfo;
 import com.digitusrevolution.rideshare.model.user.dto.UserProfile;
 import com.digitusrevolution.rideshare.model.user.dto.UserSignInResult;
 import com.digitusrevolution.rideshare.model.user.dto.UserStatus;
 import com.digitusrevolution.rideshare.model.user.dto.UserRegistration;
+import com.digitusrevolution.rideshare.user.business.GroupBusinessService;
 import com.digitusrevolution.rideshare.user.business.UserBusinessService;
 import com.digitusrevolution.rideshare.user.domain.service.UserDomainService;
 
@@ -81,7 +83,7 @@ public class UserBusinessResource {
 	 *  
 	 * @return VehicleBusinessResource Object
 	 */
-	@Path("/{id}/vehicles")
+	@Path("/{userId}/vehicles")
 	public VehicleBusinessResource getVehicleBusinessResource(){
 		return new VehicleBusinessResource();
 	}
@@ -92,14 +94,10 @@ public class UserBusinessResource {
 	 *  
 	 * @return GroupBusinessResource Object
 	 */
-	/*
-	@Path("/{id}/groups")
+	@Path("/{userId}/groups")
 	public GroupBusinessResource getGroupBusinessResource(){
 		return new GroupBusinessResource();
 	}
-	*/
-	
-
 
 	/**
 	 * 
@@ -322,16 +320,6 @@ public class UserBusinessResource {
 		UserProfile userProfile = userBusinessService.getUserProfile(userId);
 		return Response.ok(userProfile).build();
 	}
-	
-	@GET
-	@Path("/{userId}/groups")
-	public Response getGroups(@PathParam("userId") int userId, @QueryParam("page") int page) {
-		UserBusinessService userBusinessService = new UserBusinessService();
-		List<GroupDetail> groups = userBusinessService.getGroups(userId, page);
-		GenericEntity<List<GroupDetail>> entity = new GenericEntity<List<GroupDetail>>(groups) {};
-		return Response.ok(entity).build();
-	}
-
 }
 
 

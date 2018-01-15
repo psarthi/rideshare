@@ -45,6 +45,21 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 		UserEntity userEntity = (UserEntity) query.uniqueResult();
 		return userEntity;
 	}
+	
+	// This function will tell if a user is an admin of a group or not
+	public boolean isAdmin(int groupId, int memberUserId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Query query = session.getNamedQuery("Admin.byGroupIdAndUserId").setParameter("groupId", groupId)
+				.setParameter("memberUserId", memberUserId);
+		UserEntity userEntity = (UserEntity) query.uniqueResult();
+		if (userEntity!=null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	
 	/*
 	 * Associations explaination -  
 	 * 
@@ -99,5 +114,25 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 		return userEntities;
 	}
 
+	//This will get all admins of the group
+	public List<UserEntity> getAdmins(int groupId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass)
+				.add(Restrictions.eq("id", groupId))
+				.createCriteria("admins", "adm",JoinType.RIGHT_OUTER_JOIN)
+				.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+	
+		//VERY IMP - Get the result in Set else you would get duplicate values
+		Set list = new HashSet<>(criteria.list());
+		List<UserEntity> userEntities = new LinkedList<>();
+		Iterator iter = list.iterator();
+		while (iter.hasNext() ) {
+		    Map map = (Map) iter.next();
+		    UserEntity userEntity = (UserEntity) map.get("adm");
+		    userEntities.add(userEntity);
+		}
+		
+		return userEntities;
+	}
 
 }

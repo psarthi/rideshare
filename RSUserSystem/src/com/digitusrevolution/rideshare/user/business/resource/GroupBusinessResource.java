@@ -16,9 +16,12 @@ import javax.ws.rs.core.Response;
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
+import com.digitusrevolution.rideshare.model.user.dto.GroupListType;
+import com.digitusrevolution.rideshare.model.user.dto.GroupMember;
+import com.digitusrevolution.rideshare.model.user.dto.UserListType;
 import com.digitusrevolution.rideshare.user.business.GroupBusinessService;
+import com.digitusrevolution.rideshare.user.business.UserBusinessService;
 
-@Path("/groups")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class GroupBusinessResource {
@@ -32,31 +35,41 @@ public class GroupBusinessResource {
 	 * @return status OK
 	 */
 	@POST
-	@Path("/create")
 	public Response createGroup(BasicGroup group){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		int id = groupBusinessService.createGroup(group);
 		//Since we are trying to get all data before even committing, all child objects may not come 
 		//so its cleaner to have get All updated data post commit in different transaction
-		GroupDetail createdGroup = groupBusinessService.getGroupDetails(id);
+		GroupDetail createdGroup = groupBusinessService.getGroupDetails(id, group.getOwner().getId());
 		return Response.ok().entity(createdGroup).build();
 	}
-
+	
 	@GET
-	@Path("/{id}")
-	public Response getGroupDetails(@PathParam("id") int groupId){
-		GroupBusinessService groupBusinessService = new GroupBusinessService();
-		GroupDetail group = groupBusinessService.getGroupDetails(groupId);
-		return Response.ok().entity(group).build();
+	public Response getGroups(@PathParam("userId") int userId, @QueryParam("listType") GroupListType listType, @QueryParam("page") int page) {
+		UserBusinessService userBusinessService = new UserBusinessService();
+		List<GroupDetail> groups = userBusinessService.getGroups(userId, listType, page);
+		GenericEntity<List<GroupDetail>> entity = new GenericEntity<List<GroupDetail>>(groups) {};
+		return Response.ok(entity).build();
 	}
 
 	@GET
-	@Path("/{id}/members")
-	public Response getMembers(@PathParam("id") int groupId, @QueryParam("page") int page) {
+	@Path("/{groupId}/members")
+	public Response getMembers(@PathParam("groupId") int groupId, @QueryParam("page") int page) {
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
-		List<BasicUser> users = groupBusinessService.getMembers(groupId, page);
-		GenericEntity<List<BasicUser>> entity = new GenericEntity<List<BasicUser>>(users) {};
+		List<GroupMember> members = groupBusinessService.getMembers(groupId, page);
+		GenericEntity<List<GroupMember>> entity = new GenericEntity<List<GroupMember>>(members) {};
 		return Response.ok(entity).build();
+	}
+
+	@GET
+	@Path("/{groupId}")
+	public Response getGroupDetails(@PathParam("userId") int userId, @PathParam("groupId") int groupId){
+		//This is an exception where we are calling service from different resource
+		//i.e. user business resource calling group business service and the reason 
+		//is we need to capture user id as well as group id
+		GroupBusinessService groupBusinessService = new GroupBusinessService();
+		GroupDetail group = groupBusinessService.getGroupDetails(groupId, userId);
+		return Response.ok().entity(group).build();
 	}
 
 }

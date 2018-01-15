@@ -16,6 +16,8 @@ import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.FullGroup;
 import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
+import com.digitusrevolution.rideshare.model.user.dto.GroupMember;
+import com.digitusrevolution.rideshare.model.user.dto.UserListType;
 import com.digitusrevolution.rideshare.user.domain.core.GroupDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
@@ -51,7 +53,7 @@ public class GroupBusinessService {
 		return id;
 	}
 	
-	public GroupDetail getGroupDetails(int groupId){
+	public GroupDetail getGroupDetails(int groupId, int userId){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -60,7 +62,7 @@ public class GroupBusinessService {
 			transaction = session.beginTransaction();
 			
 			GroupDO groupDO = new GroupDO();
-			groupDetail = groupDO.getGroupDetails(groupId);
+			groupDetail = groupDO.getGroupDetails(groupId, userId);
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -79,20 +81,15 @@ public class GroupBusinessService {
 		return groupDetail;
 	}
 	
-	public List<BasicUser> getMembers(int groupId, int page){
+	public List<GroupMember> getMembers(int groupId, int page){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		List<BasicUser> users = new LinkedList<>();
+		List<GroupMember> members = null;
 		try {
 			transaction = session.beginTransaction();
 			
 			GroupDO groupDO = new GroupDO();
-			List<User> members = groupDO.getMembers(groupId, page);
-			for (User user: members) {
-				BasicUser basicUser = new BasicUser();
-				basicUser = JsonObjectMapper.getMapper().convertValue(user, BasicUser.class);
-				users.add(basicUser);
-			}
+			members = groupDO.getMembers(groupId, page);
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -108,6 +105,6 @@ public class GroupBusinessService {
 				session.close();				
 			}
 		}
-		return users;
+		return members;
 	}
 }
