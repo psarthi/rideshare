@@ -17,6 +17,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -39,7 +41,12 @@ import com.digitusrevolution.rideshare.model.user.domain.Sex;
 
 @Entity
 @Table (name="user_detail")
-//@NamedQuery(name="UserEntity.byEmail", query="from UserEntity where email=:email")
+@NamedQueries({
+	@NamedQuery(name="User.SearchByName", 
+	query="from UserEntity where concat(firstName,' ',lastName) like :name order by firstName asc"),
+	@NamedQuery(name="Invite.ByUserIdAndGroupId", 
+	query="select grp from UserEntity as usr join usr.groupInvites as grp where usr.id=:userId and grp.id=:groupId")	
+})
 public class UserEntity {
 	
 	@Id

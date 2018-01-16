@@ -13,9 +13,11 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.digitusrevolution.rideshare.model.common.ResponseMessage;
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
+import com.digitusrevolution.rideshare.model.user.dto.GroupInviteUserSearchResult;
 import com.digitusrevolution.rideshare.model.user.dto.GroupListType;
 import com.digitusrevolution.rideshare.model.user.dto.GroupMember;
 import com.digitusrevolution.rideshare.model.user.dto.UserListType;
@@ -70,6 +72,26 @@ public class GroupBusinessResource {
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		GroupDetail group = groupBusinessService.getGroupDetails(groupId, userId);
 		return Response.ok().entity(group).build();
+	}
+	
+	@GET
+	@Path("/{groupId}/searchuser")
+	public Response searchUserByNameForGroupInvite(@PathParam("groupId") int groupId, @QueryParam("name") String name,
+			@QueryParam("page") int page){
+		GroupBusinessService groupBusinessService = new GroupBusinessService();
+		List<GroupInviteUserSearchResult> users = groupBusinessService.searchUserByNameForGroupInvite(groupId, name, page);
+		GenericEntity<List<GroupInviteUserSearchResult>> entity = new GenericEntity<List<GroupInviteUserSearchResult>>(users) {};
+		return Response.ok(entity).build();
+	}
+	
+	@POST
+	@Path("/{groupId}/invite")
+	public Response inviteUsers(@PathParam("groupId") int groupId, List<Integer> userIds){
+		GroupBusinessService groupBusinessService = new GroupBusinessService();
+		groupBusinessService.inviteUsers(groupId, userIds);
+		ResponseMessage responseMessage = new ResponseMessage();
+		responseMessage.setStatus(ResponseMessage.Code.OK);
+		return Response.ok(responseMessage).build();
 	}
 
 }

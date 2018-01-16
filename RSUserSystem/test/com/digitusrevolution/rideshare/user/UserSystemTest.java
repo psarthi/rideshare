@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.user;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,6 +12,7 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.FuelType;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
@@ -60,13 +62,23 @@ public class UserSystemTest {
 	
 	public void test(){
 		
+		UserDO userDO = new UserDO();
+		List<User> users = userDO.searchUserByName("Par",1);
+		for (User user:users) {
+			System.out.println("User is:"+user.getFirstName()+" "+user.getLastName());
+		}
+		
 		UserDAO userDAO = new UserDAO();
+		boolean status = userDAO.isInvited(2, 2);
+		System.out.println("Invited status:"+status);
+		
+		/*
 		int count = userDAO.getRidesOffered(2);
 		System.out.println("Rides Offered is:"+count);
 		count = userDAO.getRidesTaken(2);
 		System.out.println("Rides Taken is:"+count);
+		
 
-		/*
 		VehicleCategory vehicleCategory = new VehicleCategory();
 		vehicleCategory.setName("All");
 		

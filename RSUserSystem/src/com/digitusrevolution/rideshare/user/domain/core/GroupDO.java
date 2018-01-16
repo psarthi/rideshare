@@ -35,6 +35,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
+import com.digitusrevolution.rideshare.model.user.dto.GroupInviteUserSearchResult;
 import com.digitusrevolution.rideshare.model.user.dto.GroupMember;
 import com.digitusrevolution.rideshare.model.user.dto.MembershipStatus;
 import com.digitusrevolution.rideshare.model.user.dto.UserListType;
@@ -485,6 +486,27 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 			membershipStatus.setAdmin(adminStatus);
 		}
 		return membershipStatus;
+	}
+	
+	public List<GroupInviteUserSearchResult> searchUserByNameForGroupInvite(int groupId, String name, int page){
+		UserDO userDO = new UserDO();
+		List<User> users = userDO.searchUserByName(name, page);
+		List<GroupInviteUserSearchResult> results = new LinkedList<>();
+		for (User user: users) {
+			GroupInviteUserSearchResult result = new GroupInviteUserSearchResult();
+			//IMP - Reason for not transferring the whole user data 
+			//and just sending name and photo is from security concern
+			BasicUser basicUser = new BasicUser();
+			basicUser.setId(user.getId());
+			basicUser.setFirstName(user.getFirstName());
+			basicUser.setLastName(user.getLastName());
+			basicUser.setPhoto(user.getPhoto());
+			result.setUser(basicUser);
+			result.setMember(isMember(groupId, user.getId()));
+			result.setInvited(userDO.isInvited(groupId, user.getId()));
+			results.add(result);
+		}
+		return results;
 	}
 
 }

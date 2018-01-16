@@ -2,6 +2,7 @@ package com.digitusrevolution.rideshare.user.business;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -514,6 +515,38 @@ public class UserBusinessService {
 			}
 		}
 		return groupDetails;
+	}
+	
+	public List<BasicUser> searchUserByName(String name, int page){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		List<BasicUser> basicUsers = new LinkedList<>();
+		try {
+			transaction = session.beginTransaction();
+			
+			UserDO userDO = new UserDO();
+			List<User> users = userDO.searchUserByName(name, page);
+			for (User user: users) {
+				BasicUser basicUser = new BasicUser();
+				basicUser = JsonObjectMapper.getMapper().convertValue(user, BasicUser.class);
+				basicUsers.add(basicUser);
+			}
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return basicUsers;
 	}
 }
 

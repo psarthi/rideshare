@@ -8,7 +8,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -19,8 +21,10 @@ import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
+import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 
@@ -61,6 +65,32 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 		.add(Restrictions.ne("id", userId)).list());
 		return userEntities;
 	}
+	
+	/*
+	 * Keeping this for reference purpose only, use the below one which will take care of searching in fullName
+	 *  
+	 * This will return all user starting with search string either in firstName/lastName
+	 * 
+	 */
+	/*public Set<UserEntity> searchUserByName(int userId, String name){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass);
+		@SuppressWarnings("unchecked")
+		Set<UserEntity> userEntities = new HashSet<>(criteria.add(Restrictions.or(Restrictions.ilike("firstName", name, MatchMode.START)))
+			.add(Restrictions.ne("id", userId)).list());
+		return userEntities;
+	}*/
+	
+	public Set<UserEntity> searchUserByName(String name, int startIndex){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
+		Query query = session.getNamedQuery("User.SearchByName").setParameter("name", name+"%")
+				.setFirstResult(startIndex)
+				.setMaxResults(resultLimit);
+		Set<UserEntity> userEntities = new HashSet<>(query.list());
+		return userEntities;
+	} 
+
 	
 	public int getRidesOffered(int userId) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -110,6 +140,19 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 		}
 		
 		return groupEntities;
+	}
+	
+	//This will tell if user is invite to a group or not
+	public boolean isInvited(int groupId, int userId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Query query = session.getNamedQuery("Invite.ByUserIdAndGroupId").setParameter("groupId", groupId)
+				.setParameter("userId", userId);
+		GroupEntity groupEntity = (GroupEntity) query.uniqueResult();
+		if (groupEntity!=null) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }

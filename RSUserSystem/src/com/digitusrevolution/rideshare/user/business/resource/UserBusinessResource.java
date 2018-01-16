@@ -320,6 +320,15 @@ public class UserBusinessResource {
 		UserProfile userProfile = userBusinessService.getUserProfile(userId);
 		return Response.ok(userProfile).build();
 	}
+	
+	@GET
+	@Path("/{userId}/search")
+	public Response searchUserByName(@QueryParam("name") String name, @QueryParam("page") int page){
+		UserBusinessService userBusinessService = new UserBusinessService();
+		List<BasicUser> users = userBusinessService.searchUserByName(name, page);
+		GenericEntity<List<BasicUser>> entity = new GenericEntity<List<BasicUser>>(users) {};
+		return Response.ok(entity).build();
+	}
 }
 
 

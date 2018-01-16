@@ -311,6 +311,17 @@ public class UserDO implements DomainObjectPKInteger<User>{
 
 		return potentialFriends;
 	}
+	
+	public List<User> searchUserByName(String name, int page){
+		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
+		int itemsCount = 10;
+		int startIndex = page*itemsCount; 
+		Set<UserEntity> userEntities = userDAO.searchUserByName(name, startIndex);
+		LinkedList<User> users = new LinkedList<>();
+		users = (LinkedList<User>) userMapper.getDomainModels(users, userEntities, false);
+		Collections.sort(users);
+		return users;
+	}
 
 	/*
 	 * Purpose - Send friend request to all selected users who are not friend or submitted friend request earlier
@@ -511,6 +522,9 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		return groupDetails;
 	}
 	
+	public boolean isInvited(int groupId, int userId){
+		return userDAO.isInvited(groupId, userId);
+	}
 }
 
 

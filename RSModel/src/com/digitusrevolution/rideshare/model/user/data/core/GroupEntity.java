@@ -40,7 +40,6 @@ import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
 	@NamedQuery(name="Admin.byGroupIdAndUserId", 
 	query="select adm from GroupEntity as grp join grp.admins as adm "
 			+ "where grp.id=:groupId and adm.id=:memberUserId")
-
 })
 public class GroupEntity {
 	@Id
