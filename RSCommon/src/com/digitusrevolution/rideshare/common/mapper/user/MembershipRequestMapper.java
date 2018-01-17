@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.common.mapper.user;
 import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
+import com.digitusrevolution.rideshare.common.mapper.user.core.GroupMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
@@ -17,8 +18,11 @@ public class MembershipRequestMapper implements Mapper<MembershipRequest, Member
 		membershipRequestEntity.setUserUniqueIdentifier(membershipRequest.getUserUniqueIdentifier());
 		membershipRequestEntity.setQuestionAnswers(membershipRequest.getQuestionAnswers());
 		membershipRequestEntity.setStatus(membershipRequest.getStatus());
+		//Don't get child else, we will end up into recursive loop as Request has User and Group and its also vice versa
 		UserMapper userMapper = new UserMapper();
 		membershipRequestEntity.setUser(userMapper.getEntity(membershipRequest.getUser(), false));
+		GroupMapper groupMapper = new GroupMapper();
+		membershipRequestEntity.setGroup(groupMapper.getEntity(membershipRequest.getGroup(), false));
 		membershipRequestEntity.setAdminRemark(membershipRequest.getAdminRemark());
 		return membershipRequestEntity;
 	}
@@ -38,6 +42,8 @@ public class MembershipRequestMapper implements Mapper<MembershipRequest, Member
 		membershipRequest.setStatus(membershipRequestEntity.getStatus());
 		UserMapper userMapper = new UserMapper();
 		membershipRequest.setUser(userMapper.getDomainModel(membershipRequestEntity.getUser(), false));
+		GroupMapper groupMapper = new GroupMapper();
+		membershipRequest.setGroup(groupMapper.getDomainModel(membershipRequestEntity.getGroup(), false));
 		membershipRequest.setAdminRemark(membershipRequestEntity.getAdminRemark());
 		return membershipRequest;
 	}

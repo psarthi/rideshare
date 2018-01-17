@@ -13,12 +13,12 @@ import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
+import com.digitusrevolution.rideshare.model.user.dto.BasicMembershipRequest;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.FullGroup;
 import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
 import com.digitusrevolution.rideshare.model.user.dto.GroupInviteUserSearchResult;
 import com.digitusrevolution.rideshare.model.user.dto.GroupMember;
-import com.digitusrevolution.rideshare.model.user.dto.UserListType;
 import com.digitusrevolution.rideshare.user.domain.core.GroupDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
@@ -63,7 +63,7 @@ public class GroupBusinessService {
 			transaction = session.beginTransaction();
 			
 			GroupDO groupDO = new GroupDO();
-			groupDetail = groupDO.getGroupDetails(groupId, userId);
+			groupDetail = groupDO.getGroupDetail(groupId, userId);
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -159,6 +159,59 @@ public class GroupBusinessService {
 				session.close();				
 			}
 		}
+	}
+	
+	public List<GroupDetail> searchGroupByName(int userId, String name, int page){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		List<GroupDetail> groupDetails = null;
+		try {
+			transaction = session.beginTransaction();
+			
+			GroupDO groupDO = new GroupDO();
+			groupDetails = groupDO.searchGroupByName(userId, name, page);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return groupDetails;
+	}
+	
+	public List<BasicMembershipRequest> getGroupMembershipRequests(int groupId, int page){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		List<BasicMembershipRequest> requests = new LinkedList<>();
+		try {
+			transaction = session.beginTransaction();
+			
+			GroupDO groupDO = new GroupDO();
+			requests = groupDO.getGroupMembershipRequests(groupId, page);			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return requests;
 	}
 }
 

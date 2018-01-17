@@ -11,6 +11,7 @@ import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper
 import com.digitusrevolution.rideshare.common.mapper.user.CityMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.CountryMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.FriendRequestMapper;
+import com.digitusrevolution.rideshare.common.mapper.user.MembershipRequestMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.PhotoMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.PreferenceMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.RoleMapper;
@@ -119,6 +120,10 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		userEntity.setGroups(groupMapper.getEntities(userEntity.getGroups(), user.getGroups(), false));
 		userEntity.setGroupInvites(groupMapper.getEntities(userEntity.getGroupInvites(), user.getGroupInvites(), false));
 		
+		//Don't fetch child as user has request and request has user, so recursive loop
+		MembershipRequestMapper membershipRequestMapper = new MembershipRequestMapper();
+		userEntity.setMembershipRequests(membershipRequestMapper.getEntities(userEntity.getMembershipRequests(), user.getMembershipRequests(), false));
+		
 		return userEntity;
 		
 	}
@@ -225,6 +230,10 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		//Don't fetch child as user has group and group has user, so recursive loop
 		user.setGroups(groupMapper.getDomainModels(user.getGroups(), userEntity.getGroups(), false));
 		user.setGroupInvites(groupMapper.getDomainModels(user.getGroupInvites(), userEntity.getGroupInvites(), false));
+		
+		//Don't fetch child as user has request and request has user, so recursive loop
+		MembershipRequestMapper membershipRequestMapper = new MembershipRequestMapper();
+		user.setMembershipRequests(membershipRequestMapper.getDomainModels(user.getMembershipRequests(), userEntity.getMembershipRequests(), false));
 
 		return user;
 	}

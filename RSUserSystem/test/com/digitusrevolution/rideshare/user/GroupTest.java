@@ -59,15 +59,28 @@ public class GroupTest {
 	private void test(){
 		
 		GroupDAO groupDAO = new GroupDAO();
+	
 		int size = groupDAO.getMemberCount(3);
 		System.out.println("Size is:"+size);
 		
+
 		size = groupDAO.getAdmins(2).size();
 		System.out.println("Group Admins Counts is:"+size);
 		System.out.println("User is Admin:"+groupDAO.isAdmin(2, 2));
 		System.out.println("User is Member:"+groupDAO.isAdmin(2, 1));
 		
-		/*
+		MembershipRequest membershipRequest = new MembershipRequest();
+		membershipRequest.getQuestionAnswers().put("Question-1", "Answer-1");
+		membershipRequest.getQuestionAnswers().put("Question-2", "Answer-2");
+		membershipRequest.getQuestionAnswers().put("Question-3", "Answer-3");
+		membershipRequest.setUserUniqueIdentifier("Employee Id-1");
+		UserDO userDO = new UserDO();
+		User user = userDO.get(4);
+		membershipRequest.setUser(user);
+		GroupDO groupDO = new GroupDO();
+		groupDO.sendMembershipRequest(2, membershipRequest);
+
+		/*	
 		GroupDAO groupDAO = new GroupDAO();
 	//	groupDAO.getMember(1, 4);
 		

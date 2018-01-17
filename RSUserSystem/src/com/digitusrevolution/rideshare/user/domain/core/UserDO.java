@@ -27,6 +27,7 @@ import com.digitusrevolution.rideshare.common.exception.OTPFailedException;
 import com.digitusrevolution.rideshare.common.exception.SignInFailedException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.TransactionMapper;
+import com.digitusrevolution.rideshare.common.mapper.user.MembershipRequestMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.GroupMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
@@ -47,11 +48,13 @@ import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
+import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.FriendRequest;
+import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 import com.digitusrevolution.rideshare.model.user.domain.Preference;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
@@ -62,6 +65,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
+import com.digitusrevolution.rideshare.model.user.dto.BasicMembershipRequest;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.FullUser;
 import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
@@ -509,21 +513,36 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		groupMapper.getDomainModels(groups, groupEntities, false);
 		//this will sort the list further
 		Collections.sort(groups);
-		LinkedList<GroupDetail> groupDetails = new LinkedList<>();
 		GroupDO groupDO = new GroupDO();
-		for (Group group: groups) {
-			GroupDetail groupDetail = new GroupDetail();
-			groupDetail = JsonObjectMapper.getMapper().convertValue(group, GroupDetail.class);
-			groupDetail.setMemberCount(groupDO.getMemberCount(group.getId()));
-			MembershipStatus membershipStatus = groupDO.getMembershipStatus(group.getId(), userId);
-			groupDetail.setMembershipStatus(membershipStatus);
-			groupDetails.add(groupDetail);
-		}
-		return groupDetails;
+		return groupDO.getGroupDetails(userId, groups);
 	}
 	
 	public boolean isInvited(int groupId, int userId){
 		return userDAO.isInvited(groupId, userId);
+	}
+	
+	public List<BasicMembershipRequest> getUserMembershipRequests(int userId, int page){
+		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
+		int itemsCount = 10;
+		int startIndex = page*itemsCount; 
+		List<MembershipRequestEntity> membershipRequestEntities = userDAO.getUserMembershipRequests(userId, startIndex);
+		return getBasicMembershipRequests(membershipRequestEntities);
+	}
+
+	public List<BasicMembershipRequest> getBasicMembershipRequests(
+			List<MembershipRequestEntity> membershipRequestEntities) {
+		MembershipRequestMapper requestMapper = new MembershipRequestMapper();
+		LinkedList<MembershipRequest> membershipRequests = new LinkedList<>();
+		membershipRequests = (LinkedList<MembershipRequest>) requestMapper.getDomainModels(membershipRequests, membershipRequestEntities, false);
+		Collections.sort(membershipRequests);
+		
+		LinkedList<BasicMembershipRequest> basicMembershipRequests = new LinkedList<>();
+		for (MembershipRequest request: membershipRequests) {
+			BasicMembershipRequest basicMembershipRequest = new BasicMembershipRequest();
+			basicMembershipRequest = JsonObjectMapper.getMapper().convertValue(request, BasicMembershipRequest.class);
+			basicMembershipRequests.add(basicMembershipRequest);
+		}
+		return basicMembershipRequests;
 	}
 }
 

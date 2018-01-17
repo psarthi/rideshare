@@ -150,6 +150,31 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 		return groupEntities;
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public List<MembershipRequestEntity> getUserMembershipRequests(int userId, int startIndex){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
+		String subCriteriaAssociationPath = "membershipRequests";
+		Criteria criteria = session.createCriteria(entityClass)
+				.add(Restrictions.eq("id", userId))
+				.createCriteria("membershipRequests", "request",JoinType.RIGHT_OUTER_JOIN)
+					.addOrder(Order.desc("createdDateTime"))
+					.setFirstResult(startIndex)
+					.setMaxResults(resultLimit)
+					.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		
+		//VERY IMP - Get the result in Set else you would get duplicate values
+		Set list = new HashSet<>(criteria.list());
+		List<MembershipRequestEntity> requestEntities = new LinkedList<>();
+		Iterator iter = list.iterator();
+		while (iter.hasNext() ) {
+		    Map map = (Map) iter.next();
+		    MembershipRequestEntity requestEntity = (MembershipRequestEntity) map.get("request");
+		    requestEntities.add(requestEntity);
+		}
+		return requestEntities;
+	}
+	
 	//This will tell if user is invite to a group or not
 	public boolean isInvited(int groupId, int userId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();

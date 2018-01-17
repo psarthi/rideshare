@@ -31,6 +31,7 @@ import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.data.CountryEntity;
 import com.digitusrevolution.rideshare.model.user.data.FriendRequestEntity;
+import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
 import com.digitusrevolution.rideshare.model.user.data.PreferenceEntity;
 import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
@@ -114,7 +115,17 @@ public class UserEntity {
 	@ManyToMany
 	@JoinTable(name="user_group_invite",joinColumns=@JoinColumn(name="user_id"), inverseJoinColumns=@JoinColumn(name="group_id"))
 	private Collection<GroupEntity> groupInvites = new HashSet<GroupEntity>();
+	@OneToMany(mappedBy="user")
+	private Collection<MembershipRequestEntity> membershipRequests = new HashSet<MembershipRequestEntity>();
 	
+	public Collection<MembershipRequestEntity> getMembershipRequests() {
+		return membershipRequests;
+	}
+
+	public void setMembershipRequests(Collection<MembershipRequestEntity> membershipRequests) {
+		this.membershipRequests = membershipRequests;
+	}
+
 	@Column
 	@Enumerated(EnumType.STRING)
 	private RegistrationType registrationType;

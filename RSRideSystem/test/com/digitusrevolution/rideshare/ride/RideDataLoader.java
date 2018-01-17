@@ -62,6 +62,8 @@ public class RideDataLoader {
 			trustCategory.setName(TrustCategoryName.Anonymous);
 
 			TrustCategoryDO trustCategoryDO = new TrustCategoryDO();
-			trustCategoryDO.create(trustCategory);			
+			trustCategoryDO.create(trustCategory);	
+			trustCategory.setName(TrustCategoryName.Groups);
+			trustCategoryDO.create(trustCategory);	
 		}		
 }

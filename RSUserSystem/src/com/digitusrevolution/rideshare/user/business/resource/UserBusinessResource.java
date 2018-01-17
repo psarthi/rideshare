@@ -29,6 +29,7 @@ import com.digitusrevolution.rideshare.model.user.domain.Preference;
 import com.digitusrevolution.rideshare.model.user.domain.RegistrationType;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
+import com.digitusrevolution.rideshare.model.user.dto.BasicMembershipRequest;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.FullUser;
 import com.digitusrevolution.rideshare.model.user.dto.GoogleSignInInfo;
@@ -327,6 +328,15 @@ public class UserBusinessResource {
 		UserBusinessService userBusinessService = new UserBusinessService();
 		List<BasicUser> users = userBusinessService.searchUserByName(name, page);
 		GenericEntity<List<BasicUser>> entity = new GenericEntity<List<BasicUser>>(users) {};
+		return Response.ok(entity).build();
+	}
+	
+	@GET
+	@Path("/{userId}/membershiprequests")
+	public Response getUserMembershipRequests(@PathParam("userId") int userId, @QueryParam("page") int page){
+		UserBusinessService userBusinessService = new UserBusinessService();
+		List<BasicMembershipRequest> membershipRequests = userBusinessService.getUserMembershipRequests(userId, page);
+		GenericEntity<List<BasicMembershipRequest>> entity = new GenericEntity<List<BasicMembershipRequest>>(membershipRequests) {};
 		return Response.ok(entity).build();
 	}
 }

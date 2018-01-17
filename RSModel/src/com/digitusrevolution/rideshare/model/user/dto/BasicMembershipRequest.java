@@ -1,17 +1,21 @@
-package com.digitusrevolution.rideshare.model.user.domain;
+package com.digitusrevolution.rideshare.model.user.dto;
 
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-public class MembershipRequest implements Comparable<MembershipRequest>{
+//Reason behind this jsonignore so that it doesn't throw error while converting from Domain Model to DTO which has less fields
+@JsonIgnoreProperties (ignoreUnknown=true)
+public class BasicMembershipRequest {
 
 	private int id;
-	private User user;
-	private Group group; 
+	private BasicUser user;
+	private BasicGroup group; 
 	//This would be visible to all group members e.g. employee id, flat number etc
 	private String userUniqueIdentifier;
 	private Map<String, String> questionAnswers = new HashMap<String, String>();
@@ -20,12 +24,6 @@ public class MembershipRequest implements Comparable<MembershipRequest>{
 	private String adminRemark;
 	private String userRemark;
 	
-	public User getUser() {
-		return user;
-	}
-	public void setUser(User user) {
-		this.user = user;
-	}
 	public ApprovalStatus getStatus() {
 		return status;
 	}
@@ -78,10 +76,10 @@ public class MembershipRequest implements Comparable<MembershipRequest>{
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof MembershipRequest)) {
+		if (!(obj instanceof BasicMembershipRequest)) {
 			return false;
 		}
-		MembershipRequest other = (MembershipRequest) obj;
+		BasicMembershipRequest other = (BasicMembershipRequest) obj;
 		if (id != other.id) {
 			return false;
 		}
@@ -100,15 +98,16 @@ public class MembershipRequest implements Comparable<MembershipRequest>{
 	public void setAdminRemark(String adminRemark) {
 		this.adminRemark = adminRemark;
 	}
-	public Group getGroup() {
+	public BasicUser getUser() {
+		return user;
+	}
+	public void setUser(BasicUser user) {
+		this.user = user;
+	}
+	public BasicGroup getGroup() {
 		return group;
 	}
-	public void setGroup(Group group) {
+	public void setGroup(BasicGroup group) {
 		this.group = group;
-	}
-	@Override
-	public int compareTo(MembershipRequest o) {
-		//descending order
-		return o.id - this.id;
 	}
 }

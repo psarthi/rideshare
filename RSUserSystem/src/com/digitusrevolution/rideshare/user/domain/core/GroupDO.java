@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotAcceptableException;
@@ -33,12 +34,12 @@ import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
+import com.digitusrevolution.rideshare.model.user.dto.BasicMembershipRequest;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
 import com.digitusrevolution.rideshare.model.user.dto.GroupInviteUserSearchResult;
 import com.digitusrevolution.rideshare.model.user.dto.GroupMember;
 import com.digitusrevolution.rideshare.model.user.dto.MembershipStatus;
-import com.digitusrevolution.rideshare.model.user.dto.UserListType;
 import com.digitusrevolution.rideshare.user.data.GroupDAO;
 import com.digitusrevolution.rideshare.user.domain.MembershipRequestDO;
 
@@ -159,8 +160,9 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		membershipRequest.setStatus(ApprovalStatus.Pending);
 		UserDO userDO = new UserDO();
 		User user = userDO.getAllData(membershipRequest.getUser().getId());
-		membershipRequest.setUser(user);
 		group = getAllData(groupId);
+		membershipRequest.setUser(user);
+		membershipRequest.setGroup(group);
 		MembershipRequest submittedMembershipRequest = getMembershipRequest(groupId, membershipRequest.getUser().getId());
 		//Check if request has been submitted earlier as well
 		if (submittedMembershipRequest!=null){
@@ -465,7 +467,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * This will get group details with membership status 
 	 * 
 	 */
-	public GroupDetail getGroupDetails(int groupId, int userId) {
+	public GroupDetail getGroupDetail(int groupId, int userId) {
 		Group group = get(groupId);
 		GroupDetail groupDetail = JsonObjectMapper.getMapper().convertValue(group, GroupDetail.class);
 		groupDetail.setMemberCount(groupDAO.getMemberCount(groupId));
@@ -484,6 +486,9 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		if (memberStatus) {
 			boolean adminStatus = isAdmin(groupId, userId);
 			membershipStatus.setAdmin(adminStatus);
+		} else {
+			UserDO userDO = new UserDO();
+			membershipStatus.setInvited(userDO.isInvited(groupId, userId));
 		}
 		return membershipStatus;
 	}
@@ -508,7 +513,43 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		}
 		return results;
 	}
+	
+	public List<GroupDetail> searchGroupByName(int userId, String name, int page){
+		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
+		int itemsCount = 10;
+		int startIndex = page*itemsCount; 
+		Set<GroupEntity> groupEntities = groupDAO.searchGroupByName(name, startIndex);
+		LinkedList<Group> groups = new LinkedList<>();
+		groups = (LinkedList<Group>) groupMapper.getDomainModels(groups, groupEntities, false);
+		Collections.sort(groups);
+		return getGroupDetails(userId, groups);
+	}
 
+	/*
+	 * This is for convinience of converting group to groupDetails by setting membership status against the user 
+	 * 
+	 */
+	public List<GroupDetail> getGroupDetails(int userId, LinkedList<Group> groups) {
+		LinkedList<GroupDetail> groupDetails = new LinkedList<>();
+		for (Group group: groups) {
+			GroupDetail groupDetail = new GroupDetail();
+			groupDetail = JsonObjectMapper.getMapper().convertValue(group, GroupDetail.class);
+			groupDetail.setMemberCount(getMemberCount(group.getId()));
+			MembershipStatus membershipStatus = getMembershipStatus(group.getId(), userId);
+			groupDetail.setMembershipStatus(membershipStatus);
+			groupDetails.add(groupDetail);
+		}
+		return groupDetails;
+	}
+
+	public List<BasicMembershipRequest> getGroupMembershipRequests(int groupId, int page){
+		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
+		int itemsCount = 10;
+		int startIndex = page*itemsCount; 
+		List<MembershipRequestEntity> membershipRequestEntities = groupDAO.getGroupMembershipRequests(groupId, startIndex);
+		UserDO userDO = new UserDO();
+		return userDO.getBasicMembershipRequests(membershipRequestEntities);
+	}
 }
 
 

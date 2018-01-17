@@ -9,6 +9,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,8 +19,10 @@ import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
+import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 
 //Reason for creating entity and not using embedded as you can't have element collection inside embedded
 @Entity
@@ -30,13 +33,15 @@ public class MembershipRequestEntity {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	private String userUniqueIdentifier;
-	@ElementCollection
+	@ElementCollection(fetch=FetchType.EAGER)
 	@JoinTable(name="membership_request_answer",joinColumns=@JoinColumn(name="request_id"))
 	@MapKeyColumn(name="question")
 	@Column(name="answer")
 	private Map<String, String> questionAnswers = new HashMap<String, String>();
 	@OneToOne
 	private UserEntity user;
+	@OneToOne
+	private GroupEntity group; 
 	@Column
 	@Enumerated(EnumType.STRING)
 	private ApprovalStatus status;
@@ -124,5 +129,11 @@ public class MembershipRequestEntity {
 	}
 	public void setUserRemark(String userRemark) {
 		this.userRemark = userRemark;
+	}
+	public GroupEntity getGroup() {
+		return group;
+	}
+	public void setGroup(GroupEntity group) {
+		this.group = group;
 	}
 }

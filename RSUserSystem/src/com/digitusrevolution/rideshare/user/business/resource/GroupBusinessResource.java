@@ -15,12 +15,12 @@ import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.common.ResponseMessage;
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
+import com.digitusrevolution.rideshare.model.user.dto.BasicMembershipRequest;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
 import com.digitusrevolution.rideshare.model.user.dto.GroupInviteUserSearchResult;
 import com.digitusrevolution.rideshare.model.user.dto.GroupListType;
 import com.digitusrevolution.rideshare.model.user.dto.GroupMember;
-import com.digitusrevolution.rideshare.model.user.dto.UserListType;
 import com.digitusrevolution.rideshare.user.business.GroupBusinessService;
 import com.digitusrevolution.rideshare.user.business.UserBusinessService;
 
@@ -92,6 +92,25 @@ public class GroupBusinessResource {
 		ResponseMessage responseMessage = new ResponseMessage();
 		responseMessage.setStatus(ResponseMessage.Code.OK);
 		return Response.ok(responseMessage).build();
+	}
+	
+	@GET
+	@Path("/search")
+	public Response searchGroupByName(@PathParam("userId") int userId, @QueryParam("name") String name, 
+			@QueryParam("page") int page){
+		GroupBusinessService groupBusinessService = new GroupBusinessService();
+		List<GroupDetail> groupDetails = groupBusinessService.searchGroupByName(userId, name, page);
+		GenericEntity<List<GroupDetail>> entity = new GenericEntity<List<GroupDetail>>(groupDetails) {};
+		return Response.ok(entity).build();
+	}
+	
+	@GET
+	@Path("/{groupId}/membershiprequests")
+	public Response getUserMembershipRequests(@PathParam("groupId") int groupId, @QueryParam("page") int page){
+		GroupBusinessService groupBusinessService = new GroupBusinessService();
+		List<BasicMembershipRequest> membershipRequests = groupBusinessService.getGroupMembershipRequests(groupId, page);
+		GenericEntity<List<BasicMembershipRequest>> entity = new GenericEntity<List<BasicMembershipRequest>>(membershipRequests) {};
+		return Response.ok(entity).build();
 	}
 
 }

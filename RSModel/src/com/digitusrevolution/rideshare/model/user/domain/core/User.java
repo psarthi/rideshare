@@ -12,6 +12,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.FriendRequest;
+import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.Preference;
 import com.digitusrevolution.rideshare.model.user.domain.RegistrationType;
@@ -56,6 +57,7 @@ public class User implements Comparable<User>{
 	private float profileRating;
 	
 	private Collection<Group> groupInvites = new HashSet<Group>();
+	private Collection<MembershipRequest> membershipRequests = new HashSet<MembershipRequest>();
 	private RegistrationType registrationType;
 	
 	public int getId() {
@@ -335,6 +337,14 @@ public class User implements Comparable<User>{
 		//Negative number is desc order, positive is asc order
 		//This will return in assending order
 		return this.firstName.compareTo(user.firstName);
+	}
+
+	public Collection<MembershipRequest> getMembershipRequests() {
+		return membershipRequests;
+	}
+
+	public void setMembershipRequests(Collection<MembershipRequest> membershipRequests) {
+		this.membershipRequests = membershipRequests;
 	}
 
 }

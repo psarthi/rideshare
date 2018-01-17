@@ -12,10 +12,13 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
+import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.FuelType;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
+import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.user.data.UserDAO;
 import com.digitusrevolution.rideshare.user.domain.OTPDO;
@@ -71,6 +74,9 @@ public class UserSystemTest {
 		UserDAO userDAO = new UserDAO();
 		boolean status = userDAO.isInvited(2, 2);
 		System.out.println("Invited status:"+status);
+		
+		List<MembershipRequestEntity> requestEntities = userDAO.getUserMembershipRequests(4, 0);
+		System.out.println("Request Size:"+requestEntities.size());
 		
 		/*
 		int count = userDAO.getRidesOffered(2);
