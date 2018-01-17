@@ -546,7 +546,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
 		int itemsCount = 10;
 		int startIndex = page*itemsCount; 
-		List<MembershipRequestEntity> membershipRequestEntities = groupDAO.getGroupMembershipRequests(groupId, startIndex);
+		Set<MembershipRequestEntity> membershipRequestEntities = groupDAO.getGroupMembershipRequests(groupId, startIndex);
 		UserDO userDO = new UserDO();
 		return userDO.getBasicMembershipRequests(membershipRequestEntities);
 	}

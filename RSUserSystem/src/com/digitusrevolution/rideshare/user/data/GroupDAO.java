@@ -145,29 +145,20 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 		return groupEntities;
 	}
 	
+	/*
+	 * VERY IMP - Don't use Criteria way and fetching Results as its not working and its having some weired outcome
+	 * so don't implement function similar to getUserMembershipRequests of UserDAO instead use the Query way
+	 * 
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List<MembershipRequestEntity> getGroupMembershipRequests(int groupId, int startIndex){
+	public Set<MembershipRequestEntity> getGroupMembershipRequests(int groupId, int startIndex){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
-		String subCriteriaAssociationPath = "membershipRequests";
-		Criteria criteria = session.createCriteria(entityClass)
-				.add(Restrictions.eq("id", groupId))
-				.createCriteria("membershipRequests", "request",JoinType.RIGHT_OUTER_JOIN)
-					.addOrder(Order.desc("createdDateTime"))
-					.setFirstResult(startIndex)
-					.setMaxResults(resultLimit)
-					.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-		
-		//VERY IMP - Get the result in Set else you would get duplicate values
-		Set list = new HashSet<>(criteria.list());
-		List<MembershipRequestEntity> requestEntities = new LinkedList<>();
-		Iterator iter = list.iterator();
-		while (iter.hasNext() ) {
-		    Map map = (Map) iter.next();
-		    MembershipRequestEntity requestEntity = (MembershipRequestEntity) map.get("request");
-		    requestEntities.add(requestEntity);
-		}
-		return requestEntities;
+		Query query = session.getNamedQuery("MembershipRequests.byGroupId").setParameter("groupId", groupId)
+				.setFirstResult(startIndex)
+				.setMaxResults(resultLimit);
+		Set<MembershipRequestEntity> requestEntities = new HashSet<>(query.list());
+		return requestEntities;		
 	}
 	
 

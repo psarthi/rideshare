@@ -75,10 +75,10 @@ public class GroupTest {
 		membershipRequest.getQuestionAnswers().put("Question-3", "Answer-3");
 		membershipRequest.setUserUniqueIdentifier("Employee Id-1");
 		UserDO userDO = new UserDO();
-		User user = userDO.get(4);
+		User user = userDO.get(2);
 		membershipRequest.setUser(user);
 		GroupDO groupDO = new GroupDO();
-		groupDO.sendMembershipRequest(2, membershipRequest);
+		groupDO.sendMembershipRequest(3, membershipRequest);
 
 		/*	
 		GroupDAO groupDAO = new GroupDAO();

@@ -530,7 +530,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	}
 
 	public List<BasicMembershipRequest> getBasicMembershipRequests(
-			List<MembershipRequestEntity> membershipRequestEntities) {
+			Collection<MembershipRequestEntity> membershipRequestEntities) {
 		MembershipRequestMapper requestMapper = new MembershipRequestMapper();
 		LinkedList<MembershipRequest> membershipRequests = new LinkedList<>();
 		membershipRequests = (LinkedList<MembershipRequest>) requestMapper.getDomainModels(membershipRequests, membershipRequestEntities, false);
