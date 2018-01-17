@@ -538,11 +538,20 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		
 		LinkedList<BasicMembershipRequest> basicMembershipRequests = new LinkedList<>();
 		for (MembershipRequest request: membershipRequests) {
-			BasicMembershipRequest basicMembershipRequest = new BasicMembershipRequest();
-			basicMembershipRequest = JsonObjectMapper.getMapper().convertValue(request, BasicMembershipRequest.class);
+			BasicMembershipRequest basicMembershipRequest = getBasicMembershipRequestFromRequest(request);
 			basicMembershipRequests.add(basicMembershipRequest);
 		}
 		return basicMembershipRequests;
+	}
+
+	public BasicMembershipRequest getBasicMembershipRequestFromRequest(MembershipRequest request) {
+		BasicMembershipRequest basicMembershipRequest = new BasicMembershipRequest();
+		basicMembershipRequest = JsonObjectMapper.getMapper().convertValue(request, BasicMembershipRequest.class);
+		GroupDO groupDO = new GroupDO();
+		GroupDetail groupDetail = groupDO.getGroupDetailFromGroup(request.getGroup(), request.getUser().getId());
+		//This is important so that we get updated group detail instead of empty information on membercount and group status
+		basicMembershipRequest.setGroup(groupDetail);
+		return basicMembershipRequest;
 	}
 }
 

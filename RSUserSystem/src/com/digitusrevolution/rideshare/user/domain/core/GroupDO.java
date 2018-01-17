@@ -204,6 +204,25 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		}
 		//don't throw exception, let business logic handle this
 		return null;
+	} 
+	
+	public BasicMembershipRequest getBasicMembershipRequest(int groupId, int userId){
+		MembershipRequest membershipRequest = getMembershipRequest(groupId, userId);
+		if (membershipRequest!=null){
+			UserDO userDO = new UserDO();
+			return userDO.getBasicMembershipRequestFromRequest(membershipRequest);			
+		}
+		//don't throw exception, let business logic handle this
+		return null;
+	} 
+	
+	public boolean isMembershipRequestSubmitted(int groupId, int userId) {
+		MembershipRequestEntity membershipRequestEntity = groupDAO.getMembershipRequest(groupId, userId);
+		if (membershipRequestEntity!=null){
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/*
@@ -217,11 +236,12 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * - Update the membership status as Approved
 	 * 
 	 */
-	public void approveMembershipRequest(int groupId, int userId){
-		MembershipRequest membershipRequest = getMembershipRequest(groupId, userId);
+	public void approveMembershipRequest(int groupId, int requesterUserId, String remark){
+		MembershipRequest membershipRequest = getMembershipRequest(groupId, requesterUserId);
 		group = getAllData(groupId);
 		if (membershipRequest!=null){
 			if (!membershipRequest.getStatus().equals(ApprovalStatus.Approved)){
+				membershipRequest.setAdminRemark(remark);
 				group.getMembers().add(membershipRequest.getUser());
 				update(group);
 				//Don't try to remove membership request from group and add back to update, as it will throw exception
@@ -236,7 +256,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 						+ "Its current status:"+membershipRequest.getStatus());
 			}
 		} else {
-			throw new NotAcceptableException("No membership request has been submitted by user id:"+userId +" for group id:"+groupId);
+			throw new NotAcceptableException("No membership request has been submitted by user id:"+requesterUserId +" for group id:"+groupId);
 		}
 	}
 
@@ -251,19 +271,11 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * - Maintain log of old remarks by appending the new remark to the old one with date time
 	 * 
 	 */
-	public void rejectMembershipRequest(int groupId, int userId, String remark){
-		MembershipRequest membershipRequest = getMembershipRequest(groupId, userId);
+	public void rejectMembershipRequest(int groupId, int requesterUserId, String remark){
+		MembershipRequest membershipRequest = getMembershipRequest(groupId, requesterUserId);
 		if (membershipRequest!=null){
 			if (membershipRequest.getStatus().equals(ApprovalStatus.Pending)){
-				//Reason for concatinating is to keep track of old reason for rejection with date time
-				String deliminiator = "\r\nUTC Time:"+DateTimeUtil.getCurrentTimeInUTC().toString()+"\r\n--------\r\n";
-				String updatedRemark;
-				if (membershipRequest.getAdminRemark()==null){
-					updatedRemark = deliminiator.concat(remark);
-				} else {
-					updatedRemark = membershipRequest.getAdminRemark().concat(deliminiator).concat(remark);					
-				}
-				membershipRequest.setAdminRemark(updatedRemark);
+				membershipRequest.setAdminRemark(remark);
 				membershipRequest.setStatus(ApprovalStatus.Rejected);
 				MembershipRequestDO membershipRequestDO = new MembershipRequestDO();
 				membershipRequestDO.update(membershipRequest);
@@ -273,7 +285,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 			}
 		}
 		else {
-			throw new NotAcceptableException("No membership request has been submitted by user id:"+userId +" for group id:"+groupId);
+			throw new NotAcceptableException("No membership request has been submitted by user id:"+requesterUserId +" for group id:"+groupId);
 		}
 	}
 	
@@ -464,14 +476,22 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	}
 
 	/*
-	 * This will get group details with membership status 
+	 * This will get group details with membership status and member count
 	 * 
 	 */
 	public GroupDetail getGroupDetail(int groupId, int userId) {
 		Group group = get(groupId);
+		return getGroupDetailFromGroup(group, userId);
+	}
+	
+	/*
+	 * This function is for convinience so that we can easily get GroupDetail with updated details from group
+	 * 
+	 */
+	public GroupDetail getGroupDetailFromGroup(Group group, int userId) {
 		GroupDetail groupDetail = JsonObjectMapper.getMapper().convertValue(group, GroupDetail.class);
-		groupDetail.setMemberCount(groupDAO.getMemberCount(groupId));
-		groupDetail.setMembershipStatus(getMembershipStatus(groupId, userId));
+		groupDetail.setMemberCount(groupDAO.getMemberCount(group.getId()));
+		groupDetail.setMembershipStatus(getMembershipStatus(group.getId(), userId));
 		return groupDetail;
 	}
 	
@@ -487,9 +507,21 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 			boolean adminStatus = isAdmin(groupId, userId);
 			membershipStatus.setAdmin(adminStatus);
 		} else {
+			//This would not be applicable once user becomes member as we remove the invite
 			UserDO userDO = new UserDO();
-			membershipStatus.setInvited(userDO.isInvited(groupId, userId));
+			boolean inviteStatus = userDO.isInvited(groupId, userId);
+			membershipStatus.setInvited(inviteStatus);
 		}
+		//This would be applicable for all cases as we are not removing the request from the system
+		//And lets send appropriate data for all calls
+		MembershipRequest membershipRequest = getMembershipRequest(groupId, userId);
+		if (membershipRequest!=null) {
+			membershipStatus.setRequestSubmitted(true);
+			membershipStatus.setApprovalStatus(membershipRequest.getStatus());
+		} else {
+			membershipStatus.setRequestSubmitted(false);
+		}
+
 		return membershipStatus;
 	}
 	
@@ -509,6 +541,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 			result.setUser(basicUser);
 			result.setMember(isMember(groupId, user.getId()));
 			result.setInvited(userDO.isInvited(groupId, user.getId()));
+			result.setRequestSubmitted(isMembershipRequestSubmitted(groupId, user.getId()));
 			results.add(result);
 		}
 		return results;

@@ -24,6 +24,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
+import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.GroupListType;
 
@@ -159,6 +160,7 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 				.add(Restrictions.eq("id", userId))
 				.createCriteria("membershipRequests", "request",JoinType.RIGHT_OUTER_JOIN)
 					.addOrder(Order.desc("createdDateTime"))
+					.add(Restrictions.ne("status", ApprovalStatus.Approved))
 					.setFirstResult(startIndex)
 					.setMaxResults(resultLimit)
 					.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);

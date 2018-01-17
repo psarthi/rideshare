@@ -21,6 +21,7 @@ import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
+import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
 
 public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 
@@ -155,6 +156,8 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
 		Query query = session.getNamedQuery("MembershipRequests.byGroupId").setParameter("groupId", groupId)
+				.setParameter("approvedStatus", ApprovalStatus.Approved)
+				.setParameter("rejectedStatus", ApprovalStatus.Rejected)
 				.setFirstResult(startIndex)
 				.setMaxResults(resultLimit);
 		Set<MembershipRequestEntity> requestEntities = new HashSet<>(query.list());

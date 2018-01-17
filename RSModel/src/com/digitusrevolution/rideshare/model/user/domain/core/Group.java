@@ -7,9 +7,13 @@ import java.util.LinkedList;
 
 import com.digitusrevolution.rideshare.model.user.domain.MembershipForm;
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.digitusrevolution.rideshare.model.user.domain.GroupFeedback;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 
+//Reason behind this jsonignore so that it doesn't throw error while converting from DTO to Domain Model which has more fields
+//e.g. in case of GroupDetail has extra fields such as membercount
+@JsonIgnoreProperties (ignoreUnknown=true)
 public class Group implements Comparable<Group>{
 
 	private int id;

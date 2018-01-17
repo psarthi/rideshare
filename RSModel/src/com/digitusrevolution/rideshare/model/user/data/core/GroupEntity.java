@@ -44,7 +44,8 @@ import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
 	query="from GroupEntity where name like :name order by name asc"),
 	@NamedQuery(name="MembershipRequests.byGroupId", 
 	query="select request from GroupEntity as grp join grp.membershipRequests as request "
-			+ "where grp.id=:groupId order by request.createdDateTime desc")
+			+ "where grp.id=:groupId and request.status!=:approvedStatus and request.status!=:rejectedStatus "
+			+ "order by request.createdDateTime desc")
 
 })
 public class GroupEntity {

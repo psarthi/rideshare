@@ -24,6 +24,7 @@ public class MembershipRequestMapper implements Mapper<MembershipRequest, Member
 		GroupMapper groupMapper = new GroupMapper();
 		membershipRequestEntity.setGroup(groupMapper.getEntity(membershipRequest.getGroup(), false));
 		membershipRequestEntity.setAdminRemark(membershipRequest.getAdminRemark());
+		membershipRequestEntity.setUserRemark(membershipRequest.getUserRemark());
 		return membershipRequestEntity;
 	}
 
@@ -45,6 +46,7 @@ public class MembershipRequestMapper implements Mapper<MembershipRequest, Member
 		GroupMapper groupMapper = new GroupMapper();
 		membershipRequest.setGroup(groupMapper.getDomainModel(membershipRequestEntity.getGroup(), false));
 		membershipRequest.setAdminRemark(membershipRequestEntity.getAdminRemark());
+		membershipRequest.setUserRemark(membershipRequestEntity.getUserRemark());
 		return membershipRequest;
 	}
 

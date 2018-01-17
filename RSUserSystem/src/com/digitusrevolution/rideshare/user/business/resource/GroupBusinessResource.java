@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.common.ResponseMessage;
+import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
 import com.digitusrevolution.rideshare.model.user.dto.BasicMembershipRequest;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
@@ -112,5 +113,54 @@ public class GroupBusinessResource {
 		GenericEntity<List<BasicMembershipRequest>> entity = new GenericEntity<List<BasicMembershipRequest>>(membershipRequests) {};
 		return Response.ok(entity).build();
 	}
+	
+	@GET
+	//Reason for changing it to request to avoid confusion / typos between membershiprequest(s)
+	@Path("/{groupId}/request")
+	public Response getMembershipRequest(@PathParam("groupId") int groupId, @PathParam("userId") int userId){
+		GroupBusinessService groupBusinessService = new GroupBusinessService();
+		BasicMembershipRequest membershipRequest = groupBusinessService.getMembershipRequest(groupId, userId);
+		return Response.ok().entity(membershipRequest).build();
+	}
+	
+	@POST
+	@Path("/{groupId}/request")
+	public Response sendMembershipRequest(@PathParam("groupId") int groupId, BasicMembershipRequest membershipRequest){
+		GroupBusinessService groupBusinessService = new GroupBusinessService();
+		groupBusinessService.sendMembershipRequest(groupId, membershipRequest);
+		ResponseMessage responseMessage = new ResponseMessage();
+		responseMessage.setStatus(ResponseMessage.Code.OK);
+		return Response.ok(responseMessage).build();
+	}
 
+	@POST
+	@Path("/{groupId}/approverequest/{requesterUserId}")
+	public Response approveMembershipRequest(@PathParam("groupId") int groupId, @PathParam("requesterUserId") int requesterUserId, String remark){
+		GroupBusinessService groupBusinessService = new GroupBusinessService();
+		groupBusinessService.approveMembershipRequest(groupId, requesterUserId, remark);
+		ResponseMessage responseMessage = new ResponseMessage();
+		responseMessage.setStatus(ResponseMessage.Code.OK);
+		return Response.ok(responseMessage).build();
+	}
+	
+	@POST
+	@Path("/{groupId}/rejectrequest/{requesterUserId}")
+	public Response rejectMembershipRequest(@PathParam("groupId") int groupId, @PathParam("requesterUserId") int requesterUserId, String remark){
+		GroupBusinessService groupBusinessService = new GroupBusinessService();
+		groupBusinessService.rejectMembershipRequest(groupId, requesterUserId, remark);
+		ResponseMessage responseMessage = new ResponseMessage();
+		responseMessage.setStatus(ResponseMessage.Code.OK);
+		return Response.ok(responseMessage).build();
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
