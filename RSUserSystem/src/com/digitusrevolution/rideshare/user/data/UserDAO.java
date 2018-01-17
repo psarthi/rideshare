@@ -25,6 +25,7 @@ import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.dto.GroupListType;
 
 public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 
@@ -118,12 +119,19 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 	 * 
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List<GroupEntity> getGroups(int userId, int startIndex){
+	public List<GroupEntity> getGroups(GroupListType listType, int userId, int startIndex){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
+		String subCriteriaAssociationPath = null;
+		if (listType.equals(GroupListType.Member)) {
+			subCriteriaAssociationPath = "groups";
+		}
+		if (listType.equals(GroupListType.Invite)) {
+			subCriteriaAssociationPath = "groupInvites";
+		}
 		Criteria criteria = session.createCriteria(entityClass)
 				.add(Restrictions.eq("id", userId))
-				.createCriteria("groups", "grp",JoinType.RIGHT_OUTER_JOIN)
+				.createCriteria(subCriteriaAssociationPath, "grp",JoinType.RIGHT_OUTER_JOIN)
 					.addOrder(Order.asc("name"))
 					.setFirstResult(startIndex)
 					.setMaxResults(resultLimit)

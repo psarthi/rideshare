@@ -502,7 +502,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
 		int itemsCount = 10;
 		int startIndex = page*itemsCount; 
-		List<GroupEntity> groupEntities = userDAO.getGroups(userId, startIndex);
+		List<GroupEntity> groupEntities = userDAO.getGroups(listType, userId, startIndex);
 		GroupMapper groupMapper = new GroupMapper();
 		LinkedList<Group> groups = new LinkedList<>();
 		//We need just basic group information, so no need to fetch child

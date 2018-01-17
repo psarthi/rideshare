@@ -6,5 +6,5 @@ package com.digitusrevolution.rideshare.model.user.dto;
 
 public enum GroupListType {
 
-    All, Member, Invite
+    Member, Invite
 }
