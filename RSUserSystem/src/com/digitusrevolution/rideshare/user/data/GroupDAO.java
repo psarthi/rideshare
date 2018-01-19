@@ -18,10 +18,12 @@ import org.hibernate.sql.JoinType;
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
+import com.digitusrevolution.rideshare.model.user.data.GroupFeedbackEntity;
 import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
+import com.digitusrevolution.rideshare.model.user.domain.Vote;
 
 public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 
@@ -59,7 +61,6 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 			return false;
 		}
 	}
-
 	
 	/*
 	 * Associations explaination -  
@@ -90,6 +91,9 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 		return size;
 	}
 	
+	/* 
+	 * 	 Kept here for reference purpose only
+	 * 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List<UserEntity> getMembers(int groupId, int startIndex){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -114,6 +118,27 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 		
 		return userEntities;
 	}
+	*/
+	
+	/*
+	 * VERY IMP - Don't use Criteria way and fetching Results as its not working and its having some weired outcome
+	 * so don't implement function similar to getUserMembershipRequests of UserDAO instead use the Query way
+	 * 
+	 */
+	public List<UserEntity> getMembers(int groupId, int startIndex){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
+		Query query = session.getNamedQuery("Members.byGroupId").setParameter("groupId", groupId)
+				.setFirstResult(startIndex)
+				.setMaxResults(resultLimit);
+		Set<UserEntity> userEntities = new HashSet<>(query.list());
+		List<UserEntity> userEntitiesList = new LinkedList<>();
+		for (UserEntity userEntity: userEntities) {
+			userEntitiesList.add(userEntity);
+		}
+		return userEntitiesList;		
+	}
+	
 
 	//This will get all admins of the group
 	public List<UserEntity> getAdmins(int groupId){

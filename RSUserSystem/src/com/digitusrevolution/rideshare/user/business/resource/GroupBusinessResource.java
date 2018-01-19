@@ -14,11 +14,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.model.common.ResponseMessage;
+import com.digitusrevolution.rideshare.model.user.domain.MembershipForm;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
 import com.digitusrevolution.rideshare.model.user.dto.BasicMembershipRequest;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
+import com.digitusrevolution.rideshare.model.user.dto.GroupFeedbackInfo;
 import com.digitusrevolution.rideshare.model.user.dto.GroupInviteUserSearchResult;
 import com.digitusrevolution.rideshare.model.user.dto.GroupListType;
 import com.digitusrevolution.rideshare.model.user.dto.GroupMember;
@@ -43,7 +45,7 @@ public class GroupBusinessResource {
 		int id = groupBusinessService.createGroup(group);
 		//Since we are trying to get all data before even committing, all child objects may not come 
 		//so its cleaner to have get All updated data post commit in different transaction
-		GroupDetail createdGroup = groupBusinessService.getGroupDetails(id, group.getOwner().getId());
+		GroupDetail createdGroup = groupBusinessService.getGroupDetail(id, group.getOwner().getId());
 		return Response.ok().entity(createdGroup).build();
 	}
 	
@@ -66,12 +68,12 @@ public class GroupBusinessResource {
 
 	@GET
 	@Path("/{groupId}")
-	public Response getGroupDetails(@PathParam("userId") int userId, @PathParam("groupId") int groupId){
+	public Response getGroupDetail(@PathParam("userId") int userId, @PathParam("groupId") int groupId){
 		//This is an exception where we are calling service from different resource
 		//i.e. user business resource calling group business service and the reason 
 		//is we need to capture user id as well as group id
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
-		GroupDetail group = groupBusinessService.getGroupDetails(groupId, userId);
+		GroupDetail group = groupBusinessService.getGroupDetail(groupId, userId);
 		return Response.ok().entity(group).build();
 	}
 	
@@ -125,32 +127,65 @@ public class GroupBusinessResource {
 	
 	@POST
 	@Path("/{groupId}/request")
-	public Response sendMembershipRequest(@PathParam("groupId") int groupId, BasicMembershipRequest membershipRequest){
+	public Response sendMembershipRequest(@PathParam("groupId") int groupId, @PathParam("userId") int userId, BasicMembershipRequest membershipRequest){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		groupBusinessService.sendMembershipRequest(groupId, membershipRequest);
-		ResponseMessage responseMessage = new ResponseMessage();
-		responseMessage.setStatus(ResponseMessage.Code.OK);
-		return Response.ok(responseMessage).build();
+		//Getting updated groupdetail in seperate transaction so that we get updated data
+		GroupDetail groupDetail = groupBusinessService.getGroupDetail(groupId, userId);
+		return Response.ok().entity(groupDetail).build();
 	}
 
 	@POST
 	@Path("/{groupId}/approverequest/{requesterUserId}")
-	public Response approveMembershipRequest(@PathParam("groupId") int groupId, @PathParam("requesterUserId") int requesterUserId, String remark){
+	public Response approveMembershipRequest(@PathParam("groupId") int groupId, @PathParam("userId") int userId,
+			@PathParam("requesterUserId") int requesterUserId, String remark){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		groupBusinessService.approveMembershipRequest(groupId, requesterUserId, remark);
-		ResponseMessage responseMessage = new ResponseMessage();
-		responseMessage.setStatus(ResponseMessage.Code.OK);
-		return Response.ok(responseMessage).build();
+		//Getting updated groupdetail in seperate transaction so that we get updated data
+		GroupDetail groupDetail = groupBusinessService.getGroupDetail(groupId, userId);
+		return Response.ok().entity(groupDetail).build();
 	}
 	
 	@POST
 	@Path("/{groupId}/rejectrequest/{requesterUserId}")
-	public Response rejectMembershipRequest(@PathParam("groupId") int groupId, @PathParam("requesterUserId") int requesterUserId, String remark){
+	public Response rejectMembershipRequest(@PathParam("groupId") int groupId, @PathParam("userId") int userId,
+			@PathParam("requesterUserId") int requesterUserId, String remark){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		groupBusinessService.rejectMembershipRequest(groupId, requesterUserId, remark);
-		ResponseMessage responseMessage = new ResponseMessage();
-		responseMessage.setStatus(ResponseMessage.Code.OK);
-		return Response.ok(responseMessage).build();
+		//Getting updated groupdetail in seperate transaction so that we get updated data
+		GroupDetail groupDetail = groupBusinessService.getGroupDetail(groupId, userId);
+		return Response.ok().entity(groupDetail).build();
+	}
+	
+	@POST
+	@Path("/{groupId}/feedback")
+	public Response giveFeedback(@PathParam("groupId") int groupId, @PathParam("userId") int memberUserId, GroupFeedbackInfo feedback){
+		GroupBusinessService groupBusinessService = new GroupBusinessService();
+		groupBusinessService.giveFeedback(groupId, memberUserId, feedback);
+		//Getting updated groupdetail in seperate transaction so that we get updated data
+		GroupDetail groupDetail = groupBusinessService.getGroupDetail(groupId, memberUserId);
+		return Response.ok().entity(groupDetail).build();
+	}
+	
+	@GET
+	@Path("/{groupId}/leave")
+	public Response leaveGroup(@PathParam("groupId") int groupId, @PathParam("userId") int userId){
+		GroupBusinessService groupBusinessService = new GroupBusinessService();
+		groupBusinessService.leaveGroup(groupId, userId);
+		//Getting updated groupdetail in seperate transaction so that we get updated data
+		GroupDetail groupDetail = groupBusinessService.getGroupDetail(groupId, userId);
+		return Response.ok().entity(groupDetail).build();
+	}
+	
+	@POST
+	@Path("/{groupId}/updatemembershipform")
+	public Response updateMembershipForm(@PathParam("groupId") int groupId, @PathParam("userId") int userId, 
+			MembershipForm form) {
+		GroupBusinessService groupBusinessService = new GroupBusinessService();
+		groupBusinessService.updateMembershipForm(groupId, form);
+		//Getting updated groupdetail in seperate transaction so that we get updated data
+		GroupDetail groupDetail = groupBusinessService.getGroupDetail(groupId, userId);
+		return Response.ok().entity(groupDetail).build();
 	}
 }
 

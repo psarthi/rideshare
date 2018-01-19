@@ -86,6 +86,10 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 	public Set<UserEntity> searchUserByName(String name, int startIndex){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
+		//VERY IMP - Don't order by name, else you will miss some items due to edge condition of matching names
+		//e.g if you have 20 groups of the same name, then order of that can be anything and since we are just getting 
+		//sublist from the whole list, you may miss items
+		//So, ensure that your order by should be unique when you are using sublist
 		Query query = session.getNamedQuery("User.SearchByName").setParameter("name", name+"%")
 				.setFirstResult(startIndex)
 				.setMaxResults(resultLimit);
@@ -130,10 +134,14 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 		if (listType.equals(GroupListType.Invite)) {
 			subCriteriaAssociationPath = "groupInvites";
 		}
+		//VERY IMP - Don't order by name, else you will miss some items due to edge condition of matching names
+		//e.g if you have 20 groups of the same name, then order of that can be anything and since we are just getting 
+		//sublist from the whole list, you may miss items
+		//So, ensure that your order by should be unique when you are using sublist
 		Criteria criteria = session.createCriteria(entityClass)
 				.add(Restrictions.eq("id", userId))
 				.createCriteria(subCriteriaAssociationPath, "grp",JoinType.RIGHT_OUTER_JOIN)
-					.addOrder(Order.asc("name"))
+					.addOrder(Order.asc("id"))
 					.setFirstResult(startIndex)
 					.setMaxResults(resultLimit)
 					.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
@@ -159,7 +167,7 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 		Criteria criteria = session.createCriteria(entityClass)
 				.add(Restrictions.eq("id", userId))
 				.createCriteria("membershipRequests", "request",JoinType.RIGHT_OUTER_JOIN)
-					.addOrder(Order.desc("createdDateTime"))
+					.addOrder(Order.asc("id"))
 					.add(Restrictions.ne("status", ApprovalStatus.Approved))
 					.setFirstResult(startIndex)
 					.setMaxResults(resultLimit)

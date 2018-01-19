@@ -58,6 +58,14 @@ public class GroupTest {
 	
 	private void test(){
 		
+		GroupDO groupDO = new GroupDO();
+		groupDO.getVote(2, 1);
+//		GroupFeedback feedback = new GroupFeedback();
+//		feedback.setVote(Vote.Genuine);
+//		groupDO.giveFeedback(2, 1, feedback);
+
+		
+		/*
 		GroupDAO groupDAO = new GroupDAO();
 	
 		int size = groupDAO.getMemberCount(3);
@@ -80,7 +88,6 @@ public class GroupTest {
 		GroupDO groupDO = new GroupDO();
 		groupDO.sendMembershipRequest(3, membershipRequest);
 
-		/*	
 		GroupDAO groupDAO = new GroupDAO();
 	//	groupDAO.getMember(1, 4);
 		

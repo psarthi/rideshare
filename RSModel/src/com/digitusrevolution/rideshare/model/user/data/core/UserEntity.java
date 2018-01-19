@@ -42,9 +42,13 @@ import com.digitusrevolution.rideshare.model.user.domain.Sex;
 
 @Entity
 @Table (name="user_detail")
+//VERY IMP - Don't order by name, else you will miss some items due to edge condition of matching names
+//e.g if you have 20 groups of the same name, then order of that can be anything and since we are just getting 
+//sublist from the whole list, you may miss items
+//So, ensure that your order by should be unique when you are using sublist
 @NamedQueries({
 	@NamedQuery(name="User.SearchByName", 
-	query="from UserEntity where concat(firstName,' ',lastName) like :name order by firstName asc"),
+	query="from UserEntity where concat(firstName,' ',lastName) like :name order by id asc"),
 	@NamedQuery(name="Invite.ByUserIdAndGroupId", 
 	query="select grp from UserEntity as usr join usr.groupInvites as grp where usr.id=:userId and grp.id=:groupId")	
 })

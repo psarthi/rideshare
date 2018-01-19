@@ -30,6 +30,10 @@ import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
 //Its important to select request else without that, it will fetch two object, one if group entity and 2nd one is membership request
 //Don't use group, member keyword as its reserved in db i.e. don't use any reserved keyword in sql 
 //Note - Join works only with entity and not element collection
+//VERY IMP - Don't order by name, else you will miss some items due to edge condition of matching names
+//e.g if you have 20 groups of the same name, then order of that can be anything and since we are just getting 
+//sublist from the whole list, you may miss items
+//So, ensure that your order by should be unique when you are using sublist
 @NamedQueries({
 	@NamedQuery(name="MembershipRequest.byGroupIdAndUserId", 
 			query="select request from GroupEntity as grp join grp.membershipRequests as request "
@@ -41,12 +45,17 @@ import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
 	query="select adm from GroupEntity as grp join grp.admins as adm "
 			+ "where grp.id=:groupId and adm.id=:memberUserId"),
 	@NamedQuery(name="Group.SearchByName", 
-	query="from GroupEntity where name like :name order by name asc"),
+	query="from GroupEntity where name like :name order by id asc"),
 	@NamedQuery(name="MembershipRequests.byGroupId", 
 	query="select request from GroupEntity as grp join grp.membershipRequests as request "
 			+ "where grp.id=:groupId and request.status!=:approvedStatus and request.status!=:rejectedStatus "
-			+ "order by request.createdDateTime desc")
-
+			+ "order by request.id asc"),
+	@NamedQuery(name="Members.byGroupId", 
+	query="select mbr from GroupEntity as grp join grp.members as mbr "
+			+ "where grp.id=:groupId order by mbr.id asc"),
+	@NamedQuery(name="Admins.byGroupId", 
+	query="select adm from GroupEntity as grp join grp.admins as adm "
+			+ "where grp.id=:groupId order by adm.id asc")
 })
 public class GroupEntity {
 	@Id
