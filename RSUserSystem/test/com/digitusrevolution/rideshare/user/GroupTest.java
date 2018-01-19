@@ -59,7 +59,7 @@ public class GroupTest {
 	private void test(){
 		
 		GroupDO groupDO = new GroupDO();
-		groupDO.getVote(2, 1);
+		//groupDO.getVote(2, 1);
 //		GroupFeedback feedback = new GroupFeedback();
 //		feedback.setVote(Vote.Genuine);
 //		groupDO.giveFeedback(2, 1, feedback);

@@ -463,7 +463,7 @@ public class UserBusinessService {
 		}
 	}
 	
-	public UserProfile getUserProfile(int userId) {
+	public UserProfile getUserProfile(int userId, int signedInUserId) {
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -472,7 +472,7 @@ public class UserBusinessService {
 			transaction = session.beginTransaction();
 	
 			UserDO userDO = new UserDO();
-			userProfile = userDO.getUserProfile(userId);
+			userProfile = userDO.getUserProfile(userId, signedInUserId);
 			
 			transaction.commit();
 		} catch (RuntimeException e) {

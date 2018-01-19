@@ -66,6 +66,9 @@ public class UserSystemTest {
 	public void test(){
 		
 		UserDO userDO = new UserDO();
+		userDO.getCommonGroups(1, 2);
+		
+		/*
 		List<User> users = userDO.searchUserByName("Par",1);
 		for (User user:users) {
 			System.out.println("User is:"+user.getFirstName()+" "+user.getLastName());
@@ -78,7 +81,7 @@ public class UserSystemTest {
 		List<MembershipRequestEntity> requestEntities = userDAO.getUserMembershipRequests(4, 0);
 		System.out.println("Request Size:"+requestEntities.size());
 		
-		/*
+
 		int count = userDAO.getRidesOffered(2);
 		System.out.println("Rides Offered is:"+count);
 		count = userDAO.getRidesTaken(2);

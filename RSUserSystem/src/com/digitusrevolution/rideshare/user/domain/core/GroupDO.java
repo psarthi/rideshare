@@ -300,22 +300,26 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		group = getAllData(groupId);
 		UserDO userDO = new UserDO();
 		User member = userDO.get(memberUserId);
-		boolean removeStatus = group.getMembers().remove(member);
-		if (removeStatus){
-			//This will remove admin as well if user is an admin
-			if (isAdmin(groupId, memberUserId)) {
-				group.getAdmins().remove(member);
-			}
-			//This will remove membership request if submitted (in case you have created the group so request is there)
-			MembershipRequestEntity membershipRequestEntity = groupDAO.getMembershipRequest(groupId, memberUserId);
-			if (membershipRequestEntity!=null) {
-				MembershipRequestMapper membershipRequestMapper = new MembershipRequestMapper();
-				MembershipRequest membershipRequest = membershipRequestMapper.getDomainModel(membershipRequestEntity, false);
-				group.getMembershipRequests().remove(membershipRequest);				
-			}
-			update(group);	
+		if (group.getOwner().getId()==memberUserId) {
+			throw new NotAcceptableException("Owner can't be removed from the group");
 		} else {
-			throw new NotAcceptableException("Group with id:"+groupId+" doesn't not have any member with id:"+memberUserId);
+			boolean removeStatus = group.getMembers().remove(member);		
+			if (removeStatus){
+				//This will remove admin as well if user is an admin
+				if (isAdmin(groupId, memberUserId)) {
+					group.getAdmins().remove(member);
+				}
+				//This will remove membership request if submitted (in case you have created the group so request is there)
+				MembershipRequestEntity membershipRequestEntity = groupDAO.getMembershipRequest(groupId, memberUserId);
+				if (membershipRequestEntity!=null) {
+					MembershipRequestMapper membershipRequestMapper = new MembershipRequestMapper();
+					MembershipRequest membershipRequest = membershipRequestMapper.getDomainModel(membershipRequestEntity, false);
+					group.getMembershipRequests().remove(membershipRequest);				
+				}
+				update(group);	
+			} else {
+				throw new NotAcceptableException("Group with id:"+groupId+" doesn't not have any member with id:"+memberUserId);
+			}			
 		}
 	}
 

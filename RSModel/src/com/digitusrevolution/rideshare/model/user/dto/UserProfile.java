@@ -7,8 +7,7 @@ public class UserProfile {
 	private BasicUser user;
 	private int ridesTaken;
 	private int offeredRides;
-	private List<BasicUser> mutualFriends;
-	private List<BasicGroup> commonGroups;
+	private List<GroupDetail> commonGroups;
 	
 	public BasicUser getUser() {
 		return user;
@@ -28,16 +27,11 @@ public class UserProfile {
 	public void setOfferedRides(int offeredRides) {
 		this.offeredRides = offeredRides;
 	}
-	public List<BasicUser> getMutualFriends() {
-		return mutualFriends;
-	}
-	public void setMutualFriends(List<BasicUser> mutualFriends) {
-		this.mutualFriends = mutualFriends;
-	}
-	public List<BasicGroup> getCommonGroups() {
+	public List<GroupDetail> getCommonGroups() {
 		return commonGroups;
 	}
-	public void setCommonGroups(List<BasicGroup> commonGroups) {
+	public void setCommonGroups(List<GroupDetail> commonGroups) {
 		this.commonGroups = commonGroups;
 	}
+	
 }

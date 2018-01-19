@@ -488,7 +488,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		return profileRating;
 	}
 	
-	public UserProfile getUserProfile(int userId) {
+	public UserProfile getUserProfile(int userId, int signedInUserId) {
 		
 		user = get(userId);
 		UserProfile userProfile = new UserProfile();
@@ -497,7 +497,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		userProfile.setOfferedRides(userDAO.getRidesOffered(userId));	
 		userProfile.setRidesTaken(userDAO.getRidesTaken(userId));
 		
-		//TODO implement mutual friends and common groups later
+		userProfile.setCommonGroups(getCommonGroups(userId, signedInUserId));
 		
 		return userProfile;
 	}
@@ -516,6 +516,36 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		GroupDO groupDO = new GroupDO();
 		return groupDO.getGroupDetails(userId, groups);
 	}
+	
+	
+	public List<GroupDetail> getGroups(int userId){
+		List<GroupEntity> groupEntities = userDAO.getGroups(userId);
+		GroupMapper groupMapper = new GroupMapper();
+		LinkedList<Group> groups = new LinkedList<>();
+		//We need just basic group information, so no need to fetch child
+		groupMapper.getDomainModels(groups, groupEntities, false);
+		//this will sort the list further
+		Collections.sort(groups);
+		GroupDO groupDO = new GroupDO();
+		return groupDO.getGroupDetails(userId, groups);
+	}
+	
+	public List<GroupDetail> getCommonGroups(int userId, int secondUserId){
+		//Don't call getGroups which will avoid unnecessary further calls when using mapper
+		List<GroupEntity> firstGroupEntities = userDAO.getGroups(userId);
+		List<GroupEntity> secondGroupEntities = userDAO.getGroups(secondUserId);		
+		firstGroupEntities.retainAll(secondGroupEntities);		
+		
+		LinkedList<Group> groups = new LinkedList<>();
+		GroupMapper groupMapper = new GroupMapper();
+		//We need just basic group information, so no need to fetch child
+		groupMapper.getDomainModels(groups, firstGroupEntities, false);
+		//this will sort the list further
+		Collections.sort(groups);
+		GroupDO groupDO = new GroupDO();
+		return groupDO.getGroupDetails(userId, groups);
+	}
+	
 	
 	public boolean isInvited(int groupId, int userId){
 		return userDAO.isInvited(groupId, userId);

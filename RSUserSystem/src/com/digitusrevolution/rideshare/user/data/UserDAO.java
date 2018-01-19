@@ -159,6 +159,27 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 		return groupEntities;
 	}
 	
+	// This will return all groups where user is a member
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public List<GroupEntity> getGroups(int userId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass)
+				.add(Restrictions.eq("id", userId))
+				.createCriteria("groups", "grp",JoinType.RIGHT_OUTER_JOIN)
+					.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		
+		//VERY IMP - Get the result in Set else you would get duplicate values
+		Set list = new HashSet<>(criteria.list());
+		List<GroupEntity> groupEntities = new LinkedList<>();
+		Iterator iter = list.iterator();
+		while (iter.hasNext() ) {
+		    Map map = (Map) iter.next();
+		    GroupEntity groupEntity = (GroupEntity) map.get("grp");
+		    groupEntities.add(groupEntity);
+		}
+		return groupEntities;
+	}
+	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List<MembershipRequestEntity> getUserMembershipRequests(int userId, int startIndex){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();

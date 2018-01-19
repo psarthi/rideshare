@@ -315,10 +315,10 @@ public class UserBusinessResource {
 	}
 	
 	@GET
-	@Path("/{userId}/profile")
-	public Response getUserProfile(@PathParam("userId") int userId) {
+	@Path("/{signedInUserId}/profile/{userId}")
+	public Response getUserProfile(@PathParam("signedInUserId") int signedInUserId, @PathParam("userId") int userId) {
 		UserBusinessService userBusinessService = new UserBusinessService();
-		UserProfile userProfile = userBusinessService.getUserProfile(userId);
+		UserProfile userProfile = userBusinessService.getUserProfile(userId, signedInUserId);
 		return Response.ok(userProfile).build();
 	}
 	

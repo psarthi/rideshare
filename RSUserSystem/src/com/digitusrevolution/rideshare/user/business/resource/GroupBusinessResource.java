@@ -187,6 +187,28 @@ public class GroupBusinessResource {
 		GroupDetail groupDetail = groupBusinessService.getGroupDetail(groupId, userId);
 		return Response.ok().entity(groupDetail).build();
 	}
+	
+	@GET
+	@Path("/{groupId}/addadmin")
+	public Response addAdmin(@PathParam("groupId") int groupId, @PathParam("userId") int memberUserId){
+		GroupBusinessService groupBusinessService = new GroupBusinessService();
+		groupBusinessService.addAdmin(groupId, memberUserId);
+		//Getting updated groupdetail in seperate transaction so that we get updated data
+		GroupDetail groupDetail = groupBusinessService.getGroupDetail(groupId, memberUserId);
+		return Response.ok().entity(groupDetail).build();
+	}
+	
+	@GET
+	@Path("/{groupId}/removemember")
+	public Response removeMember(@PathParam("groupId") int groupId, @PathParam("userId") int memberUserId){
+		GroupBusinessService groupBusinessService = new GroupBusinessService();
+		groupBusinessService.removeMember(groupId, memberUserId);
+		//Getting updated groupdetail in seperate transaction so that we get updated data
+		GroupDetail groupDetail = groupBusinessService.getGroupDetail(groupId, memberUserId);
+		return Response.ok().entity(groupDetail).build();
+
+	}
+
 }
 
 
