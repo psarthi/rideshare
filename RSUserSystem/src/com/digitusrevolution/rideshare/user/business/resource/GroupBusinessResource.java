@@ -17,6 +17,7 @@ import com.digitusrevolution.rideshare.model.common.ResponseMessage;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipForm;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
+import com.digitusrevolution.rideshare.model.user.dto.BasicGroupInfo;
 import com.digitusrevolution.rideshare.model.user.dto.BasicMembershipRequest;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
@@ -40,12 +41,23 @@ public class GroupBusinessResource {
 	 * @return status OK
 	 */
 	@POST
-	public Response createGroup(BasicGroup group){
+	public Response createGroup(BasicGroupInfo group){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		int id = groupBusinessService.createGroup(group);
 		//Since we are trying to get all data before even committing, all child objects may not come 
 		//so its cleaner to have get All updated data post commit in different transaction
 		GroupDetail createdGroup = groupBusinessService.getGroupDetail(id, group.getOwner().getId());
+		return Response.ok().entity(createdGroup).build();
+	}
+	
+	@POST
+	@Path("/update")
+	public Response updateGroup(BasicGroupInfo group) {
+		GroupBusinessService groupBusinessService = new GroupBusinessService();
+		groupBusinessService.updateGroup(group);
+		//Since we are trying to get all data before even committing, all child objects may not come 
+		//so its cleaner to have get All updated data post commit in different transaction
+		GroupDetail createdGroup = groupBusinessService.getGroupDetail(group.getId(), group.getOwner().getId());
 		return Response.ok().entity(createdGroup).build();
 	}
 	

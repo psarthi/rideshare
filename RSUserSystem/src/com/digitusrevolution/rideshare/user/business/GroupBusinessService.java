@@ -16,6 +16,7 @@ import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
+import com.digitusrevolution.rideshare.model.user.dto.BasicGroupInfo;
 import com.digitusrevolution.rideshare.model.user.dto.BasicMembershipRequest;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.FullGroup;
@@ -30,7 +31,7 @@ public class GroupBusinessService {
 	
 	private static final Logger logger = LogManager.getLogger(GroupBusinessService.class.getName());
 
-	public int createGroup(BasicGroup group){
+	public int createGroup(BasicGroupInfo group){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -39,7 +40,7 @@ public class GroupBusinessService {
 			transaction = session.beginTransaction();
 			
 			GroupDO groupDO = new GroupDO();
-			id = groupDO.createGroup(JsonObjectMapper.getMapper().convertValue(group, Group.class));
+			id = groupDO.createGroup(JsonObjectMapper.getMapper().convertValue(group, Group.class), group.getRawImage());
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -56,6 +57,31 @@ public class GroupBusinessService {
 			}
 		}
 		return id;
+	}
+	
+	public void updateGroup(BasicGroupInfo group) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		try {
+			transaction = session.beginTransaction();
+			
+			GroupDO groupDO = new GroupDO();
+			groupDO.updateGroup(JsonObjectMapper.getMapper().convertValue(group, Group.class), group.getRawImage());
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
 	}
 	
 	public GroupDetail getGroupDetail(int groupId, int userId){

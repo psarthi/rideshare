@@ -1,5 +1,9 @@
 package com.digitusrevolution.rideshare.user.domain.core;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,6 +11,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotAcceptableException;
@@ -22,6 +27,7 @@ import com.digitusrevolution.rideshare.common.mapper.user.core.GroupMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
@@ -29,6 +35,7 @@ import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
 import com.digitusrevolution.rideshare.model.user.domain.GroupFeedback;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipForm;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
+import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.UserFeedback;
 import com.digitusrevolution.rideshare.model.user.domain.Vote;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
@@ -127,7 +134,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	/*
 	 * Purpose - Create group by setting additional properties such as createdDate, Owner etc.
 	 */
-	public int createGroup(Group group){
+	public int createGroup(Group group, byte[] rawImage){
 		ZonedDateTime currentTimeInUTC = DateTimeUtil.getCurrentTimeInUTC();
 		group.setCreatedDateTime(currentTimeInUTC);
 		UserDO userDO = new UserDO();
@@ -137,9 +144,72 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		group.getMembers().add(user);
 		//Its important to add owner as group admin as well
 		group.getAdmins().add(user);
+		//Storing group Photo
+		if (rawImage!=null) {
+			String filePath = saveRawImage(rawImage, group);
+			if (filePath!=null) {
+				String photoUrl = PropertyReader.getInstance().getProperty("PHOTO_WEB_URL");
+				String groupPhotoUrl = photoUrl + filePath;
+				Photo photo = new Photo();
+				photo.setImageLocation(groupPhotoUrl);
+				group.setPhoto(photo);							
+			}
+		}
 		int id = create(group);
 		return id;
 	}
+	
+	public void updateGroup(Group updatedGroup, byte[] rawImage) {
+		group = getAllData(updatedGroup.getId());
+		group.setName(updatedGroup.getName());
+		group.setInformation(updatedGroup.getInformation());
+		if (rawImage!=null) {
+			String filePath = saveRawImage(rawImage, group);
+			if (filePath!=null) {
+				String photoUrl = PropertyReader.getInstance().getProperty("PHOTO_WEB_URL");
+				String groupPhotoUrl = photoUrl + filePath;
+				//This will update the photo
+				if (group.getPhoto()!=null) {
+					group.getPhoto().setImageLocation(groupPhotoUrl);	
+				}
+				//This will add new photo
+				else {
+					Photo photo = new Photo();
+					photo.setImageLocation(groupPhotoUrl);
+					group.setPhoto(photo);							
+				}
+			}
+		}
+		update(group);
+	}
+	
+	private String saveRawImage(byte[] rawImage, Group group) {
+		String photoRootDir = PropertyReader.getInstance().getProperty("PHOTO_ROOT_PATH");
+		String photoGroupDir = PropertyReader.getInstance().getProperty("GROUP_PHOTO_FOLDER_NAME");
+		String photoFullPath =  photoRootDir + photoGroupDir;
+		// Use relative path for Unix systems
+		File dir = new File(photoFullPath);
+		//Somehow this is not working, so best is to have the group directory created manually
+		//dir.getParentFile().mkdirs(); 
+		//We can't user groupId as its not generated as of now, so use random UUID
+		String fileName = UUID.randomUUID().toString() + ".jpg";
+		File destination = new File(dir,fileName);
+        FileOutputStream fo;
+        try {
+            destination.createNewFile();
+            fo = new FileOutputStream(destination);
+            fo.write(rawImage);
+            fo.close();
+            String filePathExcludingRootDir = photoGroupDir + File.separator + fileName;  
+            logger.debug("Saved File path:"+filePathExcludingRootDir);
+            return filePathExcludingRootDir;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    	}
 
 	/*
 	 * Purpose - Submit membership request for a group
