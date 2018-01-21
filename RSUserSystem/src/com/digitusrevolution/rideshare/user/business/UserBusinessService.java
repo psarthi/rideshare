@@ -36,6 +36,7 @@ import com.digitusrevolution.rideshare.model.user.dto.UserStatus;
 import com.digitusrevolution.rideshare.model.user.dto.UserRegistration;
 import com.digitusrevolution.rideshare.user.domain.OTPDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
+import com.digitusrevolution.rideshare.user.domain.core.VehicleDO;
 
 public class UserBusinessService {
 	
@@ -376,7 +377,14 @@ public class UserBusinessService {
 			User user = userDO.getAllData(userId);
 			user.setPreference(preference);
 			userDO.update(user);
-			
+
+			//This will take care of updating the default vehcile configuration e.g seat/luggage change
+			//which will not have any effect on existing rides as we are not referring to current vehcile seats in ride logic
+			//instead we save offered ride seats in ride itself and we match as per that number
+			//so logically it may happen that user may reduce / increase the vehicle but this would effect future ride creation and not existing rides
+			VehicleDO vehicleDO = new VehicleDO();
+			vehicleDO.update(preference.getDefaultVehicle());
+
 			transaction.commit();
 		} catch (RuntimeException e) {
 			if (transaction!=null){

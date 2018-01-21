@@ -420,14 +420,14 @@ public class GroupBusinessService {
 		}
 	}
 	
-	public void addAdmin(int groupId, int memberUserId){
+	public void addAdmin(int signedInUserId, int groupId, int memberUserId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();
 			
 			GroupDO groupDO = new GroupDO();
-			groupDO.addAdmin(groupId, memberUserId);	
+			groupDO.addAdmin(signedInUserId, groupId, memberUserId);	
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -445,14 +445,15 @@ public class GroupBusinessService {
 		}
 	}
 	
-	public void removeMember(int groupId, int memberUserId){
+	
+	public void removeMember(int signedInUserId, int groupId, int memberUserId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();
 			
 			GroupDO groupDO = new GroupDO();
-			groupDO.removeMember(groupId, memberUserId);	
+			groupDO.removeMember(signedInUserId, groupId, memberUserId);	
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -468,6 +469,34 @@ public class GroupBusinessService {
 				session.close();				
 			}
 		}
+	}
+	
+	public GroupMember getMember(int groupId, int memberUserId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		GroupMember groupMember = null;
+		try {
+			transaction = session.beginTransaction();
+			
+			GroupDO groupDO = new GroupDO();
+			User member = groupDO.getMember(groupId, memberUserId);	
+			groupMember = groupDO.getGroupMemberFromUser(groupId, member);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return groupMember;
 	}
 }
 

@@ -366,30 +366,34 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * - Remove member from group
 	 * 
 	 */
-	public void removeMember(int groupId, int memberUserId){
-		group = getAllData(groupId);
-		UserDO userDO = new UserDO();
-		User member = userDO.get(memberUserId);
-		if (group.getOwner().getId()==memberUserId) {
-			throw new NotAcceptableException("Owner can't be removed from the group");
-		} else {
-			boolean removeStatus = group.getMembers().remove(member);		
-			if (removeStatus){
-				//This will remove admin as well if user is an admin
-				if (isAdmin(groupId, memberUserId)) {
-					group.getAdmins().remove(member);
-				}
-				//This will remove membership request if submitted (in case you have created the group so request is there)
-				MembershipRequestEntity membershipRequestEntity = groupDAO.getMembershipRequest(groupId, memberUserId);
-				if (membershipRequestEntity!=null) {
-					MembershipRequestMapper membershipRequestMapper = new MembershipRequestMapper();
-					MembershipRequest membershipRequest = membershipRequestMapper.getDomainModel(membershipRequestEntity, false);
-					group.getMembershipRequests().remove(membershipRequest);				
-				}
-				update(group);	
+	public void removeMember(int signedInUserId, int groupId, int memberUserId){
+		if (isAdmin(groupId, signedInUserId)) {
+			group = getAllData(groupId);
+			UserDO userDO = new UserDO();
+			User member = userDO.get(memberUserId);
+			if (group.getOwner().getId()==memberUserId) {
+				throw new NotAcceptableException("Owner can't be removed from the group");
 			} else {
-				throw new NotAcceptableException("Group with id:"+groupId+" doesn't not have any member with id:"+memberUserId);
+				boolean removeStatus = group.getMembers().remove(member);		
+				if (removeStatus){
+					//This will remove admin as well if user is an admin
+					if (isAdmin(groupId, memberUserId)) {
+						group.getAdmins().remove(member);
+					}
+					//This will remove membership request if submitted (in case you have created the group so request is there)
+					MembershipRequestEntity membershipRequestEntity = groupDAO.getMembershipRequest(groupId, memberUserId);
+					if (membershipRequestEntity!=null) {
+						MembershipRequestMapper membershipRequestMapper = new MembershipRequestMapper();
+						MembershipRequest membershipRequest = membershipRequestMapper.getDomainModel(membershipRequestEntity, false);
+						group.getMembershipRequests().remove(membershipRequest);				
+					}
+					update(group);	
+				} else {
+					throw new NotAcceptableException("Group with id:"+groupId+" doesn't not have any member with id:"+memberUserId);
+				}			
 			}			
+		} else {
+			throw new NotAcceptableException("You are not authorized to approve the request as you are not an admin");
 		}
 	}
 
@@ -400,7 +404,8 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		if (group.getOwner().getId()==userId) {
 			throw new NotAcceptableException("You can't leave the group as you are the owner of this group with id:"+groupId);
 		} else {
-			removeMember(groupId, userId);	
+			//Note - Here signedInUser and memberUserId is same, so sending userId in both parameter
+			removeMember(userId, groupId, userId);	
 		}
 	}
 
@@ -420,20 +425,24 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * - if user is not admin and member of group, then add as admin
 	 * 
 	 */
-	public void addAdmin(int groupId, int memberUserId){ 	
-		User member = getMember(groupId, memberUserId);
-		if (member!=null){
-			//TODO This is a very expensive operation as it will get all members etc. we need to find better way to avoid getAllData for group/user etc.
-			group = getAllData(groupId);
-			if (!isAdmin(groupId, memberUserId)){
-				group.getAdmins().add(member);
-				update(group);
+	public void addAdmin(int signedInUserId, int groupId, int memberUserId){
+		if (isAdmin(groupId, signedInUserId)) {
+			User member = getMember(groupId, memberUserId);
+			if (member!=null){
+				//TODO This is a very expensive operation as it will get all members etc. we need to find better way to avoid getAllData for group/user etc.
+				group = getAllData(groupId);
+				if (!isAdmin(groupId, memberUserId)){
+					group.getAdmins().add(member);
+					update(group);
+				} else {
+					throw new NotAcceptableException("User is already an admin. User id, Group id:"+memberUserId+","+groupId);
+				}
 			} else {
-				throw new NotAcceptableException("User is already an admin. User id, Group id:"+memberUserId+","+groupId);
-			}
+				throw new NotAcceptableException("User is not a member of this group, So can't be added as admin. "
+						+ "User id, Group id:"+memberUserId+","+groupId);
+			}			
 		} else {
-			throw new NotAcceptableException("User is not a member of this group, So can't be added as admin. "
-					+ "User id, Group id:"+memberUserId+","+groupId);
+			throw new NotAcceptableException("You are not authorized to approve the request as you are not an admin");
 		}
 	}
 
@@ -584,12 +593,18 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		LinkedList<GroupMember> groupMembers = new LinkedList<>();
 		for (User user: members) {
 			GroupMember groupMember = new GroupMember();
-			groupMember = JsonObjectMapper.getMapper().convertValue(user, GroupMember.class);
-			groupMember.setAdmin(isAdmin(groupId, user.getId()));
+			groupMember = getGroupMemberFromUser(groupId, user);
 			groupMembers.add(groupMember);
 		}
 
 		return groupMembers;
+	}
+
+	public GroupMember getGroupMemberFromUser(int groupId, User user) {
+		GroupMember groupMember;
+		groupMember = JsonObjectMapper.getMapper().convertValue(user, GroupMember.class);
+		groupMember.setAdmin(isAdmin(groupId, user.getId()));
+		return groupMember;
 	}
 
 	/*
@@ -608,6 +623,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	public GroupDetail getGroupDetailFromGroup(Group group, int userId) {
 		GroupDetail groupDetail = JsonObjectMapper.getMapper().convertValue(group, GroupDetail.class);
 		groupDetail.setMemberCount(groupDAO.getMemberCount(group.getId()));
+		groupDetail.setPendingRequestCount(groupDAO.getGroupMembershipRequestCount(group.getId()));
 		groupDetail.setMembershipStatus(getMembershipStatus(group.getId(), userId));
 		return groupDetail;
 	}
@@ -683,12 +699,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	public List<GroupDetail> getGroupDetails(int userId, LinkedList<Group> groups) {
 		LinkedList<GroupDetail> groupDetails = new LinkedList<>();
 		for (Group group: groups) {
-			GroupDetail groupDetail = new GroupDetail();
-			groupDetail = JsonObjectMapper.getMapper().convertValue(group, GroupDetail.class);
-			groupDetail.setMemberCount(getMemberCount(group.getId()));
-			MembershipStatus membershipStatus = getMembershipStatus(group.getId(), userId);
-			groupDetail.setMembershipStatus(membershipStatus);
-			groupDetails.add(groupDetail);
+			groupDetails.add(getGroupDetailFromGroup(group, userId));
 		}
 		return groupDetails;
 	}

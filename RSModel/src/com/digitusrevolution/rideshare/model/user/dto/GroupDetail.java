@@ -13,6 +13,7 @@ public class GroupDetail extends BasicGroup{
 	//This is an additional property than DO reason for having this 
 	//so that we don't have to get full list of member to get the count
 	private int memberCount;
+	private int pendingRequestCount;
 	private MembershipStatus membershipStatus;
 	
 	public int getMemberCount() {
@@ -30,4 +31,13 @@ public class GroupDetail extends BasicGroup{
 	public void setMembershipStatus(MembershipStatus membershipStatus) {
 		this.membershipStatus = membershipStatus;
 	}
+
+	public int getPendingRequestCount() {
+		return pendingRequestCount;
+	}
+
+	public void setPendingRequestCount(int pendingRequestCount) {
+		this.pendingRequestCount = pendingRequestCount;
+	}
+
 }

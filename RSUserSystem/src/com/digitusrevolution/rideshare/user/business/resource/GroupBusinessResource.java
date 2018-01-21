@@ -201,24 +201,30 @@ public class GroupBusinessResource {
 	}
 	
 	@GET
-	@Path("/{groupId}/addadmin")
-	public Response addAdmin(@PathParam("groupId") int groupId, @PathParam("userId") int memberUserId){
+	@Path("/{groupId}/addadmin/{memberUserId}")
+	public Response addAdmin(@PathParam("groupId") int groupId, @PathParam("userId") int signedInUserId, 
+			@PathParam("memberUserId") int memberUserId){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
-		groupBusinessService.addAdmin(groupId, memberUserId);
-		//Getting updated groupdetail in seperate transaction so that we get updated data
-		GroupDetail groupDetail = groupBusinessService.getGroupDetail(groupId, memberUserId);
-		return Response.ok().entity(groupDetail).build();
+		groupBusinessService.addAdmin(signedInUserId, groupId, memberUserId);
+		GroupMember member = groupBusinessService.getMember(groupId, memberUserId);
+		return Response.ok().entity(member).build();
+	}
+	
+	public Response getMember(@PathParam("groupId") int groupId, @PathParam("userId") int memberUserId){
+		GroupBusinessService groupBusinessService = new GroupBusinessService();
+		GroupMember member = groupBusinessService.getMember(groupId, memberUserId);
+		return Response.ok().entity(member).build();
 	}
 	
 	@GET
-	@Path("/{groupId}/removemember")
-	public Response removeMember(@PathParam("groupId") int groupId, @PathParam("userId") int memberUserId){
+	@Path("/{groupId}/removemember/{memberUserId}")
+	public Response removeMember(@PathParam("groupId") int groupId, @PathParam("userId") int signedInUserId,
+			@PathParam("memberUserId") int memberUserId){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
-		groupBusinessService.removeMember(groupId, memberUserId);
-		//Getting updated groupdetail in seperate transaction so that we get updated data
-		GroupDetail groupDetail = groupBusinessService.getGroupDetail(groupId, memberUserId);
-		return Response.ok().entity(groupDetail).build();
-
+		groupBusinessService.removeMember(signedInUserId, groupId, memberUserId);
+		ResponseMessage responseMessage = new ResponseMessage();
+		responseMessage.setStatus(ResponseMessage.Code.OK);
+		return Response.ok(responseMessage).build();
 	}
 
 }

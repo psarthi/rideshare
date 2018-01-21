@@ -189,5 +189,17 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 		return requestEntities;		
 	}
 	
+	public int getGroupMembershipRequestCount(int groupId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
+		Query query = session.getNamedQuery("MembershipRequests.byGroupId").setParameter("groupId", groupId)
+				.setParameter("approvedStatus", ApprovalStatus.Approved)
+				.setParameter("rejectedStatus", ApprovalStatus.Rejected);
+		
+		Set<MembershipRequestEntity> requestEntities = new HashSet<>(query.list());
+		return requestEntities.size();		
+	}
+
+	
 
 }
