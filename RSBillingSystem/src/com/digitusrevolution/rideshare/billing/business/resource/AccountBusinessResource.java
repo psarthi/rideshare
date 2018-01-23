@@ -51,7 +51,7 @@ public class AccountBusinessResource {
 	
 	@GET
 	@Path("/{accountNumber}/transactions")
-	public Response getRides(@PathParam("accountNumber") int accountNumber, @QueryParam("page") int page){
+	public Response getTransactions(@PathParam("accountNumber") int accountNumber, @QueryParam("page") int page){
 		AccountBusinessService accountBusinessService = new AccountBusinessService();
 		List<Transaction> transactions = accountBusinessService.getTransactions(accountNumber, page);
 		GenericEntity<List<Transaction>> entity = new GenericEntity<List<Transaction>>(transactions) {};

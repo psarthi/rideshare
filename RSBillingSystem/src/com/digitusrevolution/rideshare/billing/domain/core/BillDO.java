@@ -18,6 +18,7 @@ import com.digitusrevolution.rideshare.common.mapper.billing.core.BillMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.domain.core.BillStatus;
@@ -200,6 +201,14 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 		return bills;
 	}
 
+	public float getPendingBillsAmount(User passenger) {
+		List<Bill> pendingBills = getPendingBills(passenger);
+		float pendingAmount = 0;
+		for (Bill bill: pendingBills) {
+			pendingAmount+=bill.getAmount();
+		}
+		return pendingAmount;
+	}
 }
 
 

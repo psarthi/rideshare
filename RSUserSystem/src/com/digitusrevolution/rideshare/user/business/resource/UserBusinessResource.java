@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -59,23 +60,26 @@ public class UserBusinessResource {
 	public Response registerUser(UserRegistration userRegistration){
 		
 		UserBusinessService userBusinessService = new UserBusinessService();
-		userBusinessService.registerUser(userRegistration);
-		//This is very important - Below code can't be placed in registerUser function in business service class as until n unless transaction is committed, 
-		//user information is not available from RideSystem which is trying to fetch upcoming ride related information on REST call. So by putting the statement below
-		//we are ensure first above transaction is completed and new transaction would be initiated for sign in
-		UserSignInResult userSignInResult;
-		if (userRegistration.getRegistrationType().equals(RegistrationType.Google)) {
-			GoogleSignInInfo googleSignInInfo = new GoogleSignInInfo();
-			googleSignInInfo.setEmail(userRegistration.getEmail());
-			userSignInResult = userBusinessService.googleSignIn(googleSignInInfo);
+		int userId = userBusinessService.registerUser(userRegistration);
+		if (userId!=0) {
+			//This is very important - Below code can't be placed in registerUser function in business service class as until n unless transaction is committed, 
+			//user information is not available from RideSystem which is trying to fetch upcoming ride related information on REST call. So by putting the statement below
+			//we are ensure first above transaction is completed and new transaction would be initiated for sign in
+			UserSignInResult userSignInResult;
+			if (userRegistration.getRegistrationType().equals(RegistrationType.Google)) {
+				GoogleSignInInfo googleSignInInfo = new GoogleSignInInfo();
+				googleSignInInfo.setEmail(userRegistration.getEmail());
+				userSignInResult = userBusinessService.googleSignIn(googleSignInInfo);
+			}
+			else {
+				SignInInfo signInInfo = new SignInInfo();
+				signInInfo.setEmail(userRegistration.getEmail());
+				signInInfo.setPassword(userRegistration.getPassword());
+				userSignInResult = userBusinessService.signIn(signInInfo);			
+			}
+			return Response.ok().entity(userSignInResult).build();
 		}
-		else {
-			SignInInfo signInInfo = new SignInInfo();
-			signInInfo.setEmail(userRegistration.getEmail());
-			signInInfo.setPassword(userRegistration.getPassword());
-			userSignInResult = userBusinessService.signIn(signInInfo);			
-		}		
-		return Response.ok().entity(userSignInResult).build();
+		return Response.serverError().entity(new WebApplicationException("User Registration Failed", Status.INTERNAL_SERVER_ERROR)).build();
 	}
 
 	/**
@@ -129,8 +133,7 @@ public class UserBusinessResource {
 			@QueryParam("mobileNumbers") List<String> mobileNumbers){
 		
 		UserBusinessService userBusinessService = new UserBusinessService();
-		List<User> users = userBusinessService.findAllPotentialFriendsBasedOnEmailOrMobile(userId, emailIds, mobileNumbers);
-		
+		List<User> users = userBusinessService.findAllPotentialFriendsBasedOnEmailOrMobile(userId, emailIds, mobileNumbers);		
 		GenericEntity<List<User>> entity = new GenericEntity<List<User>>(users) {};
 		return Response.ok(entity).build();
 	}
@@ -229,7 +232,10 @@ public class UserBusinessResource {
 	public Response checkUserExist(@PathParam("userEmail") String userEmail){
 		UserBusinessService userBusinessService = new UserBusinessService();
 		UserStatus userStatus = userBusinessService.checkUserExist(userEmail);
-		return Response.ok().entity(userStatus).build();
+		if (userStatus!=null) {
+			return Response.ok().entity(userStatus).build();
+		}
+		return Response.serverError().entity(new WebApplicationException("System Error", Status.INTERNAL_SERVER_ERROR)).build();
 	}
 	
 	/**
@@ -275,7 +281,6 @@ public class UserBusinessResource {
 	@POST
 	@Path("/{id}/preference")
 	public Response updateUserPrefernce(@PathParam("id") int userId, Preference preference){
-
 		UserBusinessService userBusinessService = new UserBusinessService();
 		userBusinessService.updateUserPreference(userId, preference);
 		UserDomainService userDomainService = new UserDomainService();

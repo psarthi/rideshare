@@ -288,12 +288,14 @@ public class UserBusinessService {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		boolean status = false;
-		UserStatus userStatus = new UserStatus();
+		UserStatus userStatus = null;
 		try {
 			transaction = session.beginTransaction();
 			
 			UserDO userDO = new UserDO();
 			status = userDO.isEmailExist(userEmail);
+			//Initializing here so that we can check the status of userStatus as null in BusinessResource in case of any exception
+			userStatus = new UserStatus();
 			userStatus.setUserExist(status);
 			
 			transaction.commit();
