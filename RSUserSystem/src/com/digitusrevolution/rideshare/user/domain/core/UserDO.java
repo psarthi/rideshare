@@ -264,7 +264,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		trustCategory.setName(TrustCategoryName.Anonymous);
 		preference.setTrustCategory(trustCategory);
 		
-		preference.setRideMode(RideMode.Paid);
+		preference.setRideMode(RideMode.Free);
 
 		return preference;
 	}

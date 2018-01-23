@@ -7,12 +7,16 @@ import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 
 @Entity
 @Table(name="country")
@@ -30,6 +34,8 @@ public class CountryEntity {
 	@ManyToOne (cascade=CascadeType.ALL)
 	private CurrencyEntity currency;
 	private String code;
+	@Enumerated(EnumType.STRING)
+	private RideMode rideMode;
 	
 	public String getName() {
 		return name;
@@ -88,6 +94,12 @@ public class CountryEntity {
 	}
 	public void setCode(String code) {
 		this.code = code;
+	}
+	public RideMode getRideMode() {
+		return rideMode;
+	}
+	public void setRideMode(RideMode rideMode) {
+		this.rideMode = rideMode;
 	}
 
 	

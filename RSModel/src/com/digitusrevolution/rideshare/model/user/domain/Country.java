@@ -3,6 +3,8 @@ package com.digitusrevolution.rideshare.model.user.domain;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
+
 public class Country {
 
 	private String name;
@@ -13,6 +15,7 @@ public class Country {
 	private Collection<Fuel> fuels = new HashSet<Fuel>();
 	private Currency currency;
 	private String code;
+	private RideMode rideMode;
 	
 	public String getName() {
 		return name;
@@ -71,6 +74,12 @@ public class Country {
 	}
 	public void setCode(String code) {
 		this.code = code;
+	}
+	public RideMode getRideMode() {
+		return rideMode;
+	}
+	public void setRideMode(RideMode rideMode) {
+		this.rideMode = rideMode;
 	}
 
 }

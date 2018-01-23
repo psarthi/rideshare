@@ -12,6 +12,7 @@ import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
@@ -87,6 +88,7 @@ public class UserDataLoader {
 		country.setCurrency(currency);
 		country.setName("India");
 		country.setCode("+91");
+		country.setRideMode(RideMode.Free);
 		
 		Fuel fuel = new Fuel();
 		fuel.setType(FuelType.Petrol);
