@@ -30,6 +30,7 @@ import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
+import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
 import com.digitusrevolution.rideshare.model.user.dto.UserFeedbackInfo;
 
 /**
@@ -61,6 +62,18 @@ public class RESTClientUtil {
 		Collection<Role> roles = response.readEntity(new GenericType<Collection<Role>>() {});
 		return roles;
 	}
+	
+	public static List<GroupDetail> getGroups(int id){
+
+		RESTClientImpl<Role> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_USER_GROUP_URL");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Integer.toString(id));
+		Response response = restClientUtil.get(uri);		
+		List<GroupDetail> groups = response.readEntity(new GenericType<List<GroupDetail>>() {});
+		return groups;
+	}
+	
 
 	public static Vehicle getVehicle(int userId, int vehicleId){
 

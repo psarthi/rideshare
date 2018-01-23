@@ -17,6 +17,8 @@ import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
 import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
 import com.digitusrevolution.rideshare.model.ride.domain.RideType;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustCategoryName;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
@@ -69,7 +71,6 @@ public class RideOfferBusinessService {
 			//Need to think on the logic of recurring ride
 			RideRequestDO rideRequestDO = new RideRequestDO();
 			rideRequestDO.autoMatchRideRequest(rideId);
-
 			transaction.commit();
 
 		} catch (RuntimeException e) {

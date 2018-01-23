@@ -3,8 +3,10 @@ package com.digitusrevolution.rideshare.ride.domain.core;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -35,6 +37,8 @@ import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePointProperty;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustCategoryName;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
@@ -51,6 +55,7 @@ import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
 import com.digitusrevolution.rideshare.ride.data.RideDAO;
 import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
@@ -486,7 +491,8 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 
 		//Step 3 - This will remove all rides which doesn't match the business criteria e.g. if its not available
 		if (!rideIds.isEmpty()){
-			Set<Integer> validRideIds = getValidRides(rideIds, rideRequest.getSeatRequired(), rideRequest.getRideMode(), rideRequest.getPassenger());
+			Set<Integer> validRideIds = getValidRides(rideIds, rideRequest.getSeatRequired(), rideRequest.getRideMode(), 
+					rideRequest.getPassenger(), rideRequest.getTrustNetwork());
 			logger.debug("[Valid Rides Based on Business Criteria]:"+validRideIds);
 			//This will remove all invalid rides from the list
 			pickupRidePoints.keySet().retainAll(validRideIds);
@@ -498,6 +504,12 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		logger.debug("[Valid Drop Rides: Based on Business Criteria]:"+dropRidePoints.keySet());
 
 		iterator = pickupRidePoints.keySet().iterator();
+		//TODO Later find a better logic to evenly fill the seats
+		//VERY IMP - This will sort the ride ids based on their ids i.e. first come first server 
+		//but this also has a catch if first ride has offered 4 seats, then until all 4 seats are filled
+		//other rides would not get filled in that route. So its better to keep it random only for now
+		//so that all ride owners gets chance to fill the seats
+		//List<Integer> sortedRideIds = new ArrayList<>(pickupRidePoints.keySet());
 		List<MatchedTripInfo> matchedTripInfos = new ArrayList<>();
 
 		//Step 4 - This will create matching trip info for all valid rides
@@ -540,22 +552,41 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 	 * e.g. user rating, preference, trust category etc.
 	 * 
 	 */
-	private Set<Integer> getValidRides(Set<Integer> rideIds, int seatRequired, RideMode rideRequestMode, User passenger){
+	private Set<Integer> getValidRides(Set<Integer> rideIds, int seatRequired, RideMode rideRequestMode, User passenger, TrustNetwork trustNetwork){
 		UserMapper userMapper = new UserMapper();
 		UserEntity passengerEntity = userMapper.getEntity(passenger, false); 
 		Set<RideEntity> validRideEntities = rideDAO.getValidRides(rideIds, seatRequired, rideRequestMode, passengerEntity);
+
+		//This will get the first element of trust category and any ride / ride request can have only one trust category for the moment 
+		//as we have removed the friend category, so logically it would be either All or Group 	
+		TrustCategory trustCategory = trustNetwork.getTrustCategories().iterator().next();
+
+		List<GroupDetail> passengerGroups = null;
+		if (trustCategory.getName().equals(TrustCategoryName.Groups)) {
+			passengerGroups = RESTClientUtil.getGroups(passenger.getId());
+		}
+
 		Set<Integer> validRideIds = new HashSet<>();
 		for (RideEntity rideEntity : validRideEntities) {
-			validRideIds.add(rideEntity.getId());
+			if (trustCategory.getName().equals(TrustCategoryName.Groups)) {
+				List<GroupDetail> driverGroups = RESTClientUtil.getGroups(rideEntity.getDriver().getId());
+				//This will check if there is any common groups between driver and passenger
+				if (passengerGroups!=null && !Collections.disjoint(passengerGroups, driverGroups)) {
+					validRideIds.add(rideEntity.getId());
+				}
+			} else {
+				validRideIds.add(rideEntity.getId());
+			}
 		}
 		return validRideIds;
 	}
 
 	public MatchedTripInfo autoMatchRide(int rideRequestId) {		
 		List<MatchedTripInfo> matchedTripInfos = searchRides(rideRequestId);
+		//IMP - This will sort the matched list based on seats occupied, so that we fill the seats evenly
+		matchedTripInfos = getSortedMatchedList(matchedTripInfos);
 		if (matchedTripInfos.size() > 0) {
 			for (int i=0; i < matchedTripInfos.size(); i++) {
-				//We will try to match with the first one in the list which can be customized later
 				MatchedTripInfo matchedTripInfo = matchedTripInfos.get(i);
 				try {
 					acceptRideRequest(matchedTripInfo);
@@ -575,6 +606,43 @@ public class RideDO implements DomainObjectPKInteger<Ride>{
 		} 
 		logger.debug("No Matching Ride Found for Ride Request ID:"+rideRequestId);
 		return null;
+	}
+
+	//This will sort the matched list based on seats occupied, so that we fill the seats evenly 
+	public List<MatchedTripInfo> getSortedMatchedList(List<MatchedTripInfo> matchedTripInfos) {
+
+		logger.debug("Pre Sorted ride list-");
+		for (MatchedTripInfo tripInfo : matchedTripInfos) {
+			logger.debug("Ride Id:"+tripInfo.getRideId());	
+		}
+
+		Collections.sort(matchedTripInfos, new Comparator<MatchedTripInfo>() {
+			@Override
+			public int compare(MatchedTripInfo m1, MatchedTripInfo m2) {
+				Ride r1 = getAllData(m1.getRideId());
+				Ride r2 = getAllData(m2.getRideId());
+				int r1SeatOccupied = 0;
+				for (RideRequest acceptedRideRequest : r1.getAcceptedRideRequests()) {
+					r1SeatOccupied += acceptedRideRequest.getSeatRequired();
+				}
+
+				int r2SeatOccupied = 0;
+				for (RideRequest acceptedRideRequest : r2.getAcceptedRideRequests()) {
+					r2SeatOccupied += acceptedRideRequest.getSeatRequired();
+				}
+
+				logger.debug("Seats Occupied of R1,R2 -"+r1.getId()+","+r2.getId()+"["+r1SeatOccupied+","+r2SeatOccupied+"]");
+				//This will ensure we get sorted list in asc order i.e. seats which has less occupancy would show up first
+				return r1SeatOccupied - r2SeatOccupied;
+			}
+		});
+
+		logger.debug("Post Sorted ride list-");
+		for (MatchedTripInfo tripInfo : matchedTripInfos) {
+			logger.debug("Ride Id:"+tripInfo.getRideId());
+		}
+
+		return matchedTripInfos;
 	}
 
 	public List<RidePoint> getAllRidePointsOfRide(int rideId) {

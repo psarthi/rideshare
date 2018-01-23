@@ -380,7 +380,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 					if (isAdmin(groupId, memberUserId)) {
 						group.getAdmins().remove(member);
 					}
-					//This will remove membership request if submitted (in case you have created the group so request is there)
+					//This will remove membership request if submitted (in case you have created the group request would not be there)
 					MembershipRequestEntity membershipRequestEntity = groupDAO.getMembershipRequest(groupId, memberUserId);
 					if (membershipRequestEntity!=null) {
 						MembershipRequestMapper membershipRequestMapper = new MembershipRequestMapper();
@@ -397,15 +397,22 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		}
 	}
 
-	public void leaveGroup(int groupId, int userId){
+	public void leaveGroup(int groupId, int memberUserId){
 		//Reason for having seperate function is just for naming convenience
 		//and may be in future additional task may be added
-		group = get(groupId);
-		if (group.getOwner().getId()==userId) {
+		group = getAllData(groupId);
+		if (group.getOwner().getId()==memberUserId) {
 			throw new NotAcceptableException("You can't leave the group as you are the owner of this group with id:"+groupId);
 		} else {
-			//Note - Here signedInUser and memberUserId is same, so sending userId in both parameter
-			removeMember(userId, groupId, userId);	
+			UserDO userDO = new UserDO();
+			User member = userDO.get(memberUserId);
+			group.getMembers().remove(member);
+			MembershipRequestEntity membershipRequestEntity = groupDAO.getMembershipRequest(groupId, memberUserId);
+			//No need to check as if the user is a member, then there has to be request and if he/she is an owner then it will come in this else condition
+			MembershipRequestMapper membershipRequestMapper = new MembershipRequestMapper();
+			MembershipRequest membershipRequest = membershipRequestMapper.getDomainModel(membershipRequestEntity, false);
+			group.getMembershipRequests().remove(membershipRequest);				
+			update(group);
 		}
 	}
 

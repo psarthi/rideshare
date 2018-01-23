@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 import com.digitusrevolution.rideshare.common.inf.DomainResource;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
 import com.digitusrevolution.rideshare.user.domain.service.UserDomainService;
 
 @Path("/domain/users")
@@ -68,5 +69,14 @@ public class UserDomainResource implements DomainResource<User>{
 	@Path("/{id}/vehicles")
 	public VehicleDomainResource getVehicleDomainResource(){
 		return new VehicleDomainResource();
+	}
+	
+	@GET
+	@Path("/{id}/groups")
+	public Response getGroups(@PathParam("id") int userId){
+		UserDomainService userDomainService = new UserDomainService();
+		List<GroupDetail> groups = userDomainService.getGroups(userId);
+		GenericEntity<List<GroupDetail>> entity = new GenericEntity<List<GroupDetail>>(groups) {};
+		return Response.ok(entity).build();
 	}
 }

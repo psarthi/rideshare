@@ -12,6 +12,7 @@ import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.inf.DomainService;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
 public class UserDomainService implements DomainService<User>{
@@ -78,8 +79,8 @@ public class UserDomainService implements DomainService<User>{
 		return users;
 	}
 
-
 	public Collection<Role> getRoles(int id){
+
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		Collection<Role> roles = null;
@@ -107,4 +108,31 @@ public class UserDomainService implements DomainService<User>{
 		
 	}
 
+	public List<GroupDetail> getGroups(int userId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		List<GroupDetail> groups = null;
+		try {
+			transaction = session.beginTransaction();
+	
+			UserDO userDO = new UserDO();
+			groups = userDO.getGroups(userId);
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return groups;
+	}
+	
 }

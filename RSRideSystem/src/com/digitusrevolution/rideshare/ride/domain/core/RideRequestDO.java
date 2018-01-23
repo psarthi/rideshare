@@ -50,6 +50,8 @@ import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
 import com.digitusrevolution.rideshare.model.ride.domain.Point;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
+import com.digitusrevolution.rideshare.model.ride.domain.TrustCategoryName;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
@@ -69,6 +71,7 @@ import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
+import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
 import com.digitusrevolution.rideshare.ride.data.RidePointDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestDAO;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
@@ -681,7 +684,8 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			}
 			int availableSeats = ride.getSeatOffered() - seatOccupied;
 			//Getting valid ride request Ids based on all business criteria
-			Set<Integer> validRideRequestIds = getValidRideRequests(rideRequestsMap.keySet(), availableSeats, ride.getRideMode(), ride.getDriver());
+			Set<Integer> validRideRequestIds = getValidRideRequests(rideRequestsMap.keySet(), availableSeats, ride.getRideMode(), 
+					ride.getDriver(), ride.getTrustNetwork());
 			//Removing all the invalid ride request Ids
 			rideRequestsMap.keySet().retainAll(validRideRequestIds);
 			logger.debug("Phase 0 - Valid Ride Request Ids based on all business criteria of Ride Id["+ride.getId()+"]:"+rideRequestsMap.keySet());
@@ -831,14 +835,35 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * e.g. user rating, preference, trust category etc.
 	 * 
 	 */
-	private Set<Integer> getValidRideRequests(Set<Integer> rideRequestIds, int availableSeats, RideMode createdRideMode, User driver){
+	private Set<Integer> getValidRideRequests(Set<Integer> rideRequestIds, int availableSeats, RideMode createdRideMode, 
+			User driver, TrustNetwork trustNetwork){
 		UserMapper userMapper = new UserMapper();
-		UserEntity driverEntity = userMapper.getEntity(driver, false); 
+		UserEntity driverEntity = userMapper.getEntity(driver, false);
+		
 		Set<RideRequestEntity> validRideRequestEntities = rideRequestDAO.getValidRideRequests(rideRequestIds, availableSeats, createdRideMode, driverEntity);
+		
+		//This will get the first element of trust category and any ride / ride request can have only one trust category for the moment 
+		//as we have removed the friend category, so logically it would be either All or Group 	
+		TrustCategory trustCategory = trustNetwork.getTrustCategories().iterator().next();
+		
+		List<GroupDetail> driverGroups = null;
+		if (trustCategory.getName().equals(TrustCategoryName.Groups)) {
+			driverGroups = RESTClientUtil.getGroups(driver.getId());
+		}
+		
 		Set<Integer> validRideRequestIds = new HashSet<>();
 		for (RideRequestEntity rideRequestEntity : validRideRequestEntities) {
-			validRideRequestIds.add(rideRequestEntity.getId());
+			if (trustCategory.getName().equals(TrustCategoryName.Groups)) {
+				List<GroupDetail> passengerGroups = RESTClientUtil.getGroups(rideRequestEntity.getPassenger().getId());
+				//This will check if there is any common groups between driver and passenger
+				if (driverGroups!=null && !Collections.disjoint(driverGroups, passengerGroups)) {
+					validRideRequestIds.add(rideRequestEntity.getId());
+				}
+			} else {
+				validRideRequestIds.add(rideRequestEntity.getId());
+			}
 		}
+
 		return validRideRequestIds;
 	}
 
@@ -1026,10 +1051,11 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	public MatchedTripInfo autoMatchRideRequest(int rideId) {		
 		RideRequestSearchResult searchRideRequests = searchRideRequests(rideId, 0, 0);
 		List<MatchedTripInfo> matchedTripInfos = searchRideRequests.getMatchedTripInfos();
+		RideDO rideDO = new RideDO();
+		//IMP - This will sort the matched list based on seats occupied, so that we fill the seats evenly
+		matchedTripInfos = rideDO.getSortedMatchedList(matchedTripInfos);
 		if (matchedTripInfos.size() > 0) {
-			RideDO rideDO = new RideDO();
 			for (int i=0; i < matchedTripInfos.size(); i++) {
-				//We will try to match with the first one in the list which can be customized later
 				MatchedTripInfo matchedTripInfo = matchedTripInfos.get(i);
 				try {
 					rideDO.acceptRideRequest(matchedTripInfo);

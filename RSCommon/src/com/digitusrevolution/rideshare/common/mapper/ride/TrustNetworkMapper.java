@@ -14,9 +14,9 @@ public class TrustNetworkMapper implements Mapper<TrustNetwork, TrustNetworkEnti
 		TrustNetworkEntity trustNetworkEntity = new TrustNetworkEntity();
 		trustNetworkEntity.setId(trustNetwork.getId());
 
-		if (fetchChild){
-			trustNetworkEntity = getEntityChild(trustNetwork, trustNetworkEntity);
-		}
+		TrustCategoryMapper trustCategoryMapper = new TrustCategoryMapper();
+		trustNetworkEntity.setTrustCategories(trustCategoryMapper.getEntities(trustNetworkEntity.getTrustCategories(), 
+				trustNetwork.getTrustCategories(), true));
 
 		return trustNetworkEntity;
 	}
@@ -26,36 +26,20 @@ public class TrustNetworkMapper implements Mapper<TrustNetwork, TrustNetworkEnti
 		TrustNetwork trustNetwork = new TrustNetwork();
 		trustNetwork.setId(trustNetworkEntity.getId());
 		
-		if (fetchChild){
-			trustNetwork = getDomainModelChild(trustNetwork, trustNetworkEntity);		
-		}
-		
+		TrustCategoryMapper trustCategoryMapper = new TrustCategoryMapper();
+		trustNetwork.setTrustCategories(trustCategoryMapper.getDomainModels(trustNetwork.getTrustCategories(), 
+				trustNetworkEntity.getTrustCategories(), true));
+
 		return trustNetwork;
 	}
 
 	@Override
 	public TrustNetworkEntity getEntityChild(TrustNetwork trustNetwork, TrustNetworkEntity trustNetworkEntity) {
-		TrustCategoryMapper trustCategoryMapper = new TrustCategoryMapper();
-		trustNetworkEntity.setTrustCategories(trustCategoryMapper.getEntities(trustNetworkEntity.getTrustCategories(), 
-				trustNetwork.getTrustCategories(), true));
-
-		UserMapper userMapper = new UserMapper();
-		trustNetworkEntity.setFriends(userMapper.getEntities(trustNetworkEntity.getFriends(), trustNetwork.getFriends(), true));
-
 		return trustNetworkEntity;
 	}
 
 	@Override
 	public TrustNetwork getDomainModelChild(TrustNetwork trustNetwork, TrustNetworkEntity trustNetworkEntity) {
-
-		TrustCategoryMapper trustCategoryMapper = new TrustCategoryMapper();
-		trustNetwork.setTrustCategories(trustCategoryMapper.getDomainModels(trustNetwork.getTrustCategories(), 
-				trustNetworkEntity.getTrustCategories(), true));
-
-		UserMapper userMapper = new UserMapper();
-		trustNetwork.setFriends(userMapper.getDomainModels(trustNetwork.getFriends(), 
-				trustNetworkEntity.getFriends(), true));
-
 		return trustNetwork;
 	}
 
