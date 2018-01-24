@@ -31,7 +31,7 @@ public class MembershipRequestEntity {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
+	private long id;
 	private String userUniqueIdentifier;
 	@ElementCollection(fetch=FetchType.EAGER)
 	@JoinTable(name="membership_request_answer",joinColumns=@JoinColumn(name="request_id"))
@@ -49,10 +49,10 @@ public class MembershipRequestEntity {
 	private String adminRemark;
 	private String userRemark;
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public UserEntity getUser() {
@@ -77,8 +77,7 @@ public class MembershipRequestEntity {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
-		result = prime * result + ((user == null) ? 0 : user.hashCode());
+		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
 	@Override
@@ -94,13 +93,6 @@ public class MembershipRequestEntity {
 		}
 		MembershipRequestEntity other = (MembershipRequestEntity) obj;
 		if (id != other.id) {
-			return false;
-		}
-		if (user == null) {
-			if (other.user != null) {
-				return false;
-			}
-		} else if (!user.equals(other.user)) {
 			return false;
 		}
 		return true;

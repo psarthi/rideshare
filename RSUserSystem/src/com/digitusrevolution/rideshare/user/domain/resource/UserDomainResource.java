@@ -13,7 +13,8 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.digitusrevolution.rideshare.common.inf.DomainResource;
+import com.digitusrevolution.rideshare.common.inf.DomainResourceInteger;
+import com.digitusrevolution.rideshare.common.inf.DomainResourceLong;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
@@ -22,13 +23,13 @@ import com.digitusrevolution.rideshare.user.domain.service.UserDomainService;
 @Path("/domain/users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class UserDomainResource implements DomainResource<User>{
+public class UserDomainResource implements DomainResourceLong<User>{
 
 
 	@Override
 	@GET
 	@Path("/{id}")
-	public Response get(@PathParam("id") int id, @QueryParam("fetchChild") String fetchChild){
+	public Response get(@PathParam("id") long id, @QueryParam("fetchChild") String fetchChild){
 		
 		UserDomainService userDomainService = new UserDomainService();
 		User user = userDomainService.get(id, Boolean.valueOf(fetchChild));
@@ -53,7 +54,7 @@ public class UserDomainResource implements DomainResource<User>{
 	 */
 	@GET
 	@Path("/{id}/roles")
-	public Response getRoles(@PathParam("id") int id){
+	public Response getRoles(@PathParam("id") long id){
 		UserDomainService userDomainService = new UserDomainService();
 		Collection<Role> roles = userDomainService.getRoles(id);
 		GenericEntity<Collection<Role>> entity = new GenericEntity<Collection<Role>>(roles) {};
@@ -73,7 +74,7 @@ public class UserDomainResource implements DomainResource<User>{
 	
 	@GET
 	@Path("/{id}/groups")
-	public Response getGroups(@PathParam("id") int userId){
+	public Response getGroups(@PathParam("id") long userId){
 		UserDomainService userDomainService = new UserDomainService();
 		List<GroupDetail> groups = userDomainService.getGroups(userId);
 		GenericEntity<List<GroupDetail>> entity = new GenericEntity<List<GroupDetail>>(groups) {};

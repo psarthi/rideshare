@@ -43,7 +43,7 @@ public class RideRequestBusinessResource {
 	public Response requestRide(BasicRideRequest rideRequest){
 	
 		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
-		int id = rideRequestBusinessService.requestRide(rideRequest);
+		long id = rideRequestBusinessService.requestRide(rideRequest);
 		//Since we are trying to get all data before even committing, all child objects may not come so its cleaner to have getAllData post commit in different transaction
 		RideRequestResult rideRequestResult = rideRequestBusinessService.getRideRequestResult(id);
 		return Response.ok(rideRequestResult).build();
@@ -51,7 +51,7 @@ public class RideRequestBusinessResource {
 
 	@GET
 	@Path("/user/{id}")
-	public Response getRideRequests(@PathParam("id") int id, @QueryParam("page") int page){
+	public Response getRideRequests(@PathParam("id") long id, @QueryParam("page") int page){
 		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
 		List<BasicRideRequest> rideRequests = rideRequestBusinessService.getRideRequests(id, page);
 		GenericEntity<List<BasicRideRequest>> entity = new GenericEntity<List<BasicRideRequest>>(rideRequests) {};
@@ -60,7 +60,7 @@ public class RideRequestBusinessResource {
 	
 	@GET
 	@Path("/{id}")
-	public Response getRideRequest(@PathParam("id") int id){
+	public Response getRideRequest(@PathParam("id") long id){
 		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
 		FullRideRequest rideRequest = rideRequestBusinessService.getRideRequest(id);
 		return Response.ok(rideRequest).build();
@@ -73,7 +73,7 @@ public class RideRequestBusinessResource {
 	 */
 	@GET
 	@Path("/current/{passengerId}")
-	public Response getCurrentRideRequest(@PathParam("passengerId") int passengerId){
+	public Response getCurrentRideRequest(@PathParam("passengerId") long passengerId){
 		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
 		FullRideRequest rideRequest = rideRequestBusinessService.getCurrentRideRequest(passengerId);
 		if (rideRequest==null) {
@@ -89,7 +89,7 @@ public class RideRequestBusinessResource {
 	 */
 	@GET
 	@Path("/cancel/{rideRequestId}")
-	public Response cancelRideRequest(@PathParam("rideRequestId") int rideRequestId){
+	public Response cancelRideRequest(@PathParam("rideRequestId") long rideRequestId){
 		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
 		rideRequestBusinessService.cancelRideRequest(rideRequestId);
 		//This will ensure that we are getting fully updated data once transaction is committed
@@ -106,7 +106,7 @@ public class RideRequestBusinessResource {
 	 */
 	@GET
 	@Path("{rideRequestId}/canceldriver/{rideId}")
-	public Response cancelDriver(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId, @QueryParam("rating") float rating){
+	public Response cancelDriver(@PathParam("rideId") long rideId, @PathParam("rideRequestId") long rideRequestId, @QueryParam("rating") float rating){
 		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
 		rideRequestBusinessService.cancelDriver(rideId, rideRequestId, rating);
 		//This will ensure that we are getting fully updated data once transaction is committed
@@ -123,7 +123,7 @@ public class RideRequestBusinessResource {
 	 */
 	@GET
 	@Path("{rideRequestId}/validatepaymentcode/{code}")
-	public Response validatePaymentConfirmationCode(@PathParam("rideRequestId") int rideRequestId, @PathParam("code") String code) {
+	public Response validatePaymentConfirmationCode(@PathParam("rideRequestId") long rideRequestId, @PathParam("code") String code) {
 		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
 		boolean status = rideRequestBusinessService.validatePaymentConfirmationCode(rideRequestId, code);
 		return Response.ok(status).build();

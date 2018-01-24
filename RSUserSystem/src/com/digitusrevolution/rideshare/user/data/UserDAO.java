@@ -20,6 +20,7 @@ import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
@@ -28,7 +29,7 @@ import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.GroupListType;
 
-public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
+public class UserDAO extends GenericDAOImpl<UserEntity,Long>{
 
 	private static final Class<UserEntity> entityClass = UserEntity.class;
 
@@ -58,23 +59,23 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 	 * This will return all registered users matching either email id or mobile number excluding requested User
 	 * i.e. if user1 has requested to get all the registered users, then it will exclude user 1 from the list
 	 */
-	public Set<UserEntity> findAllRegisteredUserBasedOnEmailOrMobile(int userId, List<String> emailIds, List<String> mobileNumbers){
+	public Set<UserEntity> findAllRegisteredUserBasedOnEmailOrMobile(long userId, List<String> emailIds, List<String> mobileNumbers){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
 		@SuppressWarnings("unchecked")
 		Set<UserEntity> userEntities = new HashSet<>(criteria.add(Restrictions.or(Restrictions.in("email", emailIds),
 				Restrictions.in("mobileNumber", mobileNumbers)))
-		.add(Restrictions.ne("id", userId)).list());
+				.add(Restrictions.ne("id", userId)).list());
 		return userEntities;
 	}
-	
+
 	/*
 	 * Keeping this for reference purpose only, use the below one which will take care of searching in fullName
 	 *  
 	 * This will return all user starting with search string either in firstName/lastName
 	 * 
 	 */
-	/*public Set<UserEntity> searchUserByName(int userId, String name){
+	/*public Set<UserEntity> searchUserByName(long userId, String name){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
 		@SuppressWarnings("unchecked")
@@ -82,7 +83,7 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 			.add(Restrictions.ne("id", userId)).list());
 		return userEntities;
 	}*/
-	
+
 	public Set<UserEntity> searchUserByName(String name, int startIndex){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
@@ -97,34 +98,38 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 		return userEntities;
 	} 
 
-	
-	public int getRidesOffered(int userId) {
+
+	public int getRidesOffered(long userId) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass)
 				.add(Restrictions.eq("id", userId))
 				.createCriteria("ridesOffered", JoinType.RIGHT_OUTER_JOIN)
-					.add(Restrictions.eq("status", RideStatus.Finished))
+				.add(Restrictions.eq("status", RideStatus.Finished))
 				.setProjection(Projections.rowCount());
 		int size = (int) Long.parseLong(criteria.uniqueResult().toString());
 		return size;
 	}
-	
-	public int getRidesTaken(int userId) {
+
+	//IMP - Even though the name of the function makes you think to use ridesTaken membervariable and get the count
+	//but that would not fetch the required result as ridesTaken holds all the matched ride
+	//but if you want only dropped ride request, then use ride request with passenger status
+	public int getRidesTaken(long userId) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass)
 				.add(Restrictions.eq("id", userId))
-				.createCriteria("ridesTaken", JoinType.RIGHT_OUTER_JOIN)
+				.createCriteria("rideRequests", JoinType.RIGHT_OUTER_JOIN)
+				.add(Restrictions.eq("passengerStatus", PassengerStatus.Dropped))
 				.setProjection(Projections.rowCount());
 		int size = (int) Long.parseLong(criteria.uniqueResult().toString());
 		return size;
 	}
-	
+
 	/*
 	 * Purpose - This will get list of groups based on startIndex to support pagination
 	 * 
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List<GroupEntity> getGroups(GroupListType listType, int userId, int startIndex){
+	public List<GroupEntity> getGroups(GroupListType listType, long userId, int startIndex){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
 		String subCriteriaAssociationPath = null;
@@ -143,73 +148,73 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 		Criteria criteria = session.createCriteria(entityClass)
 				.add(Restrictions.eq("id", userId))
 				.createCriteria(subCriteriaAssociationPath, "grp",JoinType.RIGHT_OUTER_JOIN)
-					.addOrder(Order.asc("name").ignoreCase())
-					.setFirstResult(startIndex)
-					.setMaxResults(resultLimit)
-					.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-		
+				.addOrder(Order.asc("name").ignoreCase())
+				.setFirstResult(startIndex)
+				.setMaxResults(resultLimit)
+				.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+
 		//VERY IMP - Get the result in Set else you would get duplicate values
 		Set list = new HashSet<>(criteria.list());
 		List<GroupEntity> groupEntities = new LinkedList<>();
 		Iterator iter = list.iterator();
 		while (iter.hasNext() ) {
-		    Map map = (Map) iter.next();
-		    GroupEntity groupEntity = (GroupEntity) map.get("grp");
-		    groupEntities.add(groupEntity);
+			Map map = (Map) iter.next();
+			GroupEntity groupEntity = (GroupEntity) map.get("grp");
+			groupEntities.add(groupEntity);
 		}
-		
+
 		return groupEntities;
 	}
-	
+
 	// This will return all groups where user is a member
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List<GroupEntity> getGroups(int userId){
+	public List<GroupEntity> getGroups(long userId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass)
 				.add(Restrictions.eq("id", userId))
 				.createCriteria("groups", "grp",JoinType.RIGHT_OUTER_JOIN)
-					.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-		
+				.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+
 		//VERY IMP - Get the result in Set else you would get duplicate values
 		Set list = new HashSet<>(criteria.list());
 		List<GroupEntity> groupEntities = new LinkedList<>();
 		Iterator iter = list.iterator();
 		while (iter.hasNext() ) {
-		    Map map = (Map) iter.next();
-		    GroupEntity groupEntity = (GroupEntity) map.get("grp");
-		    groupEntities.add(groupEntity);
+			Map map = (Map) iter.next();
+			GroupEntity groupEntity = (GroupEntity) map.get("grp");
+			groupEntities.add(groupEntity);
 		}
 		return groupEntities;
 	}
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List<MembershipRequestEntity> getUserMembershipRequests(int userId, int startIndex){
+	public List<MembershipRequestEntity> getUserMembershipRequests(long userId, int startIndex){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
 		String subCriteriaAssociationPath = "membershipRequests";
 		Criteria criteria = session.createCriteria(entityClass)
 				.add(Restrictions.eq("id", userId))
 				.createCriteria("membershipRequests", "request",JoinType.RIGHT_OUTER_JOIN)
-					.addOrder(Order.asc("id"))
-					.add(Restrictions.ne("status", ApprovalStatus.Approved))
-					.setFirstResult(startIndex)
-					.setMaxResults(resultLimit)
-					.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-		
+				.addOrder(Order.asc("id"))
+				.add(Restrictions.ne("status", ApprovalStatus.Approved))
+				.setFirstResult(startIndex)
+				.setMaxResults(resultLimit)
+				.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+
 		//VERY IMP - Get the result in Set else you would get duplicate values
 		Set list = new HashSet<>(criteria.list());
 		List<MembershipRequestEntity> requestEntities = new LinkedList<>();
 		Iterator iter = list.iterator();
 		while (iter.hasNext() ) {
-		    Map map = (Map) iter.next();
-		    MembershipRequestEntity requestEntity = (MembershipRequestEntity) map.get("request");
-		    requestEntities.add(requestEntity);
+			Map map = (Map) iter.next();
+			MembershipRequestEntity requestEntity = (MembershipRequestEntity) map.get("request");
+			requestEntities.add(requestEntity);
 		}
 		return requestEntities;
 	}
-	
+
 	//This will tell if user is invite to a group or not
-	public boolean isInvited(int groupId, int userId){
+	public boolean isInvited(long groupId, long userId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Query query = session.getNamedQuery("Invite.ByUserIdAndGroupId").setParameter("groupId", groupId)
 				.setParameter("userId", userId);

@@ -12,19 +12,20 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.digitusrevolution.rideshare.common.inf.DomainResource;
+import com.digitusrevolution.rideshare.common.inf.DomainResourceInteger;
+import com.digitusrevolution.rideshare.common.inf.DomainResourceLong;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.user.domain.service.GroupDomainService;
 
 @Path("/domain/groups")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class GroupDomainResource implements DomainResource<Group>{
+public class GroupDomainResource implements DomainResourceLong<Group>{
 
 	@Override
 	@GET
 	@Path("/{id}")
-	public Response get(@PathParam("id") int id, @QueryParam("fetchChild") String fetchChild){
+	public Response get(@PathParam("id") long id, @QueryParam("fetchChild") String fetchChild){
 		GroupDomainService groupDomainService = new GroupDomainService();
 		Group group = groupDomainService.get(id, Boolean.valueOf(fetchChild));
 		return Response.ok(group).build();

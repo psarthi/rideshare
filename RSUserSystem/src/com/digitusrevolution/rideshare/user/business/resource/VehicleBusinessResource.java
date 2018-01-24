@@ -28,7 +28,7 @@ public class VehicleBusinessResource {
 	 * @return status OK
 	 */
 	@POST
-	public Response addVehicle(@PathParam("userId") int userId, Vehicle vehicle){
+	public Response addVehicle(@PathParam("userId") long userId, Vehicle vehicle){
 
 		VehicleBusinessService vehicleBusinessService = new VehicleBusinessService();
 		vehicleBusinessService.addVehicle(userId, vehicle);

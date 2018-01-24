@@ -5,15 +5,15 @@ import java.util.HashSet;
 
 public class Account {
 	
-	private int number;
+	private long number;
 	private float balance;
 	private Collection<Transaction> transactions = new HashSet<Transaction>();
 	private AccountType type;
 	
-	public int getNumber() {
+	public long getNumber() {
 		return number;
 	}
-	public void setNumber(int number) {
+	public void setNumber(long number) {
 		this.number = number;
 	}
 	public float getBalance() {
@@ -26,8 +26,7 @@ public class Account {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + number;
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		result = prime * result + (int) (number ^ (number >>> 32));
 		return result;
 	}
 	@Override
@@ -43,9 +42,6 @@ public class Account {
 		}
 		Account other = (Account) obj;
 		if (number != other.number) {
-			return false;
-		}
-		if (type != other.type) {
 			return false;
 		}
 		return true;

@@ -9,16 +9,17 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.billing.domain.core.BillDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
-import com.digitusrevolution.rideshare.common.inf.DomainService;
+import com.digitusrevolution.rideshare.common.inf.DomainServiceInteger;
+import com.digitusrevolution.rideshare.common.inf.DomainServiceLong;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 
-public class BillDomainService implements DomainService<Bill>{
+public class BillDomainService implements DomainServiceLong<Bill>{
 
 	private static final Logger logger = LogManager.getLogger(BillDomainService.class.getName());
 
 	@Override
-	public Bill get(int number, boolean fetchChild) {
+	public Bill get(long number, boolean fetchChild) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		Bill bill = null;

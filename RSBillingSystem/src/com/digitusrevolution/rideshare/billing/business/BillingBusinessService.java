@@ -21,7 +21,7 @@ public class BillingBusinessService {
 	
 	private static final Logger logger = LogManager.getLogger(BillingBusinessService.class.getName());
 	
-	public void approveBill(int billNumber){
+	public void approveBill(long billNumber){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		try {
@@ -46,7 +46,7 @@ public class BillingBusinessService {
 		}
 	}
 	
-	public void rejectBill(int billNumber){
+	public void rejectBill(long billNumber){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		try {

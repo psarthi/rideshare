@@ -24,7 +24,7 @@ public class PreferenceEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	//Unable to find how to create PK as user id, so adding a new id but logically it would be right to have user id as PK
-	private int id;
+	private long id;
 	//Ride Request Preference
 	@OneToOne
 	private VehicleCategoryEntity vehicleCategory;
@@ -50,6 +50,12 @@ public class PreferenceEntity {
 	private RideMode rideMode;
 	
 
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public VehicleCategoryEntity getVehicleCategory() {
 		return vehicleCategory;
 	}
@@ -109,12 +115,6 @@ public class PreferenceEntity {
 	}
 	public void setMinProfileRating(float minProfileRating) {
 		this.minProfileRating = minProfileRating;
-	}
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
 	}
 	public VehicleEntity getDefaultVehicle() {
 		return defaultVehicle;

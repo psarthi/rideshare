@@ -25,7 +25,7 @@ import com.digitusrevolution.rideshare.common.auth.AuthService;
 import com.digitusrevolution.rideshare.common.exception.EmailExistException;
 import com.digitusrevolution.rideshare.common.exception.OTPFailedException;
 import com.digitusrevolution.rideshare.common.exception.SignInFailedException;
-import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
+import com.digitusrevolution.rideshare.common.inf.DomainObjectPKLong;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.TransactionMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.MembershipRequestMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.GroupMapper;
@@ -81,7 +81,7 @@ import com.digitusrevolution.rideshare.user.domain.RoleDO;
 import com.digitusrevolution.rideshare.user.domain.VehicleCategoryDO;
 import com.digitusrevolution.rideshare.user.domain.VehicleSubCategoryDO;
 
-public class UserDO implements DomainObjectPKInteger<User>{
+public class UserDO implements DomainObjectPKLong<User>{
 
 	private User user;
 	private UserEntity userEntity;
@@ -107,14 +107,14 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	}
 
 	@Override
-	public int create(User user){
+	public long create(User user){
 		setUser(user);
-		int id = userDAO.create(userEntity);
+		long id = userDAO.create(userEntity);
 		return id;
 	}
 
 	@Override
-	public User get(int id){
+	public User get(long id){
 		userEntity = userDAO.get(id);
 		if (userEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);
@@ -124,7 +124,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	}
 
 	@Override
-	public User getAllData(int id){		
+	public User getAllData(long id){		
 		get(id);
 		fetchChild();
 		return user;
@@ -151,7 +151,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	}
 
 	@Override
-	public void delete(int id){
+	public void delete(long id){
 		user = get(id);
 		setUser(user);
 		userDAO.delete(userEntity);
@@ -171,7 +171,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		return true;
 	}
 
-	public Collection<Role> getRoles(int id){
+	public Collection<Role> getRoles(long id){
 		getAllData(id);
 		logger.debug("Role size: "+user.getRoles().size());
 		return user.getRoles();
@@ -206,8 +206,8 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		update(user);
 	}
 	
-	public int registerUser(User user, String otp){
-		int id = 0;
+	public long registerUser(User user, String otp){
+		long id = 0;
 		OTPDO otpdo = new OTPDO();
 		boolean otpValidationStatus = otpdo.validateOTP(user.getMobileNumber(), otp); 
 		boolean emailStatus = isEmailExist(user.getEmail());
@@ -273,7 +273,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	 * Purpose - Add account to the user
 	 * 
 	 */
-	public void addAccount(int userId, Account account){
+	public void addAccount(long userId, Account account){
 		//Always use getAllData instead of get whenever you are trying to update, so that you don't miss any fields where relationship is owned by this entity
 		//Otherwise while updating, that field relationship would be deleted
 		User user = getAllData(userId);
@@ -293,7 +293,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	 * - Return all potential friends
 	 * 
 	 */
-	public List<User> findAllPotentialFriendsBasedOnEmailOrMobile(int userId, List<String> emailIds, List<String> mobileNumbers){
+	public List<User> findAllPotentialFriendsBasedOnEmailOrMobile(long userId, List<String> emailIds, List<String> mobileNumbers){
 		Set<UserEntity> registeredUserEntities = userDAO.findAllRegisteredUserBasedOnEmailOrMobile(userId, emailIds, mobileNumbers);
 		Collection<User> registeredUsers = new LinkedList<>();
 		registeredUsers = userMapper.getDomainModels(registeredUsers, registeredUserEntities, false);
@@ -338,7 +338,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	 *   and Approval status as pending
 	 * 
 	 */
-	public void sendFriendRequest(int userId, List<User> friends){
+	public void sendFriendRequest(long userId, List<User> friends){
 		user = getAllData(userId);
 		for (User friend : friends) {
 			ZonedDateTime dateTime = DateTimeUtil.getCurrentTimeInUTC();
@@ -368,7 +368,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		return false;
 	}
 
-	private boolean isFriendRequestSubmitted(User user, int friendUserId){
+	private boolean isFriendRequestSubmitted(User user, long friendUserId){
 		FriendRequest friendRequest = user.getFriendRequest(friendUserId);
 		if (friendRequest!=null){
 			return true;
@@ -387,7 +387,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	 * - Else throw exception
 	 * 
 	 */
-	public void acceptFriendRequest(int userId, int friendUserId){
+	public void acceptFriendRequest(long userId, long friendUserId){
 		user = getAllData(userId);
 		FriendRequest friendRequest = user.getFriendRequest(friendUserId);
 		if (friendRequest.getStatus().equals(ApprovalStatus.Pending) || friendRequest.getStatus().equals(ApprovalStatus.Rejected)){
@@ -409,7 +409,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	 * - If yes, update the status as Rejected
 	 * 
 	 */
-	public void rejectFriendRequest(int userId, int friendUserId){
+	public void rejectFriendRequest(long userId, long friendUserId){
 		user = getAllData(userId);
 		FriendRequest friendRequest = user.getFriendRequest(friendUserId);
 		if (friendRequest.getStatus().equals(ApprovalStatus.Pending)){
@@ -464,7 +464,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		return userSignInResult;		
 	}
 	
-	public void addUserFeedback(int userId, User givenByUser, Ride ride, RideRequest rideRequest, float rating) {
+	public void addUserFeedback(long userId, User givenByUser, Ride ride, RideRequest rideRequest, float rating) {
 		user = getAllData(userId);
 		UserFeedback feedback = new UserFeedback();
 		feedback.setForUser(user);
@@ -488,7 +488,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		return profileRating;
 	}
 	
-	public UserProfile getUserProfile(int userId, int signedInUserId) {
+	public UserProfile getUserProfile(long userId, long signedInUserId) {
 		
 		user = get(userId);
 		UserProfile userProfile = new UserProfile();
@@ -502,7 +502,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		return userProfile;
 	}
 	
-	public List<GroupDetail> getGroups(int userId, GroupListType listType, int page){
+	public List<GroupDetail> getGroups(long userId, GroupListType listType, int page){
 		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
 		int itemsCount = 10;
 		int startIndex = page*itemsCount; 
@@ -518,7 +518,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	}
 	
 	
-	public List<GroupDetail> getGroups(int userId){
+	public List<GroupDetail> getGroups(long userId){
 		List<GroupEntity> groupEntities = userDAO.getGroups(userId);
 		GroupMapper groupMapper = new GroupMapper();
 		LinkedList<Group> groups = new LinkedList<>();
@@ -530,7 +530,7 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		return groupDO.getGroupDetails(userId, groups);
 	}
 	
-	public List<GroupDetail> getCommonGroups(int userId, int signedInUserId){
+	public List<GroupDetail> getCommonGroups(long userId, long signedInUserId){
 		//Don't call getGroups which will avoid unnecessary further calls when using mapper
 		List<GroupEntity> firstGroupEntities = userDAO.getGroups(userId);
 		List<GroupEntity> secondGroupEntities = userDAO.getGroups(signedInUserId);		
@@ -549,11 +549,11 @@ public class UserDO implements DomainObjectPKInteger<User>{
 	}
 	
 	
-	public boolean isInvited(int groupId, int userId){
+	public boolean isInvited(long groupId, long userId){
 		return userDAO.isInvited(groupId, userId);
 	}
 	
-	public List<BasicMembershipRequest> getUserMembershipRequests(int userId, int page){
+	public List<BasicMembershipRequest> getUserMembershipRequests(long userId, int page){
 		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
 		int itemsCount = 10;
 		int startIndex = page*itemsCount; 

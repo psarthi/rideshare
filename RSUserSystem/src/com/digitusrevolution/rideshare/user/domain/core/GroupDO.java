@@ -21,7 +21,7 @@ import javax.ws.rs.WebApplicationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
+import com.digitusrevolution.rideshare.common.inf.DomainObjectPKLong;
 import com.digitusrevolution.rideshare.common.mapper.user.MembershipRequestMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.GroupMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
@@ -49,7 +49,7 @@ import com.digitusrevolution.rideshare.model.user.dto.MembershipStatus;
 import com.digitusrevolution.rideshare.user.data.GroupDAO;
 import com.digitusrevolution.rideshare.user.domain.MembershipRequestDO;
 
-public class GroupDO implements DomainObjectPKInteger<Group>{
+public class GroupDO implements DomainObjectPKLong<Group>{
 
 	private Group group;
 	private GroupEntity groupEntity;
@@ -101,14 +101,14 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	}
 
 	@Override
-	public int create(Group group) {
+	public long create(Group group) {
 		setGroup(group);
-		int id = groupDAO.create(groupEntity);
+		long id = groupDAO.create(groupEntity);
 		return id;
 	}
 
 	@Override
-	public Group get(int id) {
+	public Group get(long id) {
 		groupEntity = groupDAO.get(id);
 		if (groupEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);
@@ -118,14 +118,14 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	}
 
 	@Override
-	public Group getAllData(int id) {
+	public Group getAllData(long id) {
 		get(id);
 		fetchChild();
 		return group;
 	}
 
 	@Override
-	public void delete(int id) {
+	public void delete(long id) {
 		group = get(id);
 		setGroup(group);
 		groupDAO.delete(groupEntity);
@@ -134,7 +134,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	/*
 	 * Purpose - Create group by setting additional properties such as createdDate, Owner etc.
 	 */
-	public int createGroup(Group group, byte[] rawImage){
+	public long createGroup(Group group, byte[] rawImage){
 		if (!isGroupNameExist(group.getName())) {
 			ZonedDateTime currentTimeInUTC = DateTimeUtil.getCurrentTimeInUTC();
 			group.setCreatedDateTime(currentTimeInUTC);
@@ -156,7 +156,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 					group.setPhoto(photo);							
 				}
 			}
-			int id = create(group);
+			long id = create(group);
 			return id;			
 		} else {
 			throw new NotAcceptableException("Group already exist with the same name");
@@ -230,7 +230,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * - Remove group invitation from user
 	 * 
 	 */
-	public void sendMembershipRequest(int groupId, MembershipRequest membershipRequest){
+	public void sendMembershipRequest(long groupId, MembershipRequest membershipRequest){
 		membershipRequest.setCreatedDateTime(DateTimeUtil.getCurrentTimeInUTC());
 		membershipRequest.setStatus(ApprovalStatus.Pending);
 		UserDO userDO = new UserDO();
@@ -269,7 +269,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * Purpose - Get complete membership request info and not just basic info
 	 * 
 	 */
-	public MembershipRequest getMembershipRequest(int groupId, int userId){
+	public MembershipRequest getMembershipRequest(long groupId, long userId){
 		MembershipRequestEntity membershipRequestEntity = groupDAO.getMembershipRequest(groupId, userId);
 		if (membershipRequestEntity!=null){
 			MembershipRequestMapper membershipRequestMapper = new MembershipRequestMapper();
@@ -281,7 +281,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		return null;
 	} 
 
-	public BasicMembershipRequest getBasicMembershipRequest(int groupId, int userId){
+	public BasicMembershipRequest getBasicMembershipRequest(long groupId, long userId){
 		MembershipRequest membershipRequest = getMembershipRequest(groupId, userId);
 		if (membershipRequest!=null){
 			UserDO userDO = new UserDO();
@@ -291,7 +291,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		return null;
 	} 
 
-	public boolean isMembershipRequestSubmitted(int groupId, int userId) {
+	public boolean isMembershipRequestSubmitted(long groupId, long userId) {
 		MembershipRequestEntity membershipRequestEntity = groupDAO.getMembershipRequest(groupId, userId);
 		if (membershipRequestEntity!=null){
 			return true;
@@ -311,7 +311,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * - Update the membership status as Approved
 	 * 
 	 */
-	public void approveMembershipRequest(int groupId, int requesterUserId, String remark){
+	public void approveMembershipRequest(long groupId, long requesterUserId, String remark){
 		MembershipRequest membershipRequest = getMembershipRequest(groupId, requesterUserId);
 		group = getAllData(groupId);
 		if (membershipRequest!=null){
@@ -346,7 +346,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * - Maintain log of old remarks by appending the new remark to the old one with date time
 	 * 
 	 */
-	public void rejectMembershipRequest(int groupId, int requesterUserId, String remark){
+	public void rejectMembershipRequest(long groupId, long requesterUserId, String remark){
 		MembershipRequest membershipRequest = getMembershipRequest(groupId, requesterUserId);
 		if (membershipRequest!=null){
 			if (membershipRequest.getStatus().equals(ApprovalStatus.Pending)){
@@ -372,7 +372,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * - Remove member from group
 	 * 
 	 */
-	public void removeMember(int signedInUserId, int groupId, int memberUserId){
+	public void removeMember(long signedInUserId, long groupId, long memberUserId){
 		if (isAdmin(groupId, signedInUserId)) {
 			group = getAllData(groupId);
 			UserDO userDO = new UserDO();
@@ -403,7 +403,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		}
 	}
 
-	public void leaveGroup(int groupId, int memberUserId){
+	public void leaveGroup(long groupId, long memberUserId){
 		//Reason for having seperate function is just for naming convenience
 		//and may be in future additional task may be added
 		group = getAllData(groupId);
@@ -422,7 +422,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		}
 	}
 
-	public void updateMembershipForm(int groupId, MembershipForm form) {
+	public void updateMembershipForm(long groupId, MembershipForm form) {
 		group = getAllData(groupId);
 		group.setMembershipForm(form);
 		update(group);
@@ -438,7 +438,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * - if user is not admin and member of group, then add as admin
 	 * 
 	 */
-	public void addAdmin(int signedInUserId, int groupId, int memberUserId){
+	public void addAdmin(long signedInUserId, long groupId, long memberUserId){
 		if (isAdmin(groupId, signedInUserId)) {
 			User member = getMember(groupId, memberUserId);
 			if (member!=null){
@@ -463,7 +463,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * Purpose - Return member with basic information
 	 * 
 	 */
-	public User getMember(int groupId, int memberUserId){
+	public User getMember(long groupId, long memberUserId){
 		UserEntity memberEntity = groupDAO.getMember(groupId, memberUserId);
 		if (memberEntity!=null){
 			UserMapper userMapper = new UserMapper();
@@ -480,7 +480,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * 
 	 * This is just a convinience method similar to getMember which avoids any further sql queries while doing mapping
 	 */
-	public boolean isMember(int groupId, int userId) {
+	public boolean isMember(long groupId, long userId) {
 		UserEntity memberEntity = groupDAO.getMember(groupId, userId);
 		if (memberEntity!=null){
 			return true;
@@ -494,11 +494,11 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * This function should be used when you just need to know the status of admin as its a very less resource intesive function 
 	 * as compared to getAllData of group and then find out in the list of admin if it exist or not
 	 */
-	public boolean isAdmin(int groupId, int memberUserId) {
+	public boolean isAdmin(long groupId, long memberUserId) {
 		return groupDAO.isAdmin(groupId, memberUserId);
 	}
 
-	public Vote getVote(int groupId, int memberUserId) {
+	public Vote getVote(long groupId, long memberUserId) {
 		group = getAllData(groupId);
 		for (GroupFeedback feedback: group.getFeedbacks()) {
 			if (feedback.getGivenByUser().getId()==memberUserId) {
@@ -518,9 +518,9 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * - Add group to all valid user group invites collection 
 	 * 
 	 */
-	public void inviteUsers(int groupId, List<Integer> userIds){
-		List<Integer> validUserIds = new ArrayList<>();
-		for (Integer userId : userIds) {
+	public void inviteUsers(long groupId, List<Long> userIds){
+		List<Long> validUserIds = new ArrayList<>();
+		for (Long userId : userIds) {
 			User member = getMember(groupId, userId);
 			if (member==null){
 				validUserIds.add(userId);
@@ -529,7 +529,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 			}
 		}
 		group = get(groupId);
-		for (Integer userId : validUserIds) {
+		for (Long userId : validUserIds) {
 			UserDO userDO = new UserDO();
 			User user = userDO.getAllData(userId);
 			user.getGroupInvites().add(group);
@@ -547,7 +547,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * - If yes, overwrite else add a new feedback
 	 * 
 	 */
-	public void giveFeedback(int groupId, int memberUserId, GroupFeedback feedback){
+	public void giveFeedback(long groupId, long memberUserId, GroupFeedback feedback){
 		User member = getMember(groupId, memberUserId);
 		int genuineVotes = 0;
 		int fakeVotes = 0;
@@ -587,11 +587,11 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		}
 	}
 
-	public int getMemberCount(int groupId) {
+	public int getMemberCount(long groupId) {
 		return groupDAO.getMemberCount(groupId);
 	}
 
-	public List<GroupMember> getMembers(int groupId, int page){
+	public List<GroupMember> getMembers(long groupId, int page){
 
 		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
 		int itemsCount = 10;
@@ -613,7 +613,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		return groupMembers;
 	}
 
-	public GroupMember getGroupMemberFromUser(int groupId, User user) {
+	public GroupMember getGroupMemberFromUser(long groupId, User user) {
 		GroupMember groupMember;
 		groupMember = JsonObjectMapper.getMapper().convertValue(user, GroupMember.class);
 		groupMember.setAdmin(isAdmin(groupId, user.getId()));
@@ -624,7 +624,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * This will get group details with membership status and member count
 	 * 
 	 */
-	public GroupDetail getGroupDetail(int groupId, int userId) {
+	public GroupDetail getGroupDetail(long groupId, long userId) {
 		Group group = get(groupId);
 		return getGroupDetailFromGroup(group, userId);
 	}
@@ -633,7 +633,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * This function is for convinience so that we can easily get GroupDetail with updated details from group
 	 * 
 	 */
-	public GroupDetail getGroupDetailFromGroup(Group group, int userId) {
+	public GroupDetail getGroupDetailFromGroup(Group group, long userId) {
 		GroupDetail groupDetail = JsonObjectMapper.getMapper().convertValue(group, GroupDetail.class);
 		groupDetail.setMemberCount(groupDAO.getMemberCount(group.getId()));
 		groupDetail.setPendingRequestCount(groupDAO.getGroupMembershipRequestCount(group.getId()));
@@ -645,7 +645,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * This will get membership status of any user for a specific group
 	 * 
 	 */
-	public MembershipStatus getMembershipStatus(int groupId, int userId) {
+	public MembershipStatus getMembershipStatus(long groupId, long userId) {
 		MembershipStatus membershipStatus = new MembershipStatus();
 		boolean memberStatus = isMember(groupId, userId);
 		membershipStatus.setMember(memberStatus);
@@ -672,7 +672,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		return membershipStatus;
 	}
 
-	public List<GroupInviteUserSearchResult> searchUserByNameForGroupInvite(int groupId, String name, int page){
+	public List<GroupInviteUserSearchResult> searchUserByNameForGroupInvite(long groupId, String name, int page){
 		UserDO userDO = new UserDO();
 		List<User> users = userDO.searchUserByName(name, page);
 		List<GroupInviteUserSearchResult> results = new LinkedList<>();
@@ -694,7 +694,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		return results;
 	}
 
-	public List<GroupDetail> searchGroupByName(int userId, String name, int page){
+	public List<GroupDetail> searchGroupByName(long userId, String name, int page){
 		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
 		int itemsCount = 10;
 		int startIndex = page*itemsCount; 
@@ -717,7 +717,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * This is for convinience of converting group to groupDetails by setting membership status against the user 
 	 * 
 	 */
-	public List<GroupDetail> getGroupDetails(int userId, LinkedList<Group> groups) {
+	public List<GroupDetail> getGroupDetails(long userId, LinkedList<Group> groups) {
 		LinkedList<GroupDetail> groupDetails = new LinkedList<>();
 		for (Group group: groups) {
 			groupDetails.add(getGroupDetailFromGroup(group, userId));
@@ -725,7 +725,7 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		return groupDetails;
 	}
 
-	public List<BasicMembershipRequest> getGroupMembershipRequests(int groupId, int page){
+	public List<BasicMembershipRequest> getGroupMembershipRequests(long groupId, int page){
 		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
 		int itemsCount = 10;
 		int startIndex = page*itemsCount; 

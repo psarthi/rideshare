@@ -49,7 +49,7 @@ public class RideGeoJSON {
 	 * Purpose - This will get all the matching rides for specific ride request. 
 	 * This function internally calls search ride and convert the data into GeoJson format 
 	 */
-	public FeatureCollection getMatchingRides(int rideRequestId){
+	public FeatureCollection getMatchingRides(long rideRequestId){
 		List<MatchedTripInfo> matchedTripInfos = rideDO.searchRides(rideRequestId);
 		FeatureCollection featureCollection = getMatchingRidesGeoJson(rideRequestId, matchedTripInfos);
 		return featureCollection;
@@ -65,7 +65,7 @@ public class RideGeoJSON {
 	 * - Get GeoJson for all matched rides (Includes Start Point, End Point and Route)
 	 * 
 	 */
-	private FeatureCollection getMatchingRidesGeoJson(int rideRequestId, List<MatchedTripInfo> matchedTripInfos) {
+	private FeatureCollection getMatchingRidesGeoJson(long rideRequestId, List<MatchedTripInfo> matchedTripInfos) {
 		//This will get ride related geoJson for each matching rides
 		FeatureCollection featureCollection = getMatchedTripInfoGeoJSON(matchedTripInfos);
 		//This will get ride request related geoJson (Note - Its common for all matching rides) 
@@ -84,7 +84,7 @@ public class RideGeoJSON {
 	/*
 	 * Purpose - This will get all ride points for a specific ride
 	 */
-	public FeatureCollection getRidePoints(int rideId){
+	public FeatureCollection getRidePoints(long rideId){
 		FeatureCollection featureCollection = new FeatureCollection();
 		featureCollection.addAll(getRidePoints(rideDO.getAllData(rideId)));
 		return featureCollection;

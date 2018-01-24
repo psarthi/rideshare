@@ -19,7 +19,7 @@ import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 public class TrustNetworkEntity {
 	@Id
 	@GeneratedValue
-	private int id;
+	private long id;
 	@ManyToMany
 	@JoinTable(name="trust_network_category",joinColumns=@JoinColumn(name="trust_network_id"))
 	private Collection<TrustCategoryEntity> trustCategories = new HashSet<TrustCategoryEntity>();
@@ -30,10 +30,10 @@ public class TrustNetworkEntity {
 	@JoinTable(name="trust_network_group",joinColumns=@JoinColumn(name="trust_network_id"))
 	private Collection<GroupEntity> groups = new HashSet<GroupEntity>();
 	
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public Collection<TrustCategoryEntity> getTrustCategories() {
@@ -58,10 +58,7 @@ public class TrustNetworkEntity {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((friends == null) ? 0 : friends.hashCode());
-		result = prime * result + ((groups == null) ? 0 : groups.hashCode());
-		result = prime * result + id;
-		result = prime * result + ((trustCategories == null) ? 0 : trustCategories.hashCode());
+		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
 	@Override
@@ -76,28 +73,7 @@ public class TrustNetworkEntity {
 			return false;
 		}
 		TrustNetworkEntity other = (TrustNetworkEntity) obj;
-		if (friends == null) {
-			if (other.friends != null) {
-				return false;
-			}
-		} else if (!friends.equals(other.friends)) {
-			return false;
-		}
-		if (groups == null) {
-			if (other.groups != null) {
-				return false;
-			}
-		} else if (!groups.equals(other.groups)) {
-			return false;
-		}
 		if (id != other.id) {
-			return false;
-		}
-		if (trustCategories == null) {
-			if (other.trustCategories != null) {
-				return false;
-			}
-		} else if (!trustCategories.equals(other.trustCategories)) {
 			return false;
 		}
 		return true;

@@ -8,7 +8,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 
 public class Preference {
 
-	private int id;
+	private long id;
 	//Ride Request Preference
 	private VehicleCategory vehicleCategory;
 	private VehicleSubCategory vehicleSubCategory;
@@ -27,6 +27,12 @@ public class Preference {
 	private float minProfileRating;
 	private RideMode rideMode;
 	
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public VehicleCategory getVehicleCategory() {
 		return vehicleCategory;
 	}
@@ -86,12 +92,6 @@ public class Preference {
 	}
 	public void setMinProfileRating(float minProfileRating) {
 		this.minProfileRating = minProfileRating;
-	}
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
 	}
 	public Vehicle getDefaultVehicle() {
 		return defaultVehicle;

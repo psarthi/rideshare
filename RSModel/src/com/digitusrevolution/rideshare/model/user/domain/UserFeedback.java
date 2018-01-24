@@ -6,7 +6,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 public class UserFeedback{
 	
-	private int id;
+	private long id;
 	private User forUser;
 	private User givenByUser;
 	private float rating;
@@ -14,7 +14,12 @@ public class UserFeedback{
 	private Ride ride;
 	private RideRequest rideRequest;
 
-
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public User getGivenByUser() {
 		return givenByUser;
 	}
@@ -92,12 +97,6 @@ public class UserFeedback{
 	}
 	public void setRideRequest(RideRequest rideRequest) {
 		this.rideRequest = rideRequest;
-	}
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
 	}
 	public User getForUser() {
 		return forUser;

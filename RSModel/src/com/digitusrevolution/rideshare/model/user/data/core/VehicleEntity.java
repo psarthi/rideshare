@@ -18,7 +18,7 @@ import com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity;
 public class VehicleEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
+	private long id;
 	private String registrationNumber;
 	private String model;
 	private int seatCapacity;
@@ -30,11 +30,11 @@ public class VehicleEntity {
 	@OneToOne(cascade=CascadeType.ALL)
 	private PhotoEntity photo;
 	
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -98,9 +98,7 @@ public class VehicleEntity {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
-		result = prime * result + ((vehicleCategory == null) ? 0 : vehicleCategory.hashCode());
-		result = prime * result + ((vehicleSubCategory == null) ? 0 : vehicleSubCategory.hashCode());
+		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
 
@@ -117,20 +115,6 @@ public class VehicleEntity {
 		}
 		VehicleEntity other = (VehicleEntity) obj;
 		if (id != other.id) {
-			return false;
-		}
-		if (vehicleCategory == null) {
-			if (other.vehicleCategory != null) {
-				return false;
-			}
-		} else if (!vehicleCategory.equals(other.vehicleCategory)) {
-			return false;
-		}
-		if (vehicleSubCategory == null) {
-			if (other.vehicleSubCategory != null) {
-				return false;
-			}
-		} else if (!vehicleSubCategory.equals(other.vehicleSubCategory)) {
 			return false;
 		}
 		return true;

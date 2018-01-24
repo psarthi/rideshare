@@ -31,11 +31,11 @@ public class GroupBusinessService {
 	
 	private static final Logger logger = LogManager.getLogger(GroupBusinessService.class.getName());
 
-	public int createGroup(BasicGroupInfo group){
+	public long createGroup(BasicGroupInfo group){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		int id = 0;
+		long id = 0;
 		try {
 			transaction = session.beginTransaction();
 			
@@ -84,7 +84,7 @@ public class GroupBusinessService {
 		}
 	}
 	
-	public GroupDetail getGroupDetail(int groupId, int userId){
+	public GroupDetail getGroupDetail(long groupId, long userId){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -112,7 +112,7 @@ public class GroupBusinessService {
 		return groupDetail;
 	}
 	
-	public List<GroupMember> getMembers(int groupId, int page){
+	public List<GroupMember> getMembers(long groupId, int page){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		List<GroupMember> members = null;
@@ -139,7 +139,7 @@ public class GroupBusinessService {
 		return members;
 	}
 	
-	public List<GroupInviteUserSearchResult> searchUserByNameForGroupInvite(int groupId, String name, int page){
+	public List<GroupInviteUserSearchResult> searchUserByNameForGroupInvite(long groupId, String name, int page){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		List<GroupInviteUserSearchResult> users = null;
@@ -166,7 +166,7 @@ public class GroupBusinessService {
 		return users;
 	}
 	
-	public void inviteUsers(int groupId, List<Integer> userIds){
+	public void inviteUsers(long groupId, List<Long> userIds){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		try {
@@ -191,7 +191,7 @@ public class GroupBusinessService {
 		}
 	}
 	
-	public List<GroupDetail> searchGroupByName(int userId, String name, int page){
+	public List<GroupDetail> searchGroupByName(long userId, String name, int page){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		List<GroupDetail> groupDetails = null;
@@ -218,7 +218,7 @@ public class GroupBusinessService {
 		return groupDetails;
 	}
 	
-	public List<BasicMembershipRequest> getGroupMembershipRequests(int groupId, int page){
+	public List<BasicMembershipRequest> getGroupMembershipRequests(long groupId, int page){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		List<BasicMembershipRequest> requests = new LinkedList<>();
@@ -244,7 +244,7 @@ public class GroupBusinessService {
 		return requests;
 	}
 	
-	public BasicMembershipRequest getMembershipRequest(int groupId, int userId){
+	public BasicMembershipRequest getMembershipRequest(long groupId, long userId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		BasicMembershipRequest request = null;
@@ -270,7 +270,7 @@ public class GroupBusinessService {
 		return request;
 	}
 	
-	public void sendMembershipRequest(int groupId, BasicMembershipRequest membershipRequest){
+	public void sendMembershipRequest(long groupId, BasicMembershipRequest membershipRequest){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -295,7 +295,7 @@ public class GroupBusinessService {
 		}
 	}
 	
-	public void approveMembershipRequest(int groupId, int requesterUserId, String remark){
+	public void approveMembershipRequest(long groupId, long requesterUserId, String remark){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -320,7 +320,7 @@ public class GroupBusinessService {
 		}
 	}
 	
-	public void rejectMembershipRequest(int groupId, int requesterUserId, String remark){
+	public void rejectMembershipRequest(long groupId, long requesterUserId, String remark){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -345,7 +345,7 @@ public class GroupBusinessService {
 		}
 	}
 	
-	public void giveFeedback(int groupId, int memberUserId, GroupFeedbackInfo feedback){
+	public void giveFeedback(long groupId, long memberUserId, GroupFeedbackInfo feedback){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -370,7 +370,7 @@ public class GroupBusinessService {
 		}
 	}
 	
-	public void leaveGroup(int groupId, int userId){
+	public void leaveGroup(long groupId, long userId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -395,7 +395,7 @@ public class GroupBusinessService {
 		}
 	}
 	
-	public void updateMembershipForm(int groupId, MembershipForm form) {
+	public void updateMembershipForm(long groupId, MembershipForm form) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -420,7 +420,7 @@ public class GroupBusinessService {
 		}
 	}
 	
-	public void addAdmin(int signedInUserId, int groupId, int memberUserId){
+	public void addAdmin(long signedInUserId, long groupId, long memberUserId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -446,7 +446,7 @@ public class GroupBusinessService {
 	}
 	
 	
-	public void removeMember(int signedInUserId, int groupId, int memberUserId){
+	public void removeMember(long signedInUserId, long groupId, long memberUserId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -471,7 +471,7 @@ public class GroupBusinessService {
 		}
 	}
 	
-	public GroupMember getMember(int groupId, int memberUserId){
+	public GroupMember getMember(long groupId, long memberUserId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		GroupMember groupMember = null;

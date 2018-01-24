@@ -1,11 +1,14 @@
 package com.digitusrevolution.rideshare.model.billing.dto;
 
 public class BillInfo {
-	private int billNumber;
-	public int getBillNumber() {
+	private long billNumber;
+
+	public long getBillNumber() {
 		return billNumber;
 	}
-	public void setBillNumber(int billNumber) {
+
+	public void setBillNumber(long billNumber) {
 		this.billNumber = billNumber;
 	}
+	
 }

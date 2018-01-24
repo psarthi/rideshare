@@ -47,7 +47,7 @@ public class RideRequestGeoJSON {
 	 * Purpose - Get feature collection of all ride pickup and drop points, ride request pickup and drop points, multi polygon around route
 	 * 
 	 */
-	public FeatureCollection getMatchingRideRequests(int rideId,double lastSearchDistance, int lastResultIndex){
+	public FeatureCollection getMatchingRideRequests(long rideId,double lastSearchDistance, int lastResultIndex){
 		RideRequestSearchResult rideRequestSearchResult = rideRequestDO.searchRideRequests(rideId, lastSearchDistance, lastResultIndex);
 		FeatureCollection featureCollection = getMatchingRideRequestsGeoJson(rideId, rideRequestSearchResult);
 		return featureCollection;
@@ -63,7 +63,7 @@ public class RideRequestGeoJSON {
 	 * - Get GeoJson for all matched ride requests (Include Pickup and Drop points)
 	 * 
 	 */
-	private FeatureCollection getMatchingRideRequestsGeoJson(int rideId,
+	private FeatureCollection getMatchingRideRequestsGeoJson(long rideId,
 			RideRequestSearchResult rideRequestSearchResult) {
 		RideDO rideDO = new RideDO();
 		//This will get ride pickup and drop points 
@@ -86,7 +86,7 @@ public class RideRequestGeoJSON {
 	}
 
 	//This will return geoJSON of ride request points
-	public FeatureCollection getRideRequestPoints(int rideRequestId) {
+	public FeatureCollection getRideRequestPoints(long rideRequestId) {
 		FeatureCollection featureCollection = new FeatureCollection();
 		List<Feature> features = getRideRequestGeoJSON(rideRequestId);
 		featureCollection.addAll(features);
@@ -97,7 +97,7 @@ public class RideRequestGeoJSON {
 	 * Purpose - This will get features for ride request pickup and drop point
 	 * 
 	 */
-	public List<Feature> getRideRequestGeoJSON(int rideRequestId) {
+	public List<Feature> getRideRequestGeoJSON(long rideRequestId) {
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		List<RideRequestPoint> rideRequestPoints = rideRequestDO.getPointsOfRideRequest(rideRequestId);
 		RideRequestPoint rideRequestPoint1 = rideRequestPoints.get(0);

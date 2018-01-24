@@ -8,7 +8,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 public class Bill {
 
-	private int number;
+	private long number;
 	//Reason for storing Passenger, Driver so that we have data handy available with every bill, instead of fetching data from ride/ride request
 	//Basic logic of all properties here is to have relationship available at one go instead of doing search again
 	private User passenger;
@@ -24,10 +24,10 @@ public class Bill {
 	private float discountPercentage;
 	private BillStatus status;
 	
-	public int getNumber() {
+	public long getNumber() {
 		return number;
 	}
-	public void setNumber(int number) {
+	public void setNumber(long number) {
 		this.number = number;
 	}
 	public User getPassenger() {
@@ -64,9 +64,7 @@ public class Bill {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + number;
-		result = prime * result + ((ride == null) ? 0 : ride.hashCode());
-		result = prime * result + ((rideRequest == null) ? 0 : rideRequest.hashCode());
+		result = prime * result + (int) (number ^ (number >>> 32));
 		return result;
 	}
 	@Override
@@ -82,20 +80,6 @@ public class Bill {
 		}
 		Bill other = (Bill) obj;
 		if (number != other.number) {
-			return false;
-		}
-		if (ride == null) {
-			if (other.ride != null) {
-				return false;
-			}
-		} else if (!ride.equals(other.ride)) {
-			return false;
-		}
-		if (rideRequest == null) {
-			if (other.rideRequest != null) {
-				return false;
-			}
-		} else if (!rideRequest.equals(other.rideRequest)) {
 			return false;
 		}
 		return true;

@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties (ignoreUnknown=true)
 public class BasicRidePassenger {
 	
-	private int id;
+	private long id;
 	private BasicUser passenger;
 	
 	public BasicUser getPassenger() {
@@ -23,10 +23,10 @@ public class BasicRidePassenger {
 	public void setPassenger(BasicUser passenger) {
 		this.passenger = passenger;
 	}
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 }

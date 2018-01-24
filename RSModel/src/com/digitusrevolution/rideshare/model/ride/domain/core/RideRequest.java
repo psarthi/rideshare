@@ -4,27 +4,22 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
-import com.digitusrevolution.rideshare.model.user.data.UserFeedbackEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 import com.digitusrevolution.rideshare.model.user.domain.UserFeedback;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 //This can help in getting just id instead of object but its causing issue while deserialization, so for now lets park it.
 //@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class RideRequest implements Comparable<RideRequest>{
 
-	private int id;
+	private long id;
 	private RideRequestPoint pickupPoint = new RideRequestPoint();
 	private RideRequestPoint dropPoint = new RideRequestPoint();
 	private String pickupPointAddress;
@@ -60,10 +55,10 @@ public class RideRequest implements Comparable<RideRequest>{
 	private String confirmationCode;
 	private Collection<UserFeedback> feedbacks = new HashSet<UserFeedback>();
 	
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public RideRequestPoint getPickupPoint() {
@@ -192,32 +187,6 @@ public class RideRequest implements Comparable<RideRequest>{
 	public void setTravelDistance(int travelDistance) {
 		this.travelDistance = travelDistance;
 	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + id;
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof RideRequest)) {
-			return false;
-		}
-		RideRequest other = (RideRequest) obj;
-		if (id != other.id) {
-			return false;
-		}
-		return true;
-	}
 	public Collection<Ride> getCancelledRides() {
 		return cancelledRides;
 	}
@@ -284,7 +253,7 @@ public class RideRequest implements Comparable<RideRequest>{
 		//return this.id - rideRequest.id;
 
 		//descending order
-		return rideRequest.id - this.id;
+		return Long.compare(rideRequest.id, this.id);
 	}
 	public String getConfirmationCode() {
 		return confirmationCode;
@@ -297,6 +266,30 @@ public class RideRequest implements Comparable<RideRequest>{
 	}
 	public void setFeedbacks(Collection<UserFeedback> feedbacks) {
 		this.feedbacks = feedbacks;
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof RideRequest)) {
+			return false;
+		}
+		RideRequest other = (RideRequest) obj;
+		if (id != other.id) {
+			return false;
+		}
+		return true;
 	}
 	
 }

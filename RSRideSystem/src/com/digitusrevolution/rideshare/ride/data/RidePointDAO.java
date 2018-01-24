@@ -67,7 +67,7 @@ public class RidePointDAO{
 		return ridePoint;
 	}
 
-	public RidePoint getRidePointOfRide(String _id, int rideId) {
+	public RidePoint getRidePointOfRide(String _id, long rideId) {
 		Document document = collection.find(eq("_id", _id)).first();
 		String json = document.toJson();
 		logger.trace(json);
@@ -76,11 +76,11 @@ public class RidePointDAO{
 		return ridePoint;
 	}
 
-	private RidePoint getSpecificRidePoint(RidePoint ridePoint, int rideId){
+	private RidePoint getSpecificRidePoint(RidePoint ridePoint, long rideId){
 		List<RidePointProperty> ridePointProperties = ridePoint.getRidePointProperties();
 		Iterator<RidePointProperty> iterator = ridePointProperties.iterator();
 		while(iterator.hasNext()){
-			int id = iterator.next().getId();
+			long id = iterator.next().getId();
 			if (id != rideId){
 				logger.trace("Removing Ride Id:" + id);
 				iterator.remove();
@@ -106,7 +106,7 @@ public class RidePointDAO{
 		collection.deleteOne(eq("_id", _id));
 	}
 	
-	public void deleteAllRidePointsOfRide(int rideId) {
+	public void deleteAllRidePointsOfRide(long rideId) {
 		Document query = new Document("rides.id",rideId);
 		DeleteResult result = collection.deleteMany(query);
 		logger.debug("Total ride points deleted for ride:"+rideId+" is: "+result.getDeletedCount());
@@ -118,7 +118,7 @@ public class RidePointDAO{
 		return getAllRidePointFromDocuments(cursor);
 	}
 
-	public List<RidePoint> getAllRidePointsOfRide(int rideId) {
+	public List<RidePoint> getAllRidePointsOfRide(long rideId) {
 		logger.entry();
 		MongoCursor<Document> cursor = collection.find(eq("rides.id", rideId)).iterator();
 		logger.exit();
@@ -153,7 +153,7 @@ public class RidePointDAO{
 	 *  
 	 * 1. Reason behind this function in this class instead of riderequestDAO as collection used is ride_point and not rideRequest_point 
 	 */
-	private Map<Integer, RidePointInfo> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, int rideId){
+	private Map<Long, RidePointInfo> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, long rideId){
 
 		logger.trace("Ride Request Point:"+rideRequestPoint.getPoint().toString());	
 		long variationInSeconds = DateTimeUtil.getSeconds(rideRequestPoint.getTimeVariation());
@@ -230,14 +230,16 @@ public class RidePointDAO{
 		//pipeline.add(sort);
 
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
-		Map<Integer, RideSearchPoint> rideSearchPointMap = new HashMap<>();
+		Map<Long, RideSearchPoint> rideSearchPointMap = new HashMap<>();
 		JSONUtil<RideSearchPoint> jsonUtilRideSearchPoint = new JSONUtil<>(RideSearchPoint.class);
 		int count =0;
 		try {
 			while (cursor.hasNext()){
 				RideSearchPoint rideSearchPoint = new RideSearchPoint();
 				Document document = cursor.next();
-				Integer matchedRideId = document.getInteger("_id");
+				//TODO - By default mongodb insert the data as integer, and we need to find a way to store as Long
+				//once we are able to store as long, then getLong would work otherwise, it will throw cast exception
+				Long matchedRideId = Integer.toUnsignedLong(document.getInteger("_id"));
 				Document searchPoint = (Document) document.get("rideSearchPoint");
 				String json = searchPoint.toJson();
 				logger.trace("rideId:" + matchedRideId);
@@ -253,22 +255,22 @@ public class RidePointDAO{
 		return getRidePointInfoMap(rideSearchPointMap);
 	}
 
-	public Map<Integer, RidePointInfo> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint){
+	public Map<Long, RidePointInfo> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint){
 		return getAllMatchingRidePointNearGivenPoint(rideRequestPoint,-1);
 	}
 	
-	public RidePointInfo getRidePointOfSpecificRideNearGivenPoint(RideRequestPoint rideRequestPoint, int rideId){
-		Map<Integer, RidePointInfo> ridePointInfoMap = getAllMatchingRidePointNearGivenPoint(rideRequestPoint,rideId);	
+	public RidePointInfo getRidePointOfSpecificRideNearGivenPoint(RideRequestPoint rideRequestPoint, long rideId){
+		Map<Long, RidePointInfo> ridePointInfoMap = getAllMatchingRidePointNearGivenPoint(rideRequestPoint,rideId);	
 		return ridePointInfoMap.get(rideId);
 	}
 
 	
-	private Map<Integer, RidePointInfo> getRidePointInfoMap(Map<Integer, RideSearchPoint> rideSearchPointMap){
-		Map<Integer, RidePointInfo> ridePointInfoMap = new HashMap<>();
+	private Map<Long, RidePointInfo> getRidePointInfoMap(Map<Long, RideSearchPoint> rideSearchPointMap){
+		Map<Long, RidePointInfo> ridePointInfoMap = new HashMap<>();
 
-		for (Map.Entry<Integer, RideSearchPoint> entry: rideSearchPointMap.entrySet() ) {
+		for (Map.Entry<Long, RideSearchPoint> entry: rideSearchPointMap.entrySet() ) {
 			RideSearchPoint rideSearchPoint = entry.getValue();
-			Integer rideId = entry.getKey();
+			Long rideId = entry.getKey();
 			RidePoint ridePoint = getRidePoint(rideSearchPoint);
 			RidePointInfo ridePointInfo = new RidePointInfo();
 			ridePointInfo.setRidePoint(ridePoint);
@@ -305,7 +307,7 @@ public class RidePointDAO{
 		return ridePoints;
 	}
 
-	private List<RidePoint> getAllSpecificRidePointFromDocuments(MongoCursor<Document> cursor, int rideId){
+	private List<RidePoint> getAllSpecificRidePointFromDocuments(MongoCursor<Document> cursor, long rideId){
 		List<RidePoint> ridePoints = new ArrayList<>();
 		try {
 			while (cursor.hasNext()){

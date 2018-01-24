@@ -25,7 +25,7 @@ import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
 import com.digitusrevolution.rideshare.model.user.domain.Vote;
 
-public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
+public class GroupDAO extends GenericDAOImpl<GroupEntity, Long>{
 
 	private static final Class<GroupEntity> entityClass = GroupEntity.class;
 
@@ -33,7 +33,7 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 		super(entityClass);
 	}
 
-	public MembershipRequestEntity getMembershipRequest(int groupId, int userId){
+	public MembershipRequestEntity getMembershipRequest(long groupId, long userId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Query query = session.getNamedQuery("MembershipRequest.byGroupIdAndUserId").setParameter("groupId", groupId)
 				.setParameter("userId", userId);
@@ -41,7 +41,7 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 		return membershipRequestEntity;
 	}
 	
-	public UserEntity getMember(int groupId, int memberUserId){
+	public UserEntity getMember(long groupId, long memberUserId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Query query = session.getNamedQuery("Member.byGroupIdAndUserId").setParameter("groupId", groupId)
 				.setParameter("memberUserId", memberUserId);
@@ -50,7 +50,7 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 	}
 	
 	// This function will tell if a user is an admin of a group or not
-	public boolean isAdmin(int groupId, int memberUserId){
+	public boolean isAdmin(long groupId, long memberUserId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Query query = session.getNamedQuery("Admin.byGroupIdAndUserId").setParameter("groupId", groupId)
 				.setParameter("memberUserId", memberUserId);
@@ -81,7 +81,7 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 	 *  We have also used Projects to get result count	
 	 * 
 	 */
-	public int getMemberCount(int groupId) {
+	public int getMemberCount(long groupId) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass)
 				.add(Restrictions.eq("id", groupId))
@@ -95,7 +95,7 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 	 * 	 Kept here for reference purpose only
 	 * 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List<UserEntity> getMembers(int groupId, int startIndex){
+	public List<UserEntity> getMembers(long groupId, long startIndex){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
 		Criteria criteria = session.createCriteria(entityClass)
@@ -125,7 +125,7 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 	 * so don't implement function similar to getUserMembershipRequests of UserDAO instead use the Query way
 	 * 
 	 */
-	public List<UserEntity> getMembers(int groupId, int startIndex){
+	public List<UserEntity> getMembers(long groupId, int startIndex){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
 		Query query = session.getNamedQuery("Members.byGroupId").setParameter("groupId", groupId)
@@ -141,7 +141,7 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 	
 
 	//This will get all admins of the group
-	public List<UserEntity> getAdmins(int groupId){
+	public List<UserEntity> getAdmins(long groupId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass)
 				.add(Restrictions.eq("id", groupId))
@@ -177,7 +177,7 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 	 * 
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Set<MembershipRequestEntity> getGroupMembershipRequests(int groupId, int startIndex){
+	public Set<MembershipRequestEntity> getGroupMembershipRequests(long groupId, int startIndex){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
 		Query query = session.getNamedQuery("MembershipRequests.byGroupId").setParameter("groupId", groupId)
@@ -189,7 +189,7 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Integer>{
 		return requestEntities;		
 	}
 	
-	public int getGroupMembershipRequestCount(int groupId){
+	public int getGroupMembershipRequestCount(long groupId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
 		Query query = session.getNamedQuery("MembershipRequests.byGroupId").setParameter("groupId", groupId)

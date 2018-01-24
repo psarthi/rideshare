@@ -21,7 +21,7 @@ import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
 import com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity;
 
-public class AccountDAO extends GenericDAOImpl<AccountEntity, Integer>{
+public class AccountDAO extends GenericDAOImpl<AccountEntity, Long>{
 
 	private static final Class<AccountEntity> entityClass = AccountEntity.class;
 
@@ -65,7 +65,7 @@ public class AccountDAO extends GenericDAOImpl<AccountEntity, Integer>{
 	 * 
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List<TransactionEntity> getTransactions(int accountNumber, int startIndex){
+	public List<TransactionEntity> getTransactions(long accountNumber, int startIndex){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		int resultLimit = Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RESULT_LIMIT"));
 		Criteria criteria = session.createCriteria(entityClass)

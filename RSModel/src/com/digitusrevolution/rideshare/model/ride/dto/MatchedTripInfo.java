@@ -4,24 +4,24 @@ import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 
 public class MatchedTripInfo {
 
-	private int rideId;
-	private int rideRequestId;
+	private long rideId;
+	private long rideRequestId;
 	private RidePoint ridePickupPoint;
 	private RidePoint rideDropPoint;
 	private double pickupPointDistance;
 	private double dropPointDistance;
 	private double rideRequestTravelDistance;
 
-	public int getRideId() {
+	public long getRideId() {
 		return rideId;
 	}
-	public void setRideId(int rideId) {
+	public void setRideId(long rideId) {
 		this.rideId = rideId;
 	}
-	public int getRideRequestId() {
+	public long getRideRequestId() {
 		return rideRequestId;
 	}
-	public void setRideRequestId(int rideRequestId) {
+	public void setRideRequestId(long rideRequestId) {
 		this.rideRequestId = rideRequestId;
 	}
 	public RidePoint getRidePickupPoint() {

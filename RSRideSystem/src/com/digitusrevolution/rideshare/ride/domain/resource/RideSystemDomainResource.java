@@ -93,7 +93,7 @@ public class RideSystemDomainResource {
 	 */
 	@GET
 	@Path("/ride/route/{rideId}")
-	public Response getRidePoints(@PathParam("rideId") int rideId){
+	public Response getRidePoints(@PathParam("rideId") long rideId){
 		RideSystemDomainService rideSystemDomainService = new RideSystemDomainService();
 		FeatureCollection featureCollection = rideSystemDomainService.getRidePoints(rideId);
 		return Response.ok(featureCollection).build();
@@ -118,7 +118,7 @@ public class RideSystemDomainResource {
 	 */
 	@GET
 	@Path("/riderequest/{rideRequestId}")
-	public Response getRideRequestPoints(@PathParam("rideRequestId") int rideRequestId) {
+	public Response getRideRequestPoints(@PathParam("rideRequestId") long rideRequestId) {
 		RideSystemDomainService rideSystemDomainService = new RideSystemDomainService();
 		FeatureCollection featureCollection = rideSystemDomainService.getRideRequestPoints(rideRequestId);
 		return Response.ok(featureCollection).build();
@@ -134,9 +134,9 @@ public class RideSystemDomainResource {
 	public Response offerRide(RideOfferInfo rideOfferInfo){
 	
 		RideSystemDomainService rideSystemDomainService = new RideSystemDomainService();
-		List<Integer> rideIds = rideSystemDomainService.offerRide(rideOfferInfo);
+		List<Long> rideIds = rideSystemDomainService.offerRide(rideOfferInfo);
 		FeatureCollection featureCollection = new FeatureCollection();
-		for (Integer id : rideIds) {
+		for (Long id : rideIds) {
 			FeatureCollection rideFeatureCollection = rideSystemDomainService.getRidePoints(id);
 			featureCollection.addAll(rideFeatureCollection.getFeatures());
 		}
@@ -151,7 +151,7 @@ public class RideSystemDomainResource {
 	 */
 	@GET
 	@Path("/ride/search/{rideRequestId}")
-	public Response getMatchingRides(@PathParam("rideRequestId") int rideRequestId){
+	public Response getMatchingRides(@PathParam("rideRequestId") long rideRequestId){
 		RideSystemDomainService rideSystemDomainService = new RideSystemDomainService();
 		FeatureCollection featureCollection = rideSystemDomainService.getMatchingRides(rideRequestId);
 		return Response.ok(featureCollection).build();		
@@ -167,7 +167,7 @@ public class RideSystemDomainResource {
 	public Response requestRide(RideRequest rideRequest){
 		
 		RideSystemDomainService rideSystemDomainService = new RideSystemDomainService();
-		int id = rideSystemDomainService.requestRide(rideRequest);
+		long id = rideSystemDomainService.requestRide(rideRequest);
 		FeatureCollection featureCollection = rideSystemDomainService.getRideRequestPoints(id);
 		return Response.ok().entity(featureCollection).build();
 		
@@ -184,7 +184,7 @@ public class RideSystemDomainResource {
 	 */
 	@GET
 	@Path("/riderequest/search/{rideId}/{lastSearchDistance}/{lastResultIndex}")
-	public Response getMatchingRideRequests(@PathParam("rideId") int rideId, @PathParam("lastSearchDistance")  double lastSearchDistance, 
+	public Response getMatchingRideRequests(@PathParam("rideId") long rideId, @PathParam("lastSearchDistance")  double lastSearchDistance, 
 											@PathParam("lastResultIndex") int lastResultIndex){
 	
 		RideSystemDomainService rideSystemDomainService = new RideSystemDomainService();

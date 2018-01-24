@@ -5,13 +5,19 @@ import java.util.HashSet;
 
 public class MembershipForm {
 
-	private int id;
+	private long id;
 	//This would be visible to all group members e.g. employee id, flat number etc
 	//This should not be changed but if required then all members needs to update their identifier details
 	private String userUniqueIdentifierName;
 	private Collection<String> questions = new HashSet<String>();
 	private String remark;
 	
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public Collection<String> getQuestions() {
 		return questions;
 	}
@@ -24,12 +30,6 @@ public class MembershipForm {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	public String getUserUniqueIdentifierName() {
 		return userUniqueIdentifierName;
 	}
@@ -40,10 +40,7 @@ public class MembershipForm {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
-		result = prime * result + ((questions == null) ? 0 : questions.hashCode());
-		result = prime * result + ((remark == null) ? 0 : remark.hashCode());
-		result = prime * result + ((userUniqueIdentifierName == null) ? 0 : userUniqueIdentifierName.hashCode());
+		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
 	@Override
@@ -59,27 +56,6 @@ public class MembershipForm {
 		}
 		MembershipForm other = (MembershipForm) obj;
 		if (id != other.id) {
-			return false;
-		}
-		if (questions == null) {
-			if (other.questions != null) {
-				return false;
-			}
-		} else if (!questions.equals(other.questions)) {
-			return false;
-		}
-		if (remark == null) {
-			if (other.remark != null) {
-				return false;
-			}
-		} else if (!remark.equals(other.remark)) {
-			return false;
-		}
-		if (userUniqueIdentifierName == null) {
-			if (other.userUniqueIdentifierName != null) {
-				return false;
-			}
-		} else if (!userUniqueIdentifierName.equals(other.userUniqueIdentifierName)) {
 			return false;
 		}
 		return true;

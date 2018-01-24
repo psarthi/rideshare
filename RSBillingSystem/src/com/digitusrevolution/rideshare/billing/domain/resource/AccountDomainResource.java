@@ -14,13 +14,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.billing.domain.service.AccountDomainService;
-import com.digitusrevolution.rideshare.common.inf.DomainResource;
+import com.digitusrevolution.rideshare.common.inf.DomainResourceInteger;
+import com.digitusrevolution.rideshare.common.inf.DomainResourceLong;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 
 @Path("/domain/accounts")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class AccountDomainResource implements DomainResource<Account>{
+public class AccountDomainResource implements DomainResourceLong<Account>{
 	
 	/**
 	 * 
@@ -32,7 +33,7 @@ public class AccountDomainResource implements DomainResource<Account>{
 	public Response createVirtualAccount(){
 		
 		AccountDomainService accountDomainService = new AccountDomainService();
-		int number = accountDomainService.createVirtualAccount();
+		long number = accountDomainService.createVirtualAccount();
 		//Reason for doing get post create so that we get different transaction
 		Account account = accountDomainService.get(number, true);
 		return Response.ok(account).build();
@@ -41,7 +42,7 @@ public class AccountDomainResource implements DomainResource<Account>{
 	@Override
 	@GET
 	@Path("/{number}")
-	public Response get(@PathParam("number") int number, @QueryParam("fetchChild") String fetchChild){
+	public Response get(@PathParam("number") long number, @QueryParam("fetchChild") String fetchChild){
 		AccountDomainService accountDomainService = new AccountDomainService();
 		Account account = accountDomainService.get(number, Boolean.valueOf(fetchChild));
 		return Response.ok(account).build();

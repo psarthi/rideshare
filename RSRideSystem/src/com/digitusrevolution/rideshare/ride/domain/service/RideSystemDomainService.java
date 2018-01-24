@@ -37,7 +37,7 @@ import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
 
 public class RideSystemDomainService {
-
+	
 	private static final Logger logger = LogManager.getLogger(RideSystemDomainService.class.getName());
 
 	/*
@@ -52,11 +52,11 @@ public class RideSystemDomainService {
 	 * 
 	 * 
 	 */
-	public List<Integer> offerRide(RideOfferInfo rideOfferInfo){
+	public List<Long> offerRide(RideOfferInfo rideOfferInfo){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		List<Integer> rideIds = null;
+		List<Long> rideIds = null;
 		try {
 			transaction = session.beginTransaction();
 
@@ -109,11 +109,11 @@ public class RideSystemDomainService {
 		return rideIds;
 	}
 
-	public int requestRide(RideRequest rideRequest){
+	public long requestRide(RideRequest rideRequest){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		int id =0;
+		long id =0;
 		try {
 			transaction = session.beginTransaction();
 
@@ -198,7 +198,7 @@ public class RideSystemDomainService {
 		return featureCollection;	
 	}
 
-	public FeatureCollection getRidePoints(int rideId){
+	public FeatureCollection getRidePoints(long rideId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		FeatureCollection featureCollection = new FeatureCollection();
@@ -253,7 +253,7 @@ public class RideSystemDomainService {
 
 	}
 
-	public FeatureCollection getRideRequestPoints(int rideRequestId) {
+	public FeatureCollection getRideRequestPoints(long rideRequestId) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		FeatureCollection featureCollection = new FeatureCollection();
@@ -280,7 +280,7 @@ public class RideSystemDomainService {
 		return featureCollection;	
 	}
 
-	public FeatureCollection getMatchingRides(int rideRequestId){
+	public FeatureCollection getMatchingRides(long rideRequestId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		FeatureCollection featureCollection = new FeatureCollection();
@@ -307,7 +307,7 @@ public class RideSystemDomainService {
 		return featureCollection;	
 	}
 
-	public FeatureCollection getMatchingRideRequests(int rideId,double lastSearchDistance, int lastResultIndex){
+	public FeatureCollection getMatchingRideRequests(long rideId,double lastSearchDistance, int lastResultIndex){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	

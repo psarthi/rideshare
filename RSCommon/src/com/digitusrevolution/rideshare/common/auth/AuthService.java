@@ -44,7 +44,7 @@ public class AuthService implements AuthServiceInf{
 	}
 	
 
-	public String getToken(int userId) {
+	public String getToken(long userId) {
 
 		Map<String, Object> claims = new HashMap<>();
 		claims.put(ID_KEY,String.valueOf(userId));

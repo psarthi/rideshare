@@ -7,18 +7,18 @@ import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
-import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
+import com.digitusrevolution.rideshare.common.inf.DomainObjectPKLong;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
 import com.digitusrevolution.rideshare.common.mapper.user.MembershipRequestMapper;
 import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 
-public class MembershipRequestDO implements DomainObjectPKInteger<MembershipRequest>{
+public class MembershipRequestDO implements DomainObjectPKLong<MembershipRequest>{
 
 	private MembershipRequest membershipRequest;
 	private MembershipRequestEntity membershipRequestEntity;
 	private MembershipRequestMapper membershipRequestMapper;
-	private GenericDAO<MembershipRequestEntity, Integer> genericDAO;
+	private GenericDAO<MembershipRequestEntity, Long> genericDAO;
 
 	public void setMembershipRequest(MembershipRequest membershipRequest) {
 		this.membershipRequest = membershipRequest;
@@ -64,14 +64,14 @@ public class MembershipRequestDO implements DomainObjectPKInteger<MembershipRequ
 	}
 
 	@Override
-	public int create(MembershipRequest membershipRequest) {
+	public long create(MembershipRequest membershipRequest) {
 		setMembershipRequest(membershipRequest);
-		int id = genericDAO.create(membershipRequestEntity);
+		long id = genericDAO.create(membershipRequestEntity);
 		return id;
 	}
 
 	@Override
-	public MembershipRequest get(int id) {
+	public MembershipRequest get(long id) {
 		membershipRequestEntity = genericDAO.get(id);
 		if (membershipRequestEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);
@@ -81,14 +81,14 @@ public class MembershipRequestDO implements DomainObjectPKInteger<MembershipRequ
 	}
 
 	@Override
-	public MembershipRequest getAllData(int id) {
+	public MembershipRequest getAllData(long id) {
 		get(id);
 		fetchChild();
 		return membershipRequest;
 	}
 
 	@Override
-	public void delete(int id) {
+	public void delete(long id) {
 		membershipRequest = get(id);
 		setMembershipRequest(membershipRequest);
 		genericDAO.delete(membershipRequestEntity);			

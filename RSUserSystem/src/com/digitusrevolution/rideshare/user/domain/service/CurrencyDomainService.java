@@ -8,11 +8,11 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
-import com.digitusrevolution.rideshare.common.inf.DomainService;
+import com.digitusrevolution.rideshare.common.inf.DomainServiceInteger;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.user.domain.CurrencyDO;
 
-public class CurrencyDomainService implements DomainService<Currency>{
+public class CurrencyDomainService implements DomainServiceInteger<Currency>{
 
 	private static final Logger logger = LogManager.getLogger(CurrencyDomainService.class.getName());
 

@@ -60,7 +60,7 @@ import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
 public class GroupEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
+	private long id;
 	private String name;
 	@OneToOne(cascade=CascadeType.ALL)
 	private PhotoEntity photo;
@@ -87,10 +87,10 @@ public class GroupEntity {
 	private int genuineVotes;
 	private int fakeVotes;
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public String getName() {
@@ -175,9 +175,7 @@ public class GroupEntity {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((owner == null) ? 0 : owner.hashCode());
+		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
 	@Override
@@ -193,20 +191,6 @@ public class GroupEntity {
 		}
 		GroupEntity other = (GroupEntity) obj;
 		if (id != other.id) {
-			return false;
-		}
-		if (name == null) {
-			if (other.name != null) {
-				return false;
-			}
-		} else if (!name.equals(other.name)) {
-			return false;
-		}
-		if (owner == null) {
-			if (other.owner != null) {
-				return false;
-			}
-		} else if (!owner.equals(other.owner)) {
 			return false;
 		}
 		return true;

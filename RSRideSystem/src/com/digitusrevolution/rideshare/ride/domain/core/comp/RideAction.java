@@ -68,6 +68,9 @@ public class RideAction {
 	/*
 	 * Purpose - Accept ride request
 	 * 
+	 * Note - We are passing ride and rideRequest instead of getting the same within this function, so that we can maintain the sanity of the data
+	 * and perform multiple operation within the same transaction. Otherwise what happens until we commit transaction we don't get updated data
+	 * 
 	 * High level logic -
 	 * 
 	 * - Check status of ride request to see if its still looking for ride i.e. its unfulfilled
@@ -84,15 +87,15 @@ public class RideAction {
 	 * - If its equal, change the status of ride to fulfilled
 	 * 
 	 */
-	public void acceptRideRequest(MatchedTripInfo matchedTripInfo){
+	public void acceptRideRequest(Ride ride, RideRequest rideRequest, MatchedTripInfo matchedTripInfo){
 		logger.debug("Accept Ride Request Request for [Ride Id/Ride Request Id]:"+matchedTripInfo.getRideId()+","+matchedTripInfo.getRideRequestId());
-		int rideId = matchedTripInfo.getRideId();
-		int rideRequestId = matchedTripInfo.getRideRequestId();
-		Ride ride = rideDO.getAllData(rideId);
+		long rideId = matchedTripInfo.getRideId();
+		long rideRequestId = matchedTripInfo.getRideRequestId();
+		//Ride ride = rideDO.getAllData(rideId);
 		RideStatus rideStatus = ride.getStatus();
 		RideSeatStatus rideSeatStatus = ride.getSeatStatus();
 		RideRequestDO rideRequestDO = new RideRequestDO();
-		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
+		//RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
 		RideRequestStatus rideRequestStatus = rideRequest.getStatus();
 
 		int seatOccupied = 0;
@@ -118,6 +121,10 @@ public class RideAction {
 					//Note - By adding the ride request in the getAcceptedRideRequests collection, it will not update the ride id in the ride request table
 					//as ride is acceptedRideRequests relationship is owned by ride request entity and not ride (@OneToMany(mappedBy="acceptedRide"))
 					rideRequest.setAcceptedRide(ride);
+					//This will just help us to maintain the sanity of data within the transaction so that we can perform more actions within this transaction itself
+					//But yes, as mentioned above this will not add ride to ride request for that you need to setAcceptedRide only 
+					ride.getAcceptedRideRequests().add(rideRequest);
+					
 					//Change ride request status to accept status
 					rideRequest.setStatus(RideRequestStatus.Fulfilled);
 					//Set Ride Pickup & Drop Points
@@ -343,7 +350,7 @@ public class RideAction {
 	 * as well as it will give flexibility to modify this function without worrying about updating both side references
 	 * e.g ride should be updated with ride request and vice versa
 	 */
-	public void rejectRideRequest(int rideId, int rideRequestId){
+	public void rejectRideRequest(long rideId, long rideRequestId){
 
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
@@ -368,7 +375,7 @@ public class RideAction {
 	 * e.g ride should be updated with ride request and vice versa
 	 * 
 	 */
-	public void startRide(int rideId){
+	public void startRide(long rideId){
 		logger.debug("Start Ride:"+rideId);
 		//Get child else child properties would get deleted while updating, as Ride Passenger has cascade enabled
 		Ride ride = rideDO.getAllData(rideId);
@@ -395,7 +402,7 @@ public class RideAction {
 	 * as updated ride request would not come into effect until we commit the transaction
 	 * 
 	 */
-	public void pickupPassenger(int rideId, int rideRequestId){
+	public void pickupPassenger(long rideId, long rideRequestId){
 		logger.debug("Pickup Passenger for Ride Id/Ride RequestId:"+rideId+","+rideRequestId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
@@ -442,7 +449,7 @@ public class RideAction {
 	 * as updated ride request would not come into effect until we commit the transaction
 	 * 
 	 */
-	public void dropPassenger(int rideId, int rideRequestId, RideMode rideMode, String paymentCode){
+	public void dropPassenger(long rideId, long rideRequestId, RideMode rideMode, String paymentCode){
 		logger.debug("Drop Passenger for Ride Id/Ride RequestId:"+rideId+","+rideRequestId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
@@ -521,7 +528,7 @@ public class RideAction {
 	 * as updated ride request would not come into effect until we commit the transaction
 	 * 
 	 */
-	public void endRide(int rideId){
+	public void endRide(long rideId){
 		logger.debug("Ending Ride:"+rideId);
 		Ride ride = rideDO.getAllData(rideId);
 		RideStatus rideStatus = ride.getStatus();
@@ -608,7 +615,7 @@ public class RideAction {
 	 * e.g ride should be updated with ride request and vice versa
 	 * 
 	 */
-	public void cancelAcceptedRideRequest(int rideId, int rideRequestId, CancellationType cancellationType){
+	public void cancelAcceptedRideRequest(long rideId, long rideRequestId, CancellationType cancellationType){
 		logger.debug("Cancelling Accepted Ride Request - ride Id/Ride Request Id:"+rideId+","+rideRequestId);
 		RidesInfo ridesInfo = new RidesInfo();
 		Ride ride = rideDO.getAllData(rideId);
@@ -715,7 +722,7 @@ public class RideAction {
 	 * e.g ride should be updated with ride request and vice versa
 	 * 
 	 */
-	public void cancelRide(int rideId){
+	public void cancelRide(long rideId){
 		logger.debug("Cancelling Ride:"+rideId);
 		Ride ride = rideDO.getAllData(rideId);
 		RideStatus rideStatus = ride.getStatus();

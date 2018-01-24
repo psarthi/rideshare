@@ -7,18 +7,18 @@ import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
-import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
+import com.digitusrevolution.rideshare.common.inf.DomainObjectPKLong;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RidePassengerMapper;
 import com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
 
-public class RidePassengerDO implements DomainObjectPKInteger<RidePassenger>{
+public class RidePassengerDO implements DomainObjectPKLong<RidePassenger>{
 	
 	private RidePassenger ridePassenger;
 	private RidePassengerEntity ridePassengerEntity;
 	private RidePassengerMapper ridePassengerMapper;
-	private GenericDAO<RidePassengerEntity, Integer> genericDAO;
+	private GenericDAO<RidePassengerEntity, Long> genericDAO;
 	
 	public RidePassengerDO() {
 		ridePassenger = new RidePassenger();
@@ -63,14 +63,14 @@ public class RidePassengerDO implements DomainObjectPKInteger<RidePassenger>{
 	}
 
 	@Override
-	public int create(RidePassenger ridePassenger) {
+	public long create(RidePassenger ridePassenger) {
 		setRidePassenger(ridePassenger);
-		int id = genericDAO.create(ridePassengerEntity);
+		long id = genericDAO.create(ridePassengerEntity);
 		return id;
 	}
 
 	@Override
-	public RidePassenger get(int id) {
+	public RidePassenger get(long id) {
 		ridePassengerEntity = genericDAO.get(id);
 		if (ridePassengerEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);
@@ -80,14 +80,14 @@ public class RidePassengerDO implements DomainObjectPKInteger<RidePassenger>{
 	}
 
 	@Override
-	public RidePassenger getAllData(int id) {
+	public RidePassenger getAllData(long id) {
 		get(id);
 		fetchChild();
 		return ridePassenger;
 	}
 
 	@Override
-	public void delete(int id) {
+	public void delete(long id) {
 		ridePassenger = get(id);
 		setRidePassenger(ridePassenger);
 		genericDAO.delete(ridePassengerEntity);		

@@ -8,18 +8,19 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
-import com.digitusrevolution.rideshare.common.inf.DomainService;
+import com.digitusrevolution.rideshare.common.inf.DomainServiceInteger;
+import com.digitusrevolution.rideshare.common.inf.DomainServiceLong;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.user.domain.core.GroupDO;
 import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
-public class GroupDomainService implements DomainService<Group>{
+public class GroupDomainService implements DomainServiceLong<Group>{
 
 	private static final Logger logger = LogManager.getLogger(GroupDomainService.class.getName());
 	
 	@Override
-	public Group get(int id, boolean fetchChild) {
+	public Group get(long id, boolean fetchChild) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		Group group = null;

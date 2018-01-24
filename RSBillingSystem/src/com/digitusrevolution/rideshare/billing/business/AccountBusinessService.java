@@ -16,7 +16,7 @@ public class AccountBusinessService {
 
 	private static final Logger logger = LogManager.getLogger(AccountBusinessService.class.getName());
 
-	public void addMoneyToWallet(int accountNumber, float amount) {
+	public void addMoneyToWallet(long accountNumber, float amount) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -41,7 +41,7 @@ public class AccountBusinessService {
 		}
 	}
 	
-	public void redeemFromWallet(int accountNumber, float amount) {
+	public void redeemFromWallet(long accountNumber, float amount) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -66,7 +66,7 @@ public class AccountBusinessService {
 		}
 	}
 	
-	public List<com.digitusrevolution.rideshare.model.billing.domain.core.Transaction> getTransactions(int accountNumber, int page) {
+	public List<com.digitusrevolution.rideshare.model.billing.domain.core.Transaction> getTransactions(long accountNumber, int page) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		List<com.digitusrevolution.rideshare.model.billing.domain.core.Transaction> transactions = new ArrayList<>();

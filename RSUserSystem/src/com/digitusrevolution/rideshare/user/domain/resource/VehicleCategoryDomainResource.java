@@ -12,14 +12,14 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.digitusrevolution.rideshare.common.inf.DomainResource;
+import com.digitusrevolution.rideshare.common.inf.DomainResourceInteger;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.user.domain.service.VehicleCategoryDomainService;
 
 @Path("/domain/vehiclecategories")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class VehicleCategoryDomainResource implements DomainResource<VehicleCategory>{
+public class VehicleCategoryDomainResource implements DomainResourceInteger<VehicleCategory>{
 
 	@GET
 	@Path("/{id}")

@@ -2,9 +2,9 @@ package com.digitusrevolution.rideshare.common.inf;
 
 import java.util.List;
 
-public interface DomainService<M> {
+public interface DomainServiceLong<M> {
 
-	M get(int id, boolean fetchChild);
+	M get(long id, boolean fetchChild);
 
 	List<M> getAll();
 }

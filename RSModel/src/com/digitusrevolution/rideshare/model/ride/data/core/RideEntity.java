@@ -37,7 +37,7 @@ import com.digitusrevolution.rideshare.model.user.domain.Sex;
 public class RideEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
+	private long id;
 	private ZonedDateTime startTime;
 	private ZonedDateTime endTime;
 	//We need to store just ridePointId in Hibernate as ridepoint is getting stored in MonogoDB
@@ -88,17 +88,18 @@ public class RideEntity {
 	@Enumerated(EnumType.STRING)
 	private RideMode rideMode;
 	
+
 	public RideMode getRideMode() {
 		return rideMode;
 	}
-	public void setRideMode(RideMode rideMode) {
-		this.rideMode = rideMode;
-	}
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
+	}
+	public void setRideMode(RideMode rideMode) {
+		this.rideMode = rideMode;
 	}
 	public ZonedDateTime getStartTime() {
 		return startTime;
@@ -200,7 +201,7 @@ public class RideEntity {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
+		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
 	@Override

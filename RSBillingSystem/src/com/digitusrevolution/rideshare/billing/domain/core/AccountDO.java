@@ -4,6 +4,6 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Remark;
 
 public interface AccountDO {
 
-	public void debit(int accountNumber, float amount, Remark remark);
-	public void credit(int accountNumber, float amount, Remark remark);
+	public void debit(long accountNumber, float amount, Remark remark);
+	public void credit(long accountNumber, float amount, Remark remark);
 }

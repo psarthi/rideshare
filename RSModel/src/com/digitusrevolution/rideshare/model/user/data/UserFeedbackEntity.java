@@ -17,7 +17,7 @@ public class UserFeedbackEntity{
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
+	private long id;
 	@OneToOne
 	private UserEntity forUser;
 	@OneToOne
@@ -29,10 +29,10 @@ public class UserFeedbackEntity{
 	@OneToOne
 	private RideRequestEntity rideRequest;
 	
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public float getRating() {
@@ -60,6 +60,7 @@ public class UserFeedbackEntity{
 		int result = 1;
 		result = prime * result + ((forUser == null) ? 0 : forUser.hashCode());
 		result = prime * result + ((givenByUser == null) ? 0 : givenByUser.hashCode());
+		result = prime * result + Float.floatToIntBits(rating);
 		result = prime * result + ((ride == null) ? 0 : ride.hashCode());
 		result = prime * result + ((rideRequest == null) ? 0 : rideRequest.hashCode());
 		return result;
@@ -88,6 +89,9 @@ public class UserFeedbackEntity{
 				return false;
 			}
 		} else if (!givenByUser.equals(other.givenByUser)) {
+			return false;
+		}
+		if (Float.floatToIntBits(rating) != Float.floatToIntBits(other.rating)) {
 			return false;
 		}
 		if (ride == null) {

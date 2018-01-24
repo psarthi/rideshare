@@ -16,9 +16,9 @@ public class RemarkEntity {
 	private String message;
 	private String paidBy;
 	private String paidTo;
-	private int billNumber;
-	private int rideId;
-	private int rideRequestId;
+	private long billNumber;
+	private long rideId;
+	private long rideRequestId;
 	
 	public String getMessage() {
 		return message;
@@ -38,29 +38,29 @@ public class RemarkEntity {
 	public void setPaidTo(String paidTo) {
 		this.paidTo = paidTo;
 	}
-	public int getBillNumber() {
-		return billNumber;
-	}
-	public void setBillNumber(int billNumber) {
-		this.billNumber = billNumber;
-	}
-	public int getRideId() {
-		return rideId;
-	}
-	public void setRideId(int rideId) {
-		this.rideId = rideId;
-	}
-	public int getRideRequestId() {
-		return rideRequestId;
-	}
-	public void setRideRequestId(int rideRequestId) {
-		this.rideRequestId = rideRequestId;
-	}
 	public Purpose getPurpose() {
 		return purpose;
 	}
 	public void setPurpose(Purpose purpose) {
 		this.purpose = purpose;
+	}
+	public long getBillNumber() {
+		return billNumber;
+	}
+	public void setBillNumber(long billNumber) {
+		this.billNumber = billNumber;
+	}
+	public long getRideId() {
+		return rideId;
+	}
+	public void setRideId(long rideId) {
+		this.rideId = rideId;
+	}
+	public long getRideRequestId() {
+		return rideRequestId;
+	}
+	public void setRideRequestId(long rideRequestId) {
+		this.rideRequestId = rideRequestId;
 	}
 	
 	

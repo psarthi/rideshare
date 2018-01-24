@@ -6,7 +6,7 @@ import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 
 public class Vehicle {
 
-	private int id;
+	private long id;
 	private String registrationNumber;
 	private String model;
 	private int seatCapacity;
@@ -15,6 +15,14 @@ public class Vehicle {
 	private VehicleSubCategory vehicleSubCategory;
 	private Photo photo;
 	
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
 	public String getRegistrationNumber() {
 		return registrationNumber;
 	}
@@ -47,14 +55,6 @@ public class Vehicle {
 		this.smallLuggageCapacity = smallLuggageCapacity;
 	}
 
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
 	public VehicleSubCategory getVehicleSubCategory() {
 		return vehicleSubCategory;
 	}
@@ -83,9 +83,7 @@ public class Vehicle {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
-		result = prime * result + ((vehicleCategory == null) ? 0 : vehicleCategory.hashCode());
-		result = prime * result + ((vehicleSubCategory == null) ? 0 : vehicleSubCategory.hashCode());
+		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
 
@@ -102,20 +100,6 @@ public class Vehicle {
 		}
 		Vehicle other = (Vehicle) obj;
 		if (id != other.id) {
-			return false;
-		}
-		if (vehicleCategory == null) {
-			if (other.vehicleCategory != null) {
-				return false;
-			}
-		} else if (!vehicleCategory.equals(other.vehicleCategory)) {
-			return false;
-		}
-		if (vehicleSubCategory == null) {
-			if (other.vehicleSubCategory != null) {
-				return false;
-			}
-		} else if (!vehicleSubCategory.equals(other.vehicleSubCategory)) {
 			return false;
 		}
 		return true;

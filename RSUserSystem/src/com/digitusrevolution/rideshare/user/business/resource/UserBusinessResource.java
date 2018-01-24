@@ -60,7 +60,7 @@ public class UserBusinessResource {
 	public Response registerUser(UserRegistration userRegistration){
 		
 		UserBusinessService userBusinessService = new UserBusinessService();
-		int userId = userBusinessService.registerUser(userRegistration);
+		long userId = userBusinessService.registerUser(userRegistration);
 		if (userId!=0) {
 			//This is very important - Below code can't be placed in registerUser function in business service class as until n unless transaction is committed, 
 			//user information is not available from RideSystem which is trying to fetch upcoming ride related information on REST call. So by putting the statement below
@@ -112,7 +112,7 @@ public class UserBusinessResource {
 	 */
 	@POST
 	@Path("/{id}/accounts")
-	public Response addAccount(@PathParam("id") int userId, Account account){
+	public Response addAccount(@PathParam("id") long userId, Account account){
 
 		UserBusinessService userBusinessService = new UserBusinessService();
 		userBusinessService.addAccount(userId, account);
@@ -128,7 +128,7 @@ public class UserBusinessResource {
 	 */
 	@GET
 	@Path("/{id}/potentialfriends")
-	public Response findAllPotentialFriendsBasedOnEmailOrMobile(@PathParam("id") int userId, 
+	public Response findAllPotentialFriendsBasedOnEmailOrMobile(@PathParam("id") long userId, 
 			@QueryParam("emailIds") List<String> emailIds, 
 			@QueryParam("mobileNumbers") List<String> mobileNumbers){
 		
@@ -146,7 +146,7 @@ public class UserBusinessResource {
 	 */
 	@POST
 	@Path("/{id}/friendrequest")
-	public Response sendFriendRequest(@PathParam("id") int userId, List<User> friends){
+	public Response sendFriendRequest(@PathParam("id") long userId, List<User> friends){
 		UserBusinessService userBusinessService = new UserBusinessService();
 		userBusinessService.sendFriendRequest(userId, friends);
 		return Response.ok().build();
@@ -160,7 +160,7 @@ public class UserBusinessResource {
 	 */
 	@POST
 	@Path("/{id}/acceptfriendRequest/{friendUserId}")
-	public Response acceptFriendRequest(@PathParam("id") int userId, @PathParam("friendUserId") int friendUserId){
+	public Response acceptFriendRequest(@PathParam("id") long userId, @PathParam("friendUserId") long friendUserId){
 		UserBusinessService userBusinessService = new UserBusinessService();
 		userBusinessService.acceptFriendRequest(userId, friendUserId);
 		return Response.ok().build();		
@@ -174,7 +174,7 @@ public class UserBusinessResource {
 	 */
 	@POST
 	@Path("/{id}/rejectfriendrequest/{friendUserId}")
-	public Response rejectFriendRequest(@PathParam("id") int userId, @PathParam("friendUserId") int friendUserId){
+	public Response rejectFriendRequest(@PathParam("id") long userId, @PathParam("friendUserId") long friendUserId){
 		UserBusinessService userBusinessService = new UserBusinessService();
 		userBusinessService.rejectFriendRequest(userId, friendUserId);
 		return Response.ok().build();
@@ -280,7 +280,7 @@ public class UserBusinessResource {
 	 */
 	@POST
 	@Path("/{id}/preference")
-	public Response updateUserPrefernce(@PathParam("id") int userId, Preference preference){
+	public Response updateUserPrefernce(@PathParam("id") long userId, Preference preference){
 		UserBusinessService userBusinessService = new UserBusinessService();
 		userBusinessService.updateUserPreference(userId, preference);
 		UserDomainService userDomainService = new UserDomainService();
@@ -291,7 +291,7 @@ public class UserBusinessResource {
 
 	@GET
 	@Path("/{id}")
-	public Response get(@PathParam("id") int id, @QueryParam("fetchChild") String fetchChild){
+	public Response get(@PathParam("id") long id, @QueryParam("fetchChild") String fetchChild){
 		UserBusinessService userBusinessService = new UserBusinessService();
 		FullUser user = userBusinessService.get(id, Boolean.valueOf(fetchChild));
 		return Response.ok(user).build();
@@ -304,7 +304,7 @@ public class UserBusinessResource {
 	 */
 	@POST
 	@Path("/{userId}/feedback")
-	public Response addUserFeedback(@PathParam("userId") int userId, UserFeedbackInfo userFeedbackInfo, @QueryParam("rideType") RideType rideType) {
+	public Response addUserFeedback(@PathParam("userId") long userId, UserFeedbackInfo userFeedbackInfo, @QueryParam("rideType") RideType rideType) {
 		UserBusinessService userBusinessService = new UserBusinessService();
 		userBusinessService.addUserFeedback(userId, userFeedbackInfo);
 		//We are fetching the updated Ride / Ride Request so that we can refresh the page accordingly
@@ -321,7 +321,7 @@ public class UserBusinessResource {
 	
 	@GET
 	@Path("/{signedInUserId}/profile/{userId}")
-	public Response getUserProfile(@PathParam("signedInUserId") int signedInUserId, @PathParam("userId") int userId) {
+	public Response getUserProfile(@PathParam("signedInUserId") long signedInUserId, @PathParam("userId") long userId) {
 		UserBusinessService userBusinessService = new UserBusinessService();
 		UserProfile userProfile = userBusinessService.getUserProfile(userId, signedInUserId);
 		return Response.ok(userProfile).build();
@@ -338,7 +338,7 @@ public class UserBusinessResource {
 	
 	@GET
 	@Path("/{userId}/membershiprequests")
-	public Response getUserMembershipRequests(@PathParam("userId") int userId, @QueryParam("page") int page){
+	public Response getUserMembershipRequests(@PathParam("userId") long userId, @QueryParam("page") int page){
 		UserBusinessService userBusinessService = new UserBusinessService();
 		List<BasicMembershipRequest> membershipRequests = userBusinessService.getUserMembershipRequests(userId, page);
 		GenericEntity<List<BasicMembershipRequest>> entity = new GenericEntity<List<BasicMembershipRequest>>(membershipRequests) {};

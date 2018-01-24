@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User implements Comparable<User>{
 	
-	private int id;
+	private long id;
 	private String firstName;
 	private String lastName;
 	private Sex sex;
@@ -47,6 +47,9 @@ public class User implements Comparable<User>{
 	private Collection<Account> accounts = new HashSet<Account>();
 	//@JsonIdentityReference(alwaysAsId=true)
 	private Collection<Ride> ridesOffered = new HashSet<Ride>();
+	//Imp - This would hold all rides which has matched and not taken
+	//TODO - Logically we can explore to remove this as well as we can get the same result from ride request 
+	//with passengerStatus column as well
 	private Collection<Ride> ridesTaken = new HashSet<Ride>();
 	private Collection<RideRequest> rideRequests = new HashSet<RideRequest>();
 	private Collection<Bill> bills = new HashSet<Bill>();
@@ -60,14 +63,13 @@ public class User implements Comparable<User>{
 	private Collection<MembershipRequest> membershipRequests = new HashSet<MembershipRequest>();
 	private RegistrationType registrationType;
 	
-	public int getId() {
+	
+	public long getId() {
 		return id;
 	}
-	
-	public void setId(int id) {
-		this.id = id;		
+	public void setId(long id) {
+		this.id = id;
 	}
-	
 	public String getFirstName() {
 		return firstName;
 	}
@@ -227,11 +229,7 @@ public class User implements Comparable<User>{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((email == null) ? 0 : email.hashCode());
-		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
-		result = prime * result + id;
-		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
-		result = prime * result + ((mobileNumber == null) ? 0 : mobileNumber.hashCode());
+		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
 
@@ -247,35 +245,7 @@ public class User implements Comparable<User>{
 			return false;
 		}
 		User other = (User) obj;
-		if (email == null) {
-			if (other.email != null) {
-				return false;
-			}
-		} else if (!email.equals(other.email)) {
-			return false;
-		}
-		if (firstName == null) {
-			if (other.firstName != null) {
-				return false;
-			}
-		} else if (!firstName.equals(other.firstName)) {
-			return false;
-		}
 		if (id != other.id) {
-			return false;
-		}
-		if (lastName == null) {
-			if (other.lastName != null) {
-				return false;
-			}
-		} else if (!lastName.equals(other.lastName)) {
-			return false;
-		}
-		if (mobileNumber == null) {
-			if (other.mobileNumber != null) {
-				return false;
-			}
-		} else if (!mobileNumber.equals(other.mobileNumber)) {
 			return false;
 		}
 		return true;
@@ -305,7 +275,7 @@ public class User implements Comparable<User>{
 		this.friendRequests = friendRequests;
 	}
 	
-	public FriendRequest getFriendRequest(int friendUserId){
+	public FriendRequest getFriendRequest(long friendUserId){
 		Collection<FriendRequest> friendRequests = getFriendRequests();
 		for (FriendRequest friendRequest : friendRequests) {
 			if (friendRequest.getFriend().getId() == friendUserId){

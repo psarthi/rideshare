@@ -8,16 +8,17 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
-import com.digitusrevolution.rideshare.common.inf.DomainService;
+import com.digitusrevolution.rideshare.common.inf.DomainServiceInteger;
+import com.digitusrevolution.rideshare.common.inf.DomainServiceLong;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 
-public class RideDomainService implements DomainService<Ride>{
+public class RideDomainService implements DomainServiceLong<Ride>{
 
 	private static final Logger logger = LogManager.getLogger(RideDomainService.class.getName());
 
 	@Override
-	public Ride get(int id, boolean fetchChild) {
+	public Ride get(long id, boolean fetchChild) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		Ride ride = null;

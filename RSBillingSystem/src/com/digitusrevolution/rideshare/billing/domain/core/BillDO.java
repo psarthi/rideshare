@@ -13,7 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.billing.data.BillDAO;
-import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
+import com.digitusrevolution.rideshare.common.inf.DomainObjectPKLong;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.BillMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
@@ -33,7 +33,7 @@ import com.digitusrevolution.rideshare.model.user.domain.FuelType;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
-public class BillDO implements DomainObjectPKInteger<Bill>{
+public class BillDO implements DomainObjectPKLong<Bill>{
 	
 	private Bill bill;
 	private BillEntity billEntity;
@@ -84,14 +84,14 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	}
 
 	@Override
-	public int create(Bill bill) {
+	public long create(Bill bill) {
 		setBill(bill);
-		int id = billDAO.create(billEntity);
+		long id = billDAO.create(billEntity);
 		return id;
 	}
 
 	@Override
-	public Bill get(int number) {
+	public Bill get(long number) {
 		billEntity = billDAO.get(number);
 		if (billEntity == null){
 			throw new NotFoundException("No Data found with number: "+number);
@@ -101,24 +101,24 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	}
 
 	@Override
-	public Bill getAllData(int number) {
+	public Bill getAllData(long number) {
 		get(number);
 		fetchChild();
 		return bill;
 	}
 
 	@Override
-	public void delete(int number) {
+	public void delete(long number) {
 		bill = get(number);
 		setBill(bill);
 		billDAO.delete(billEntity);
 	}
 	
-	private BillStatus getStatus(int billNumber){
+	private BillStatus getStatus(long billNumber){
 		return billDAO.getStatus(billNumber);
 	}
 	
-	public void approveBill(int billNumber){
+	public void approveBill(long billNumber){
 		bill = getAllData(billNumber);
 		if (bill.getStatus().equals(BillStatus.Pending) || bill.getStatus().equals(BillStatus.Rejected)){
 			bill.setStatus(BillStatus.Approved);
@@ -129,7 +129,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 
 	}
 	
-	public void rejectBill(int billNumber){
+	public void rejectBill(long billNumber){
 		bill = getAllData(billNumber);
 		if (bill.getStatus().equals(BillStatus.Pending)){
 			bill.setStatus(BillStatus.Rejected);
@@ -143,7 +143,7 @@ public class BillDO implements DomainObjectPKInteger<Bill>{
 	 * Purpose - Make payment to driver and company from Passenger account
 	 * 
 	 */
-	public Bill makePayment(int billNumber){
+	public Bill makePayment(long billNumber){
 		bill = getAllData(billNumber);
 		if (bill.getStatus().equals(BillStatus.Approved)){
 			float amount = bill.getAmount();

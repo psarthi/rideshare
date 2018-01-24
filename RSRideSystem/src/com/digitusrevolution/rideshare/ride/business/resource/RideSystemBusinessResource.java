@@ -23,7 +23,7 @@ public class RideSystemBusinessResource {
 	 */
 	@GET
 	@Path("/current/rides/{userId}")
-	public Response getCurrentRide(@PathParam("userId") int userId){
+	public Response getCurrentRide(@PathParam("userId") long userId){
 		RideSystemBusinessService rideSystemBusinessService = new RideSystemBusinessService();
 		FullRidesInfo fullRidesInfo = rideSystemBusinessService.getCurrentRides(userId);
 		return Response.ok().entity(fullRidesInfo).build();

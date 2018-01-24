@@ -42,11 +42,11 @@ public class UserBusinessService {
 	
 	private static final Logger logger = LogManager.getLogger(UserBusinessService.class.getName());
 	
-	public int registerUser(UserRegistration userRegistration){
+	public long registerUser(UserRegistration userRegistration){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		int id = 0;
+		long id = 0;
 		try {
 			transaction = session.beginTransaction();
 			
@@ -73,7 +73,7 @@ public class UserBusinessService {
 		return id;
 	}
 
-	public void addAccount(int userId, Account account){
+	public void addAccount(long userId, Account account){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		try {
@@ -98,7 +98,7 @@ public class UserBusinessService {
 		}	
 	}
 	
-	public List<User> findAllPotentialFriendsBasedOnEmailOrMobile(int userId, List<String> emailIds, List<String> mobileNumbers){
+	public List<User> findAllPotentialFriendsBasedOnEmailOrMobile(long userId, List<String> emailIds, List<String> mobileNumbers){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		List<User> users = null;
@@ -126,7 +126,7 @@ public class UserBusinessService {
 
 	}
 	
-	public void sendFriendRequest(int userId, List<User> friends){
+	public void sendFriendRequest(long userId, List<User> friends){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		try {
@@ -151,7 +151,7 @@ public class UserBusinessService {
 		}			
 	}
 	
-	public void acceptFriendRequest(int userId, int friendUserId){
+	public void acceptFriendRequest(long userId, long friendUserId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		try {
@@ -176,7 +176,7 @@ public class UserBusinessService {
 		}			
 	}
 	
-	public void rejectFriendRequest(int userId, int friendUserId){
+	public void rejectFriendRequest(long userId, long friendUserId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		try {
@@ -369,7 +369,7 @@ public class UserBusinessService {
 		return status;
 	}
 
-	public void updateUserPreference(int userId, Preference preference) {
+	public void updateUserPreference(long userId, Preference preference) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		try {
@@ -403,7 +403,7 @@ public class UserBusinessService {
 		}		
 	}
 	
-	public FullUser get(int id, boolean fetchChild){
+	public FullUser get(long id, boolean fetchChild){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		FullUser fullUser = null;
@@ -437,7 +437,7 @@ public class UserBusinessService {
 		return fullUser;
 	}
 	
-	public void addUserFeedback(int userId, UserFeedbackInfo userFeedbackInfo) {
+	public void addUserFeedback(long userId, UserFeedbackInfo userFeedbackInfo) {
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -473,7 +473,7 @@ public class UserBusinessService {
 		}
 	}
 	
-	public UserProfile getUserProfile(int userId, int signedInUserId) {
+	public UserProfile getUserProfile(long userId, long signedInUserId) {
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -501,7 +501,7 @@ public class UserBusinessService {
 		return userProfile;
 	}
 	
-	public List<GroupDetail> getGroups(int userId, GroupListType listType, int page){
+	public List<GroupDetail> getGroups(long userId, GroupListType listType, int page){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		List<GroupDetail> groupDetails = null;
@@ -560,7 +560,7 @@ public class UserBusinessService {
 		return basicUsers;
 	}
 	
-	public List<BasicMembershipRequest> getUserMembershipRequests(int userId, int page){
+	public List<BasicMembershipRequest> getUserMembershipRequests(long userId, int page){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		List<BasicMembershipRequest> requests = new LinkedList<>();

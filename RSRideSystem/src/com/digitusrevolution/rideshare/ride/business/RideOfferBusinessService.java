@@ -52,11 +52,11 @@ public class RideOfferBusinessService {
 	 * 
 	 * 
 	 */
-	public int offerRide(RideOfferInfo rideOfferInfo){
+	public long offerRide(RideOfferInfo rideOfferInfo){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		int rideId = 0;
+		long rideId = 0;
 		try {
 			transaction = session.beginTransaction();
 
@@ -65,7 +65,7 @@ public class RideOfferBusinessService {
 			GoogleDirection googleDirection = rideOfferInfo.getGoogleDirection();
 
 			RideDO rideDO = new RideDO();
-			List<Integer> rideIds = rideDO.offerRide(ride,googleDirection);
+			List<Long> rideIds = rideDO.offerRide(ride,googleDirection);
 			//This will get first ride ID
 			rideId = rideIds.get(0);
 			//Need to think on the logic of recurring ride
@@ -91,7 +91,7 @@ public class RideOfferBusinessService {
 	}
 
 
-	public RideOfferResult getRideOfferResult(int rideId){
+	public RideOfferResult getRideOfferResult(long rideId){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -127,7 +127,7 @@ public class RideOfferBusinessService {
 		return rideOfferResult;
 	}
 
-	public List<BasicRide> getRides(int driverId, int page){
+	public List<BasicRide> getRides(long driverId, int page){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		List<BasicRide> basicRides = new ArrayList<>();
@@ -158,7 +158,7 @@ public class RideOfferBusinessService {
 		return basicRides;
 	}
 
-	public FullRide getRide(int rideId){
+	public FullRide getRide(long rideId){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -187,7 +187,7 @@ public class RideOfferBusinessService {
 		return fullRide;
 	}
 
-	public FullRide getCurrentRide(int driverId){
+	public FullRide getCurrentRide(long driverId){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -217,7 +217,7 @@ public class RideOfferBusinessService {
 		return fullRide;
 	}
 
-	public void startRide(int rideId){
+	public void startRide(long rideId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -242,7 +242,7 @@ public class RideOfferBusinessService {
 		}
 	}
 
-	public void endRide(int rideId){
+	public void endRide(long rideId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -267,7 +267,7 @@ public class RideOfferBusinessService {
 		}
 	}
 
-	public void pickupPassenger(int rideId, int rideRequestId){
+	public void pickupPassenger(long rideId, long rideRequestId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -292,7 +292,7 @@ public class RideOfferBusinessService {
 		}
 	}
 
-	public void dropPassenger(int rideId, int rideRequestId, RideMode rideMode, String paymentCode){
+	public void dropPassenger(long rideId, long rideRequestId, RideMode rideMode, String paymentCode){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -317,7 +317,7 @@ public class RideOfferBusinessService {
 		}
 	}
 
-	public void cancelRide(int rideId){
+	public void cancelRide(long rideId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -342,7 +342,7 @@ public class RideOfferBusinessService {
 		}
 	}
 
-	public void cancelPassenger(int rideId, int rideRequestId, float rating){
+	public void cancelPassenger(long rideId, long rideRequestId, float rating){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -376,7 +376,7 @@ public class RideOfferBusinessService {
 		}
 	}
 
-	public boolean makePayment(int rideRequestId) {
+	public boolean makePayment(long rideRequestId) {
 
 		RideRequestDomainService rideRequestDomainService = new RideRequestDomainService();
 		RideRequest rideRequest = rideRequestDomainService.get(rideRequestId, true);

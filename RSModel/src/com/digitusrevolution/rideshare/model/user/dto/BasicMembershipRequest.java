@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties (ignoreUnknown=true)
 public class BasicMembershipRequest {
 
-	private int id;
+	private long id;
 	private BasicUser user;
 	private GroupDetail group; 
 	//This would be visible to all group members e.g. employee id, flat number etc
@@ -24,6 +24,12 @@ public class BasicMembershipRequest {
 	private String adminRemark;
 	private String userRemark;
 	
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public ApprovalStatus getStatus() {
 		return status;
 	}
@@ -35,12 +41,6 @@ public class BasicMembershipRequest {
 	}
 	public void setCreatedDateTime(ZonedDateTime createdDateTime) {
 		this.createdDateTime = createdDateTime;
-	}
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
 	}
 	public String getUserUniqueIdentifier() {
 		return userUniqueIdentifier;
@@ -64,8 +64,7 @@ public class BasicMembershipRequest {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
-		result = prime * result + ((user == null) ? 0 : user.hashCode());
+		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
 	@Override
@@ -81,13 +80,6 @@ public class BasicMembershipRequest {
 		}
 		BasicMembershipRequest other = (BasicMembershipRequest) obj;
 		if (id != other.id) {
-			return false;
-		}
-		if (user == null) {
-			if (other.user != null) {
-				return false;
-			}
-		} else if (!user.equals(other.user)) {
 			return false;
 		}
 		return true;

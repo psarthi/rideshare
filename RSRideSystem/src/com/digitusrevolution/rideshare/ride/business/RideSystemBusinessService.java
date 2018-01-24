@@ -26,7 +26,7 @@ public class RideSystemBusinessService {
 
 	private static final Logger logger = LogManager.getLogger(RideSystemBusinessService.class.getName());
 
-	public FullRidesInfo getCurrentRides(int userId) {
+	public FullRidesInfo getCurrentRides(long userId) {
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -58,13 +58,13 @@ public class RideSystemBusinessService {
 		return fullRidesInfo;
 	}
 
-	public boolean giveUserFeedback(int rideId, int rideRequestId, float rating, RideType rideType) {
+	public boolean giveUserFeedback(long rideId, long rideRequestId, float rating, RideType rideType) {
 		RideDO rideDO = new RideDO();
 		Ride ride = rideDO.get(rideId);
 		RideRequestDO requestDO = new RideRequestDO();
 		RideRequest rideRequest = requestDO.get(rideRequestId);
 		User givenByUser;
-		int forUserId;
+		long forUserId;
 		if (rideType.equals(RideType.OfferRide)) {
 			givenByUser = ride.getDriver();
 			forUserId = rideRequest.getPassenger().getId();

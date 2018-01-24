@@ -24,16 +24,16 @@ public class RidePassengerEntity {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
+	private long id;
 	@ManyToOne
 	private RideEntity ride;
 	@ManyToOne
 	private UserEntity passenger;
 	
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public RideEntity getRide() {
@@ -52,7 +52,7 @@ public class RidePassengerEntity {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
+		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + ((passenger == null) ? 0 : passenger.hashCode());
 		result = prime * result + ((ride == null) ? 0 : ride.hashCode());
 		return result;

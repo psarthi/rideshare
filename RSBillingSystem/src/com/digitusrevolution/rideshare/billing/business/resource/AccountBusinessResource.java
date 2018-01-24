@@ -30,7 +30,7 @@ public class AccountBusinessResource {
 	 */
 	@GET
 	@Path("/{accountNumber}/addmoney/{amount}")
-	public Response addMoneyToWallet(@PathParam("accountNumber") int accountNumber, @PathParam("amount") float amount) {
+	public Response addMoneyToWallet(@PathParam("accountNumber") long accountNumber, @PathParam("amount") float amount) {
 		AccountBusinessService accountBusinessService = new AccountBusinessService();
 		accountBusinessService.addMoneyToWallet(accountNumber, amount);
 		AccountDomainService accountDomainService = new AccountDomainService();
@@ -40,7 +40,7 @@ public class AccountBusinessResource {
 	
 	@GET
 	@Path("/{accountNumber}/redeem/{amount}")
-	public Response redeemFromWallet(@PathParam("accountNumber") int accountNumber, @PathParam("amount") float amount) {
+	public Response redeemFromWallet(@PathParam("accountNumber") long accountNumber, @PathParam("amount") float amount) {
 		AccountBusinessService accountBusinessService = new AccountBusinessService();
 		accountBusinessService.redeemFromWallet(accountNumber, amount);
 		AccountDomainService accountDomainService = new AccountDomainService();
@@ -51,7 +51,7 @@ public class AccountBusinessResource {
 	
 	@GET
 	@Path("/{accountNumber}/transactions")
-	public Response getTransactions(@PathParam("accountNumber") int accountNumber, @QueryParam("page") int page){
+	public Response getTransactions(@PathParam("accountNumber") long accountNumber, @QueryParam("page") int page){
 		AccountBusinessService accountBusinessService = new AccountBusinessService();
 		List<Transaction> transactions = accountBusinessService.getTransactions(accountNumber, page);
 		GenericEntity<List<Transaction>> entity = new GenericEntity<List<Transaction>>(transactions) {};

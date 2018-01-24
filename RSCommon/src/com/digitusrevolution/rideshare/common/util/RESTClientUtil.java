@@ -41,46 +41,46 @@ import com.digitusrevolution.rideshare.model.user.dto.UserFeedbackInfo;
  */
 public class RESTClientUtil {
 
-	public static User getUser(int id){
+	public static User getUser(long id){
 
 		RESTClientImpl<User> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_USER_URL");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(Integer.toString(id));
+		URI uri = uriBuilder.build(Long.toString(id));
 		Response response = restClientUtil.get(uri);
 		User user = response.readEntity(User.class);
 		return user;
 	}
 
-	public static Collection<Role> getRoles(int id){
+	public static Collection<Role> getRoles(long id){
 
 		RESTClientImpl<Role> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_USER_ROLE_URL");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(Integer.toString(id));
+		URI uri = uriBuilder.build(Long.toString(id));
 		Response response = restClientUtil.get(uri);		
 		Collection<Role> roles = response.readEntity(new GenericType<Collection<Role>>() {});
 		return roles;
 	}
 	
-	public static List<GroupDetail> getGroups(int id){
+	public static List<GroupDetail> getGroups(long id){
 
 		RESTClientImpl<Role> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_USER_GROUP_URL");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(Integer.toString(id));
+		URI uri = uriBuilder.build(Long.toString(id));
 		Response response = restClientUtil.get(uri);		
 		List<GroupDetail> groups = response.readEntity(new GenericType<List<GroupDetail>>() {});
 		return groups;
 	}
 	
 
-	public static Vehicle getVehicle(int userId, int vehicleId){
+	public static Vehicle getVehicle(long userId, long vehicleId){
 
 		RESTClientImpl<Vehicle> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_VEHICLE_URL");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(Integer.toString(userId),Integer.toString(vehicleId));
+		URI uri = uriBuilder.build(Long.toString(userId),Long.toString(vehicleId));
 		Response response = restClientUtil.get(uri);
 		Vehicle vehicle = response.readEntity(Vehicle.class);
 		return vehicle;
@@ -142,7 +142,7 @@ public class RESTClientUtil {
 		RESTClientImpl<VehicleCategory> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_VEHICLE_CATEGORY_URL");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(Integer.toString(id));
+		URI uri = uriBuilder.build(Long.toString(id));
 		Response response = restClientUtil.get(uri);
 		VehicleCategory vehicleCategory = response.readEntity(VehicleCategory.class);
 		return vehicleCategory;
@@ -153,19 +153,19 @@ public class RESTClientUtil {
 		RESTClientImpl<VehicleCategory> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_VEHICLE_SUB_CATEGORY_URL");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(Integer.toString(id));
+		URI uri = uriBuilder.build(Long.toString(id));
 		Response response = restClientUtil.get(uri);
 		VehicleSubCategory vehicleSubCategory = response.readEntity(VehicleSubCategory.class);
 		return vehicleSubCategory;
 	}
 
 	
-	public static Account getVirtualAccount(int number){
+	public static Account getVirtualAccount(long number){
 
 		RESTClientImpl<Account> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_VIRTUAL_ACCOUNT_URL");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(Integer.toString(number));
+		URI uri = uriBuilder.build(Long.toString(number));
 		Response response = restClientUtil.get(uri);
 		Account account= response.readEntity(Account.class);
 		return account;
@@ -176,7 +176,7 @@ public class RESTClientUtil {
 		RESTClientImpl<Currency> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_CURRENCY_URL");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(Integer.toString(id));
+		URI uri = uriBuilder.build(Long.toString(id));
 		Response response = restClientUtil.get(uri);
 		Currency currency= response.readEntity(Currency.class);
 		return currency;
@@ -187,7 +187,7 @@ public class RESTClientUtil {
 		RESTClientImpl<Currency> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_COMPANY_URL");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(Integer.toString(id));
+		URI uri = uriBuilder.build(Long.toString(id));
 		Response response = restClientUtil.get(uri);
 		Company company= response.readEntity(Company.class);
 		return company;
@@ -208,12 +208,12 @@ public class RESTClientUtil {
 		}
 	}
 	
-	public static FullRide getCurrentRide(int driverId){
+	public static FullRide getCurrentRide(long driverId){
 
 		RESTClientImpl<Ride> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_CURRENT_RIDE");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(Integer.toString(driverId));
+		URI uri = uriBuilder.build(Long.toString(driverId));
 		Response response = restClientUtil.get(uri);
 		if (response.getStatus() == Status.NOT_FOUND.getStatusCode()) {
 			return null;
@@ -222,12 +222,12 @@ public class RESTClientUtil {
 		return ride;
 	}
 	
-	public static FullRideRequest getCurrentRideRequest(int passengerId){
+	public static FullRideRequest getCurrentRideRequest(long passengerId){
 
 		RESTClientImpl<RideRequest> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_CURRENT_RIDE_REQUEST");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(Integer.toString(passengerId));
+		URI uri = uriBuilder.build(Long.toString(passengerId));
 		Response response = restClientUtil.get(uri);
 		if (response.getStatus() == Status.NOT_FOUND.getStatusCode()) {
 			return null;
@@ -248,11 +248,11 @@ public class RESTClientUtil {
 		return false;
 	}
 	
-	public static Account addMoneyToWallet(int accountNumber, float amount){
+	public static Account addMoneyToWallet(long accountNumber, float amount){
 		RESTClientImpl<Account> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("ADD_MONEY_TO_WALLET");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(Integer.toString(accountNumber), Float.toString(amount));
+		URI uri = uriBuilder.build(Long.toString(accountNumber), Float.toString(amount));
 		Response response = restClientUtil.get(uri);
 		if (response.getStatus() == Status.OK.getStatusCode()) {
 			Account account= response.readEntity(Account.class);
@@ -261,11 +261,11 @@ public class RESTClientUtil {
 		return null;
 	}
 	
-	public static boolean userFeedback(int userId, UserFeedbackInfo userFeedbackInfo, RideType rideType){
+	public static boolean userFeedback(long userId, UserFeedbackInfo userFeedbackInfo, RideType rideType){
 		RESTClientImpl<UserFeedbackInfo> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("POST_USER_FEEDBACK");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(Integer.toString(userId), rideType.toString());
+		URI uri = uriBuilder.build(Long.toString(userId), rideType.toString());
 		
 		Response response = restClientUtil.post(uri, userFeedbackInfo);
 		if (response.getStatus() == Status.OK.getStatusCode()) {
@@ -285,11 +285,11 @@ public class RESTClientUtil {
 		return bills;
 	}
 	
-	public static Ride getRide(int rideId) {
+	public static Ride getRide(long rideId) {
 		RESTClientImpl<Ride> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_RIDE");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(Integer.toString(rideId));
+		URI uri = uriBuilder.build(Long.toString(rideId));
 		Response response = restClientUtil.get(uri);
 		if (response.getStatus() == Status.OK.getStatusCode()) {
 			Ride ride= response.readEntity(Ride.class);
@@ -298,11 +298,11 @@ public class RESTClientUtil {
 		return null;
 	}
 	
-	public static RideRequest getRideRequest(int rideRequestId) {
+	public static RideRequest getRideRequest(long rideRequestId) {
 		RESTClientImpl<RideRequest> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_RIDE_REQUEST");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(Integer.toString(rideRequestId));
+		URI uri = uriBuilder.build(Long.toString(rideRequestId));
 		Response response = restClientUtil.get(uri);
 		if (response.getStatus() == Status.OK.getStatusCode()) {
 			RideRequest rideRequest = response.readEntity(RideRequest.class);

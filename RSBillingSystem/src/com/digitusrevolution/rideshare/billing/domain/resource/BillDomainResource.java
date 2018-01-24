@@ -14,19 +14,20 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.billing.domain.service.BillDomainService;
-import com.digitusrevolution.rideshare.common.inf.DomainResource;
+import com.digitusrevolution.rideshare.common.inf.DomainResourceInteger;
+import com.digitusrevolution.rideshare.common.inf.DomainResourceLong;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 
 @Path("/domain/bills")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class BillDomainResource implements DomainResource<Bill>{
+public class BillDomainResource implements DomainResourceLong<Bill>{
 
 	@Override
 	@GET
 	@Path("/{number}")
-	public Response get(@PathParam("number") int number, @QueryParam("fetchChild") String fetchChild){
+	public Response get(@PathParam("number") long number, @QueryParam("fetchChild") String fetchChild){
 		BillDomainService billDomainService = new BillDomainService();
 		Bill bill = billDomainService.get(number, Boolean.valueOf(fetchChild));
 		return Response.ok(bill).build();

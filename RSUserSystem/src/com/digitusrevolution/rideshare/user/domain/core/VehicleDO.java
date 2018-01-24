@@ -9,13 +9,13 @@ import javax.ws.rs.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
+import com.digitusrevolution.rideshare.common.inf.DomainObjectPKLong;
 import com.digitusrevolution.rideshare.common.mapper.user.core.VehicleMapper;
 import com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.data.VehicleDAO;
 
-public class VehicleDO implements DomainObjectPKInteger<Vehicle>{
+public class VehicleDO implements DomainObjectPKLong<Vehicle>{
 
 	private Vehicle vehicle;
 	private VehicleEntity vehicleEntity;
@@ -47,16 +47,16 @@ public class VehicleDO implements DomainObjectPKInteger<Vehicle>{
 	}
 
 	@Override
-	public int create(Vehicle vehicle) {
+	public long create(Vehicle vehicle) {
 		logger.entry();
 		setVehicle(vehicle);
-		int id = vehicleDAO.create(vehicleEntity);
+		long id = vehicleDAO.create(vehicleEntity);
 		logger.exit();
 		return id;
 	}
 
 	@Override
-	public Vehicle get(int id) {
+	public Vehicle get(long id) {
 		vehicleEntity = vehicleDAO.get(id);
 		if (vehicleEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);
@@ -66,7 +66,7 @@ public class VehicleDO implements DomainObjectPKInteger<Vehicle>{
 	}
 
 	@Override
-	public Vehicle getAllData(int id) {
+	public Vehicle getAllData(long id) {
 		get(id);
 		fetchChild();
 		return vehicle;
@@ -93,7 +93,7 @@ public class VehicleDO implements DomainObjectPKInteger<Vehicle>{
 	}
 
 	@Override
-	public void delete(int id) {
+	public void delete(long id) {
 		vehicle = get(id);
 		setVehicle(vehicle);
 		vehicleDAO.delete(vehicleEntity);		

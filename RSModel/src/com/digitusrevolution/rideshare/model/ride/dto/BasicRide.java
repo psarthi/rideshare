@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class BasicRide {
 
 	//id data type needs to be finalized later, whether to use int, long, string
-	private int id;
+	private long id;
 	private ZonedDateTime startTime;
 	private ZonedDateTime endTime;
 	private RidePoint startPoint = new RidePoint();
@@ -37,10 +37,10 @@ public class BasicRide {
 	private int travelDistance;
 	private RideMode rideMode;
 	
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public ZonedDateTime getStartTime() {

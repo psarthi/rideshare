@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.billing.data.AccountDAO;
 import com.digitusrevolution.rideshare.common.exception.InSufficientBalanceException;
-import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
+import com.digitusrevolution.rideshare.common.inf.DomainObjectPKLong;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.AccountMapper;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.TransactionMapper;
 import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
@@ -28,7 +28,7 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
 import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionType;
 
 //Need to implement Account Interface which is standard for any AccountDO implementation so that all type of account has same behavior
-public class VirtualAccountDO implements DomainObjectPKInteger<Account>, AccountDO{
+public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 	
 	private Account account;
 	private AccountEntity accountEntity;
@@ -79,14 +79,14 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 	}
 
 	@Override
-	public int create(Account account) {
+	public long create(Account account) {
 		setAccount(account);
-		int id = accountDAO.create(accountEntity);
+		long id = accountDAO.create(accountEntity);
 		return id;
 	}
 
 	@Override
-	public Account get(int number) {
+	public Account get(long number) {
 		accountEntity = accountDAO.get(number);
 		if (accountEntity == null){
 			throw new NotFoundException("No Data found with number: "+number);
@@ -96,21 +96,21 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 	}
 
 	@Override
-	public Account getAllData(int number) {
+	public Account getAllData(long number) {
 		get(number);
 		fetchChild();
 		return account;
 	}
 
 	@Override
-	public void delete(int number) {
+	public void delete(long number) {
 		account = get(number);
 		setAccount(account);
 		accountDAO.delete(accountEntity);
 	}
 	
 	@Override
-	public void debit(int accountNumber, float amount, Remark remark){
+	public void debit(long accountNumber, float amount, Remark remark){
 		//Its important to get child, else old transaction would get deleted as transactions is part of child
 		//And if you just get account without old transactions, then it will consider only new transaction as part of this account
 		//Since account owns the relationship of transaction, so you need to get all child before updating
@@ -132,7 +132,7 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 	}
 	
 	@Override
-	public void credit(int accountNumber, float amount, Remark remark){
+	public void credit(long accountNumber, float amount, Remark remark){
 		//Its important to get child, else old transaction would get deleted as transactions is part of child
 		//And if you just get account without old transactions, then it will consider only new transaction as part of this account
 		//Since account owns the relationship of transaction, so you need to get all child before updating
@@ -149,7 +149,7 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 		update(account);
 	}
 	
-	public void addMoneyToWallet(int accountNumber, float amount) {
+	public void addMoneyToWallet(long accountNumber, float amount) {
 		//TODO Connect with Payment Gateway and on successful transaction, credit to its wallet which is virtual account
 		boolean paymentSuccess=true;
 		if (paymentSuccess) {
@@ -164,12 +164,12 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 		}
 	}
 	
-	public float getBalance(int accountNumber) {
+	public float getBalance(long accountNumber) {
 		account = get(accountNumber);
 		return account.getBalance();
 	}
 	
-	public void redeemFromWallet(int virtualAccountNumber, float amount) {
+	public void redeemFromWallet(long virtualAccountNumber, float amount) {
 		//TODO Connect with payment gateway and on successful transaction, debit money from its wallet which is virtual account
 		boolean transferSuccess=true;
 		if (transferSuccess) {
@@ -185,7 +185,7 @@ public class VirtualAccountDO implements DomainObjectPKInteger<Account>, Account
 	}
 	
 	//This will get transaction sublist in ascending order
-	public List<Transaction> getTransactions(int accountNumber, int page){
+	public List<Transaction> getTransactions(long accountNumber, int page){
 		
 		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
 		int itemsCount = 10;

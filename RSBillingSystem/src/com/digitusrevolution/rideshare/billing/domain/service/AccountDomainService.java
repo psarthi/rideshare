@@ -9,18 +9,19 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.billing.domain.core.VirtualAccountDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
-import com.digitusrevolution.rideshare.common.inf.DomainService;
+import com.digitusrevolution.rideshare.common.inf.DomainServiceInteger;
+import com.digitusrevolution.rideshare.common.inf.DomainServiceLong;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
 
-public class AccountDomainService implements DomainService<Account>{
+public class AccountDomainService implements DomainServiceLong<Account>{
 
 	private static final Logger logger = LogManager.getLogger(AccountDomainService.class.getName());
 
-	public int createVirtualAccount() {
+	public long createVirtualAccount() {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		int number = 0;
+		long number = 0;
 		try {
 			transaction = session.beginTransaction();
 
@@ -48,7 +49,7 @@ public class AccountDomainService implements DomainService<Account>{
 	}
 	
 	@Override
-	public Account get(int number, boolean fetchChild) {
+	public Account get(long number, boolean fetchChild) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		Account account = null;

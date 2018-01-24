@@ -12,19 +12,20 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.digitusrevolution.rideshare.common.inf.DomainResource;
+import com.digitusrevolution.rideshare.common.inf.DomainResourceInteger;
+import com.digitusrevolution.rideshare.common.inf.DomainResourceLong;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.ride.domain.service.RideDomainService;
 
 @Path("/domain/rides")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class RideDomainResource implements DomainResource<Ride>{
+public class RideDomainResource implements DomainResourceLong<Ride>{
 
 	@Override
 	@GET
 	@Path("/{id}")
-	public Response get(@PathParam("id") int id, @QueryParam("fetchChild") String fetchChild) {
+	public Response get(@PathParam("id") long id, @QueryParam("fetchChild") String fetchChild) {
 		RideDomainService rideDomainService = new RideDomainService();
 		Ride ride = rideDomainService.get(id, Boolean.valueOf(fetchChild));
 		return Response.ok(ride).build();

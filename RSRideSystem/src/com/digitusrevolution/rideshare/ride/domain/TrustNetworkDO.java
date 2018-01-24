@@ -10,18 +10,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
-import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
+import com.digitusrevolution.rideshare.common.inf.DomainObjectPKLong;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
 import com.digitusrevolution.rideshare.common.mapper.ride.TrustNetworkMapper;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 
-public class TrustNetworkDO implements DomainObjectPKInteger<TrustNetwork>{
+public class TrustNetworkDO implements DomainObjectPKLong<TrustNetwork>{
 
 	private TrustNetwork trustNetwork;
 	private TrustNetworkEntity trustNetworkEntity;
 	private TrustNetworkMapper trustNetworkMapper;
-	private final GenericDAO<TrustNetworkEntity, Integer> genericDAO;
+	private final GenericDAO<TrustNetworkEntity, Long> genericDAO;
 	private static final Logger logger = LogManager.getLogger(TrustNetworkDO.class.getName());
 
 
@@ -69,23 +69,23 @@ public class TrustNetworkDO implements DomainObjectPKInteger<TrustNetwork>{
 	}
 
 	@Override
-	public void delete(int id) {
+	public void delete(long id) {
 		trustNetwork = get(id);
 		setTrustNetwork(trustNetwork);
 		genericDAO.delete(trustNetworkEntity);		
 	}
 
 	@Override
-	public int create(TrustNetwork trustNetwork) {
+	public long create(TrustNetwork trustNetwork) {
 		logger.entry();
 		setTrustNetwork(trustNetwork);
-		int id = genericDAO.create(trustNetworkEntity);
+		long id = genericDAO.create(trustNetworkEntity);
 		logger.exit();
 		return id;
 	}
 
 	@Override
-	public TrustNetwork get(int id) {
+	public TrustNetwork get(long id) {
 		trustNetworkEntity = genericDAO.get(id);
 		if (trustNetworkEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);
@@ -95,7 +95,7 @@ public class TrustNetworkDO implements DomainObjectPKInteger<TrustNetwork>{
 	}
 
 	@Override
-	public TrustNetwork getAllData(int id) {
+	public TrustNetwork getAllData(long id) {
 		get(id);
 		fetchChild();
 		return trustNetwork;

@@ -66,7 +66,7 @@ public class RideRequestPointDAO{
 		collection.deleteOne(Filters.eq("_id", _id));
 	}
 
-	public void deletePointsOfRideRequest(int rideRequestId) {
+	public void deletePointsOfRideRequest(long rideRequestId) {
 		Document query = new Document("rideRequestId",rideRequestId);
 		DeleteResult result = collection.deleteMany(query);
 		logger.debug("Total points deleted for Ride Request:"+rideRequestId+" is: "+result.getDeletedCount());
@@ -87,7 +87,7 @@ public class RideRequestPointDAO{
 		return rideRequestPoints;
 	}
 
-	public List<RideRequestPoint> getPointsOfRideRequest(int rideRequestId) {
+	public List<RideRequestPoint> getPointsOfRideRequest(long rideRequestId) {
 		List<RideRequestPoint> rideRequestPoints = new ArrayList<>();
 		MongoCursor<Document> cursor = collection.find(Filters.eq("rideRequestId", rideRequestId)).iterator();
 		try {
@@ -109,7 +109,7 @@ public class RideRequestPointDAO{
 	public void getAllMatchingRideRequestPointNearGivenPoint(RidePoint ridePoint, double minDistance, double maxDistance){
 		
 		Set<RideRequestSearchPoint> rideRequestSearchPointsSet = new HashSet<>();
-		Set<Integer> rideRequestIdsSet = new HashSet<>();
+		Set<Long> rideRequestIdsSet = new HashSet<>();
 		logger.debug("Start - Searching for Ride Point:"+ridePoint.getPoint().toString());	
 		Point point = ridePoint.getPoint();
 		JSONUtil<Point> jsonUtilPoint = new JSONUtil<>(Point.class);
@@ -173,7 +173,7 @@ public class RideRequestPointDAO{
 	 * 	 (Store as a list, where 1st item in the list is the pickup point and 2nd as drop point)    
 	 * 
 	 */
-	public Map<Integer, List<RideRequestPoint>> getAllMatchingRideRequestWithinMultiPolygonOfRide(Ride ride, MultiPolygon multiPolygon){
+	public Map<Long, List<RideRequestPoint>> getAllMatchingRideRequestWithinMultiPolygonOfRide(Ride ride, MultiPolygon multiPolygon){
 
 		JSONUtil<MultiPolygon> jsonUtilMultiPolygon = new JSONUtil<>(MultiPolygon.class);
 		String jsonMultipPolygon = jsonUtilMultiPolygon.getJson(multiPolygon);
@@ -228,7 +228,7 @@ public class RideRequestPointDAO{
 		pipeline.add(projectResult);
 
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
-		Map<Integer, List<RideRequestPoint>> rideRequestMap = new HashMap<>();
+		Map<Long, List<RideRequestPoint>> rideRequestMap = new HashMap<>();
 
 		logger.trace("Ride Id:"+ride.getId());
 
@@ -237,7 +237,9 @@ public class RideRequestPointDAO{
 				Document document = cursor.next();
 				String json = document.toJson();
 				logger.trace("Document:"+json);
-				Integer rideRequestId = document.getInteger("_id");
+				//TODO - By default mongodb insert the data as integer, and we need to find a way to store as Long
+				//once we are able to store as long, then getLong would work otherwise, it will throw cast exception
+				Long rideRequestId = Integer.toUnsignedLong(document.getInteger("_id"));
 				//This will get only the ride request point in the original form
 				@SuppressWarnings("unchecked")
 				List<Document> rideRequestPointsBSON = (List<Document>) document.get("rideRequestSearchPoint");

@@ -28,7 +28,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 
-public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
+public class RideDAO extends GenericDAOImpl<RideEntity, Long>{
 
 	private static final Logger logger = LogManager.getLogger(RideDAO.class.getName());
 	private static final Class<RideEntity> entityClass = RideEntity.class;
@@ -42,7 +42,7 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 	 * e.g. user rating, preference, trust category etc.
 	 * 
 	 */
-	public Set<RideEntity> getValidRides(Set<Integer> rideIds, int seatRequired, RideMode rideRequestMode, UserEntity passenger){
+	public Set<RideEntity> getValidRides(Set<Long> rideIds, int seatRequired, RideMode rideRequestMode, UserEntity passenger){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
@@ -165,7 +165,7 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Integer>{
 	 * Purpose - Get the status of ride, this is required many times, so instead of using get and then fetching the status
 	 * 			 this function would directly return the status
 	 */
-	public RideStatus getStatus(int rideId){
+	public RideStatus getStatus(long rideId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
 		RideStatus status = (RideStatus) criteria.add(Restrictions.eq("id",rideId))

@@ -15,7 +15,7 @@ public class VehicleBusinessService {
 	
 	private static final Logger logger = LogManager.getLogger(VehicleBusinessService.class.getName());
 	
-	public void addVehicle(int userId, Vehicle vehicle){	
+	public void addVehicle(long userId, Vehicle vehicle){	
 		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	

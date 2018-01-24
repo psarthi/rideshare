@@ -9,7 +9,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 public class MembershipRequest implements Comparable<MembershipRequest>{
 
-	private int id;
+	private long id;
 	private User user;
 	private Group group; 
 	//This would be visible to all group members e.g. employee id, flat number etc
@@ -20,6 +20,12 @@ public class MembershipRequest implements Comparable<MembershipRequest>{
 	private String adminRemark;
 	private String userRemark;
 	
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public User getUser() {
 		return user;
 	}
@@ -37,12 +43,6 @@ public class MembershipRequest implements Comparable<MembershipRequest>{
 	}
 	public void setCreatedDateTime(ZonedDateTime createdDateTime) {
 		this.createdDateTime = createdDateTime;
-	}
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
 	}
 	public String getUserUniqueIdentifier() {
 		return userUniqueIdentifier;
@@ -66,8 +66,7 @@ public class MembershipRequest implements Comparable<MembershipRequest>{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
-		result = prime * result + ((user == null) ? 0 : user.hashCode());
+		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
 	@Override
@@ -85,13 +84,6 @@ public class MembershipRequest implements Comparable<MembershipRequest>{
 		if (id != other.id) {
 			return false;
 		}
-		if (user == null) {
-			if (other.user != null) {
-				return false;
-			}
-		} else if (!user.equals(other.user)) {
-			return false;
-		}
 		return true;
 	}
 	public String getAdminRemark() {
@@ -106,9 +98,10 @@ public class MembershipRequest implements Comparable<MembershipRequest>{
 	public void setGroup(Group group) {
 		this.group = group;
 	}
+
 	@Override
 	public int compareTo(MembershipRequest o) {
 		//descending order
-		return o.id - this.id;
+		return (int) (o.id - this.id);
 	}
 }

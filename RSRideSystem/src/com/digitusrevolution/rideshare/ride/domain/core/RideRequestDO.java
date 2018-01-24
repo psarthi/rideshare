@@ -30,7 +30,7 @@ import org.geojson.Polygon;
 import com.digitusrevolution.rideshare.common.exception.InSufficientBalanceException;
 import com.digitusrevolution.rideshare.common.exception.RideRequestUnavailableException;
 import com.digitusrevolution.rideshare.common.exception.RideUnavailableException;
-import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
+import com.digitusrevolution.rideshare.common.inf.DomainObjectPKLong;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.math.google.LatLng;
@@ -80,7 +80,7 @@ import com.digitusrevolution.rideshare.ride.domain.TrustNetworkDO;
 import com.digitusrevolution.rideshare.ride.domain.core.comp.RideRequestGeoJSON;
 
 
-public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
+public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 
 	private static final Logger logger = LogManager.getLogger(RideRequestDO.class.getName());
 	private RideRequest rideRequest;
@@ -158,7 +158,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	}
 
 	@Override
-	public void delete(int id) {
+	public void delete(long id) {
 		rideRequest = get(id);
 		setRideRequest(rideRequest);
 		rideRequestDAO.delete(rideRequestEntity);
@@ -175,16 +175,16 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * 
 	 */
 	@Override
-	public int create(RideRequest rideRequest) {
+	public long create(RideRequest rideRequest) {
 		logger.entry();
 		setRideRequest(rideRequest);
-		int id = rideRequestDAO.create(rideRequestEntity);
+		long id = rideRequestDAO.create(rideRequestEntity);
 		logger.exit();
 		return id;
 	}
 
 	@Override
-	public RideRequest get(int id) {
+	public RideRequest get(long id) {
 		rideRequestEntity = rideRequestDAO.get(id);
 		if (rideRequestEntity == null){
 			throw new NotFoundException("No Data found with id: "+id);
@@ -212,7 +212,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	}
 
 	@Override
-	public RideRequest getAllData(int id) {
+	public RideRequest getAllData(long id) {
 		get(id);
 		fetchChild();
 		return rideRequest;
@@ -229,7 +229,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * - Set Ride Request point properties and then create them in NoSQL DB 
 	 * 
 	 */
-	public int requestRide(RideRequest rideRequest){
+	public long requestRide(RideRequest rideRequest){
 		ZonedDateTime pickupTimeUTC = rideRequest.getPickupTime().withZoneSameInstant(ZoneOffset.UTC);
 		//Storing dateTime in UTC
 		rideRequest.setPickupTime(pickupTimeUTC);
@@ -243,11 +243,11 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		//so that ride request creation can happen properly, else it will throw error if it tries to recreated the same trustnetwork
 		TrustNetwork trustNetwork = rideRequest.getTrustNetwork();
 		TrustNetworkDO trustNetworkDO = new TrustNetworkDO();
-		int trustNetworkId = trustNetworkDO.create(trustNetwork);
+		long trustNetworkId = trustNetworkDO.create(trustNetwork);
 		TrustNetwork trustNetworkWithId = trustNetworkDO.get(trustNetworkId);
 		rideRequest.setTrustNetwork(trustNetworkWithId);
 
-		int id = create(rideRequest);
+		long id = create(rideRequest);
 		rideRequest.setId(id);
 
 		//No need to get update Ride request as return type as in java its pass by reference, so data would be updated in the original ride request
@@ -279,7 +279,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	}
 
 
-	public List<RideRequestPoint> getPointsOfRideRequest(int rideRequestId) {
+	public List<RideRequestPoint> getPointsOfRideRequest(long rideRequestId) {
 		return rideRequestPointDAO.getPointsOfRideRequest(rideRequestId);
 	}
 
@@ -352,7 +352,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * 	 rides would be MxN i.e. for 1 million ride request point in a 400 ride points of ride would cost 400 Millions times Big O time complexity
 	 * 
 	 */
-	public RideRequestSearchResult searchRideRequests(int rideId, double lastSearchDistance, int lastResultIndex){
+	public RideRequestSearchResult searchRideRequests(long rideId, double lastSearchDistance, int lastResultIndex){
 
 		// ***** Initializing Variables - Start
 
@@ -384,9 +384,9 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		int rideRequestResultCount = 0;
 
 		//This will hold the ride requests which is inside multi polygon
-		Map<Integer, List<RideRequestPoint>> rideRequestsMap = new HashMap<>();
+		Map<Long, List<RideRequestPoint>> rideRequestsMap = new HashMap<>();
 		//This will hold the ride requests Ids from the previous ride search based on distance, which would be used to get incremental ids only
-		Set<Integer> rideRequestsIdsFromPreviousResult = new HashSet<>();
+		Set<Long> rideRequestsIdsFromPreviousResult = new HashSet<>();
 
 		//This will hold the final valid ride requests
 		List<MatchedTripInfo> validMatchedTripInfos = new LinkedList<>();
@@ -461,7 +461,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 				//This will store the previous result ride request Ids, which would be used to get only new results so that we process only new ride requests
 				//Don't just copy map keyset to this set here, as that would be copy by reference and removing from any set would effect both of them
 				//So, below method would ensure that we get seperate copy of data
-				for (Integer rideRequestId: rideRequestsMap.keySet()){
+				for (Long rideRequestId: rideRequestsMap.keySet()){
 					rideRequestsIdsFromPreviousResult.add(rideRequestId);
 				}
 
@@ -493,7 +493,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * 
 	 */
 	private List<MatchedTripInfo> processAndGetValidRideRequests(Ride ride, List<RidePoint> ridePoints,
-			Map<Integer, List<RideRequestPoint>> rideRequestsMap, List<MatchedTripInfo> validMatchedTripInfos) {
+			Map<Long, List<RideRequestPoint>> rideRequestsMap, List<MatchedTripInfo> validMatchedTripInfos) {
 
 		//Note - Don't reinitialize the validMatedTripInfos otherwise previous valid result would be lost
 
@@ -505,7 +505,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		//Final result would be stored into MatchedTripInfo Map
 
 		//**** Process all ride request for each ride points
-		Map<Integer, MatchedTripInfo> matchedTripInfoMap = processMatchedRideRequests(ride.getId(), ridePoints,
+		Map<Long, MatchedTripInfo> matchedTripInfoMap = processMatchedRideRequests(ride.getId(), ridePoints,
 				rideRequestsMap);
 
 		//This will get all valid ride requests based on ride pickup and drop point availability as well as sequence of ride pickup and drop point
@@ -529,7 +529,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * Purpose - Get Final Result Set supporting pagination i.e. additional search request
 	 * 
 	 */
-	private RideRequestSearchResult getRideRequestSearchResult(int rideId, double distance, int resultSetLimit,
+	private RideRequestSearchResult getRideRequestSearchResult(long rideId, double distance, int resultSetLimit,
 			int resultStartIndex, List<MatchedTripInfo> validMatchedTripInfos) {
 		//This will update the ride request travel distance which can be used for sorting
 		for (MatchedTripInfo matchedTripInfo : validMatchedTripInfos) {
@@ -586,15 +586,15 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * - Now you will get all the valid ride request
 	 * 
 	 */
-	private Map<Integer, MatchedTripInfo> validateProcessedRideRequests(Ride ride, Map<Integer, MatchedTripInfo> matchedTripInfoMap, 
-			Map<Integer, List<RideRequestPoint>> rideRequestsMap) {
+	private Map<Long, MatchedTripInfo> validateProcessedRideRequests(Ride ride, Map<Long, MatchedTripInfo> matchedTripInfoMap, 
+			Map<Long, List<RideRequestPoint>> rideRequestsMap) {
 		//Use iterator instead of using for loop with entrySet as you can't remove an entry while iterating on the same Map
-		Iterator<Map.Entry<Integer, MatchedTripInfo>> iterator = matchedTripInfoMap.entrySet().iterator();
+		Iterator<Map.Entry<Long, MatchedTripInfo>> iterator = matchedTripInfoMap.entrySet().iterator();
 
 		//This will get all valid ride requests based on ride pickup and drop point availability as well as sequence of ride pickup and drop point
 		//*** Validating ride requests based on ride direction as well as pickup and drop point availability 
 		while(iterator.hasNext()){
-			Entry<Integer, MatchedTripInfo> entry = iterator.next();
+			Entry<Long, MatchedTripInfo> entry = iterator.next();
 			MatchedTripInfo matchedTripInfo = entry.getValue();
 			//Validate if Ride pickup and Ride drop both exist
 			//If there is any valid Ride pickup or Ride drop point then value would not be null
@@ -611,9 +611,9 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 					//Get Ride Request Points from Request Map
 					RideRequestPoint pickupPoint = null;
 					RideRequestPoint dropPoint = null;
-					for (Map.Entry<Integer, List<RideRequestPoint>> rideRequestEntry: rideRequestsMap.entrySet()) {
+					for (Map.Entry<Long, List<RideRequestPoint>> rideRequestEntry: rideRequestsMap.entrySet()) {
 						//Pickup and drop point would always be in the same order which is taken care by rideRequestPointDAO
-						Integer rideRequestId = rideRequestEntry.getKey();
+						Long rideRequestId = rideRequestEntry.getKey();
 						if (rideRequestId == matchedTripInfo.getRideRequestId()) {
 							pickupPoint = rideRequestEntry.getValue().get(0);
 							dropPoint = rideRequestEntry.getValue().get(1);							
@@ -654,21 +654,21 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	}
 
 	//No need to return anything as we are using shared map, and by removing invalid ride request Ids it would reflect everywhere
-	private void validateBusinessCriteria(Ride ride, Map<Integer, List<RideRequestPoint>> rideRequestsMap) {
+	private void validateBusinessCriteria(Ride ride, Map<Long, List<RideRequestPoint>> rideRequestsMap) {
 		//*** Validating ride requests based on business criteria
 		Collection<RideRequest> cancelledRideRequests = ride.getCancelledRideRequests();
 		Collection<RideRequest> rejectedRideRequests = ride.getRejectedRideRequests();
-		Set<Integer> cancelledRideRequestIds = new HashSet<>();
+		Set<Long> cancelledRideRequestIds = new HashSet<>();
 
 		for (RideRequest rideRequest: cancelledRideRequests) {
 			cancelledRideRequestIds.add(rideRequest.getId());
 		}
-		Set<Integer> rejectedRideRequestIds = new HashSet<>();
+		Set<Long> rejectedRideRequestIds = new HashSet<>();
 		for (RideRequest rideRequest: rejectedRideRequests) {
 			rejectedRideRequestIds.add(rideRequest.getId());
 		}
 		//This will just create a single common list of all excluded list
-		Set<Integer> excludedRideRequestIds = new HashSet<>();
+		Set<Long> excludedRideRequestIds = new HashSet<>();
 		excludedRideRequestIds.addAll(rejectedRideRequestIds);
 		excludedRideRequestIds.addAll(cancelledRideRequestIds);
 		logger.debug("Excluded List of Ride Request Ids:"+excludedRideRequestIds);
@@ -684,7 +684,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			}
 			int availableSeats = ride.getSeatOffered() - seatOccupied;
 			//Getting valid ride request Ids based on all business criteria
-			Set<Integer> validRideRequestIds = getValidRideRequests(rideRequestsMap.keySet(), availableSeats, ride.getRideMode(), 
+			Set<Long> validRideRequestIds = getValidRideRequests(rideRequestsMap.keySet(), availableSeats, ride.getRideMode(), 
 					ride.getDriver(), ride.getTrustNetwork());
 			//Removing all the invalid ride request Ids
 			rideRequestsMap.keySet().retainAll(validRideRequestIds);
@@ -740,10 +740,10 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * - Once all ride request points are processed against each ride points, you will have shortest ride pickup and drop points against each ride request
 	 * 
 	 */
-	private Map<Integer, MatchedTripInfo> processMatchedRideRequests(int rideId, List<RidePoint> ridePoints,
-			Map<Integer, List<RideRequestPoint>> rideRequestsMap) {
+	private Map<Long, MatchedTripInfo> processMatchedRideRequests(long rideId, List<RidePoint> ridePoints,
+			Map<Long, List<RideRequestPoint>> rideRequestsMap) {
 		//Its important to have this as map else you can't get matched trip info for each ride request ids
-		Map<Integer, MatchedTripInfo> matchedTripInfoMap = new HashMap<>();
+		Map<Long, MatchedTripInfo> matchedTripInfoMap = new HashMap<>();
 		int count=0;
 		//This will get ridepoint which is having shortest distance from pickup and drop point of each ride requests
 		//Final result would be stored into MatchedTripInfo Map
@@ -751,11 +751,11 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		for (RidePoint ridePoint : ridePoints) {
 			LatLng from = new LatLng(ridePoint.getPoint().getLatitude(), ridePoint.getPoint().getLongitude());
 
-			for (Map.Entry<Integer, List<RideRequestPoint>> entry: rideRequestsMap.entrySet()) {
+			for (Map.Entry<Long, List<RideRequestPoint>> entry: rideRequestsMap.entrySet()) {
 				//Pickup and drop point would always be in the same order which is taken care by rideRequestPointDAO
 				RideRequestPoint pickupPoint = entry.getValue().get(0);
 				RideRequestPoint dropPoint = entry.getValue().get(1);
-				Integer rideRequestId = entry.getKey();
+				Long rideRequestId = entry.getKey();
 				LatLng pickupPointCordinates = new LatLng(pickupPoint.getPoint().getLatitude(), pickupPoint.getPoint().getLongitude());
 				double pickupDistance = SphericalUtil.computeDistanceBetween(from, pickupPointCordinates);
 				LatLng dropPointCordinates = new LatLng(dropPoint.getPoint().getLatitude(), dropPoint.getPoint().getLongitude());
@@ -835,7 +835,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * e.g. user rating, preference, trust category etc.
 	 * 
 	 */
-	private Set<Integer> getValidRideRequests(Set<Integer> rideRequestIds, int availableSeats, RideMode createdRideMode, 
+	private Set<Long> getValidRideRequests(Set<Long> rideRequestIds, int availableSeats, RideMode createdRideMode, 
 			User driver, TrustNetwork trustNetwork){
 		UserMapper userMapper = new UserMapper();
 		UserEntity driverEntity = userMapper.getEntity(driver, false);
@@ -851,7 +851,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			driverGroups = RESTClientUtil.getGroups(driver.getId());
 		}
 		
-		Set<Integer> validRideRequestIds = new HashSet<>();
+		Set<Long> validRideRequestIds = new HashSet<>();
 		for (RideRequestEntity rideRequestEntity : validRideRequestEntities) {
 			if (trustCategory.getName().equals(TrustCategoryName.Groups)) {
 				List<GroupDetail> passengerGroups = RESTClientUtil.getGroups(rideRequestEntity.getPassenger().getId());
@@ -946,17 +946,17 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		return rideRequestGeoJSON.getAllRideRequestPoints();
 	}
 
-	public FeatureCollection getMatchingRideRequests(int rideId,double lastSearchDistance, int lastResultIndex){
+	public FeatureCollection getMatchingRideRequests(long rideId,double lastSearchDistance, int lastResultIndex){
 		RideRequestGeoJSON rideRequestGeoJSON = new RideRequestGeoJSON(this);
 		return rideRequestGeoJSON.getMatchingRideRequests(rideId, lastSearchDistance, lastResultIndex);
 	}
 
-	public FeatureCollection getRideRequestPoints(int rideRequestId) {
+	public FeatureCollection getRideRequestPoints(long rideRequestId) {
 		RideRequestGeoJSON rideRequestGeoJSON = new RideRequestGeoJSON(this);
 		return rideRequestGeoJSON.getRideRequestPoints(rideRequestId);
 	}
 
-	public List<Feature> getRideRequestGeoJSON(int rideRequestId) {
+	public List<Feature> getRideRequestGeoJSON(long rideRequestId) {
 		RideRequestGeoJSON rideRequestGeoJSON = new RideRequestGeoJSON(this);
 		return rideRequestGeoJSON.getRideRequestGeoJSON(rideRequestId);
 	}
@@ -964,7 +964,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	/*
 	 * Purpose - Get ride request status
 	 */
-	public RideRequestStatus getStatus(int rideRequestId){
+	public RideRequestStatus getStatus(long rideRequestId){
 		return rideRequestDAO.getStatus(rideRequestId);
 	}
 
@@ -984,7 +984,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	 * e.g ride should be updated with ride request and vice versa
 	 * 
 	 */
-	public void cancelRideRequest(int rideRequestId){
+	public void cancelRideRequest(long rideRequestId){
 		logger.debug("Cancelling Ride Request:"+rideRequestId);
 		rideRequest = getAllData(rideRequestId);
 		RideRequestStatus rideRequestStatus = rideRequest.getStatus();
@@ -992,7 +992,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 			rideRequest.setStatus(RideRequestStatus.Cancelled);
 			update(rideRequest);
 		} else {
-			int rideId = rideRequest.getAcceptedRide().getId();
+			long rideId = rideRequest.getAcceptedRide().getId();
 			RideDO rideDO = new RideDO();
 			if (!rideRequest.getPassengerStatus().equals(PassengerStatus.Dropped)){
 				//This will cancel the ride request from confirmed ride as well as update the cancellation status in ride request
@@ -1009,7 +1009,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 	/*
 	 * Purpose - Get current ride request
 	 */
-	public RideRequest getCurrentRideRequest(int passengerId){		
+	public RideRequest getCurrentRideRequest(long passengerId){		
 		User passenger = RESTClientUtil.getUser(passengerId);
 		UserMapper userMapper = new UserMapper();
 		//We don't need child object of User entity, just the basic user entity is fine as it primarily needs only PK
@@ -1025,7 +1025,7 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		}
 	}
 
-	public List<RideRequest> getRideRequests(int passengerId, int page){
+	public List<RideRequest> getRideRequests(long passengerId, int page){
 		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
 		int itemsCount = 10;
 		int startIndex = page*itemsCount; 
@@ -1048,19 +1048,32 @@ public class RideRequestDO implements DomainObjectPKInteger<RideRequest>{
 		return rideRequests;
 	}
 
-	public MatchedTripInfo autoMatchRideRequest(int rideId) {		
+	public MatchedTripInfo autoMatchRideRequest(long rideId) {		
 		RideRequestSearchResult searchRideRequests = searchRideRequests(rideId, 0, 0);
 		List<MatchedTripInfo> matchedTripInfos = searchRideRequests.getMatchedTripInfos();
 		RideDO rideDO = new RideDO();
+		Ride ride = rideDO.getAllData(rideId);
 		//IMP - This will sort the matched list based on seats occupied, so that we fill the seats evenly
 		matchedTripInfos = rideDO.getSortedMatchedList(matchedTripInfos);
 		if (matchedTripInfos.size() > 0) {
 			for (int i=0; i < matchedTripInfos.size(); i++) {
 				MatchedTripInfo matchedTripInfo = matchedTripInfos.get(i);
 				try {
-					rideDO.acceptRideRequest(matchedTripInfo);
-					logger.debug("Found Matching Ride Request for Ride ID:"+rideId);
-					return matchedTripInfo;				
+					RideRequest rideRequest = getAllData(matchedTripInfo.getRideRequestId());
+					rideDO.acceptRideRequest(ride, rideRequest, matchedTripInfo);
+					logger.debug("Found Matching Ride Request for Ride ID:"+rideId);	
+					//IMP - This is good as in one shot i can match many ride request, so if a driver has offered 4 seats, then 4 ride request can be served
+					//otherwise, we need to wait for 4 rides to match each request which is not good
+					int seatOccupied = 0;
+					for (RideRequest acceptedRideRequest : ride.getAcceptedRideRequests()) {
+						seatOccupied += acceptedRideRequest.getSeatRequired();
+					}
+					int availableSeats = ride.getSeatOffered() - seatOccupied;					
+					if (availableSeats!=0) {
+						continue;
+					} else {
+						return matchedTripInfo;	
+					}				
 				} catch (Exception e) {
 					if (e instanceof RideRequestUnavailableException || e instanceof InSufficientBalanceException) {
 						continue;

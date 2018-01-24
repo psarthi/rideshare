@@ -8,11 +8,11 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
-import com.digitusrevolution.rideshare.common.inf.DomainService;
+import com.digitusrevolution.rideshare.common.inf.DomainServiceInteger;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.user.domain.VehicleCategoryDO;
 
-public class VehicleCategoryDomainService implements DomainService<VehicleCategory>{
+public class VehicleCategoryDomainService implements DomainServiceInteger<VehicleCategory>{
 
 	private static final Logger logger = LogManager.getLogger(VehicleCategoryDomainService.class.getName());
 

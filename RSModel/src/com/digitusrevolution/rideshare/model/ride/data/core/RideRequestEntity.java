@@ -41,7 +41,7 @@ import com.digitusrevolution.rideshare.model.user.domain.UserFeedback;
 public class RideRequestEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
+	private long id;
 	//We need to store just rideRequestPointId in Hibernate as rideRequestPoint is getting stored in MonogoDB
 	private String pickupPointId;
 	private String dropPointId;
@@ -101,17 +101,18 @@ public class RideRequestEntity {
 	@OneToMany (mappedBy="rideRequest", cascade=CascadeType.PERSIST)
 	private Collection<UserFeedbackEntity> feedbacks = new HashSet<UserFeedbackEntity>();
 	
+	
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public RideMode getRideMode() {
 		return rideMode;
 	}
 	public void setRideMode(RideMode rideMode) {
 		this.rideMode = rideMode;
-	}
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
 	}
 	public ZonedDateTime getPickupTime() {
 		return pickupTime;
@@ -243,7 +244,7 @@ public class RideRequestEntity {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
+		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
 	@Override

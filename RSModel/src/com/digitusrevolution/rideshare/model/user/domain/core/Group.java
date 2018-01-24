@@ -13,10 +13,14 @@ import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 
 //Reason behind this jsonignore so that it doesn't throw error while converting from DTO to Domain Model which has more fields
 //e.g. in case of GroupDetail has extra fields such as membercount
+/**
+ * @author psarthi
+ *
+ */
 @JsonIgnoreProperties (ignoreUnknown=true)
 public class Group implements Comparable<Group>{
 
-	private int id;
+	private long id;
 	private String name;
 	private Photo photo;
 	
@@ -32,11 +36,11 @@ public class Group implements Comparable<Group>{
 	private int genuineVotes;
 	private int fakeVotes;
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -54,48 +58,6 @@ public class Group implements Comparable<Group>{
 
 	public void setPhoto(Photo photo) {
 		this.photo = photo;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + id;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((owner == null) ? 0 : owner.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof Group)) {
-			return false;
-		}
-		Group other = (Group) obj;
-		if (id != other.id) {
-			return false;
-		}
-		if (name == null) {
-			if (other.name != null) {
-				return false;
-			}
-		} else if (!name.equals(other.name)) {
-			return false;
-		}
-		if (owner == null) {
-			if (other.owner != null) {
-				return false;
-			}
-		} else if (!owner.equals(other.owner)) {
-			return false;
-		}
-		return true;
 	}
 
 	public Collection<User> getMembers() {
@@ -203,6 +165,33 @@ public class Group implements Comparable<Group>{
 		//Changing it to upper case so that we are comparing the group name properly by ignoring the case
 		return this.name.toUpperCase().compareTo(group.name.toUpperCase());
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Group)) {
+			return false;
+		}
+		Group other = (Group) obj;
+		if (id != other.id) {
+			return false;
+		}
+		return true;
+	}
+
 }
 
 

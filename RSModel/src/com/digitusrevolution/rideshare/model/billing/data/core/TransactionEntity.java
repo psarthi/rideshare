@@ -20,7 +20,7 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionType
 public class TransactionEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
+	private long id;
 	private ZonedDateTime dateTime;
 	@Column
 	@Enumerated(EnumType.STRING)
@@ -29,6 +29,12 @@ public class TransactionEntity {
 	@Embedded
 	private RemarkEntity remark;
 	
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public ZonedDateTime getDateTime() {
 		return dateTime;
 	}
@@ -47,21 +53,11 @@ public class TransactionEntity {
 	public void setAmount(float amount) {
 		this.amount = amount;
 	}
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + Float.floatToIntBits(amount);
-		result = prime * result + ((dateTime == null) ? 0 : dateTime.hashCode());
-		result = prime * result + id;
-		result = prime * result + ((remark == null) ? 0 : remark.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
 	@Override
@@ -76,27 +72,7 @@ public class TransactionEntity {
 			return false;
 		}
 		TransactionEntity other = (TransactionEntity) obj;
-		if (Float.floatToIntBits(amount) != Float.floatToIntBits(other.amount)) {
-			return false;
-		}
-		if (dateTime == null) {
-			if (other.dateTime != null) {
-				return false;
-			}
-		} else if (!dateTime.equals(other.dateTime)) {
-			return false;
-		}
 		if (id != other.id) {
-			return false;
-		}
-		if (remark == null) {
-			if (other.remark != null) {
-				return false;
-			}
-		} else if (!remark.equals(other.remark)) {
-			return false;
-		}
-		if (type != other.type) {
 			return false;
 		}
 		return true;

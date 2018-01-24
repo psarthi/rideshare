@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties (ignoreUnknown=true)
 public class BasicRideRequest {
 
-	private int id;
+	private long id;
 	private RideRequestPoint pickupPoint = new RideRequestPoint();
 	private RideRequestPoint dropPoint = new RideRequestPoint();
 	private String pickupPointAddress;
@@ -50,10 +50,10 @@ public class BasicRideRequest {
 	private RideMode rideMode;
 	private String confirmationCode;
 	
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public RideRequestPoint getPickupPoint() {

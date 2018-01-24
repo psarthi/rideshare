@@ -43,7 +43,7 @@ public class GroupBusinessResource {
 	@POST
 	public Response createGroup(BasicGroupInfo group){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
-		int id = groupBusinessService.createGroup(group);
+		long id = groupBusinessService.createGroup(group);
 		//Since we are trying to get all data before even committing, all child objects may not come 
 		//so its cleaner to have get All updated data post commit in different transaction
 		GroupDetail createdGroup = groupBusinessService.getGroupDetail(id, group.getOwner().getId());
@@ -62,7 +62,7 @@ public class GroupBusinessResource {
 	}
 	
 	@GET
-	public Response getGroups(@PathParam("userId") int userId, @QueryParam("listType") GroupListType listType, @QueryParam("page") int page) {
+	public Response getGroups(@PathParam("userId") long userId, @QueryParam("listType") GroupListType listType, @QueryParam("page") int page) {
 		UserBusinessService userBusinessService = new UserBusinessService();
 		List<GroupDetail> groups = userBusinessService.getGroups(userId, listType, page);
 		GenericEntity<List<GroupDetail>> entity = new GenericEntity<List<GroupDetail>>(groups) {};
@@ -71,7 +71,7 @@ public class GroupBusinessResource {
 
 	@GET
 	@Path("/{groupId}/members")
-	public Response getMembers(@PathParam("groupId") int groupId, @QueryParam("page") int page) {
+	public Response getMembers(@PathParam("groupId") long groupId, @QueryParam("page") int page) {
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		List<GroupMember> members = groupBusinessService.getMembers(groupId, page);
 		GenericEntity<List<GroupMember>> entity = new GenericEntity<List<GroupMember>>(members) {};
@@ -80,7 +80,7 @@ public class GroupBusinessResource {
 
 	@GET
 	@Path("/{groupId}")
-	public Response getGroupDetail(@PathParam("userId") int userId, @PathParam("groupId") int groupId){
+	public Response getGroupDetail(@PathParam("userId") long userId, @PathParam("groupId") long groupId){
 		//This is an exception where we are calling service from different resource
 		//i.e. user business resource calling group business service and the reason 
 		//is we need to capture user id as well as group id
@@ -91,7 +91,7 @@ public class GroupBusinessResource {
 	
 	@GET
 	@Path("/{groupId}/searchuser")
-	public Response searchUserByNameForGroupInvite(@PathParam("groupId") int groupId, @QueryParam("name") String name,
+	public Response searchUserByNameForGroupInvite(@PathParam("groupId") long groupId, @QueryParam("name") String name,
 			@QueryParam("page") int page){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		List<GroupInviteUserSearchResult> users = groupBusinessService.searchUserByNameForGroupInvite(groupId, name, page);
@@ -101,7 +101,7 @@ public class GroupBusinessResource {
 	
 	@POST
 	@Path("/{groupId}/invite")
-	public Response inviteUsers(@PathParam("groupId") int groupId, List<Integer> userIds){
+	public Response inviteUsers(@PathParam("groupId") long groupId, List<Long> userIds){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		groupBusinessService.inviteUsers(groupId, userIds);
 		ResponseMessage responseMessage = new ResponseMessage();
@@ -111,7 +111,7 @@ public class GroupBusinessResource {
 	
 	@GET
 	@Path("/search")
-	public Response searchGroupByName(@PathParam("userId") int userId, @QueryParam("name") String name, 
+	public Response searchGroupByName(@PathParam("userId") long userId, @QueryParam("name") String name, 
 			@QueryParam("page") int page){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		List<GroupDetail> groupDetails = groupBusinessService.searchGroupByName(userId, name, page);
@@ -121,7 +121,7 @@ public class GroupBusinessResource {
 	
 	@GET
 	@Path("/{groupId}/membershiprequests")
-	public Response getUserMembershipRequests(@PathParam("groupId") int groupId, @QueryParam("page") int page){
+	public Response getUserMembershipRequests(@PathParam("groupId") long groupId, @QueryParam("page") int page){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		List<BasicMembershipRequest> membershipRequests = groupBusinessService.getGroupMembershipRequests(groupId, page);
 		GenericEntity<List<BasicMembershipRequest>> entity = new GenericEntity<List<BasicMembershipRequest>>(membershipRequests) {};
@@ -131,7 +131,7 @@ public class GroupBusinessResource {
 	@GET
 	//Reason for changing it to request to avoid confusion / typos between membershiprequest(s)
 	@Path("/{groupId}/request")
-	public Response getMembershipRequest(@PathParam("groupId") int groupId, @PathParam("userId") int userId){
+	public Response getMembershipRequest(@PathParam("groupId") long groupId, @PathParam("userId") long userId){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		BasicMembershipRequest membershipRequest = groupBusinessService.getMembershipRequest(groupId, userId);
 		return Response.ok().entity(membershipRequest).build();
@@ -139,7 +139,7 @@ public class GroupBusinessResource {
 	
 	@POST
 	@Path("/{groupId}/request")
-	public Response sendMembershipRequest(@PathParam("groupId") int groupId, @PathParam("userId") int userId, BasicMembershipRequest membershipRequest){
+	public Response sendMembershipRequest(@PathParam("groupId") long groupId, @PathParam("userId") long userId, BasicMembershipRequest membershipRequest){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		groupBusinessService.sendMembershipRequest(groupId, membershipRequest);
 		//Getting updated groupdetail in seperate transaction so that we get updated data
@@ -149,8 +149,8 @@ public class GroupBusinessResource {
 
 	@POST
 	@Path("/{groupId}/approverequest/{requesterUserId}")
-	public Response approveMembershipRequest(@PathParam("groupId") int groupId, @PathParam("userId") int userId,
-			@PathParam("requesterUserId") int requesterUserId, String remark){
+	public Response approveMembershipRequest(@PathParam("groupId") long groupId, @PathParam("userId") long userId,
+			@PathParam("requesterUserId") long requesterUserId, String remark){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		groupBusinessService.approveMembershipRequest(groupId, requesterUserId, remark);
 		//Getting updated groupdetail in seperate transaction so that we get updated data
@@ -160,8 +160,8 @@ public class GroupBusinessResource {
 	
 	@POST
 	@Path("/{groupId}/rejectrequest/{requesterUserId}")
-	public Response rejectMembershipRequest(@PathParam("groupId") int groupId, @PathParam("userId") int userId,
-			@PathParam("requesterUserId") int requesterUserId, String remark){
+	public Response rejectMembershipRequest(@PathParam("groupId") long groupId, @PathParam("userId") long userId,
+			@PathParam("requesterUserId") long requesterUserId, String remark){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		groupBusinessService.rejectMembershipRequest(groupId, requesterUserId, remark);
 		//Getting updated groupdetail in seperate transaction so that we get updated data
@@ -171,7 +171,7 @@ public class GroupBusinessResource {
 	
 	@POST
 	@Path("/{groupId}/feedback")
-	public Response giveFeedback(@PathParam("groupId") int groupId, @PathParam("userId") int memberUserId, GroupFeedbackInfo feedback){
+	public Response giveFeedback(@PathParam("groupId") long groupId, @PathParam("userId") long memberUserId, GroupFeedbackInfo feedback){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		groupBusinessService.giveFeedback(groupId, memberUserId, feedback);
 		//Getting updated groupdetail in seperate transaction so that we get updated data
@@ -181,7 +181,7 @@ public class GroupBusinessResource {
 	
 	@GET
 	@Path("/{groupId}/leave")
-	public Response leaveGroup(@PathParam("groupId") int groupId, @PathParam("userId") int userId){
+	public Response leaveGroup(@PathParam("groupId") long groupId, @PathParam("userId") long userId){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		groupBusinessService.leaveGroup(groupId, userId);
 		//Getting updated groupdetail in seperate transaction so that we get updated data
@@ -191,7 +191,7 @@ public class GroupBusinessResource {
 	
 	@POST
 	@Path("/{groupId}/updatemembershipform")
-	public Response updateMembershipForm(@PathParam("groupId") int groupId, @PathParam("userId") int userId, 
+	public Response updateMembershipForm(@PathParam("groupId") long groupId, @PathParam("userId") long userId, 
 			MembershipForm form) {
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		groupBusinessService.updateMembershipForm(groupId, form);
@@ -202,15 +202,15 @@ public class GroupBusinessResource {
 	
 	@GET
 	@Path("/{groupId}/addadmin/{memberUserId}")
-	public Response addAdmin(@PathParam("groupId") int groupId, @PathParam("userId") int signedInUserId, 
-			@PathParam("memberUserId") int memberUserId){
+	public Response addAdmin(@PathParam("groupId") long groupId, @PathParam("userId") long signedInUserId, 
+			@PathParam("memberUserId") long memberUserId){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		groupBusinessService.addAdmin(signedInUserId, groupId, memberUserId);
 		GroupMember member = groupBusinessService.getMember(groupId, memberUserId);
 		return Response.ok().entity(member).build();
 	}
 	
-	public Response getMember(@PathParam("groupId") int groupId, @PathParam("userId") int memberUserId){
+	public Response getMember(@PathParam("groupId") long groupId, @PathParam("userId") long memberUserId){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		GroupMember member = groupBusinessService.getMember(groupId, memberUserId);
 		return Response.ok().entity(member).build();
@@ -218,8 +218,8 @@ public class GroupBusinessResource {
 	
 	@GET
 	@Path("/{groupId}/removemember/{memberUserId}")
-	public Response removeMember(@PathParam("groupId") int groupId, @PathParam("userId") int signedInUserId,
-			@PathParam("memberUserId") int memberUserId){
+	public Response removeMember(@PathParam("groupId") long groupId, @PathParam("userId") long signedInUserId,
+			@PathParam("memberUserId") long memberUserId){
 		GroupBusinessService groupBusinessService = new GroupBusinessService();
 		groupBusinessService.removeMember(signedInUserId, groupId, memberUserId);
 		ResponseMessage responseMessage = new ResponseMessage();

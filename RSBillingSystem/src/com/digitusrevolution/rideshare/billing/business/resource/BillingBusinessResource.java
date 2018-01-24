@@ -31,7 +31,7 @@ public class BillingBusinessResource {
 	 */
 	@POST
 	@Path("/{number}/approve")
-	public Response approveBill(@PathParam("number") int billNumber){
+	public Response approveBill(@PathParam("number") long billNumber){
 		BillingBusinessService billingBusinessService = new BillingBusinessService();
 		billingBusinessService.approveBill(billNumber);
 		return Response.ok().build();
@@ -44,7 +44,7 @@ public class BillingBusinessResource {
 	 */
 	@POST
 	@Path("/{number}/reject")
-	public Response rejectBill(@PathParam("number") int billNumber){
+	public Response rejectBill(@PathParam("number") long billNumber){
 		BillingBusinessService billingBusinessService = new BillingBusinessService();
 		billingBusinessService.rejectBill(billNumber);
 		return Response.ok().build();

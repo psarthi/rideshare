@@ -7,7 +7,7 @@ public class RideRequestPoint {
 	
 	private String _id;
 	private Point point = new Point();
-	private int rideRequestId;
+	private long rideRequestId;
 	private ZonedDateTime dateTime;
 	private LocalTime timeVariation;
 	private int distanceVariation;
@@ -24,10 +24,10 @@ public class RideRequestPoint {
 	public void setPoint(Point point) {
 		this.point = point;
 	}
-	public int getRideRequestId() {
+	public long getRideRequestId() {
 		return rideRequestId;
 	}
-	public void setRideRequestId(int rideRequestId) {
+	public void setRideRequestId(long rideRequestId) {
 		this.rideRequestId = rideRequestId;
 	}
 	public ZonedDateTime getDateTime() {

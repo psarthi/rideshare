@@ -4,16 +4,16 @@ import java.time.ZonedDateTime;
 
 public class RecurringDetail {
 	
-	private int id;
+	private long id;
 	private ZonedDateTime startDate;
 	private ZonedDateTime endDate;
 	private String repeatFrequency;
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

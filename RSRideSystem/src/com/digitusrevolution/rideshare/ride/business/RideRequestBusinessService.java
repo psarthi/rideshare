@@ -35,11 +35,11 @@ public class RideRequestBusinessService {
 	private static final Logger logger = LogManager.getLogger(RideRequestBusinessService.class.getName());
 
 
-	public int requestRide(BasicRideRequest rideRequest){
+	public long requestRide(BasicRideRequest rideRequest){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		int rideRequestId = 0;
+		long rideRequestId = 0;
 		try {
 			transaction = session.beginTransaction();
 
@@ -90,7 +90,7 @@ public class RideRequestBusinessService {
 		return rideRequestId;
 	}
 
-	public RideRequestResult getRideRequestResult(int rideRequestId){
+	public RideRequestResult getRideRequestResult(long rideRequestId){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -126,7 +126,7 @@ public class RideRequestBusinessService {
 		return rideRequestResult;
 	}
 
-	public List<BasicRideRequest> getRideRequests(int passengerId, int page){
+	public List<BasicRideRequest> getRideRequests(long passengerId, int page){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		List<BasicRideRequest> basicRideRequests = new ArrayList<>();
@@ -157,7 +157,7 @@ public class RideRequestBusinessService {
 		return basicRideRequests;
 	}
 
-	public FullRideRequest getRideRequest(int rideRequestId){
+	public FullRideRequest getRideRequest(long rideRequestId){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -187,7 +187,7 @@ public class RideRequestBusinessService {
 		return fullRideRequest;
 	}
 
-	public FullRideRequest getCurrentRideRequest(int passengerId){
+	public FullRideRequest getCurrentRideRequest(long passengerId){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
@@ -217,7 +217,7 @@ public class RideRequestBusinessService {
 		return fullRideRequest;
 	}
 
-	public void cancelRideRequest(int rideRequestId){
+	public void cancelRideRequest(long rideRequestId){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -242,7 +242,7 @@ public class RideRequestBusinessService {
 		}
 	}
 
-	public void cancelDriver(int rideId, int rideRequestId, float rating){
+	public void cancelDriver(long rideId, long rideRequestId, float rating){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
@@ -275,7 +275,7 @@ public class RideRequestBusinessService {
 		}
 	}
 
-	public boolean validatePaymentConfirmationCode(int rideRequestId, String code){
+	public boolean validatePaymentConfirmationCode(long rideRequestId, String code){
 		RideRequestDomainService rideRequestDomainService = new RideRequestDomainService();
 		RideRequest rideRequest = rideRequestDomainService.get(rideRequestId, false);
 		if (rideRequest.getConfirmationCode().equals(code)) return true;

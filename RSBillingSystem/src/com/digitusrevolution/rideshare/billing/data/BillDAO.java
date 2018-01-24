@@ -16,7 +16,7 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.BillStatus;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
-public class BillDAO extends GenericDAOImpl<BillEntity, Integer>{
+public class BillDAO extends GenericDAOImpl<BillEntity, Long>{
 	
 	private static final Class<BillEntity> entityClass = BillEntity.class;
 
@@ -27,7 +27,7 @@ public class BillDAO extends GenericDAOImpl<BillEntity, Integer>{
 	/*
 	 * Purpose - Get the status of bill
 	 */
-	public BillStatus getStatus(int billNumber){
+	public BillStatus getStatus(long billNumber){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
 		BillStatus status = (BillStatus) criteria.add(Restrictions.eq("number",billNumber))

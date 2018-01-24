@@ -37,7 +37,7 @@ public class RideOfferBusinessResource {
 	public Response offerRide(RideOfferInfo rideOfferInfo){
 	
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		int id = rideOfferBusinessService.offerRide(rideOfferInfo);
+		long id = rideOfferBusinessService.offerRide(rideOfferInfo);
 		//Since we are trying to get all data before even committing, all child objects may not come so its cleaner to have getAllData post commit in different transaction
 		RideOfferResult rideOfferResult = rideOfferBusinessService.getRideOfferResult(id);
 		return Response.ok(rideOfferResult).build();
@@ -45,7 +45,7 @@ public class RideOfferBusinessResource {
 	
 	@GET
 	@Path("/user/{id}")
-	public Response getRides(@PathParam("id") int id, @QueryParam("page") int page){
+	public Response getRides(@PathParam("id") long id, @QueryParam("page") int page){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
 		List<BasicRide> rides = rideOfferBusinessService.getRides(id, page);
 		GenericEntity<List<BasicRide>> entity = new GenericEntity<List<BasicRide>>(rides) {};
@@ -54,7 +54,7 @@ public class RideOfferBusinessResource {
 	
 	@GET
 	@Path("/{id}")
-	public Response getRide(@PathParam("id") int id){
+	public Response getRide(@PathParam("id") long id){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
 		FullRide ride = rideOfferBusinessService.getRide(id);
 		return Response.ok(ride).build();
@@ -67,7 +67,7 @@ public class RideOfferBusinessResource {
 	 */
 	@GET
 	@Path("/current/{driverId}")
-	public Response getCurrentRide(@PathParam("driverId") int driverId){
+	public Response getCurrentRide(@PathParam("driverId") long driverId){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
 		FullRide ride = rideOfferBusinessService.getCurrentRide(driverId);
 		if (ride==null) {
@@ -83,7 +83,7 @@ public class RideOfferBusinessResource {
 	 */
 	@GET
 	@Path("/start/{rideId}")
-	public Response startRide(@PathParam("rideId") int rideId){
+	public Response startRide(@PathParam("rideId") long rideId){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
 		rideOfferBusinessService.startRide(rideId);
 		//This will ensure that we are getting fully updated data once transaction is committed
@@ -99,7 +99,7 @@ public class RideOfferBusinessResource {
 	 */
 	@GET
 	@Path("/end/{rideId}")
-	public Response endRide(@PathParam("rideId") int rideId){
+	public Response endRide(@PathParam("rideId") long rideId){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
 		rideOfferBusinessService.endRide(rideId);
 		//This will ensure that we are getting fully updated data once transaction is committed
@@ -115,7 +115,7 @@ public class RideOfferBusinessResource {
 	 */
 	@GET
 	@Path("/cancel/{rideId}")
-	public Response cancelRide(@PathParam("rideId") int rideId){
+	public Response cancelRide(@PathParam("rideId") long rideId){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
 		rideOfferBusinessService.cancelRide(rideId);
 		//This will ensure that we are getting fully updated data once transaction is committed
@@ -132,7 +132,7 @@ public class RideOfferBusinessResource {
 	 */
 	@GET
 	@Path("{rideId}/cancelpassenger/{rideRequestId}")
-	public Response cancelPassenger(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId, @QueryParam("rating") float rating){
+	public Response cancelPassenger(@PathParam("rideId") long rideId, @PathParam("rideRequestId") long rideRequestId, @QueryParam("rating") float rating){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
 		rideOfferBusinessService.cancelPassenger(rideId, rideRequestId, rating);
 		//This will ensure that we are getting fully updated data once transaction is committed
@@ -149,7 +149,7 @@ public class RideOfferBusinessResource {
 	 */
 	@GET
 	@Path("/{rideId}/pickup/{rideRequestId}")
-	public Response pickupPassenger(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId){
+	public Response pickupPassenger(@PathParam("rideId") long rideId, @PathParam("rideRequestId") long rideRequestId){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
 		rideOfferBusinessService.pickupPassenger(rideId, rideRequestId);
 		//This will ensure that we are getting fully updated data once transaction is committed
@@ -166,7 +166,7 @@ public class RideOfferBusinessResource {
 	 */
 	@GET
 	@Path("/{rideId}/drop/{rideRequestId}")
-	public Response dropPassenger(@PathParam("rideId") int rideId, @PathParam("rideRequestId") int rideRequestId, 
+	public Response dropPassenger(@PathParam("rideId") long rideId, @PathParam("rideRequestId") long rideRequestId, 
 			@QueryParam("ridemode") RideMode rideMode, @QueryParam("paymentcode") String paymentCode){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
 		rideOfferBusinessService.dropPassenger(rideId, rideRequestId, rideMode, paymentCode);

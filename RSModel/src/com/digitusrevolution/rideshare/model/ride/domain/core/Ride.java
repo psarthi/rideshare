@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 public class Ride implements Comparable<Ride>{
 
 	//id data type needs to be finalized later, whether to use int, long, string
-	private int id;
+	private long id;
 	private ZonedDateTime startTime;
 	private ZonedDateTime endTime;
 	private RidePoint startPoint = new RidePoint();
@@ -49,10 +49,10 @@ public class Ride implements Comparable<Ride>{
 	private int travelDistance;
 	private RideMode rideMode;
 	
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public ZonedDateTime getStartTime() {
@@ -162,7 +162,7 @@ public class Ride implements Comparable<Ride>{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
+		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
 
@@ -195,7 +195,7 @@ public class Ride implements Comparable<Ride>{
 	public void setSeatStatus(RideSeatStatus seatStatus) {
 		this.seatStatus = seatStatus;
 	}
-	public RideRequest getRideRequestOfPassenger(int passengerId){
+	public RideRequest getRideRequestOfPassenger(long passengerId){
 		Collection<RideRequest> acceptedRideRequests = getAcceptedRideRequests();
 		for (RideRequest rideRequest : acceptedRideRequests) {
 			if (rideRequest.getPassenger().getId() == passengerId){
@@ -204,7 +204,7 @@ public class Ride implements Comparable<Ride>{
 		}
 		throw new RuntimeException("Ride Request not found for passenger id:"+passengerId);
 	}
-	public RidePassenger getRidePassenger(int passengerId){
+	public RidePassenger getRidePassenger(long passengerId){
 		Collection<RidePassenger> passengers = getRidePassengers();
 		for (RidePassenger ridePassenger : passengers) {
 			if (ridePassenger.getPassenger().getId() == passengerId){
@@ -244,7 +244,7 @@ public class Ride implements Comparable<Ride>{
 		//return this.id - ride.id;
 
 		//descending order
-		return ride.id - this.id;
+		return Long.compare(ride.id, this.id);
 	}
 
 	

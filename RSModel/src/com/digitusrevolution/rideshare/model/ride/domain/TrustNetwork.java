@@ -8,15 +8,15 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 public class TrustNetwork {
 	
-	private int id;
+	private long id;
 	private Collection<TrustCategory> trustCategories = new HashSet<TrustCategory>();
 	private Collection<User> friends = new HashSet<User>();
 	private Collection<Group> groups = new HashSet<Group>();
 	
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public Collection<TrustCategory> getTrustCategories() {
@@ -41,10 +41,7 @@ public class TrustNetwork {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((friends == null) ? 0 : friends.hashCode());
-		result = prime * result + ((groups == null) ? 0 : groups.hashCode());
-		result = prime * result + id;
-		result = prime * result + ((trustCategories == null) ? 0 : trustCategories.hashCode());
+		result = prime * result + (int) (id ^ (id >>> 32));
 		return result;
 	}
 	@Override
@@ -59,28 +56,7 @@ public class TrustNetwork {
 			return false;
 		}
 		TrustNetwork other = (TrustNetwork) obj;
-		if (friends == null) {
-			if (other.friends != null) {
-				return false;
-			}
-		} else if (!friends.equals(other.friends)) {
-			return false;
-		}
-		if (groups == null) {
-			if (other.groups != null) {
-				return false;
-			}
-		} else if (!groups.equals(other.groups)) {
-			return false;
-		}
 		if (id != other.id) {
-			return false;
-		}
-		if (trustCategories == null) {
-			if (other.trustCategories != null) {
-				return false;
-			}
-		} else if (!trustCategories.equals(other.trustCategories)) {
 			return false;
 		}
 		return true;
