@@ -498,6 +498,33 @@ public class GroupBusinessService {
 		}
 		return groupMember;
 	}
+	
+	public boolean isGroupNameExist(String name) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		boolean status = false;
+		try {
+			transaction = session.beginTransaction();
+			
+			GroupDO groupDO = new GroupDO();
+			status = groupDO.isGroupNameExist(name);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return status;
+	}
 }
 
 

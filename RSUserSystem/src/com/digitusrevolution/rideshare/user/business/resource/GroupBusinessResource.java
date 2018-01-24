@@ -226,6 +226,16 @@ public class GroupBusinessResource {
 		responseMessage.setStatus(ResponseMessage.Code.OK);
 		return Response.ok(responseMessage).build();
 	}
+	
+	@GET
+	@Path("/checkgroupexist/{name}")
+	public Response isGroupNameExist(@PathParam("name") String name) {
+		GroupBusinessService groupBusinessService = new GroupBusinessService();
+		boolean status = groupBusinessService.isGroupNameExist(name);
+		ResponseMessage responseMessage = new ResponseMessage();
+		responseMessage.setResult(Boolean.toString(status));
+		return Response.ok(responseMessage).build();
+	}
 
 }
 

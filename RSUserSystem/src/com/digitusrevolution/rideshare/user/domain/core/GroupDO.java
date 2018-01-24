@@ -135,31 +135,37 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 	 * Purpose - Create group by setting additional properties such as createdDate, Owner etc.
 	 */
 	public int createGroup(Group group, byte[] rawImage){
-		ZonedDateTime currentTimeInUTC = DateTimeUtil.getCurrentTimeInUTC();
-		group.setCreatedDateTime(currentTimeInUTC);
-		UserDO userDO = new UserDO();
-		User user = userDO.get(group.getOwner().getId());
-		group.setOwner(user);
-		//Its important to add owner as group member as well
-		group.getMembers().add(user);
-		//Its important to add owner as group admin as well
-		group.getAdmins().add(user);
-		//Storing group Photo
-		if (rawImage!=null) {
-			String filePath = saveRawImage(rawImage, group);
-			if (filePath!=null) {
-				String photoUrl = PropertyReader.getInstance().getProperty("PHOTO_WEB_URL");
-				String groupPhotoUrl = photoUrl + filePath;
-				Photo photo = new Photo();
-				photo.setImageLocation(groupPhotoUrl);
-				group.setPhoto(photo);							
+		if (!isGroupNameExist(group.getName())) {
+			ZonedDateTime currentTimeInUTC = DateTimeUtil.getCurrentTimeInUTC();
+			group.setCreatedDateTime(currentTimeInUTC);
+			UserDO userDO = new UserDO();
+			User user = userDO.get(group.getOwner().getId());
+			group.setOwner(user);
+			//Its important to add owner as group member as well
+			group.getMembers().add(user);
+			//Its important to add owner as group admin as well
+			group.getAdmins().add(user);
+			//Storing group Photo
+			if (rawImage!=null) {
+				String filePath = saveRawImage(rawImage, group);
+				if (filePath!=null) {
+					String photoUrl = PropertyReader.getInstance().getProperty("PHOTO_WEB_URL");
+					String groupPhotoUrl = photoUrl + filePath;
+					Photo photo = new Photo();
+					photo.setImageLocation(groupPhotoUrl);
+					group.setPhoto(photo);							
+				}
 			}
+			int id = create(group);
+			return id;			
+		} else {
+			throw new NotAcceptableException("Group already exist with the same name");
 		}
-		int id = create(group);
-		return id;
 	}
 	
 	public void updateGroup(Group updatedGroup, byte[] rawImage) {
+		//Don't check if groupExist with same name otherwise we will never be able to update the group as this group itself would exist
+		//Don't allow modification of name from frontend, otherwise it will unnecessarily become complicated
 		group = getAllData(updatedGroup.getId());
 		group.setName(updatedGroup.getName());
 		group.setInformation(updatedGroup.getInformation());
@@ -697,6 +703,14 @@ public class GroupDO implements DomainObjectPKInteger<Group>{
 		groups = (LinkedList<Group>) groupMapper.getDomainModels(groups, groupEntities, false);
 		Collections.sort(groups);
 		return getGroupDetails(userId, groups);
+	}
+	
+	public boolean isGroupNameExist(String name) {
+		Set<GroupEntity> groupEntities = groupDAO.searchGroupByName(name, 0);
+		if (groupEntities.size()!=0) {
+			return true;
+		} 
+		return false;
 	}
 
 	/*

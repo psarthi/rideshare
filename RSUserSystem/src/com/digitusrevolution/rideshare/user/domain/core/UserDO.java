@@ -530,10 +530,10 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		return groupDO.getGroupDetails(userId, groups);
 	}
 	
-	public List<GroupDetail> getCommonGroups(int userId, int secondUserId){
+	public List<GroupDetail> getCommonGroups(int userId, int signedInUserId){
 		//Don't call getGroups which will avoid unnecessary further calls when using mapper
 		List<GroupEntity> firstGroupEntities = userDAO.getGroups(userId);
-		List<GroupEntity> secondGroupEntities = userDAO.getGroups(secondUserId);		
+		List<GroupEntity> secondGroupEntities = userDAO.getGroups(signedInUserId);		
 		firstGroupEntities.retainAll(secondGroupEntities);		
 		
 		LinkedList<Group> groups = new LinkedList<>();
@@ -543,7 +543,9 @@ public class UserDO implements DomainObjectPKInteger<User>{
 		//this will sort the list further
 		Collections.sort(groups);
 		GroupDO groupDO = new GroupDO();
-		return groupDO.getGroupDetails(userId, groups);
+		//VERY IMP - Its very important to get memebership status of all groups against the signedInUser and not userId for which you are requesting profile
+		//as group membership status plays very important role in making lots of decision on frontend
+		return groupDO.getGroupDetails(signedInUserId, groups);
 	}
 	
 	

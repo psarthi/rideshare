@@ -138,10 +138,12 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Integer>{
 		//e.g if you have 20 groups of the same name, then order of that can be anything and since we are just getting 
 		//sublist from the whole list, you may miss items
 		//So, ensure that your order by should be unique when you are using sublist
+		//24th Jan - NOTE - We have now again sorted by name as we have enabled unique name for groups, we can't have duplicates
+		//so above statement would not hold good for groups
 		Criteria criteria = session.createCriteria(entityClass)
 				.add(Restrictions.eq("id", userId))
 				.createCriteria(subCriteriaAssociationPath, "grp",JoinType.RIGHT_OUTER_JOIN)
-					.addOrder(Order.asc("id"))
+					.addOrder(Order.asc("name").ignoreCase())
 					.setFirstResult(startIndex)
 					.setMaxResults(resultLimit)
 					.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);

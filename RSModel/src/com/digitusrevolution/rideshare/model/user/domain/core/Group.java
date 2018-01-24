@@ -200,7 +200,8 @@ public class Group implements Comparable<Group>{
 	public int compareTo(Group group) {
 		//Negative number is desc order, positive is asc order
 		//This will return in assending order
-		return this.name.compareTo(group.name);
+		//Changing it to upper case so that we are comparing the group name properly by ignoring the case
+		return this.name.toUpperCase().compareTo(group.name.toUpperCase());
 	}
 }
 

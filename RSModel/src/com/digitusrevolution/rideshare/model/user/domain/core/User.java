@@ -336,7 +336,8 @@ public class User implements Comparable<User>{
 	public int compareTo(User user) {
 		//Negative number is desc order, positive is asc order
 		//This will return in assending order
-		return this.firstName.compareTo(user.firstName);
+		//Changing it to upper case so that we are comparing the user name properly by ignoring the case
+		return this.firstName.toUpperCase().compareTo(user.firstName.toUpperCase());
 	}
 
 	public Collection<MembershipRequest> getMembershipRequests() {
