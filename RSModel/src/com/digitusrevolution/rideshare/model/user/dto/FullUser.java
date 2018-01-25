@@ -18,7 +18,6 @@ public class FullUser extends BasicUser {
 	//Don't change this to FullRide or FullRideRequest as it will unnecessarily cause load on the system 
 	//which is not required as if we need details Ride Request or Ride, then we should call Ride Server and not User Service
 	private Collection<BasicRide> ridesOffered = new HashSet<BasicRide>();
-	private Collection<BasicRide> ridesTaken = new HashSet<BasicRide>();
 	private Collection<BasicRideRequest> rideRequests = new HashSet<BasicRideRequest>();
 	private Collection<Bill> bills = new HashSet<Bill>();
 	private Collection<UserFeedback> feedbacks = new LinkedList<UserFeedback>();
@@ -72,14 +71,6 @@ public class FullUser extends BasicUser {
 
 	public void setRidesOffered(Collection<BasicRide> ridesOffered) {
 		this.ridesOffered = ridesOffered;
-	}
-
-	public Collection<BasicRide> getRidesTaken() {
-		return ridesTaken;
-	}
-
-	public void setRidesTaken(Collection<BasicRide> ridesTaken) {
-		this.ridesTaken = ridesTaken;
 	}
 
 	public Collection<UserFeedback> getFeedbacks() {

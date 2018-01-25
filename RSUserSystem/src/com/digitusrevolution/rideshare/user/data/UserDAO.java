@@ -104,7 +104,6 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Long>{
 		Criteria criteria = session.createCriteria(entityClass)
 				.add(Restrictions.eq("id", userId))
 				.createCriteria("ridesOffered", JoinType.RIGHT_OUTER_JOIN)
-				.add(Restrictions.eq("status", RideStatus.Finished))
 				.setProjection(Projections.rowCount());
 		int size = (int) Long.parseLong(criteria.uniqueResult().toString());
 		return size;
@@ -113,12 +112,11 @@ public class UserDAO extends GenericDAOImpl<UserEntity,Long>{
 	//IMP - Even though the name of the function makes you think to use ridesTaken membervariable and get the count
 	//but that would not fetch the required result as ridesTaken holds all the matched ride
 	//but if you want only dropped ride request, then use ride request with passenger status
-	public int getRidesTaken(long userId) {
+	public int getRideRequests(long userId) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass)
 				.add(Restrictions.eq("id", userId))
 				.createCriteria("rideRequests", JoinType.RIGHT_OUTER_JOIN)
-				.add(Restrictions.eq("passengerStatus", PassengerStatus.Dropped))
 				.setProjection(Projections.rowCount());
 		int size = (int) Long.parseLong(criteria.uniqueResult().toString());
 		return size;

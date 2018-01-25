@@ -495,7 +495,7 @@ public class UserDO implements DomainObjectPKLong<User>{
 		userProfile.setUser(JsonObjectMapper.getMapper().convertValue(user, BasicUser.class));
 		
 		userProfile.setOfferedRides(userDAO.getRidesOffered(userId));	
-		userProfile.setRidesTaken(userDAO.getRidesTaken(userId));
+		userProfile.setRequestedRides(userDAO.getRideRequests(userId));
 		
 		userProfile.setCommonGroups(getCommonGroups(userId, signedInUserId));
 		

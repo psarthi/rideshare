@@ -192,18 +192,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		RideMapper rideMapper = new RideMapper();
 		//Don't get childs of rides as it will get into recursive loop as ride has driver and driver has rides
 		user.setRidesOffered(rideMapper.getDomainModels(user.getRidesOffered(), userEntity.getRidesOffered(), false));
-		
-		//We are setting the ride entity here itself instead of calling Mapper class, 
-		//as RidePassenger and RidePassengerEntity is not standard classes, Entity is having all fields required for hibernate and DB mapping
-		//But domain model class (RidePassenger) is as per requirement of model only and we can't use RidePassenger mapper here
-		//as user is holding Rides instead of RidePassenger
-		Collection<RidePassengerEntity> ridePassengerEntities = userEntity.getRidesTaken();
-		Collection<RideEntity> rideEntities = new HashSet<>();
-		for (RidePassengerEntity ridePassengerEntity : ridePassengerEntities) {
-			rideEntities.add(ridePassengerEntity.getRide());
-		}		
-		user.setRidesTaken(rideMapper.getDomainModels(user.getRidesTaken(), rideEntities, false));
-		
+				
 		RideRequestMapper rideRequestMapper = new RideRequestMapper();
 		//Don't get childs of ride request as it will get into recursive loop as ride request has passenger and passenger has rides
 		user.setRideRequests(rideRequestMapper.getDomainModels(user.getRideRequests(), userEntity.getRideRequests(), false));

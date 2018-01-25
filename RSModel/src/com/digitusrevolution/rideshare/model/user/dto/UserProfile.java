@@ -5,7 +5,7 @@ import java.util.List;
 public class UserProfile {
 	
 	private BasicUser user;
-	private int ridesTaken;
+	private int requestedRides;
 	private int offeredRides;
 	private List<GroupDetail> commonGroups;
 	
@@ -15,11 +15,11 @@ public class UserProfile {
 	public void setUser(BasicUser user) {
 		this.user = user;
 	}
-	public int getRidesTaken() {
-		return ridesTaken;
+	public int getRequestedRides() {
+		return requestedRides;
 	}
-	public void setRidesTaken(int ridesTaken) {
-		this.ridesTaken = ridesTaken;
+	public void setRequestedRides(int requestedRides) {
+		this.requestedRides = requestedRides;
 	}
 	public int getOfferedRides() {
 		return offeredRides;

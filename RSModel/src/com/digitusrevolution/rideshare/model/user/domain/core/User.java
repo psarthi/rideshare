@@ -47,10 +47,6 @@ public class User implements Comparable<User>{
 	private Collection<Account> accounts = new HashSet<Account>();
 	//@JsonIdentityReference(alwaysAsId=true)
 	private Collection<Ride> ridesOffered = new HashSet<Ride>();
-	//Imp - This would hold all rides which has matched and not taken
-	//TODO - Logically we can explore to remove this as well as we can get the same result from ride request 
-	//with passengerStatus column as well
-	private Collection<Ride> ridesTaken = new HashSet<Ride>();
 	private Collection<RideRequest> rideRequests = new HashSet<RideRequest>();
 	private Collection<Bill> bills = new HashSet<Bill>();
 
@@ -190,15 +186,6 @@ public class User implements Comparable<User>{
 	public void setRidesOffered(Collection<Ride> ridesOffered) {
 		this.ridesOffered = ridesOffered;
 	}
-
-	public Collection<Ride> getRidesTaken() {
-		return ridesTaken;
-	}
-
-	public void setRidesTaken(Collection<Ride> ridesTaken) {
-		this.ridesTaken = ridesTaken;
-	}
-
 	public State getState() {
 		return state;
 	}

@@ -69,6 +69,11 @@ public class RideEntity {
 	private UserEntity driver;
 	//Reason for Many to many relationship, as one ride can have many users who is passenger 
 	//and one user can be part of many rides as different passenger
+	//We have broken Many to Many relationship to OneToMany so that we can have mapping of ride and users
+	//we could have used ride request to find the passenger details but originally this option was used to store passenger
+	//instead of storing in ride request, so need to think through properly if this has to be removed
+	//Apart from that, it would also help you to get the list of passenger without fetching the ride request and 
+	//then fetching passenger, this can also be handy data which is relevant many times, so just keep it as it is 
 	@OneToMany(mappedBy="ride", cascade=CascadeType.ALL)
 	private Collection<RidePassengerEntity> ridePassengers = new HashSet<RidePassengerEntity>();
 	//Reason for one to many relationship, as one ride can accept many ride requests 

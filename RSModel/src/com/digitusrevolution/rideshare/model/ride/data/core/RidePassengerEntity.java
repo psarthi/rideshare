@@ -17,6 +17,9 @@ import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
  * Purpose of this class is to break ManyToMany relationship between Ride and User to OneToMany from both sides,
  * so that we can add extra fields of passenger such as Passenger Status
  * 
+ * Note - We don't want to maintain seperate relationship of rides from user, as we are already storing 
+ * offered rides and ride request in user
+ * 
  */
 @Entity
 @Table(name="ride_passenger")

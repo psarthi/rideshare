@@ -90,14 +90,7 @@ public class UserEntity {
 	
 	@OneToMany(mappedBy="driver")
 	private Collection<RideEntity> ridesOffered = new HashSet<RideEntity>();
-	
-	//Reason for Many to Many relationship, as one user can take many rides and 
-	//one ride can have many users as passenger
-	//Imp - This would hold all rides which has matched and not taken
-	//TODO - Logically we can explore to remove this as well as we can get the same result from ride request 
-	//with passengerStatus column as well
-	@OneToMany(mappedBy="passenger")
-	private Collection<RidePassengerEntity> ridesTaken = new HashSet<RidePassengerEntity>();
+
 	//Reason for One to Many relationship, as one user can raise many ride request
 	//but one ride request can be raised by only one user acting as passenger
 	@OneToMany(mappedBy="passenger")
@@ -269,15 +262,6 @@ public class UserEntity {
 	public void setRidesOffered(Collection<RideEntity> ridesOffered) {
 		this.ridesOffered = ridesOffered;
 	}
-
-	public Collection<RidePassengerEntity> getRidesTaken() {
-		return ridesTaken;
-	}
-
-	public void setRidesTaken(Collection<RidePassengerEntity> ridesTaken) {
-		this.ridesTaken = ridesTaken;
-	}
-
 	public StateEntity getState() {
 		return state;
 	}
