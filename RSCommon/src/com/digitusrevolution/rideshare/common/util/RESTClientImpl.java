@@ -34,7 +34,7 @@ public class RESTClientImpl<T> implements RESTClient<T>{
 	private final Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class)).register(JacksonJsonProvider.class)
 			.register(ObjectMapperContextResolver.class);
 	//Note - We are using -1 as user id so that we can create dummy token for internal use
-	private final long systemId = -1;
+	private final long systemId = Long.valueOf(PropertyReader.getInstance().getProperty("SYSTEM_INTERNAL_USER_ID"));
 	
 	@Override
 	public Response get(URI uri) {

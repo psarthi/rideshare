@@ -28,7 +28,7 @@ public class RideSystemBusinessResource {
 	 */
 	@Secured
 	@GET
-	@Path("/current/rides/{userId}")
+	@Path("/currentrides")
 	public Response getCurrentRide(@Context ContainerRequestContext requestContext, @PathParam("userId") long userId){
 		if (AuthService.getInstance().validateTokenClaims(userId, requestContext)) {
 			RideSystemBusinessService rideSystemBusinessService = new RideSystemBusinessService();

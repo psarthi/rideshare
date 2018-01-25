@@ -61,12 +61,11 @@ public class RideRequestBusinessResource {
 
 	@Secured
 	@GET
-	@Path("/user/{id}")
-	public Response getRideRequests(@Context ContainerRequestContext requestContext, @PathParam("userId") long userId,
-			@PathParam("id") long id, @QueryParam("page") int page){
+	public Response getRideRequests(@Context ContainerRequestContext requestContext, 
+			@PathParam("userId") long userId,@QueryParam("page") int page){
 		if (AuthService.getInstance().validateTokenClaims(userId, requestContext)) {
 			RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
-			List<BasicRideRequest> rideRequests = rideRequestBusinessService.getRideRequests(id, page);
+			List<BasicRideRequest> rideRequests = rideRequestBusinessService.getRideRequests(userId, page);
 			GenericEntity<List<BasicRideRequest>> entity = new GenericEntity<List<BasicRideRequest>>(rideRequests) {};
 			return Response.ok(entity).build();			
 		}else {
@@ -95,14 +94,13 @@ public class RideRequestBusinessResource {
 	 */
 	@Secured
 	@GET
-	@Path("/current/{passengerId}")
-	public Response getCurrentRideRequest(@Context ContainerRequestContext requestContext, @PathParam("userId") long userId,
-			@PathParam("passengerId") long passengerId){
+	@Path("/current")
+	public Response getCurrentRideRequest(@Context ContainerRequestContext requestContext, @PathParam("userId") long userId){
 		if (AuthService.getInstance().validateTokenClaims(userId, requestContext)) {
 			RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
-			FullRideRequest rideRequest = rideRequestBusinessService.getCurrentRideRequest(passengerId);
+			FullRideRequest rideRequest = rideRequestBusinessService.getCurrentRideRequest(userId);
 			if (rideRequest==null) {
-				throw new NotFoundException("No current ride request for the user id:"+passengerId);
+				throw new NotFoundException("No current ride request for the user id:"+userId);
 			}
 			return Response.ok().entity(rideRequest).build();			
 		}else {

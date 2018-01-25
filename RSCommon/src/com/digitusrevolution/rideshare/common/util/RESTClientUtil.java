@@ -40,6 +40,9 @@ import com.digitusrevolution.rideshare.model.user.dto.UserFeedbackInfo;
  *
  */
 public class RESTClientUtil {
+	
+	//Note - We are using -1 as user id so that we can create dummy token for internal use
+	private static final long systemId = Long.valueOf(PropertyReader.getInstance().getProperty("SYSTEM_INTERNAL_USER_ID"));
 
 	public static User getUser(long id){
 
@@ -240,7 +243,8 @@ public class RESTClientUtil {
 		RESTClientImpl<BillInfo> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("BILL_PAYMENT_URL");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build();
+		//We are passing systemId as its an internal call and we need to pass the id in URL
+		URI uri = uriBuilder.build(Long.toString(systemId));
 		Response response = restClientUtil.post(uri, billInfo);
 		if (response.getStatus() == Status.OK.getStatusCode()) {
 			return true;
@@ -252,7 +256,7 @@ public class RESTClientUtil {
 		RESTClientImpl<Account> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("ADD_MONEY_TO_WALLET");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(Long.toString(accountNumber), Float.toString(amount));
+		URI uri = uriBuilder.build(Long.toString(systemId), Long.toString(accountNumber), Float.toString(amount));
 		Response response = restClientUtil.get(uri);
 		if (response.getStatus() == Status.OK.getStatusCode()) {
 			Account account= response.readEntity(Account.class);
@@ -278,8 +282,7 @@ public class RESTClientUtil {
 		RESTClientImpl<BasicUser> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_PENDING_BILLS");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build();
-		
+		URI uri = uriBuilder.build(Long.toString(systemId));
 		Response response = restClientUtil.post(uri, passenger);
 		List<Bill> bills = response.readEntity(new GenericType<List<Bill>>() {});
 		return bills;

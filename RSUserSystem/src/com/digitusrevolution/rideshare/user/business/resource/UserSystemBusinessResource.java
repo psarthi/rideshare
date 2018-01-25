@@ -26,6 +26,7 @@ import com.digitusrevolution.rideshare.user.business.UserSystemBusinessService;
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserSystemBusinessResource {
 	
+	//Insecure as its used in user registration
 	@GET
 	@Path("/countries")
 	public Response getCountries() {
@@ -38,17 +39,13 @@ public class UserSystemBusinessResource {
 	
 	@Secured
 	@GET
-	@Path("/vehiclecategores")
-	public Response getVehicleCategories(@Context ContainerRequestContext requestContext, @PathParam("id") long userId) {
-		if (AuthService.getInstance().validateTokenClaims(userId, requestContext)) {
+	@Path("/vehiclecategories")
+	public Response getVehicleCategories() {
 			UserSystemBusinessService userSystemBusinessService = new UserSystemBusinessService();
 			 List<VehicleCategory> vehicleCategories = userSystemBusinessService.getVehicleCategories();
 			
 			GenericEntity<List<VehicleCategory>> entity = new GenericEntity<List<VehicleCategory>>(vehicleCategories) {};
 			return Response.ok(entity).build();			
-		}else {
-			throw new NotAuthorizedException();
-		}
 	}
 
 

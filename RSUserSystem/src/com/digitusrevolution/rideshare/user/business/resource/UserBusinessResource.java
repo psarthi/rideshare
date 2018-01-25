@@ -354,7 +354,8 @@ public class UserBusinessResource {
 	public Response addUserFeedback(@Context ContainerRequestContext requestContext,
 			@PathParam("userId") long userId, UserFeedbackInfo userFeedbackInfo, 
 			@QueryParam("rideType") RideType rideType) {
-		if (AuthService.getInstance().validateTokenClaims(userId, requestContext)) {
+		//Here userId is for the person whom we are giving feedback to and inside userFeedbackInfo, we have givenByUser who is also signedInUser
+		if (AuthService.getInstance().validateTokenClaims(userFeedbackInfo.getGivenByUser().getId(), requestContext)) {
 			UserBusinessService userBusinessService = new UserBusinessService();
 			userBusinessService.addUserFeedback(userId, userFeedbackInfo);
 			//We are fetching the updated Ride / Ride Request so that we can refresh the page accordingly

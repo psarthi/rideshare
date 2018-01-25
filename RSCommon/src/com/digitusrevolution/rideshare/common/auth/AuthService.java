@@ -98,17 +98,23 @@ public class AuthService implements AuthServiceInf{
 	}
 
 	public boolean validateTokenClaims(long userId, ContainerRequestContext requestContext) {
-        String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
-        String AUTHENTICATION_SCHEME = "Bearer";
-        String token = authorizationHeader.substring(AUTHENTICATION_SCHEME.length()).trim();
+		String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
+		String AUTHENTICATION_SCHEME = "Bearer";
+		String token = authorizationHeader.substring(AUTHENTICATION_SCHEME.length()).trim();
 		try {
 			Jws<Claims> parseClaimsJws = Jwts.parser().setSigningKey(getKey()).parseClaimsJws(token);
-			if (userId == Long.parseLong(parseClaimsJws.getBody().get(ID_KEY).toString())) {
+			long tokenId = Long.parseLong(parseClaimsJws.getBody().get(ID_KEY).toString());
+			if (tokenId == userId){
 				logger.debug("Valid Token Claims for id:"+userId);
 				return true;
 			} else {
-				logger.debug("Invalid Token Claims w.r.t the url parameters for id:"+userId);
-				return false;
+				if (tokenId ==Long.valueOf(PropertyReader.getInstance().getProperty("SYSTEM_INTERNAL_USER_ID"))) {
+					logger.debug("System Internal User Id request, so ignoring validation for user Id:"+userId);
+					return true;
+				} else {
+					logger.debug("Invalid Token Claims w.r.t the url parameters for id:"+userId);
+					return false;						
+				}
 			}
 		} catch (SignatureException e) {
 			//don't trust the JWT!

@@ -55,12 +55,11 @@ public class RideOfferBusinessResource {
 
 	@Secured
 	@GET
-	@Path("/user/{id}")
-	public Response getRides(@Context ContainerRequestContext requestContext, @PathParam("userId") long userId,
-			@PathParam("id") long id, @QueryParam("page") int page){
+	public Response getRides(@Context ContainerRequestContext requestContext, 
+			@PathParam("userId") long userId,@QueryParam("page") int page){
 		if (AuthService.getInstance().validateTokenClaims(userId, requestContext)) {
 			RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-			List<BasicRide> rides = rideOfferBusinessService.getRides(id, page);
+			List<BasicRide> rides = rideOfferBusinessService.getRides(userId, page);
 			GenericEntity<List<BasicRide>> entity = new GenericEntity<List<BasicRide>>(rides) {};
 			return Response.ok(entity).build();			
 		}else {
@@ -89,14 +88,13 @@ public class RideOfferBusinessResource {
 	 */
 	@Secured
 	@GET
-	@Path("/current/{driverId}")
-	public Response getCurrentRide(@Context ContainerRequestContext requestContext, @PathParam("userId") long userId,
-			@PathParam("driverId") long driverId){
+	@Path("/current")
+	public Response getCurrentRide(@Context ContainerRequestContext requestContext, @PathParam("userId") long userId){
 		if (AuthService.getInstance().validateTokenClaims(userId, requestContext)) {
 			RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-			FullRide ride = rideOfferBusinessService.getCurrentRide(driverId);
+			FullRide ride = rideOfferBusinessService.getCurrentRide(userId);
 			if (ride==null) {
-				throw new NotFoundException("No current ride for the user id:"+driverId);
+				throw new NotFoundException("No current ride for the user id:"+userId);
 			}
 			return Response.ok().entity(ride).build();			
 		}else {
