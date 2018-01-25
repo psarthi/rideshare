@@ -385,7 +385,10 @@ public class UserBusinessService {
 			//instead we save offered ride seats in ride itself and we match as per that number
 			//so logically it may happen that user may reduce / increase the vehicle but this would effect future ride creation and not existing rides
 			VehicleDO vehicleDO = new VehicleDO();
-			vehicleDO.update(preference.getDefaultVehicle());
+			//This will ensure we can update preference even if there is no vehicle added
+			if (preference.getDefaultVehicle()!=null) {
+				vehicleDO.update(preference.getDefaultVehicle());	
+			}
 
 			transaction.commit();
 		} catch (RuntimeException e) {

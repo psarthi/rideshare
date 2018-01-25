@@ -11,6 +11,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.common.ErrorMessage;
 
@@ -18,13 +21,16 @@ import com.digitusrevolution.rideshare.model.common.ErrorMessage;
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
-
+	
+	private static final Logger logger = LogManager.getLogger(AuthenticationFilter.class.getName());
     //private static final String REALM = "example";
     private static final String AUTHENTICATION_SCHEME = "Bearer";
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-
+    		
+    		String url = requestContext.getUriInfo().getAbsolutePath().toString();
+    		logger.debug("URL:"+url);
         // Get the Authorization header from the request
         String authorizationHeader =
                 requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
@@ -49,7 +55,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         }
     }
 
-    private boolean isTokenBasedAuthentication(String authorizationHeader) {
+    public boolean isTokenBasedAuthentication(String authorizationHeader) {
 
         // Check if the Authorization header is valid
         // It must not be null and must be prefixed with "Bearer" plus a whitespace
@@ -58,7 +64,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                     .startsWith(AUTHENTICATION_SCHEME.toLowerCase() + " ");
     }
 
-    private void abortWithUnauthorized(ContainerRequestContext requestContext) {
+    public void abortWithUnauthorized(ContainerRequestContext requestContext) {
 
     		// Original code, where Realm has been used whose purpose is not clear for 
     		// token perspective so commented and modified the response

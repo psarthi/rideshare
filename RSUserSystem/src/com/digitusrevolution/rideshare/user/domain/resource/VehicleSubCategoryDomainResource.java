@@ -12,6 +12,7 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.inf.DomainResourceInteger;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.user.domain.service.VehicleSubCategoryDomainService;
@@ -22,6 +23,7 @@ import com.digitusrevolution.rideshare.user.domain.service.VehicleSubCategoryDom
 public class VehicleSubCategoryDomainResource implements DomainResourceInteger<VehicleSubCategory>{
 
 	@GET
+	@Secured
 	@Path("/{id}")
 	@Override
 	public Response get(@PathParam("id") int id, @QueryParam("fetchChild") String fetchChild) {
@@ -31,6 +33,7 @@ public class VehicleSubCategoryDomainResource implements DomainResourceInteger<V
 	}
 
 	@Override
+	@Secured
 	@GET
 	public Response getAll() {
 		VehicleSubCategoryDomainService vehicleSubCategoryDomainService = new VehicleSubCategoryDomainService();

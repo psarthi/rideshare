@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.billing.domain.service.BillDomainService;
+import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.inf.DomainResourceInteger;
 import com.digitusrevolution.rideshare.common.inf.DomainResourceLong;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
@@ -25,6 +26,7 @@ import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 public class BillDomainResource implements DomainResourceLong<Bill>{
 
 	@Override
+	@Secured
 	@GET
 	@Path("/{number}")
 	public Response get(@PathParam("number") long number, @QueryParam("fetchChild") String fetchChild){
@@ -34,6 +36,7 @@ public class BillDomainResource implements DomainResourceLong<Bill>{
 	}
 
 	@Override
+	@Secured
 	@GET
 	public Response getAll(){
 	

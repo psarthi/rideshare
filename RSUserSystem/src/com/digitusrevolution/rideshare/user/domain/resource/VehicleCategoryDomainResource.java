@@ -12,6 +12,7 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.inf.DomainResourceInteger;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.user.domain.service.VehicleCategoryDomainService;
@@ -21,6 +22,7 @@ import com.digitusrevolution.rideshare.user.domain.service.VehicleCategoryDomain
 @Consumes(MediaType.APPLICATION_JSON)
 public class VehicleCategoryDomainResource implements DomainResourceInteger<VehicleCategory>{
 
+	@Secured
 	@GET
 	@Path("/{id}")
 	@Override
@@ -29,8 +31,9 @@ public class VehicleCategoryDomainResource implements DomainResourceInteger<Vehi
 		VehicleCategory vehicleCategory = vehicleCategoryDomainService.get(id, Boolean.valueOf(fetchChild));
 		return Response.ok(vehicleCategory).build();
 	}
-
+	
 	@Override
+	@Secured
 	@GET
 	public Response getAll() {
 		VehicleCategoryDomainService vehicleCategoryDomainService = new VehicleCategoryDomainService();

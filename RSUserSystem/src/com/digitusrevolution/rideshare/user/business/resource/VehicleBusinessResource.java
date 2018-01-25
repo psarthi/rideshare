@@ -5,9 +5,14 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.digitusrevolution.rideshare.common.auth.AuthService;
+import com.digitusrevolution.rideshare.common.auth.Secured;
+import com.digitusrevolution.rideshare.common.exception.NotAuthorizedException;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
@@ -27,18 +32,23 @@ public class VehicleBusinessResource {
 	 * @param vehicle Vehicle to be added
 	 * @return status OK
 	 */
-	@POST
-	public Response addVehicle(@PathParam("userId") long userId, Vehicle vehicle){
 
-		VehicleBusinessService vehicleBusinessService = new VehicleBusinessService();
-		vehicleBusinessService.addVehicle(userId, vehicle);
-		//Reason for invoking in separate transaction so that previous data gets committed and then we get the proper data
-		//else there is chances that you may not get updated data
-		UserDomainService userDomainService = new UserDomainService();
-		User user = userDomainService.get(userId, false);
-		BasicUser basicUser = JsonObjectMapper.getMapper().convertValue(user, BasicUser.class);
-		
-		return Response.ok(basicUser).build();
+	@Secured
+	@POST
+	public Response addVehicle(@Context ContainerRequestContext requestContext,
+			@PathParam("userId") long userId, Vehicle vehicle){
+		if (AuthService.getInstance().validateTokenClaims(userId, requestContext)) {
+			VehicleBusinessService vehicleBusinessService = new VehicleBusinessService();
+			vehicleBusinessService.addVehicle(userId, vehicle);
+			//Reason for invoking in separate transaction so that previous data gets committed and then we get the proper data
+			//else there is chances that you may not get updated data
+			UserDomainService userDomainService = new UserDomainService();
+			User user = userDomainService.get(userId, false);
+			BasicUser basicUser = JsonObjectMapper.getMapper().convertValue(user, BasicUser.class);			
+			return Response.ok(basicUser).build();			
+		}else {
+			throw new NotAuthorizedException();
+		}
 	}
 
 }

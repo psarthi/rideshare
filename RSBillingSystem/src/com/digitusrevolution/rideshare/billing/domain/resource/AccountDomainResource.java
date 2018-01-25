@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.billing.domain.service.AccountDomainService;
+import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.inf.DomainResourceInteger;
 import com.digitusrevolution.rideshare.common.inf.DomainResourceLong;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
@@ -28,6 +29,7 @@ public class AccountDomainResource implements DomainResourceLong<Account>{
 	 * @param account User Account
 	 * @return accountNumber
 	 */
+	@Secured
 	@GET
 	@Path("/create")
 	public Response createVirtualAccount(){
@@ -40,6 +42,7 @@ public class AccountDomainResource implements DomainResourceLong<Account>{
 	}
 
 	@Override
+	@Secured
 	@GET
 	@Path("/{number}")
 	public Response get(@PathParam("number") long number, @QueryParam("fetchChild") String fetchChild){
@@ -49,6 +52,7 @@ public class AccountDomainResource implements DomainResourceLong<Account>{
 	}
 
 	@Override
+	@Secured
 	@GET
 	public Response getAll(){
 		

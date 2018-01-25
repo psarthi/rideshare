@@ -12,6 +12,7 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.inf.DomainResourceInteger;
 import com.digitusrevolution.rideshare.common.inf.DomainResourceLong;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
@@ -23,6 +24,7 @@ import com.digitusrevolution.rideshare.ride.domain.service.RideDomainService;
 public class RideDomainResource implements DomainResourceLong<Ride>{
 
 	@Override
+	@Secured
 	@GET
 	@Path("/{id}")
 	public Response get(@PathParam("id") long id, @QueryParam("fetchChild") String fetchChild) {
@@ -32,6 +34,7 @@ public class RideDomainResource implements DomainResourceLong<Ride>{
 	}
 
 	@Override
+	@Secured
 	@GET
 	public Response getAll() {
 		RideDomainService rideDomainService = new RideDomainService();

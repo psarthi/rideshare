@@ -20,9 +20,10 @@ import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
 import com.digitusrevolution.rideshare.ride.SampleLocalTimeModel;
 import com.digitusrevolution.rideshare.ride.domain.service.RideSystemDomainService;
 
-@Path("/domain/ridesystem")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+//Commenting this as all DO has changed to support proper system and input has also changed
+//@Path("/domain/ridesystem")
+//@Produces(MediaType.APPLICATION_JSON)
+//@Consumes(MediaType.APPLICATION_JSON)
 public class RideSystemDomainResource {
 
 	/**

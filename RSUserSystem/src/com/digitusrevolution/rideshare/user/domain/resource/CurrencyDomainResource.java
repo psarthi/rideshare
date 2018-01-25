@@ -12,6 +12,7 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.inf.DomainResourceInteger;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.user.domain.service.CurrencyDomainService;
@@ -22,6 +23,7 @@ import com.digitusrevolution.rideshare.user.domain.service.CurrencyDomainService
 public class CurrencyDomainResource implements DomainResourceInteger<Currency>{
 	
 	@Override
+	@Secured
 	@GET
 	@Path("/{id}")
 	public Response get(@PathParam("id") int id, @QueryParam("fetchChild") String fetchChild){
@@ -32,6 +34,7 @@ public class CurrencyDomainResource implements DomainResourceInteger<Currency>{
 	}
 
 	@Override
+	@Secured
 	@GET
 	public Response getAll(){
 		

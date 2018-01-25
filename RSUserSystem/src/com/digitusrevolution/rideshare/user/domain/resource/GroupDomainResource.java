@@ -12,6 +12,7 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.inf.DomainResourceInteger;
 import com.digitusrevolution.rideshare.common.inf.DomainResourceLong;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
@@ -23,6 +24,7 @@ import com.digitusrevolution.rideshare.user.domain.service.GroupDomainService;
 public class GroupDomainResource implements DomainResourceLong<Group>{
 
 	@Override
+	@Secured
 	@GET
 	@Path("/{id}")
 	public Response get(@PathParam("id") long id, @QueryParam("fetchChild") String fetchChild){
@@ -33,6 +35,7 @@ public class GroupDomainResource implements DomainResourceLong<Group>{
 	
 
 	@Override
+	@Secured
 	@GET
 	public Response getAll(){	
 		GroupDomainService groupDomainService = new GroupDomainService();

@@ -10,6 +10,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.CompanyAccount;
 import com.digitusrevolution.rideshare.serviceprovider.business.CompanyBusinessService;
@@ -24,6 +25,7 @@ public class CompanyBusinessResource {
 	 * @param companyAccount Account of the company which is different than normal user Account domain model
 	 * @return status OK
 	 */
+	@Secured
 	@POST
 	@Path("/{id}/accounts")
 	public Response addAccount(CompanyAccount companyAccount){
@@ -39,6 +41,7 @@ public class CompanyBusinessResource {
 	 * @param fetchChild value should be either true or false, this value should be passed as query parameter e.g. url?fetchchild=true. True value would return all data and false would return basic data of the model
 	 * @return Company domain model
 	 */
+	@Secured
 	@GET
 	@Path("/{id}")
 	public Response get(@PathParam("id") int id, @QueryParam("fetchChild") String fetchChild) {

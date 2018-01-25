@@ -13,6 +13,7 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.inf.DomainResourceInteger;
 import com.digitusrevolution.rideshare.common.inf.DomainResourceLong;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
@@ -27,6 +28,7 @@ public class UserDomainResource implements DomainResourceLong<User>{
 
 
 	@Override
+	@Secured
 	@GET
 	@Path("/{id}")
 	public Response get(@PathParam("id") long id, @QueryParam("fetchChild") String fetchChild){
@@ -38,6 +40,7 @@ public class UserDomainResource implements DomainResourceLong<User>{
 	
 
 	@Override
+	@Secured
 	@GET
 	public Response getAll(){
 		
@@ -53,6 +56,7 @@ public class UserDomainResource implements DomainResourceLong<User>{
 	 * @return collection of roles
 	 */
 	@GET
+	@Secured
 	@Path("/{id}/roles")
 	public Response getRoles(@PathParam("id") long id){
 		UserDomainService userDomainService = new UserDomainService();
@@ -67,11 +71,13 @@ public class UserDomainResource implements DomainResourceLong<User>{
 	 * 
 	 * @return VehicleDomainResource object
 	 */
+	@Secured
 	@Path("/{id}/vehicles")
 	public VehicleDomainResource getVehicleDomainResource(){
 		return new VehicleDomainResource();
 	}
 	
+	@Secured
 	@GET
 	@Path("/{id}/groups")
 	public Response getGroups(@PathParam("id") long userId){
