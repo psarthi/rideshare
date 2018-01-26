@@ -21,6 +21,7 @@ public class UserRegistration {
 	private Photo photo;
 	private String otp;
 	private RegistrationType registrationType;
+	private String signInToken;
 	
 	public String getFirstName() {
 		return firstName;
@@ -93,6 +94,12 @@ public class UserRegistration {
 	}
 	public void setRegistrationType(RegistrationType registrationType) {
 		this.registrationType = registrationType;
+	}
+	public String getSignInToken() {
+		return signInToken;
+	}
+	public void setSignInToken(String signInToken) {
+		this.signInToken = signInToken;
 	}
 
 }

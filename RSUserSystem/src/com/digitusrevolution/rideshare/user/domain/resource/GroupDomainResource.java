@@ -13,7 +13,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.common.auth.Secured;
-import com.digitusrevolution.rideshare.common.inf.DomainResourceInteger;
 import com.digitusrevolution.rideshare.common.inf.DomainResourceLong;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.user.domain.service.GroupDomainService;

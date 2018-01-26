@@ -3,7 +3,6 @@ package com.digitusrevolution.rideshare.ride.business;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.NotFoundException;

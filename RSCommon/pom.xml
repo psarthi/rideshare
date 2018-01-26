@@ -39,7 +39,9 @@
 	</dependencyManagement>
 	<!-- Jersey DependencyManagement Configuration End -->
 	<dependencies>
-		<!-- Jackson Core Modules which include Core, Annotations and Databind. Databind would include other two module as well, so mentioned only that. Start -->
+		<!-- Jackson Core Modules which include Core, Annotations and Databind. 
+			Databind would include other two module as well, so mentioned only that. 
+			Start -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -65,10 +67,12 @@
 		</dependency>
 		<!-- Required for JSON support for Jersey -->
 		<dependency>
-		    <groupId>org.glassfish.jersey.media</groupId>
-		    <artifactId>jersey-media-json-jackson</artifactId>
-		    <!-- Reason for specific exclusion is to make it explicit that Jackson bundled jars which may be old version should not be used and instead use common one available for project -->
-		   	<exclusions>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<!-- Reason for specific exclusion is to make it explicit that Jackson 
+				bundled jars which may be old version should not be used and instead use 
+				common one available for project -->
+			<exclusions>
 				<exclusion>
 					<groupId>com.fasterxml.jackson.core</groupId>
 					<artifactId>jackson-core</artifactId>
@@ -89,7 +93,9 @@
 			<groupId>de.grundid.opendatalab</groupId>
 			<artifactId>geojson-jackson</artifactId>
 			<version>1.8</version>
-		    <!-- Reason for specific exclusion is to make it explicit that Jackson bundled jars should not be used and instead use common one available for project -->
+			<!-- Reason for specific exclusion is to make it explicit that Jackson 
+				bundled jars should not be used and instead use common one available for 
+				project -->
 			<exclusions>
 				<exclusion>
 					<groupId>com.fasterxml.jackson.core</groupId>
@@ -108,11 +114,12 @@
 			<artifactId>hibernate-core</artifactId>
 			<version>5.1.10.Final</version>
 		</dependency>
-		<!-- Java 8 support - Very important to provide support of Java ZonedDateTime, LocalTime etc. -->
+		<!-- Java 8 support - Very important to provide support of Java ZonedDateTime, 
+			LocalTime etc. -->
 		<dependency>
-		    <groupId>org.hibernate</groupId>
-		    <artifactId>hibernate-java8</artifactId>
-		    <version>5.1.10.Final</version>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-java8</artifactId>
+			<version>5.1.10.Final</version>
 		</dependency>
 		<!-- Hibernate End -->
 		<!-- MySQL Driver Start -->
@@ -152,7 +159,8 @@
 			<groupId>com.digitusrevolution.rideshare</groupId>
 			<artifactId>RSModel</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-			<!-- Reason for specific exclusion is to make it explicit that no jars should be downloaded further as its already available to this module-->
+			<!-- Reason for specific exclusion is to make it explicit that no jars 
+				should be downloaded further as its already available to this module -->
 			<exclusions>
 				<exclusion>
 					<groupId>com.fasterxml.jackson.core</groupId>
@@ -175,16 +183,23 @@
 		<!-- RideShare Components End -->
 		<!-- JWT Component Start -->
 		<dependency>
-   			<groupId>io.jsonwebtoken</groupId>
-    			<artifactId>jjwt</artifactId>
-    			<version>0.9.0</version>
-    			<exclusions>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.0</version>
+			<exclusions>
 				<exclusion>
 					<groupId>com.fasterxml.jackson.core</groupId>
 					<artifactId>jackson-databind</artifactId>
 				</exclusion>
 			</exclusions>
-   		</dependency>
+		</dependency>
 		<!-- JWT Component End -->
+		<!-- Google API Component Start -->
+		<dependency>
+			<groupId>com.google.api-client</groupId>
+			<artifactId>google-api-client</artifactId>
+			<version>1.23.0</version>
+		</dependency>
+		<!-- Google API Component End -->
 	</dependencies>
 </project>

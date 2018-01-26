@@ -33,14 +33,11 @@ public class RESTClientImpl<T> implements RESTClient<T>{
 	 */
 	private final Client client = ClientBuilder.newClient(new ClientConfig().register(LoggingFilter.class)).register(JacksonJsonProvider.class)
 			.register(ObjectMapperContextResolver.class);
-	//Note - We are using -1 as user id so that we can create dummy token for internal use
-	private final long systemId = Long.valueOf(PropertyReader.getInstance().getProperty("SYSTEM_INTERNAL_USER_ID"));
+	private String token = AuthService.getInstance().getSystemToken();
 	
 	@Override
 	public Response get(URI uri) {
 		WebTarget webTarget = client.target(uri);
-		String token = AuthService.getInstance().getToken(systemId);
-
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer "+token);
 		Response response = invocationBuilder.get();	
@@ -51,8 +48,6 @@ public class RESTClientImpl<T> implements RESTClient<T>{
 	@Override
 	public Response post(URI uri, T model) {
 		WebTarget webTarget = client.target(uri);
-		String token = AuthService.getInstance().getToken(systemId);
-		
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer "+token);
 		Response response = invocationBuilder.post(Entity.entity(model, MediaType.APPLICATION_JSON));		
@@ -63,8 +58,6 @@ public class RESTClientImpl<T> implements RESTClient<T>{
 	@Override
 	public Response put(URI uri, T model) {
 		WebTarget webTarget = client.target(uri);
-		String token = AuthService.getInstance().getToken(systemId);
-		
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer "+token);
 		Response response = invocationBuilder.put(Entity.entity(model, MediaType.APPLICATION_JSON));		
@@ -75,8 +68,6 @@ public class RESTClientImpl<T> implements RESTClient<T>{
 	@Override
 	public Response delete(URI uri) {
 		WebTarget webTarget = client.target(uri);
-		String token = AuthService.getInstance().getToken(systemId);
-		
 		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON)
 				.header("Authorization", "Bearer "+token);
 		Response response = invocationBuilder.delete();		

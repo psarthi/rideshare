@@ -29,14 +29,10 @@ public class RideSystemBusinessResource {
 	@Secured
 	@GET
 	@Path("/currentrides")
-	public Response getCurrentRide(@Context ContainerRequestContext requestContext, @PathParam("userId") long userId){
-		if (AuthService.getInstance().validateTokenClaims(userId, requestContext)) {
-			RideSystemBusinessService rideSystemBusinessService = new RideSystemBusinessService();
-			FullRidesInfo fullRidesInfo = rideSystemBusinessService.getCurrentRides(userId);
-			return Response.ok().entity(fullRidesInfo).build();			
-		}else {
-			throw new NotAuthorizedException();
-		}
+	public Response getCurrentRide(@PathParam("userId") long userId){
+		RideSystemBusinessService rideSystemBusinessService = new RideSystemBusinessService();
+		FullRidesInfo fullRidesInfo = rideSystemBusinessService.getCurrentRides(userId);
+		return Response.ok().entity(fullRidesInfo).build();
 	}
 	
 }

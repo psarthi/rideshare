@@ -15,17 +15,13 @@ import com.digitusrevolution.rideshare.model.user.domain.MembershipForm;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
-import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroupInfo;
 import com.digitusrevolution.rideshare.model.user.dto.BasicMembershipRequest;
-import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
-import com.digitusrevolution.rideshare.model.user.dto.FullGroup;
 import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
 import com.digitusrevolution.rideshare.model.user.dto.GroupFeedbackInfo;
 import com.digitusrevolution.rideshare.model.user.dto.GroupInviteUserSearchResult;
 import com.digitusrevolution.rideshare.model.user.dto.GroupMember;
 import com.digitusrevolution.rideshare.user.domain.core.GroupDO;
-import com.digitusrevolution.rideshare.user.domain.core.UserDO;
 
 public class GroupBusinessService {
 	
