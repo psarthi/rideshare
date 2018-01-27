@@ -124,7 +124,7 @@ public class RideAction {
 					//This will just help us to maintain the sanity of data within the transaction so that we can perform more actions within this transaction itself
 					//But yes, as mentioned above this will not add ride to ride request for that you need to setAcceptedRide only 
 					ride.getAcceptedRideRequests().add(rideRequest);
-					
+
 					//Change ride request status to accept status
 					rideRequest.setStatus(RideRequestStatus.Fulfilled);
 					//Set Ride Pickup & Drop Points
@@ -156,8 +156,8 @@ public class RideAction {
 					ride.getRidePassengers().add(ridePassenger);
 
 					//This will get the new status of seat post the acceptance of this ride request 
-					//Seat status may or may not change depending on total seats occupied vs offered 
-					RideSeatStatus newRideSeatStatus = getRideSeatStatusPostAcceptance(rideRequest.getSeatRequired(), ride);
+					//Seat status may or may not change depending on total seats occupied vs offered
+					RideSeatStatus newRideSeatStatus = getRideSeatStatusPostAcceptance(rideRequest.getSeatRequired(), seatOccupied, ride.getSeatOffered());
 					ride.setSeatStatus(newRideSeatStatus);
 
 					Bill bill = generateBill(ride, rideRequest);
@@ -170,13 +170,20 @@ public class RideAction {
 					} 
 					rideRequest.setBill(bill);
 
+					boolean sufficientBalance = false; 
 					//Payment Verification code is only applicable if ride is paid mode
+					//Check balance also application for only ride paid mode
 					if (ride.getRideMode().equals(RideMode.Paid)) {
 						//This will act as payment confirmation code for debiting money from passenger account
-						rideRequest.setConfirmationCode(AuthService.getInstance().getVerificationCode());						
+						rideRequest.setConfirmationCode(AuthService.getInstance().getVerificationCode());
+						sufficientBalance = checkSufficientBalance(rideRequest); 
+					}
+					else {
+						//This will ensure that balance doesn't matter for Free matched ride
+						sufficientBalance = true;
 					}
 
-					if (checkSufficientBalance(rideRequest)) {
+					if (sufficientBalance) {
 						//Update all the changes in DB for ride and ride request
 						rideDO.update(ride);
 						//This is required to update accepted ride as well as status update on ride request table
@@ -243,14 +250,22 @@ public class RideAction {
 
 		User passenger = rideRequest.getPassenger();
 		User driver = ride.getDriver();
-		float amount = getPrice(rideRequest);
+		float discountPercentage;
+		float amount;
+		//IMP - This will take care of scenario when ride request is Paid but ride is Free 
+		if (ride.getRideMode().equals(RideMode.Free)) {
+			amount = 0;
+			discountPercentage = 100;
+		} else {
+			amount = getPrice(rideRequest);
+			discountPercentage = getDiscountPercentage(rideRequest);
+		}
 		Company company = RESTClientUtil.getCompany(1);
 		float serviceChargePercentage = company.getServiceChargePercentage();
 		//Note - Fare and Discount is used here just to store in the bill but calculation
 		//of the discount is already taken care as part of price calculation
 		float farePerMeter = getFarePerMeter(rideRequest.getVehicleSubCategory(), rideRequest.getPassenger());
 		float farePerKm = farePerMeter * 1000;
-		float discountPercentage = getDiscountPercentage(rideRequest);
 		Bill bill = new Bill();
 		//Set Bill properties
 		bill.setAmount(amount);
@@ -299,7 +314,7 @@ public class RideAction {
 		}
 		return discountPercentage;
 	}
-	
+
 	/*
 	 * Purpose - Get fare rate per meter basis (Note - Its not per Km as all data in the system is in meters)
 	 * 
@@ -323,17 +338,12 @@ public class RideAction {
 	 * Purpose - This will check the ride seat status post the acceptance of new ride request
 	 * 
 	 */
-	private RideSeatStatus getRideSeatStatusPostAcceptance(int requiredSeats, Ride ride){
+	private RideSeatStatus getRideSeatStatusPostAcceptance(int requiredSeats, int seatOccupied, int seatOffered){
 		//This should include the current required seat as we need to calculate total seats including this ride request 
-		int totalSeatsOccupied = requiredSeats;
-		//Since each ride request may have different seat requirement, so we need to calculate total of all required seats of accepted ride
-		//Note - Seats requirement and seat offered criteria should be met while searching for ride or ride requests
-		for (RideRequest acceptedRideRequest : ride.getAcceptedRideRequests()) {
-			totalSeatsOccupied = totalSeatsOccupied + acceptedRideRequest.getSeatRequired();
-		}
+		int seatsOccupiedPostAcceptance = requiredSeats + seatOccupied;
 
 		//This will check if seats offered is equal to the accepted ride request including this ride request
-		if (totalSeatsOccupied == ride.getSeatOffered()){
+		if (seatsOccupiedPostAcceptance == seatOffered){
 			return RideSeatStatus.Unavailable;
 		} else {
 			return RideSeatStatus.Available;
@@ -465,7 +475,7 @@ public class RideAction {
 				passengerNotFound = false;
 				//Check if passenger states is picked up
 				if (rideRequest.getPassengerStatus().equals(PassengerStatus.Picked)){
-						
+
 					//If its a Free Ride originally, then no need to do any payment or change the bill status
 					if (!rideRequest.getBill().getStatus().equals(BillStatus.Free)) {
 						//This will take care in case of change of ride mode at the time of dropping

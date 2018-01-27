@@ -336,15 +336,14 @@ public class UserBusinessService {
 		return userStatus;
 	}
 
-	public String getOTP(String mobileNumber){
+	public void getOTP(String mobileNumber){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		String OTP = null;
 		try {
 			transaction = session.beginTransaction();
 
 			OTPDO otpDO = new OTPDO();
-			OTP = otpDO.getOTP(mobileNumber);
+			otpDO.getOTP(mobileNumber);
 
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -360,7 +359,6 @@ public class UserBusinessService {
 				session.close();				
 			}
 		}			
-		return OTP;
 	}
 
 	public boolean validateOTP(String mobileNumber, String otp){

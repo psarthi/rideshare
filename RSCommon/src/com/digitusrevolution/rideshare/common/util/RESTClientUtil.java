@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.swing.TransferHandler.TransferSupport;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
@@ -31,6 +32,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
+import com.digitusrevolution.rideshare.model.user.dto.OTPProviderResponse;
 import com.digitusrevolution.rideshare.model.user.dto.UserFeedbackInfo;
 
 /**
@@ -314,6 +316,24 @@ public class RESTClientUtil {
 		return null;
 	}
 
+	public static OTPProviderResponse sendOTP(String mobile, String otp){
+		RESTClientImpl<BasicUser> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("SEND_OTP");
+		String authkey = PropertyReader.getInstance().getProperty("OTP_AUTH_KEY");
+		String senderId = PropertyReader.getInstance().getProperty("OTP_SENDER_ID");
+		String otp_expiry_mins = PropertyReader.getInstance().getProperty("OTP_EXPIRY_TIME_IN_MINS");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(authkey, senderId, mobile, otp, otp_expiry_mins);
+		Response response = restClientUtil.post(uri, null);
+		//Don't readEntity and try to store in OTPResponse as media type is not application/json
+		//but the response media content type is text/html, so you can read only as String
+		String otpResponseString = response.readEntity(String.class);
+		//Don't use JsonObjectMapper to convert String to OTPResponse as both types are different
+		//so use below way to get POJO from response string
+		JSONUtil<OTPProviderResponse> jsonUtil = new JSONUtil<>(OTPProviderResponse.class);
+		OTPProviderResponse otpResponse = jsonUtil.getModel(otpResponseString);
+		return otpResponse;
+	}
 	
 }
 

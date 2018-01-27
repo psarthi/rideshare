@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.WebApplicationException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,8 +17,10 @@ import com.digitusrevolution.rideshare.common.inf.DomainObjectPKString;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
 import com.digitusrevolution.rideshare.common.mapper.user.OTPMapper;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.user.data.OTPEntity;
 import com.digitusrevolution.rideshare.model.user.domain.OTP;
+import com.digitusrevolution.rideshare.model.user.dto.OTPProviderResponse;
 
 public class OTPDO implements DomainObjectPKString<OTP>{
 
@@ -100,12 +103,11 @@ public class OTPDO implements DomainObjectPKString<OTP>{
 		genericDAO.delete(otpEntity);				
 	}
 	
-	public String getOTP(String mobileNumber) {
-		
+	public void getOTP(String mobileNumber) {		
 		String otpNumber = AuthService.getInstance().getVerificationCode();
 		otp.setMobileNumber(mobileNumber);
 		otp.setOTP(otpNumber);
-		String otp_expiry_time = PropertyReader.getInstance().getProperty("OTP_EXPIRY_TIME");
+		String otp_expiry_time = PropertyReader.getInstance().getProperty("OTP_EXPIRY_TIME_IN_MINS");
 		otp.setExpirationTime(ZonedDateTime.now().plusMinutes(Long.parseLong(otp_expiry_time)));
 		logger.debug("Mobile Number & OTP is:" + otp.getMobileNumber() +","+ otp.getOTP());
 		logger.debug("Current Time is:" + ZonedDateTime.now());
@@ -113,7 +115,10 @@ public class OTPDO implements DomainObjectPKString<OTP>{
 		//Reason behind update and not create is: We want to have only one entry into the DB for each mobile number, 
 		//so in case entry exist, then update is required else insert is required
 		update(otp);
-		return otpNumber;	
+		OTPProviderResponse otpResponse = RESTClientUtil.sendOTP(mobileNumber, otp.getOTP());
+		if (!otpResponse.getType().equals("success")) {
+			throw new WebApplicationException("Unable to send OTP, please try again");
+		}
 	}
 	
 	public boolean validateOTP(String mobileNumber, String otpNumber) {

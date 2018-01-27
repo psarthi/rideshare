@@ -1,10 +1,12 @@
 package com.digitusrevolution.rideshare.common.auth;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.SecureRandom;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
@@ -26,6 +28,7 @@ import com.digitusrevolution.rideshare.common.exception.EmailExistExceptionMappe
 import com.digitusrevolution.rideshare.common.exception.InvalidTokenException;
 import com.digitusrevolution.rideshare.common.inf.AuthServiceInf;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -198,6 +201,16 @@ public class AuthService implements AuthServiceInf{
 			throw new WebApplicationException("Invalid Google Signin Token, Please try again", e);
 		}
 	}
+	
+	/*
+	private static String getFirebaseAccessToken() throws IOException {
+		  GoogleCredential googleCredential = GoogleCredential
+		      .fromStream(new FileInputStream("service-account.json"))
+		      .createScoped(Arrays.asList(SCOPES));
+		  googleCredential.refreshToken();
+		  return googleCredential.getAccessToken();
+		}
+		*/
 }
 
 

@@ -27,6 +27,7 @@ import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.common.ResponseMessage;
+import com.digitusrevolution.rideshare.model.common.ResponseMessage.Code;
 import com.digitusrevolution.rideshare.model.ride.domain.RideType;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
@@ -106,9 +107,9 @@ public class UserBusinessResource {
 	@Path("/getotp/{mobileNumber}")
 	public Response getOTP(@PathParam("mobileNumber") String mobileNumber){
 		UserBusinessService userBusinessService = new UserBusinessService();
-		String OTP = userBusinessService.getOTP(mobileNumber);
+		userBusinessService.getOTP(mobileNumber);
 		ResponseMessage responseMessage = new ResponseMessage();
-		responseMessage.setResult(OTP);
+		responseMessage.setStatus(Code.OK);
 		return Response.ok().entity(responseMessage).build();			
 	}
 
