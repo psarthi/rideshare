@@ -58,6 +58,7 @@ public class User implements Comparable<User>{
 	private Collection<Group> groupInvites = new HashSet<Group>();
 	private Collection<MembershipRequest> membershipRequests = new HashSet<MembershipRequest>();
 	private RegistrationType registrationType;
+	private String pushNotificationToken;
 	
 	
 	public long getId() {
@@ -303,6 +304,12 @@ public class User implements Comparable<User>{
 
 	public void setMembershipRequests(Collection<MembershipRequest> membershipRequests) {
 		this.membershipRequests = membershipRequests;
+	}
+	public String getPushNotificationToken() {
+		return pushNotificationToken;
+	}
+	public void setPushNotificationToken(String pushNotificationToken) {
+		this.pushNotificationToken = pushNotificationToken;
 	}
 
 }

@@ -17,6 +17,7 @@ import com.digitusrevolution.rideshare.common.auth.AuthService;
 import com.digitusrevolution.rideshare.common.exception.InSufficientBalanceException;
 import com.digitusrevolution.rideshare.common.exception.RideRequestUnavailableException;
 import com.digitusrevolution.rideshare.common.exception.RideUnavailableException;
+import com.digitusrevolution.rideshare.common.service.NotificationService;
 import com.digitusrevolution.rideshare.common.util.GoogleUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
@@ -28,6 +29,7 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.domain.core.BillStatus;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
+import com.digitusrevolution.rideshare.model.common.NotificationMessage;
 import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
 import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
@@ -189,9 +191,11 @@ public class RideAction {
 						//This is required to update accepted ride as well as status update on ride request table
 						rideRequestDO.update(rideRequest);
 						//TODO Implement notification here
-						sendNotification("Ride Request Accepted. Send Notification to Ride Owner & Requester on new Match. [Ride Id/Ride Request Id]:"+rideId+","+rideRequestId);						
+						NotificationService.sendMatchedRideNotification(ride, rideRequest);
+						logger.debug("Ride Request Accepted.[Ride Id/Ride Request Id]:"+rideId+","+rideRequestId);						
 					} else {
-						sendNotification("Ride Request can't be accepted due to insufficient balance.[Ride Id/Ride Request Id]:"+rideId+","+rideRequestId);
+						NotificationService.sendInsufficientBalanceNotification(rideRequest);
+						logger.debug("Ride Request can't be accepted due to insufficient balance.[Ride Id/Ride Request Id]:"+rideId+","+rideRequestId);
 						throw new InSufficientBalanceException("Not enough balance to pay for the bill of ride request Id:"+rideRequestId);
 					}
 				}
@@ -206,11 +210,6 @@ public class RideAction {
 		else{
 			throw new RideRequestUnavailableException("Ride Request is not available anymore with id:"+rideRequestId);
 		}			
-	}
-
-	//This function needs to be modified depending on the kind of parameters needs to be passed for sending notification
-	public void sendNotification(String message) {
-		logger.debug(message);
 	}
 
 	/*
@@ -627,7 +626,7 @@ public class RideAction {
 	 */
 	public void cancelAcceptedRideRequest(long rideId, long rideRequestId, CancellationType cancellationType){
 		logger.debug("Cancelling Accepted Ride Request - ride Id/Ride Request Id:"+rideId+","+rideRequestId);
-		RidesInfo ridesInfo = new RidesInfo();
+		//RidesInfo ridesInfo = new RidesInfo();
 		Ride ride = rideDO.getAllData(rideId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
@@ -686,9 +685,12 @@ public class RideAction {
 					//This will update ride and ride request in db
 					rideRequestDO.update(rideRequest);
 					rideDO.update(ride); 
+					NotificationService.sendCancelRideNotification(ride, rideRequest);
+					logger.debug("RideRequest has been cancelled for Id:"+rideRequest.getId());
 					logger.debug("Passenger Count post cancellation:"+ride.getAcceptedRideRequests().size());
-					ridesInfo.setRide(ride);
-					ridesInfo.setRideRequest(rideRequest);
+					//Commenting this as its not in use by anyone
+					//ridesInfo.setRide(ride);
+					//ridesInfo.setRideRequest(rideRequest);
 				} else {
 					throw new NotAcceptableException("Ride request can't be cancelled as Passenger has already been dropped."
 							+ "Passenger current status:"+passengerStatus);

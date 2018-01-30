@@ -2,6 +2,7 @@ package com.digitusrevolution.rideshare.common.auth;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.SecureRandom;
@@ -82,13 +83,13 @@ public class AuthService implements AuthServiceInf{
 
 		return compactJws;
 	}
-	
+
 	//This token would be used by internal system
 	public String getSystemToken() {
 
 		//Note - We are using -1 as user id so that we can create dummy token for internal use
 		long systemUserId = Long.valueOf(PropertyReader.getInstance().getProperty("SYSTEM_INTERNAL_USER_ID"));
-		
+
 		Map<String, Object> claims = new HashMap<>();
 		claims.put(ID_KEY,String.valueOf(systemUserId));
 
@@ -159,7 +160,7 @@ public class AuthService implements AuthServiceInf{
 			return false;
 		}
 	}
-	
+
 	public String getTokenFromContext(ContainerRequestContext requestContext) {
 		try {
 			String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
@@ -201,16 +202,6 @@ public class AuthService implements AuthServiceInf{
 			throw new WebApplicationException("Invalid Google Signin Token, Please try again", e);
 		}
 	}
-	
-	/*
-	private static String getFirebaseAccessToken() throws IOException {
-		  GoogleCredential googleCredential = GoogleCredential
-		      .fromStream(new FileInputStream("service-account.json"))
-		      .createScoped(Arrays.asList(SCOPES));
-		  googleCredential.refreshToken();
-		  return googleCredential.getAccessToken();
-		}
-		*/
 }
 
 

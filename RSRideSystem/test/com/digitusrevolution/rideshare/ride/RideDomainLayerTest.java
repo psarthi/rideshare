@@ -19,6 +19,7 @@ import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.math.google.LatLng;
 import com.digitusrevolution.rideshare.common.math.google.PolyUtil;
 import com.digitusrevolution.rideshare.common.math.google.SphericalUtil;
+import com.digitusrevolution.rideshare.common.service.NotificationService;
 import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
@@ -75,6 +76,8 @@ public class RideDomainLayerTest {
 	public void test(){
 	
 		RideDO rideDO = new RideDO();
+		RideRequestDO requestDO = new RideRequestDO();
+		NotificationService.sendMatchedRideNotification(rideDO.get(21), requestDO.get(1));
 //		rideDO.acceptRideRequest(1, 1);
 //		Ride currentRide = rideDO.getUpcomingRide(1);
 //		System.out.println("Current Ride Id is:"+currentRide.getId());

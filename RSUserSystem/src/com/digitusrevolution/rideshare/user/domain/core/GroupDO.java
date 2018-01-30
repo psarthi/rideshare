@@ -25,6 +25,7 @@ import com.digitusrevolution.rideshare.common.inf.DomainObjectPKLong;
 import com.digitusrevolution.rideshare.common.mapper.user.MembershipRequestMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.GroupMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
+import com.digitusrevolution.rideshare.common.service.NotificationService;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
@@ -147,12 +148,13 @@ public class GroupDO implements DomainObjectPKLong<Group>{
 			group.getAdmins().add(user);
 			//Storing group Photo
 			if (rawImage!=null) {
-				String filePath = saveRawImage(rawImage, group);
-				if (filePath!=null) {
-					String photoUrl = PropertyReader.getInstance().getProperty("PHOTO_WEB_URL");
-					String groupPhotoUrl = photoUrl + filePath;
+				String uri = saveRawImage(rawImage, group);
+				if (uri!=null) { 
+					//We are not storing hostname and root url so that it can be changed later without effecting the stored photo
+					//String photoUrl = PropertyReader.getInstance().getProperty("PHOTO_WEB_URL");
+					//String groupPhotoUrl = photoUrl + filePath;
 					Photo photo = new Photo();
-					photo.setImageLocation(groupPhotoUrl);
+					photo.setImageLocation(uri);
 					group.setPhoto(photo);							
 				}
 			}
@@ -170,18 +172,19 @@ public class GroupDO implements DomainObjectPKLong<Group>{
 		group.setName(updatedGroup.getName());
 		group.setInformation(updatedGroup.getInformation());
 		if (rawImage!=null) {
-			String filePath = saveRawImage(rawImage, group);
-			if (filePath!=null) {
-				String photoUrl = PropertyReader.getInstance().getProperty("PHOTO_WEB_URL");
-				String groupPhotoUrl = photoUrl + filePath;
+			String uri = saveRawImage(rawImage, group);
+			if (uri!=null) {
+				//We are not storing hostname and root url so that it can be changed later without effecting the stored photo
+				//String photoUrl = PropertyReader.getInstance().getProperty("PHOTO_WEB_URL");
+				//String groupPhotoUrl = photoUrl + filePath;
 				//This will update the photo
 				if (group.getPhoto()!=null) {
-					group.getPhoto().setImageLocation(groupPhotoUrl);	
+					group.getPhoto().setImageLocation(uri);	
 				}
 				//This will add new photo
 				else {
 					Photo photo = new Photo();
-					photo.setImageLocation(groupPhotoUrl);
+					photo.setImageLocation(uri);
 					group.setPhoto(photo);							
 				}
 			}
@@ -326,6 +329,7 @@ public class GroupDO implements DomainObjectPKLong<Group>{
 				membershipRequest.setStatus(ApprovalStatus.Approved);
 				MembershipRequestDO membershipRequestDO = new MembershipRequestDO();
 				membershipRequestDO.update(membershipRequest);
+				NotificationService.sendGroupApprovedNotification(group, membershipRequest.getUser());
 			} else {
 				throw new NotAcceptableException("Membership request can't be approved as its not in valid state."
 						+ "Its current status:"+membershipRequest.getStatus());
@@ -354,6 +358,7 @@ public class GroupDO implements DomainObjectPKLong<Group>{
 				membershipRequest.setStatus(ApprovalStatus.Rejected);
 				MembershipRequestDO membershipRequestDO = new MembershipRequestDO();
 				membershipRequestDO.update(membershipRequest);
+				NotificationService.sendGroupRejectNotification(group, membershipRequest.getUser());
 			} else {
 				throw new NotAcceptableException("Membership request can't be rejected as its not in valid state."
 						+ "Its current status:"+membershipRequest.getStatus());

@@ -36,6 +36,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		userEntity.setEmail(user.getEmail());
 		userEntity.setPassword(user.getPassword());
 		userEntity.setRegistrationType(user.getRegistrationType());
+		userEntity.setPushNotificationToken(user.getPushNotificationToken());
 		
 		CityMapper cityMapper = new CityMapper();
 		if (user.getCity()!=null) {
@@ -139,6 +140,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		user.setEmail(userEntity.getEmail());
 		user.setPassword(userEntity.getPassword());
 		user.setRegistrationType(userEntity.getRegistrationType());
+		user.setPushNotificationToken(userEntity.getPushNotificationToken());
 
 		CityMapper cityMapper = new CityMapper();
 		if (userEntity.getCity()!=null) {

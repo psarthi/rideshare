@@ -103,22 +103,27 @@ public class OTPDO implements DomainObjectPKString<OTP>{
 		genericDAO.delete(otpEntity);				
 	}
 	
-	public void getOTP(String mobileNumber) {		
-		String otpNumber = AuthService.getInstance().getVerificationCode();
-		otp.setMobileNumber(mobileNumber);
-		otp.setOTP(otpNumber);
-		String otp_expiry_time = PropertyReader.getInstance().getProperty("OTP_EXPIRY_TIME_IN_MINS");
-		otp.setExpirationTime(ZonedDateTime.now().plusMinutes(Long.parseLong(otp_expiry_time)));
-		logger.debug("Mobile Number & OTP is:" + otp.getMobileNumber() +","+ otp.getOTP());
-		logger.debug("Current Time is:" + ZonedDateTime.now());
-		logger.debug("OTP Expiry Time is:" + otp.getExpirationTime());
-		//Reason behind update and not create is: We want to have only one entry into the DB for each mobile number, 
-		//so in case entry exist, then update is required else insert is required
-		update(otp);
-		OTPProviderResponse otpResponse = RESTClientUtil.sendOTP(mobileNumber, otp.getOTP());
+	public void getOTP(String mobileNumber, boolean retry) {
+		OTPProviderResponse otpResponse;
+		if (retry) {
+			otpResponse = RESTClientUtil.getOTPOnCall(mobileNumber);
+		} else {
+			String otpNumber = AuthService.getInstance().getVerificationCode();
+			otp.setMobileNumber(mobileNumber);
+			otp.setOTP(otpNumber);
+			String otp_expiry_time = PropertyReader.getInstance().getProperty("OTP_EXPIRY_TIME_IN_MINS");
+			otp.setExpirationTime(ZonedDateTime.now().plusMinutes(Long.parseLong(otp_expiry_time)));
+			logger.debug("Mobile Number & OTP is:" + otp.getMobileNumber() +","+ otp.getOTP());
+			logger.debug("Current Time is:" + ZonedDateTime.now());
+			logger.debug("OTP Expiry Time is:" + otp.getExpirationTime());
+			//Reason behind update and not create is: We want to have only one entry into the DB for each mobile number, 
+			//so in case entry exist, then update is required else insert is required
+			update(otp);
+			otpResponse = RESTClientUtil.sendOTP(mobileNumber, otp.getOTP());
+		}
 		if (!otpResponse.getType().equals("success")) {
 			throw new WebApplicationException("Unable to send OTP, please try again");
-		}
+		}	
 	}
 	
 	public boolean validateOTP(String mobileNumber, String otpNumber) {

@@ -129,6 +129,7 @@ public class UserEntity {
 	@Column
 	@Enumerated(EnumType.STRING)
 	private RegistrationType registrationType;
+	private String pushNotificationToken;
 		
 	public long getId() {
 		return id;
@@ -342,6 +343,14 @@ public class UserEntity {
 
 	public void setRegistrationType(RegistrationType registrationType) {
 		this.registrationType = registrationType;
+	}
+
+	public String getPushNotificationToken() {
+		return pushNotificationToken;
+	}
+
+	public void setPushNotificationToken(String pushNotificationToken) {
+		this.pushNotificationToken = pushNotificationToken;
 	}
 	
 

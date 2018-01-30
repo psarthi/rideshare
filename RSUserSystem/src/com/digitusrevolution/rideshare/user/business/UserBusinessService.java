@@ -336,14 +336,14 @@ public class UserBusinessService {
 		return userStatus;
 	}
 
-	public void getOTP(String mobileNumber){
+	public void getOTP(String mobileNumber, boolean retry){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
 		try {
 			transaction = session.beginTransaction();
 
 			OTPDO otpDO = new OTPDO();
-			otpDO.getOTP(mobileNumber);
+			otpDO.getOTP(mobileNumber, retry);
 
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -606,6 +606,33 @@ public class UserBusinessService {
 			}
 		}
 		return requests;
+	}
+	
+	public void updatePushNotificationToken(long userId, String token) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		try {
+			transaction = session.beginTransaction();
+
+			UserDO userDO = new UserDO();
+			User user = userDO.getAllData(userId);
+			user.setPushNotificationToken(token);
+			userDO.update(user);
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}		
 	}
 }
 

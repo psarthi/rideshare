@@ -3,11 +3,14 @@ package com.digitusrevolution.rideshare.common.util;
 import java.net.URI;
 import java.time.ZonedDateTime;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.TransferHandler.TransferSupport;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
@@ -16,6 +19,7 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
+import com.digitusrevolution.rideshare.model.common.NotificationMessage;
 import com.digitusrevolution.rideshare.model.common.ResponseMessage;
 import com.digitusrevolution.rideshare.model.ride.domain.RideType;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
@@ -333,6 +337,41 @@ public class RESTClientUtil {
 		JSONUtil<OTPProviderResponse> jsonUtil = new JSONUtil<>(OTPProviderResponse.class);
 		OTPProviderResponse otpResponse = jsonUtil.getModel(otpResponseString);
 		return otpResponse;
+	}
+	
+	public static OTPProviderResponse getOTPOnCall(String mobile){
+		RESTClientImpl<BasicUser> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_OTP_ON_CALL");
+		String authkey = PropertyReader.getInstance().getProperty("OTP_AUTH_KEY");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(authkey, mobile);
+		Response response = restClientUtil.post(uri, null);
+		//Don't readEntity and try to store in OTPResponse as media type is not application/json
+		//but the response media content type is text/html, so you can read only as String
+		String otpResponseString = response.readEntity(String.class);
+		//Don't use JsonObjectMapper to convert String to OTPResponse as both types are different
+		//so use below way to get POJO from response string
+		JSONUtil<OTPProviderResponse> jsonUtil = new JSONUtil<>(OTPProviderResponse.class);
+		OTPProviderResponse otpResponse = jsonUtil.getModel(otpResponseString);
+		return otpResponse;
+	}
+	
+	public static boolean sendNotification(NotificationMessage notificationMessage){
+		RESTClientImpl<NotificationMessage> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("FIREBASE_SEND_MESSAGE");
+		String key = PropertyReader.getInstance().getProperty("FIREBASE_SERVER_KEY");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build();
+		MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+		headers.add("Authorization", "key="+key);
+		Response response = restClientUtil.post(uri, notificationMessage, headers);
+		String responseString = response.readEntity(String.class);
+		System.out.println("Response:"+responseString);
+		if (response.getStatus() == Status.OK.getStatusCode()) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 }

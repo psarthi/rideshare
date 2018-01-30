@@ -1,13 +1,16 @@
 package com.digitusrevolution.rideshare.common.util;
 
 import java.net.URI;
+import java.util.Map;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.client.ClientConfig;
@@ -54,6 +57,16 @@ public class RESTClientImpl<T> implements RESTClient<T>{
 		
 		return response;
 	}
+	
+	public Response post(URI uri, T model, MultivaluedMap<String, Object> headers) {
+		WebTarget webTarget = client.target(uri);
+		Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON)
+				.headers(headers);
+		Response response = invocationBuilder.post(Entity.entity(model, MediaType.APPLICATION_JSON));		
+		
+		return response;
+	}
+
 
 	@Override
 	public Response put(URI uri, T model) {

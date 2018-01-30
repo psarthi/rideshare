@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.user;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,7 +11,10 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import com.digitusrevolution.rideshare.common.auth.AuthService;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
+import com.digitusrevolution.rideshare.model.common.NotificationMessage;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
@@ -64,11 +68,19 @@ public class UserSystemTest {
 	}	
 	
 	public void test(){
-		
+				
 		UserDO userDO = new UserDO();
-		userDO.getCommonGroups(1, 2);
 		
-		/*
+		/*User user = userDO.get(1);
+		Message message = new Message();
+		message.setTo(user.getPushNotificationToken());
+		message.getNotification().setTitle("Offered Ride");
+		message.getNotification().setBody("Found matching ride partner");
+		RESTClientUtil.sendNotification(message);
+		
+		
+		userDO.getCommonGroups(1, 2);
+
 		List<User> users = userDO.searchUserByName("Par",1);
 		for (User user:users) {
 			System.out.println("User is:"+user.getFirstName()+" "+user.getLastName());

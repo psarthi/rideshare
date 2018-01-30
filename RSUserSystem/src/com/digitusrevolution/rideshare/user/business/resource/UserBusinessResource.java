@@ -105,9 +105,9 @@ public class UserBusinessResource {
 	 */
 	@GET
 	@Path("/getotp/{mobileNumber}")
-	public Response getOTP(@PathParam("mobileNumber") String mobileNumber){
+	public Response getOTP(@PathParam("mobileNumber") String mobileNumber, @QueryParam("retry") boolean retry){
 		UserBusinessService userBusinessService = new UserBusinessService();
-		userBusinessService.getOTP(mobileNumber);
+		userBusinessService.getOTP(mobileNumber, retry);
 		ResponseMessage responseMessage = new ResponseMessage();
 		responseMessage.setStatus(Code.OK);
 		return Response.ok().entity(responseMessage).build();			
@@ -357,6 +357,17 @@ public class UserBusinessResource {
 		List<BasicMembershipRequest> membershipRequests = userBusinessService.getUserMembershipRequests(userId, page);
 		GenericEntity<List<BasicMembershipRequest>> entity = new GenericEntity<List<BasicMembershipRequest>>(membershipRequests) {};
 		return Response.ok(entity).build();
+	}
+	
+	@Secured
+	@GET
+	@Path("/{userId}/updatepushnotificationtoken/{token}")
+	public Response updatePushNotificationToken(@PathParam("userId") long userId, @PathParam("token") String token) {
+		UserBusinessService userBusinessService = new UserBusinessService();
+		userBusinessService.updatePushNotificationToken(userId, token);
+		ResponseMessage responseMessage = new ResponseMessage();
+		responseMessage.setStatus(Code.OK);
+		return Response.ok(responseMessage).build();
 	}
 }
 
