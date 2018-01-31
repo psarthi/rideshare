@@ -14,7 +14,7 @@
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
-					<!--  <packagingExcludes>%regex[WEB-INF/lib/(?!RS*).*.jar]</packagingExcludes> -->
+					<!--  <packagingExcludes>%regex[WEB-INF/lib/(?!RS*).*.jar]</packagingExcludes>-->
 				</configuration>
 			</plugin>
 			<plugin>

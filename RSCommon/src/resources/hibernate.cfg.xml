@@ -5,18 +5,24 @@
 <hibernate-configuration>
 	<session-factory>
 
+
 		<!-- Data source Name for using Connection Pooling of App Server (Tomcat) 
 		<property name="connection.datasource">java:comp/env/jdbc/ridesharedb</property>-->  
 		 
-		<!-- Database connection settings -->
-		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+		<!-- Database connection settings
+		<property name="connection.driver_class">com.mysql.jdbc.Driver</property> 
 		<property name="connection.url">jdbc:mysql://localhost:3306/ridesharedb</property>
 		<property name="connection.username">root</property>
-		<property name="connection.password">sp4f@mily</property>
+		<property name="connection.password">sp4f@mily</property>-->
 
 		<!-- JDBC connection pool (use the built-in) -->
 		<!-- <property name="connection.pool_size">1</property> -->
 		
+		<!-- JDBC connection pool settings -->
+		<property name="hibernate.c3p0.min_size">5</property>
+	    <property name="hibernate.c3p0.max_size">20</property>
+	    <property name="hibernate.c3p0.timeout">300</property>
+	    <property name="hibernate.c3p0.idle_test_period">3000</property>
 
 		<!-- SQL dialect -->
 		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>

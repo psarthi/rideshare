@@ -14,8 +14,11 @@ public class MongoDBUtil {
 
 	static {
         try {
-    		mongoClient = new MongoClient("localhost",27017);
-    		database = mongoClient.getDatabase("ridesharedb");
+        	String dbName = System.getProperty("MONGO_DB_NAME");
+        	String hostName = System.getProperty("MONGO_DB_HOSTNAME");
+        	int port = Integer.parseInt(System.getProperty("MONGO_DB_PORT"));
+    		mongoClient = new MongoClient(hostName,port);
+    		database = mongoClient.getDatabase(dbName);
         } catch (Throwable ex) {
             logger.error("Database connection failed: " + ex);
             if (mongoClient!=null) mongoClient.close();
