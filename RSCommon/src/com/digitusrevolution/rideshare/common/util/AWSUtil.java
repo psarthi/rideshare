@@ -25,7 +25,7 @@ public class AWSUtil {
 	
 	private static final Logger logger = LogManager.getLogger(AWSUtil.class.getName());
 	
-	public static String saveFileInS3(byte[] rawImage) {
+	public static String saveFileInS3(byte[] rawImage, String keyName) {
 		String awsRootUrl = PropertyReader.getInstance().getProperty("AWS_S3_ROOT_URL");
 		String bucketName = PropertyReader.getInstance().getProperty("GROUP_PHOTO_BUCKET_NAME");
 		String AccessKeyID = PropertyReader.getInstance().getProperty("AWS_ACCESS_KEY");
@@ -33,8 +33,12 @@ public class AWSUtil {
 		BasicAWSCredentials credentials = new BasicAWSCredentials(AccessKeyID, SecretAccessKey);
         AmazonS3 s3client = AmazonS3ClientBuilder.standard().withCredentials
         		(new AWSStaticCredentialsProvider(credentials)).build();
-		//This is nothing but uploaded file name
-        String keyName = UUID.randomUUID().toString() + ".jpg";
+		//This is nothing but uploaded file name, we would use new name only if its not provided
+        //So that we can override earlier file if exist
+        if (keyName==null) {
+        		logger.debug("Creating new file");
+        		keyName = UUID.randomUUID().toString() + ".jpg"; 	
+        }
         String fullUrl = awsRootUrl + "/" + bucketName + "/" + keyName;
         try {
 	    		InputStream bis = new ByteArrayInputStream(rawImage);
@@ -44,13 +48,12 @@ public class AWSUtil {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(rawImage.length);
             s3client.putObject(new PutObjectRequest(bucketName, keyName, bis, metadata).withAccessControlList(acl));
-            
+            logger.debug("Successfully uploaded file at url -"+fullUrl);
+            return fullUrl;
         } catch (AmazonServiceException ase) {
         		throw new WebApplicationException("Unable to upload group photo", ase); 
         } catch (AmazonClientException ace) {
     			throw new WebApplicationException("Unable to upload group photo", ace); 
         }	
-        logger.debug("Successfully uploaded file at url -"+fullUrl);
-        return fullUrl;
 	}
 }

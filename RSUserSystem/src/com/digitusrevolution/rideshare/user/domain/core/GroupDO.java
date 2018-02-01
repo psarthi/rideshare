@@ -149,7 +149,7 @@ public class GroupDO implements DomainObjectPKLong<Group>{
 			group.getAdmins().add(user);
 			//Storing group Photo
 			if (rawImage!=null) {
-				String url = AWSUtil.saveFileInS3(rawImage);
+				String url = AWSUtil.saveFileInS3(rawImage, null);
 				if (url!=null) { 
 					Photo photo = new Photo();
 					photo.setImageLocation(url);
@@ -170,18 +170,18 @@ public class GroupDO implements DomainObjectPKLong<Group>{
 		group.setName(updatedGroup.getName());
 		group.setInformation(updatedGroup.getInformation());
 		if (rawImage!=null) {
-			String url = AWSUtil.saveFileInS3(rawImage);
-			if (url!=null) {
+			if (group.getPhoto()!=null) {
 				//This will update the photo
-				if (group.getPhoto()!=null) {
-					group.getPhoto().setImageLocation(url);	
-				}
+				String[] split = group.getPhoto().getImageLocation().split("/");
+				String keyname = split[split.length-1];
+				String url = AWSUtil.saveFileInS3(rawImage, keyname);	
+				group.getPhoto().setImageLocation(url);
+			} else {
 				//This will add new photo
-				else {
-					Photo photo = new Photo();
-					photo.setImageLocation(url);
-					group.setPhoto(photo);							
-				}
+				String url = AWSUtil.saveFileInS3(rawImage, null);
+				Photo photo = new Photo();
+				photo.setImageLocation(url);
+				group.setPhoto(photo);							
 			}
 		}
 		update(group);
