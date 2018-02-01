@@ -13,9 +13,12 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.GroupGrantee;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.Permission;
@@ -31,15 +34,13 @@ public class AWSUtil {
 		String AccessKeyID = PropertyReader.getInstance().getProperty("AWS_ACCESS_KEY");
 		String SecretAccessKey = PropertyReader.getInstance().getProperty("AWS_SECRET_KEY");
 		BasicAWSCredentials credentials = new BasicAWSCredentials(AccessKeyID, SecretAccessKey);
-        AmazonS3 s3client = AmazonS3ClientBuilder.standard().withCredentials
+		//Region is very important else you will get exception
+        AmazonS3 s3client = AmazonS3ClientBuilder.standard().withRegion(Regions.AP_SOUTH_1).withCredentials
         		(new AWSStaticCredentialsProvider(credentials)).build();
 		//This is nothing but uploaded file name, we would use new name only if its not provided
         //So that we can override earlier file if exist
-        if (keyName==null) {
-        		logger.debug("Creating new file");
-        		keyName = UUID.randomUUID().toString() + ".jpg"; 	
-        }
-        String fullUrl = awsRootUrl + "/" + bucketName + "/" + keyName;
+        String newKeyName = UUID.randomUUID().toString() + ".jpg"; 	
+        String fullUrl = awsRootUrl + "/" + bucketName + "/" + newKeyName;
         try {
 	    		InputStream bis = new ByteArrayInputStream(rawImage);
             logger.debug("Uploading a new object to S3 with name:"+keyName);
@@ -47,7 +48,11 @@ public class AWSUtil {
             acl.grantPermission(GroupGrantee.AllUsers, Permission.Read);
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(rawImage.length);
-            s3client.putObject(new PutObjectRequest(bucketName, keyName, bis, metadata).withAccessControlList(acl));
+            s3client.putObject(new PutObjectRequest(bucketName, newKeyName, bis, metadata).withAccessControlList(acl));
+            if (keyName!=null) {
+            		logger.debug("Deleting old file:"+keyName);
+                s3client.deleteObject(new DeleteObjectRequest(bucketName, keyName));            	
+            }
             logger.debug("Successfully uploaded file at url -"+fullUrl);
             return fullUrl;
         } catch (AmazonServiceException ase) {
