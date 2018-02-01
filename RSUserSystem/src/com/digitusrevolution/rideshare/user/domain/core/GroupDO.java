@@ -26,6 +26,7 @@ import com.digitusrevolution.rideshare.common.mapper.user.MembershipRequestMappe
 import com.digitusrevolution.rideshare.common.mapper.user.core.GroupMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.service.NotificationService;
+import com.digitusrevolution.rideshare.common.util.AWSUtil;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
@@ -148,13 +149,10 @@ public class GroupDO implements DomainObjectPKLong<Group>{
 			group.getAdmins().add(user);
 			//Storing group Photo
 			if (rawImage!=null) {
-				String uri = saveRawImage(rawImage, group);
-				if (uri!=null) { 
-					//We are not storing hostname and root url so that it can be changed later without effecting the stored photo
-					//String photoUrl = PropertyReader.getInstance().getProperty("PHOTO_WEB_URL");
-					//String groupPhotoUrl = photoUrl + filePath;
+				String url = AWSUtil.saveFileInS3(rawImage);
+				if (url!=null) { 
 					Photo photo = new Photo();
-					photo.setImageLocation(uri);
+					photo.setImageLocation(url);
 					group.setPhoto(photo);							
 				}
 			}
@@ -172,19 +170,16 @@ public class GroupDO implements DomainObjectPKLong<Group>{
 		group.setName(updatedGroup.getName());
 		group.setInformation(updatedGroup.getInformation());
 		if (rawImage!=null) {
-			String uri = saveRawImage(rawImage, group);
-			if (uri!=null) {
-				//We are not storing hostname and root url so that it can be changed later without effecting the stored photo
-				//String photoUrl = PropertyReader.getInstance().getProperty("PHOTO_WEB_URL");
-				//String groupPhotoUrl = photoUrl + filePath;
+			String url = AWSUtil.saveFileInS3(rawImage);
+			if (url!=null) {
 				//This will update the photo
 				if (group.getPhoto()!=null) {
-					group.getPhoto().setImageLocation(uri);	
+					group.getPhoto().setImageLocation(url);	
 				}
 				//This will add new photo
 				else {
 					Photo photo = new Photo();
-					photo.setImageLocation(uri);
+					photo.setImageLocation(url);
 					group.setPhoto(photo);							
 				}
 			}
@@ -192,7 +187,9 @@ public class GroupDO implements DomainObjectPKLong<Group>{
 		update(group);
 	}
 	
-	private String saveRawImage(byte[] rawImage, Group group) {
+	//This should be used only if you want to store the file locally
+	//Since we are using AWS S3 storage, we are not using this instead using AWSUtil class for storing
+	private String saveRawImage(byte[] rawImage) {
 		String photoRootDir = PropertyReader.getInstance().getProperty("PHOTO_ROOT_PATH");
 		String photoGroupDir = PropertyReader.getInstance().getProperty("GROUP_PHOTO_FOLDER_NAME");
 		String photoFullPath =  photoRootDir + photoGroupDir;
@@ -211,7 +208,9 @@ public class GroupDO implements DomainObjectPKLong<Group>{
             fo.close();
             String filePathExcludingRootDir = photoGroupDir + File.separator + fileName;  
             logger.debug("Saved File path:"+filePathExcludingRootDir);
-            return filePathExcludingRootDir;
+			String photoUrl = PropertyReader.getInstance().getProperty("PHOTO_WEB_URL");
+			String groupPhotoUrl = photoUrl + filePathExcludingRootDir;
+            return groupPhotoUrl;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

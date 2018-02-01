@@ -26,19 +26,7 @@ public class PhotoMapper implements Mapper<Photo, PhotoEntity>{
 	public Photo getDomainModel(PhotoEntity photoEntity, boolean fetchChild) {
 		Photo photo = new Photo();
 		photo.setId(photoEntity.getId());
-		//Note - We are only modifying the url while fetching the model and not while setting the entity 
-		//as we want to store only uri in the dabase but while fetching we need full url
-		if (photoEntity.getImageLocation()!=null) {
-			if (photoEntity.getImageLocation().contains("http")) {
-				photo.setImageLocation(photoEntity.getImageLocation());
-			} else {
-				//This is case for group photo where we are not storing hotname 
-				//so that we can customize the url at any point of time
-				String photoRootUrl = PropertyReader.getInstance().getProperty("PHOTO_WEB_URL");
-				String photoFullUrl = photoRootUrl + photoEntity.getImageLocation();
-				photo.setImageLocation(photoFullUrl);
-			}			
-		}
+		photo.setImageLocation(photoEntity.getImageLocation());
 		return photo;
 	}
 

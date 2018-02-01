@@ -20,6 +20,8 @@ public class HibernateUtil {
         String port = System.getProperty("RDS_PORT");
         String jdbcUrl = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password=" + password;
         */        	
+        	//Set below property in JVM startup command
+        	//-DJDBC_CONNECTION_STRING=jdbc:mysql://localhost:3306/ridesharedb?user=<username>&password=<Passoword> 
         	Configuration conf = new Configuration().configure("/resources/hibernate.cfg.xml");
         conf.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
         conf.setProperty("hibernate.connection.url", System.getProperty("JDBC_CONNECTION_STRING"));

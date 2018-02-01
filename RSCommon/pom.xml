@@ -207,5 +207,12 @@
 			<version>1.23.0</version>
 		</dependency>
 		<!-- Google API Component End -->
+		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3 -->
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-s3</artifactId>
+			<version>1.11.271</version>
+		</dependency>
+		<!-- End AWS S3 SDK -->
 	</dependencies>
 </project>
