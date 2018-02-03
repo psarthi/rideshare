@@ -115,9 +115,6 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 		for (Ride ride : rideRequest.getCancelledRides()) {
 			rideDO.setRideStartAndEndPoints(ride);
 		}
-		for (Ride ride : rideRequest.getPreferredRides()) {
-			rideDO.setRideStartAndEndPoints(ride);
-		}
 	}
 
 	@Override
@@ -657,19 +654,13 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 	private void validateBusinessCriteria(Ride ride, Map<Long, List<RideRequestPoint>> rideRequestsMap) {
 		//*** Validating ride requests based on business criteria
 		Collection<RideRequest> cancelledRideRequests = ride.getCancelledRideRequests();
-		Collection<RideRequest> rejectedRideRequests = ride.getRejectedRideRequests();
 		Set<Long> cancelledRideRequestIds = new HashSet<>();
 
 		for (RideRequest rideRequest: cancelledRideRequests) {
 			cancelledRideRequestIds.add(rideRequest.getId());
 		}
-		Set<Long> rejectedRideRequestIds = new HashSet<>();
-		for (RideRequest rideRequest: rejectedRideRequests) {
-			rejectedRideRequestIds.add(rideRequest.getId());
-		}
 		//This will just create a single common list of all excluded list
 		Set<Long> excludedRideRequestIds = new HashSet<>();
-		excludedRideRequestIds.addAll(rejectedRideRequestIds);
 		excludedRideRequestIds.addAll(cancelledRideRequestIds);
 		logger.debug("Excluded List of Ride Request Ids:"+excludedRideRequestIds);
 

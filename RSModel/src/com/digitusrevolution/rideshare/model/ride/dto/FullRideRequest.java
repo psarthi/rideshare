@@ -11,7 +11,6 @@ public class FullRideRequest extends BasicRideRequest{
 
 	private FullRide acceptedRide;
 	private Bill bill;
-	private Collection<FullRide> preferredRides = new HashSet<FullRide>();
 	private Collection<FullRide> cancelledRides = new HashSet<FullRide>();
 	private Collection<UserFeedback> feedbacks = new LinkedList<UserFeedback>();
 
@@ -26,12 +25,6 @@ public class FullRideRequest extends BasicRideRequest{
 	}
 	public void setAcceptedRide(FullRide acceptedRide) {
 		this.acceptedRide = acceptedRide;
-	}
-	public Collection<FullRide> getPreferredRides() {
-		return preferredRides;
-	}
-	public void setPreferredRides(Collection<FullRide> preferredRides) {
-		this.preferredRides = preferredRides;
 	}
 	public Collection<FullRide> getCancelledRides() {
 		return cancelledRides;

@@ -15,7 +15,6 @@ public class FullRide extends BasicRide{
 	
 	private Collection<BasicRidePassenger> ridePassengers = new HashSet<BasicRidePassenger>();
 	private Collection<FullRideRequest> acceptedRideRequests = new HashSet<FullRideRequest>();
-	private Collection<FullRideRequest> rejectedRideRequests = new HashSet<FullRideRequest>();
 	private Collection<FullRideRequest> cancelledRideRequests = new HashSet<FullRideRequest>();
 	
 
@@ -48,12 +47,6 @@ public class FullRide extends BasicRide{
 	}
 	public void setAcceptedRideRequests(Collection<FullRideRequest> acceptedRideRequests) {
 		this.acceptedRideRequests = acceptedRideRequests;
-	}
-	public Collection<FullRideRequest> getRejectedRideRequests() {
-		return rejectedRideRequests;
-	}
-	public void setRejectedRideRequests(Collection<FullRideRequest> rejectedRideRequests) {
-		this.rejectedRideRequests = rejectedRideRequests;
 	}
 	public Collection<FullRideRequest> getCancelledRideRequests() {
 		return cancelledRideRequests;

@@ -349,28 +349,6 @@ public class RideAction {
 		}	
 	}	
 
-
-	/*
-	 * Purpose - Add ride request in the rejected list of ride. This function is only applicable if ride has not been accepted
-	 * and User has choice of accepting or rejecting. So in that case this function would work but if ride has already been accepted
-	 * be it by system or manually, then this is not the right method. Instead use cancelAcceptedRideRequest method
-	 * 
-	 * Note - Reason for returning void for consistency with other rides action method 
-	 * as well as it will give flexibility to modify this function without worrying about updating both side references
-	 * e.g ride should be updated with ride request and vice versa
-	 */
-	public void rejectRideRequest(long rideId, long rideRequestId){
-
-		RideRequestDO rideRequestDO = new RideRequestDO();
-		RideRequest rideRequest = rideRequestDO.get(rideRequestId);
-		Ride ride = rideDO.get(rideId);
-
-		ride.getRejectedRideRequests().add(rideRequest);	
-
-		//This will update the ride details in DB
-		rideDO.update(ride);
-	}
-
 	/*
 	 * Purpose - Change the ride status to started status
 	 * 

@@ -38,7 +38,6 @@ public class BasicRideRequest {
 	private RideRequestStatus status;
 	private BasicUser passenger;
 	private PassengerStatus passengerStatus;
-	private boolean ridePreference;
 	private RidePoint ridePickupPoint = new RidePoint();
 	private RidePoint rideDropPoint = new RidePoint();
 	private String ridePickupPointAddress;
@@ -139,12 +138,6 @@ public class BasicRideRequest {
 	}
 	public void setPassenger(BasicUser passenger) {
 		this.passenger = passenger;
-	}
-	public boolean getRidePreference() {
-		return ridePreference;
-	}
-	public void setRidePreference(boolean ridePreference) {
-		this.ridePreference = ridePreference;
 	}
 	public RidePoint getRidePickupPoint() {
 		return ridePickupPoint;

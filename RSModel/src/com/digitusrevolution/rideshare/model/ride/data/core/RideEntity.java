@@ -80,11 +80,6 @@ public class RideEntity {
 	//but one ride request can be accepted by only one ride
 	@OneToMany(mappedBy="acceptedRide")
 	private Collection<RideRequestEntity> acceptedRideRequests = new HashSet<RideRequestEntity>();
-	//Reason for many to many relationship, as one ride can reject multiple ride request and 
-	//one ride request can be rejected by multiple rides
-	@ManyToMany
-	@JoinTable(name="ride_rejectedRideRequest",joinColumns=@JoinColumn(name="ride_id"))
-	private Collection<RideRequestEntity> rejectedRideRequests = new HashSet<RideRequestEntity>();
 	@ManyToMany
 	@JoinTable(name="ride_cancelledRideRequest",joinColumns=@JoinColumn(name="ride_id"))
 	private Collection<RideRequestEntity> cancelledRideRequests = new HashSet<RideRequestEntity>();
@@ -171,12 +166,6 @@ public class RideEntity {
 	}
 	public void setAcceptedRideRequests(Collection<RideRequestEntity> acceptedRideRequests) {
 		this.acceptedRideRequests = acceptedRideRequests;
-	}
-	public Collection<RideRequestEntity> getRejectedRideRequests() {
-		return rejectedRideRequests;
-	}
-	public void setRejectedRideRequests(Collection<RideRequestEntity> rejectedRideRequests) {
-		this.rejectedRideRequests = rejectedRideRequests;
 	}
 	public UserEntity getDriver() {
 		return driver;

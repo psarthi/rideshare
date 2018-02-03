@@ -44,7 +44,6 @@ public class Ride implements Comparable<Ride>{
 	private User driver;
 	private Collection<RidePassenger> ridePassengers = new HashSet<RidePassenger>();
 	private Collection<RideRequest> acceptedRideRequests = new HashSet<RideRequest>();
-	private Collection<RideRequest> rejectedRideRequests = new HashSet<RideRequest>();
 	private Collection<RideRequest> cancelledRideRequests = new HashSet<RideRequest>();
 	private int travelDistance;
 	private RideMode rideMode;
@@ -126,12 +125,6 @@ public class Ride implements Comparable<Ride>{
 	}
 	public void setAcceptedRideRequests(Collection<RideRequest> acceptedRideRequests) {
 		this.acceptedRideRequests = acceptedRideRequests;
-	}
-	public Collection<RideRequest> getRejectedRideRequests() {
-		return rejectedRideRequests;
-	}
-	public void setRejectedRideRequests(Collection<RideRequest> rejectedRideRequests) {
-		this.rejectedRideRequests = rejectedRideRequests;
 	}
 	public User getDriver() {
 		return driver;

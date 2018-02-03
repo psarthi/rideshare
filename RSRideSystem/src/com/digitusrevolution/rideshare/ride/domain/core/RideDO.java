@@ -98,9 +98,6 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 		for (RideRequest rideRequest:ride.getAcceptedRideRequests()) {
 			rideRequestDO.setRideRequestPoints(rideRequest);
 		}
-		for (RideRequest rideRequest:ride.getRejectedRideRequests()) {
-			rideRequestDO.setRideRequestPoints(rideRequest);
-		}
 		for (RideRequest rideRequest:ride.getCancelledRideRequests()) {
 			rideRequestDO.setRideRequestPoints(rideRequest);
 		}
@@ -688,11 +685,6 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 	public void acceptRideRequest(Ride ride, RideRequest rideRequest, MatchedTripInfo matchedTripInfo){
 		RideAction rideAction = new RideAction(this);
 		rideAction.acceptRideRequest(ride, rideRequest, matchedTripInfo);
-	}
-
-	public void rejectRideRequest(long rideId, long rideRequestId){
-		RideAction rideAction = new RideAction(this);
-		rideAction.rejectRideRequest(rideId, rideRequestId);
 	}
 
 	public void startRide(long rideId){

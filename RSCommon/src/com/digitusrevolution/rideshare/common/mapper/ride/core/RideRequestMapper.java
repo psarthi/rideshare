@@ -38,7 +38,6 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		rideRequestEntity.setPickupPointVariation(rideRequest.getPickupPointVariation());
 		rideRequestEntity.setDropPointVariation(rideRequest.getDropPointVariation());
 		rideRequestEntity.setStatus(rideRequest.getStatus());
-		rideRequestEntity.setRidePreference(rideRequest.getRidePreference());
 		rideRequestEntity.setTravelTime(rideRequest.getTravelTime());
 		rideRequestEntity.setTravelDistance(rideRequest.getTravelDistance());
 		rideRequestEntity.setRideMode(rideRequest.getRideMode());
@@ -99,10 +98,7 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 	@Override
 	public RideRequestEntity getEntityChild(RideRequest rideRequest, RideRequestEntity rideRequestEntity) {
 
-		RideMapper rideMapper = new RideMapper();
-		rideRequestEntity.setPreferredRides(rideMapper.getEntities(rideRequestEntity.getPreferredRides(), 
-				rideRequest.getPreferredRides(), true));
-		
+		RideMapper rideMapper = new RideMapper();		
 		Ride ride = rideRequest.getAcceptedRide();
 		//Don't get child of ride has ride request and ride request has ride, so it will get into recursive loop
 		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
@@ -141,7 +137,6 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 		rideRequest.setPickupPointVariation(rideRequestEntity.getPickupPointVariation());
 		rideRequest.setDropPointVariation(rideRequestEntity.getDropPointVariation());
 		rideRequest.setStatus(rideRequestEntity.getStatus());
-		rideRequest.setRidePreference(rideRequestEntity.getRidePreference());
 		rideRequest.setTravelTime(rideRequestEntity.getTravelTime());
 		rideRequest.setTravelDistance(rideRequestEntity.getTravelDistance());
 		rideRequest.setRideMode(rideRequestEntity.getRideMode());
@@ -193,9 +188,6 @@ public class RideRequestMapper implements Mapper<RideRequest, RideRequestEntity>
 	@Override
 	public RideRequest getDomainModelChild(RideRequest rideRequest, RideRequestEntity rideRequestEntity) {
 		RideMapper rideMapper = new RideMapper();
-		rideRequest.setPreferredRides(rideMapper.getDomainModels(rideRequest.getPreferredRides(), 
-				rideRequestEntity.getPreferredRides(), true));
-	
 		RideEntity rideEntity = rideRequestEntity.getAcceptedRide();
 		//Don't get child as ride has ride request and ride request has ride, so it will get into recursive loop
 		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 

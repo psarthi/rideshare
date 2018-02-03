@@ -89,13 +89,6 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop
 		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
 		//is called irrespective of fetchChild status
-		Collection<RideRequestEntity> rejectedRideRequestEntities = rideRequestMapper.getEntities(rideEntity.getRejectedRideRequests(), 
-				ride.getRejectedRideRequests(), false);
-		rideEntity.setRejectedRideRequests(rejectedRideRequestEntities);
-		
-		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop
-		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
-		//is called irrespective of fetchChild status
 		Collection<RideRequestEntity> cancelledRideRequestEntities = rideRequestMapper.getEntities(rideEntity.getCancelledRideRequests(), 
 				ride.getCancelledRideRequests(), false);
 		rideEntity.setCancelledRideRequests(cancelledRideRequestEntities);
@@ -166,14 +159,6 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 				rideEntity.getAcceptedRideRequests(), true);
 		ride.setAcceptedRideRequests(acceptedRideRequests);
 				
-
-		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop
-		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
-		//is called irrespective of fetchChild status. Ride is calling ride request domain function and ride request is calling ride domain function
-		Collection<RideRequest> rejectedRideRequests = rideRequestMapper.getDomainModels(ride.getRejectedRideRequests(), 
-				rideEntity.getRejectedRideRequests(), false);
-		ride.setRejectedRideRequests(rejectedRideRequests);
-
 		//Don't fetch child as ride has ride requests and ride request has ride, so it will get into recursive loop
 		//Reason for having this in child and not in entity/domain as it will get into recursive loop as entity/domain function 
 		//is called irrespective of fetchChild status. Ride is calling ride request domain function and ride request is calling ride domain function

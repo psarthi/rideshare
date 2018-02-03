@@ -75,10 +75,6 @@ public class RideRequestEntity {
 	public void setPassengerStatus(PassengerStatus passengerStatus) {
 		this.passengerStatus = passengerStatus;
 	}
-	private boolean ridePreference;
-	@ManyToMany
-	@JoinTable(name="rideRequest_preferred_ride",joinColumns=@JoinColumn(name="ride_request_id"))
-	private Collection<RideEntity> preferredRides = new HashSet<RideEntity>();
 	@ManyToOne
 	private RideEntity acceptedRide;
 	//We need to store just ridePointId in Hibernate as ridepoint is getting stored in MonogoDB
@@ -161,18 +157,6 @@ public class RideRequestEntity {
 	}
 	public void setDropPointVariation(int dropPointVariation) {
 		this.dropPointVariation = dropPointVariation;
-	}
-	public Collection<RideEntity> getPreferredRides() {
-		return preferredRides;
-	}
-	public void setPreferredRides(Collection<RideEntity> preferredRides) {
-		this.preferredRides = preferredRides;
-	}
-	public boolean getRidePreference() {
-		return ridePreference;
-	}
-	public void setRidePreference(boolean ridePreference) {
-		this.ridePreference = ridePreference;
 	}
 	public RideEntity getAcceptedRide() {
 		return acceptedRide;

@@ -38,8 +38,6 @@ public class RideRequest implements Comparable<RideRequest>{
 	//@JsonIdentityReference(alwaysAsId=true)
 	private User passenger;
 	private PassengerStatus passengerStatus;
-	private boolean ridePreference;
-	private Collection<Ride> preferredRides = new HashSet<Ride>();
 	private Ride acceptedRide;
 	private RidePoint ridePickupPoint = new RidePoint();
 	private RidePoint rideDropPoint = new RidePoint();
@@ -144,18 +142,6 @@ public class RideRequest implements Comparable<RideRequest>{
 	}
 	public void setPassenger(User passenger) {
 		this.passenger = passenger;
-	}
-	public Collection<Ride> getPreferredRides() {
-		return preferredRides;
-	}
-	public void setPreferredRides(Collection<Ride> preferredRides) {
-		this.preferredRides = preferredRides;
-	}
-	public boolean getRidePreference() {
-		return ridePreference;
-	}
-	public void setRidePreference(boolean ridePreference) {
-		this.ridePreference = ridePreference;
 	}
 	public Ride getAcceptedRide() {
 		return acceptedRide;
