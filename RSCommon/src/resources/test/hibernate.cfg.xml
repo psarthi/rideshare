@@ -20,6 +20,7 @@
 		<!-- <property name="connection.pool_size">1</property> -->
 		
 		<!-- JDBC connection pool settings -->
+		<!-- timeout and idle_test values are in seconds -->
 		<property name="hibernate.c3p0.min_size">5</property>
 	    <property name="hibernate.c3p0.max_size">20</property>
 	    <property name="hibernate.c3p0.timeout">300</property>
@@ -65,6 +66,7 @@
 	
 		<!-- Service Provider System -->
 		<mapping class="com.digitusrevolution.rideshare.model.serviceprovider.data.core.CompanyEntity" />
+		<mapping class="com.digitusrevolution.rideshare.model.serviceprovider.data.core.HelpQuestionAnswerEntity" />
 
 		<!-- Ride System -->		
 		<mapping class="com.digitusrevolution.rideshare.model.ride.data.core.RideEntity" />

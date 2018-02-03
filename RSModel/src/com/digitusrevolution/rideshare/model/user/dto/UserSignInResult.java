@@ -9,6 +9,7 @@ public class UserSignInResult {
 	private BasicUser user;
 	private FullRide currentRide;
 	private FullRideRequest currentRideRequest;
+	private boolean groupMember;
 	
 	public String getToken() {
 		return token;
@@ -33,6 +34,12 @@ public class UserSignInResult {
 	}
 	public void setCurrentRideRequest(FullRideRequest currentRideRequest) {
 		this.currentRideRequest = currentRideRequest;
+	}
+	public boolean isGroupMember() {
+		return groupMember;
+	}
+	public void setGroupMember(boolean groupMember) {
+		this.groupMember = groupMember;
 	}
 
 }

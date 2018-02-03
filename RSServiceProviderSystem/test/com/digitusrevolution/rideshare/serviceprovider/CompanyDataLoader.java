@@ -15,6 +15,7 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.CompanyDO;
+import com.digitusrevolution.rideshare.serviceprovider.domain.core.HelpQuestionAnswerDO;
 
 @Path("/domain/loaddata/serviceprovider")
 public class CompanyDataLoader {

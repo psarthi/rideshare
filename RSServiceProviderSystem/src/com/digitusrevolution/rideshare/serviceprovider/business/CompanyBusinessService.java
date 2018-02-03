@@ -1,5 +1,8 @@
 package com.digitusrevolution.rideshare.serviceprovider.business;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
@@ -7,8 +10,10 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.HelpQuestionAnswer;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.CompanyAccount;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.CompanyDO;
+import com.digitusrevolution.rideshare.serviceprovider.domain.core.HelpQuestionAnswerDO;
 
 
 public class CompanyBusinessService {
@@ -69,5 +74,32 @@ public class CompanyBusinessService {
 			}
 		}
 		return company;	
+	}
+	
+	public List<HelpQuestionAnswer> getAllHelpQuestionAnswer() {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		List<HelpQuestionAnswer> helpQuestionAnswers = new ArrayList<>();
+		try {
+			transaction = session.beginTransaction();
+
+			HelpQuestionAnswerDO helpQuestionAnswerDO = new HelpQuestionAnswerDO();
+			helpQuestionAnswers = helpQuestionAnswerDO.getAll();
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return helpQuestionAnswers;	
 	}
 }

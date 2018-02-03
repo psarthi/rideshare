@@ -4,7 +4,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.ietf.jgss.Oid;
 
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoClientOptions.Builder;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoDatabase;
 
@@ -21,7 +24,16 @@ public class MongoDBUtil {
         	String connectionString = System.getProperty("MONGODB_CONNECTION_STRING");
         	String dbName = System.getProperty("MONGODB_NAME");
         	//String connectionString = "mongodb://admin:<Password>@rideshare-test-shard-00-00-txmgo.mongodb.net:27017,rideshare-test-shard-00-01-txmgo.mongodb.net:27017,rideshare-test-shard-00-02-txmgo.mongodb.net:27017/test?ssl=true&replicaSet=rideshare-test-shard-0&authSource=admin";
-        	MongoClientURI uri = new MongoClientURI(connectionString);
+        	int minPoolSize = Integer.parseInt(PropertyReader.getInstance().getProperty("MONGODB_MIN_POOL_SIZE"));
+        	int maxPoolSize = Integer.parseInt(PropertyReader.getInstance().getProperty("MONGODB_MAX_POOL_SIZE"));
+        	int maxConnectionIdleTime = Integer.parseInt(PropertyReader.getInstance().getProperty("MONGODB_MAX_CONNECTION_IDLE_TIME_IN_MILLIS"));
+        	MongoClientOptions clientOptions = MongoClientOptions.builder()
+        			.minConnectionsPerHost(minPoolSize)
+        			.connectionsPerHost(maxPoolSize)
+        			.maxConnectionIdleTime(maxConnectionIdleTime)
+        			.build();
+        	Builder builder = MongoClientOptions.builder(clientOptions);
+        	MongoClientURI uri = new MongoClientURI(connectionString, builder);
         	mongoClient = new MongoClient(uri);
         	database = mongoClient.getDatabase(dbName);
         } catch (Throwable ex) {

@@ -1,5 +1,7 @@
 package com.digitusrevolution.rideshare.serviceprovider.business.resource;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -7,12 +9,15 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.HelpQuestionAnswer;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.CompanyAccount;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.serviceprovider.business.CompanyBusinessService;
 
 @Path("/serviceprovider")
@@ -49,6 +54,15 @@ public class CompanyBusinessResource {
 		Company company = companyBusinessService.get(id, Boolean.valueOf(fetchChild));
 		return Response.ok(company).build();
 	}
-
+	
+	@Secured
+	@GET
+	@Path("/help")
+	public Response getAllHelpQuestionAnswer() {
+		CompanyBusinessService companyBusinessService = new CompanyBusinessService();
+		List<HelpQuestionAnswer> helpQuestionAnswers = companyBusinessService.getAllHelpQuestionAnswer();
+		GenericEntity<List<HelpQuestionAnswer>> entity = new GenericEntity<List<HelpQuestionAnswer>>(helpQuestionAnswers) {};
+		return Response.ok(entity).build();
+	}
 
 }
