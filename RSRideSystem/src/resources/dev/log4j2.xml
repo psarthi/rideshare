@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n" />
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Root level="info">
+			<AppenderRef ref="Console" />
+		</Root>
+		<Logger name="com.digitusrevolution.rideshare" level="debug"
+			additivity="false">
+			<AppenderRef ref="Console" />
+		</Logger>
+		<Logger name="com.digitusrevolution.rideshare.ride.domain"
+			level="debug" additivity="false">
+			<AppenderRef ref="Console" />
+		</Logger>
+		<Logger
+			name="com.digitusrevolution.rideshare.ride.data"
+			level="debug" additivity="false">
+			<AppenderRef ref="Console" />
+		</Logger>
+		<Logger
+			name="com.digitusrevolution.rideshare.common.util.external.RouteBoxer"
+			level="debug" additivity="false">
+			<AppenderRef ref="Console" />
+		</Logger>
+		<Logger
+			name="com.digitusrevolution.rideshare.ride.data.RidePointDAO"
+			level="debug" additivity="false">
+			<AppenderRef ref="Console" />
+		</Logger>
+	</Loggers>
+</Configuration>

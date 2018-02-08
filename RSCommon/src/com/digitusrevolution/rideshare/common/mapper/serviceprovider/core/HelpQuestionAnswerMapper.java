@@ -12,6 +12,7 @@ public class HelpQuestionAnswerMapper implements Mapper<HelpQuestionAnswer, Help
 	public HelpQuestionAnswerEntity getEntity(HelpQuestionAnswer helpQuestionAnswer, boolean fetchChild) {
 		HelpQuestionAnswerEntity questionAnswerEntity = new HelpQuestionAnswerEntity();
 		questionAnswerEntity.setId(helpQuestionAnswer.getId());
+		questionAnswerEntity.setCategory(helpQuestionAnswer.getCategory());
 		questionAnswerEntity.setQuestion(helpQuestionAnswer.getQuestion());
 		questionAnswerEntity.setAnswer(helpQuestionAnswer.getAnswer());
 		return questionAnswerEntity;
@@ -26,6 +27,7 @@ public class HelpQuestionAnswerMapper implements Mapper<HelpQuestionAnswer, Help
 	public HelpQuestionAnswer getDomainModel(HelpQuestionAnswerEntity helpQuestionAnswerEntity, boolean fetchChild) {
 		HelpQuestionAnswer questionAnswer = new HelpQuestionAnswer();
 		questionAnswer.setId(helpQuestionAnswerEntity.getId());
+		questionAnswer.setCategory(helpQuestionAnswerEntity.getCategory());
 		questionAnswer.setQuestion(helpQuestionAnswerEntity.getQuestion());
 		questionAnswer.setAnswer(helpQuestionAnswerEntity.getAnswer());
 		return questionAnswer;
