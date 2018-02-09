@@ -1,32 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--########################Development Environment########################-->
+<!--########################Production Environment######################## -->
 <!DOCTYPE hibernate-configuration PUBLIC
 		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
 		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
 	<session-factory>
 
-
-		<!-- Data source Name for using Connection Pooling of App Server (Tomcat) 
-		<property name="connection.datasource">java:comp/env/jdbc/ridesharedb</property>-->  
-		 
-		<!-- Database connection settings
-		<property name="connection.driver_class">com.mysql.jdbc.Driver</property> 
-		<property name="connection.url">jdbc:mysql://localhost:3306/ridesharedb</property>
-		<property name="connection.username">root</property>
-		<property name="connection.password">sp4f@mily</property>-->
-
-		<!-- JDBC connection pool (use the built-in) -->
-		<!-- <property name="connection.pool_size">1</property> -->
-		
 		<!-- JDBC connection pool settings -->
-		<!-- timeout and idle_test values are in seconds -->
+		<property name="hibernate.c3p0.acquire_increment">3</property>
+		<!-- Minimum number of JDBC connections in the pool. Hibernate default: 
+			1 -->
 		<property name="hibernate.c3p0.min_size">5</property>
-	    <property name="hibernate.c3p0.max_size">20</property>
-	    <!-- Timeout value in seconds-->
-	    <property name="hibernate.c3p0.timeout">300</property>
-	    <!-- This is used to keep pining the DB after some time so that connection to the server is alive-->
-	    <property name="hibernate.c3p0.idle_test_period">3000</property>
+		<!-- Maximum number of JDBC connections in the pool. Hibernate default: 
+			100 -->
+		<property name="hibernate.c3p0.max_size">20</property>
+		<!-- When an idle connection is removed from the pool (in second). Hibernate 
+			default: 0, never expire. -->
+		<property name="hibernate.c3p0.timeout">1800</property>
+		<!-- idle time in seconds before a connection is automatically validated. 
+			Hibernate default: 0 Please keep in mind, that hibernate.c3p0.idle_test_period 
+			value must never exceed that of hibernate.c3p0.timeout. Otherwise C3P0 will 
+			never detect connections that has been closed -->
+		<property name="hibernate.c3p0.idle_test_period">300</property>
 
 		<!-- SQL dialect -->
 		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
@@ -35,59 +30,79 @@
 		<property name="cache.provider_class">org.hibernate.cache.internal.NoCacheProvider</property>
 
 		<!-- Echo all executed SQL to stdout -->
-		<property name="show_sql">true</property>
+		<property name="show_sql">false</property>
 
 		<!-- Drop and re-create the database schema on startup -->
+		<!-- validate: validate the schema, makes no changes to the database. update: 
+			update the schema. create: creates the schema, destroying previous data. 
+			create-drop: drop the schema when the SessionFactory is closed explicitly, 
+			typically when the application is stopped. -->
 		<property name="hbm2ddl.auto">update</property>
-		
+
 		<property name="current_session_context_class">thread</property>
-	
+
 		<!-- Default value is also false for autocommit -->
-		<!-- <property name="connection.autocommit">false</property> --> 
+		<!-- <property name="connection.autocommit">false</property> -->
 
 		<!-- Names the annotated entity class -->
 		<!-- User System -->
-		<mapping class="com.digitusrevolution.rideshare.model.user.data.core.GroupEntity" />
-		<mapping class="com.digitusrevolution.rideshare.model.user.data.core.UserEntity" />
-		<mapping class="com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity" />
-	
+		<mapping
+			class="com.digitusrevolution.rideshare.model.user.data.core.GroupEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.user.data.core.UserEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.user.data.core.VehicleEntity" />
+
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.CityEntity" />
-		<mapping class="com.digitusrevolution.rideshare.model.user.data.CountryEntity" />
-		<mapping class="com.digitusrevolution.rideshare.model.user.data.CurrencyEntity" />		
+		<mapping
+			class="com.digitusrevolution.rideshare.model.user.data.CountryEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.user.data.CurrencyEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.PhotoEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.RoleEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.StateEntity" />
-		<mapping class="com.digitusrevolution.rideshare.model.user.data.VehicleCategoryEntity" />
-		<mapping class="com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity" />
-		<mapping class="com.digitusrevolution.rideshare.model.user.data.PreferenceEntity" />
-		<mapping class="com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.user.data.VehicleCategoryEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.user.data.VehicleSubCategoryEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.user.data.PreferenceEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.FormEntity" />
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.OTPEntity" />
-		<mapping class="com.digitusrevolution.rideshare.model.user.data.UserFeedbackEntity" />
-		
-	
+		<mapping
+			class="com.digitusrevolution.rideshare.model.user.data.UserFeedbackEntity" />
+
+
 		<!-- Service Provider System -->
-		<mapping class="com.digitusrevolution.rideshare.model.serviceprovider.data.core.CompanyEntity" />
-		<mapping class="com.digitusrevolution.rideshare.model.serviceprovider.data.core.HelpQuestionAnswerEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.serviceprovider.data.core.CompanyEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.serviceprovider.data.core.HelpQuestionAnswerEntity" />
 
-		<!-- Ride System -->		
-		<mapping class="com.digitusrevolution.rideshare.model.ride.data.core.RideEntity" />
-		<mapping class="com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity" />
-		<mapping class="com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity" />
-	
-		<mapping class="com.digitusrevolution.rideshare.model.ride.data.RecurringDetailEntity" />
-		<mapping class="com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity" />
-		<mapping class="com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity" />
+		<!-- Ride System -->
+		<mapping
+			class="com.digitusrevolution.rideshare.model.ride.data.core.RideEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity" />
 
-		<!-- Billing System -->		
-		<mapping class="com.digitusrevolution.rideshare.model.billing.data.core.BillEntity" />
-		<mapping class="com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity" />
-		<mapping class="com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity" />
-		
-		<!-- Testing Purpose 		
-		<mapping class="com.digitusrevolution.rideshare.poc.A" />
-		<mapping class="com.digitusrevolution.rideshare.poc.B" />-->
-		
-	
+		<mapping
+			class="com.digitusrevolution.rideshare.model.ride.data.RecurringDetailEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity" />
+
+		<!-- Billing System -->
+		<mapping
+			class="com.digitusrevolution.rideshare.model.billing.data.core.BillEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity" />
+
 	</session-factory>
 </hibernate-configuration>

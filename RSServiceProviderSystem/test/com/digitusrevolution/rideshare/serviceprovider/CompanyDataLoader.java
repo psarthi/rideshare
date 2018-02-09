@@ -58,7 +58,7 @@ public class CompanyDataLoader {
 	public void loadCompany(){
 		
 		Company company = new Company();
-		company.setName("Parift Technologies Private Limited");
+		company.setName("Parift Technologies");
 		Currency currency = RESTClientUtil.getCurrency(1);
 		company.setCurrency(currency);
 		company.setServiceChargePercentage(10);

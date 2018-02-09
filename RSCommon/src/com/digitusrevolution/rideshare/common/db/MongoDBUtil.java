@@ -24,11 +24,9 @@ public class MongoDBUtil {
         	String connectionString = System.getProperty("MONGODB_CONNECTION_STRING");
         	String dbName = System.getProperty("MONGODB_NAME");
         	//String connectionString = "mongodb://admin:<Password>@rideshare-test-shard-00-00-txmgo.mongodb.net:27017,rideshare-test-shard-00-01-txmgo.mongodb.net:27017,rideshare-test-shard-00-02-txmgo.mongodb.net:27017/test?ssl=true&replicaSet=rideshare-test-shard-0&authSource=admin";
-        	int minPoolSize = Integer.parseInt(PropertyReader.getInstance().getProperty("MONGODB_MIN_POOL_SIZE"));
         	int maxPoolSize = Integer.parseInt(PropertyReader.getInstance().getProperty("MONGODB_MAX_POOL_SIZE"));
         	int maxConnectionIdleTime = Integer.parseInt(PropertyReader.getInstance().getProperty("MONGODB_MAX_CONNECTION_IDLE_TIME_IN_MILLIS"));
         	MongoClientOptions clientOptions = MongoClientOptions.builder()
-        			.minConnectionsPerHost(minPoolSize)
         			.connectionsPerHost(maxPoolSize)
         			.maxConnectionIdleTime(maxConnectionIdleTime)
         			.build();
