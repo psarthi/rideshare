@@ -180,7 +180,7 @@ public class AuthService implements AuthServiceInf{
 			// Set up the HTTP transport and JSON factory
 			HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
 			JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-			String CLIENT_ID = PropertyReader.getInstance().getProperty("ANDROID_APP_CLIENT_ID");
+			String CLIENT_ID = PropertyReader.getInstance().getProperty("GOOGLE_SIGNIN_CLIENT_ID");
 			GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(httpTransport, jsonFactory)
 					// Specify the CLIENT_ID of the app that accesses the backend:
 					.setAudience(Collections.singletonList(CLIENT_ID))

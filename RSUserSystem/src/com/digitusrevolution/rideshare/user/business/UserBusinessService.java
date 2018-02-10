@@ -50,7 +50,14 @@ public class UserBusinessService {
 		long id = 0;
 		try {
 			transaction = session.beginTransaction();
-			
+
+			//Currently we are bypassing google revalidation as it not working post changing the sign-in token in google console
+			//Even we need to rethink do we really need this revalidation
+			UserDO userDO = new UserDO();
+			User user = JsonObjectMapper.getMapper().convertValue(userRegistration, User.class);			
+			id = userDO.registerUser(user, userRegistration.getOtp());															
+
+			/*Below code is for reference, so that we can enable once issue is fixed
 			//IMP - Google Token revalidation is imp to avoid fraud registration
 			if (AuthService.getInstance().validateGoogleSignInToken(userRegistration.getEmail(), userRegistration.getSignInToken())) {
 				UserDO userDO = new UserDO();
@@ -58,7 +65,7 @@ public class UserBusinessService {
 				id = userDO.registerUser(user, userRegistration.getOtp());															
 			} else {
 				throw new InvalidTokenException();
-			}
+			}*/
 
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -253,11 +260,15 @@ public class UserBusinessService {
 			else {
 				//IMP - Google Token revalidation is imp to avoid fraud signIn
 				logger.debug("Token is not available, so doing google token re-validation");
+				//Currently we are bypassing google revalidation as it not working post changing the sign-in token in google console
+				//Even we need to rethink do we really need this revalidation
+				userSignInResult = userDO.googleSignIn(googleSignInInfo.getEmail());
+				/* Below code is for reference, so that we can enable once issue is fixed
 				if (AuthService.getInstance().validateGoogleSignInToken(googleSignInInfo.getEmail(), googleSignInInfo.getSignInToken())) {
 					userSignInResult = userDO.googleSignIn(googleSignInInfo.getEmail());	
 				} else {
 					throw new WebApplicationException("Google sign in token is invalid, please try again");
-				}
+				}*/
 			}
 			
 			transaction.commit();

@@ -99,7 +99,7 @@ public class RESTClientUtil {
 
 		RESTClientImpl<String> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_GOOGLE_GEOCODE_URL");
-		String key = PropertyReader.getInstance().getProperty("GOOGLE_SERVER_KEY");
+		String key = PropertyReader.getInstance().getProperty("GOOGLE_API_KEY");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
 		URI uri = uriBuilder.build(address,key);
 		Response response = restClientUtil.get(uri);
@@ -111,7 +111,7 @@ public class RESTClientUtil {
 
 		RESTClientImpl<String> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_GOOGLE_REVERSE_GEOCODE_URL");
-		String key = PropertyReader.getInstance().getProperty("GOOGLE_SERVER_KEY");
+		String key = PropertyReader.getInstance().getProperty("GOOGLE_API_KEY");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
 		URI uri = uriBuilder.build(lat,lng,key);
 		Response response = restClientUtil.get(uri);
@@ -125,7 +125,7 @@ public class RESTClientUtil {
 		long departureEpochSecond = departureTimeUTC.toEpochSecond(); 
 		RESTClientImpl<String> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_GOOGLE_DIRECTION_URL");
-		String key = PropertyReader.getInstance().getProperty("GOOGLE_SERVER_KEY");
+		String key = PropertyReader.getInstance().getProperty("GOOGLE_API_KEY");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
 		URI uri = uriBuilder.build(originLat,originLng,destinationLat,destinationLng,departureEpochSecond,key);
 		Response response = restClientUtil.get(uri);
@@ -138,7 +138,7 @@ public class RESTClientUtil {
 		long departureEpochSecond = departureTimeUTC.toEpochSecond(); 
 		RESTClientImpl<String> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_GOOGLE_DISTANCE_URL");
-		String key = PropertyReader.getInstance().getProperty("GOOGLE_SERVER_KEY");
+		String key = PropertyReader.getInstance().getProperty("GOOGLE_API_KEY");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
 		URI uri = uriBuilder.build(originLat,originLng,destinationLat,destinationLng,departureEpochSecond,key);
 		Response response = restClientUtil.get(uri);
