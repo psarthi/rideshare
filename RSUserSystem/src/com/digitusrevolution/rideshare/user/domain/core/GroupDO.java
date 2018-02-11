@@ -157,6 +157,7 @@ public class GroupDO implements DomainObjectPKLong<Group>{
 				}
 			}
 			long id = create(group);
+			logger.info("Group "+group.getName()+" Created with id:"+id);
 			return id;			
 		} else {
 			throw new NotAcceptableException("Group already exist with the same name");

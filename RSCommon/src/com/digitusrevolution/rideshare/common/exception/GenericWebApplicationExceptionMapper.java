@@ -19,7 +19,7 @@ public class GenericWebApplicationExceptionMapper implements ExceptionMapper<Web
 	@Override
 	public Response toResponse(WebApplicationException exception) {
 		
-		logger.debug("Caught in GenericWebApplicationExceptionMapper");
+		logger.error("Caught in GenericWebApplicationExceptionMapper");
 		ErrorMessage errorMessage = null;
 		if (exception.getCause()!=null){
 			exception.printStackTrace();
@@ -29,7 +29,7 @@ public class GenericWebApplicationExceptionMapper implements ExceptionMapper<Web
 			exception.printStackTrace();
 			errorMessage = new ErrorMessage(exception.getResponse().getStatus(), exception.getClass().getSimpleName(), exception.getMessage());			
 		}
-		logger.debug("Error Msg:"+errorMessage.toString());
+		logger.error("Error Msg:"+errorMessage.toString());
 		Response response = Response.status(exception.getResponse().getStatus()).entity(errorMessage).build();
 		return response;
 	}

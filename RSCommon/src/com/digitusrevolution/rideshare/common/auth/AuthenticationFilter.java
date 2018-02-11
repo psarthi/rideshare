@@ -32,7 +32,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext requestContext) throws IOException {
     		
     		String url = requestContext.getUriInfo().getAbsolutePath().toString();
-    		logger.debug("URL:"+url);
+    		logger.info("URL:"+url);
         // Get the Authorization header from the request
         String authorizationHeader =
                 requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);

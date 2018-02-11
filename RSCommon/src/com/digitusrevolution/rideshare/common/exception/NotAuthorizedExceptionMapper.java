@@ -22,6 +22,7 @@ public class NotAuthorizedExceptionMapper implements ExceptionMapper<NotAuthoriz
 		String errorMsg = PropertyReader.getInstance().getProperty("UNAUTHORIZED_ERROR_MESSAGE");
 		ErrorMessage errorMessage = new ErrorMessage(errorCode, errorType, errorMsg);
 		Response response = Response.status(Response.Status.UNAUTHORIZED).entity(errorMessage).build();
+		logger.error("Error Msg:"+errorMessage.toString());
 		return response;
 	}
 

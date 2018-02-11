@@ -256,7 +256,7 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 		rideRequest.getDropPoint().set_id(dropPointId);
 		rideRequest.setId(id);
 		update(rideRequest);
-		logger.debug("Ride Request has been created with id:" + id);
+		logger.info("Ride Request has been created with id:" + id);
 		return id;
 	}
 
@@ -353,7 +353,7 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 
 		// ***** Initializing Variables - Start
 
-		logger.debug("[Searching Rides Requests for Ride Id]:"+ rideId);
+		logger.info("[Searching Rides Requests for Ride Id]:"+ rideId);
 		RideDO rideDO = new RideDO();
 		List<RidePoint> ridePoints = rideDO.getAllRidePointsOfRide(rideId);
 		//This is important else you will not get cancelled ride requests info
@@ -516,7 +516,7 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 		logger.trace("Ride Request Final Result Count:"+validMatchedTripInfos.size());
 		int index =0;
 		for (MatchedTripInfo matchedTripInfo : validMatchedTripInfos) {
-			logger.debug("Final Ride Request ["+index+"]:"+matchedTripInfo.getRideRequestId());
+			logger.info("Final Ride Request ["+index+"]:"+matchedTripInfo.getRideRequestId());
 			index++;
 		}
 		return validMatchedTripInfos;
@@ -553,10 +553,10 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 
 		JSONUtil<MatchedTripInfo> jsonUtil = new JSONUtil<>(MatchedTripInfo.class);
 		for (MatchedTripInfo matchedTripInfo : validMatchedTripInfos) {
-			logger.debug("Final Matching Trip Info:"+ jsonUtil.getJson(matchedTripInfo));	
+			logger.info("Final Matching Trip Info:"+ jsonUtil.getJson(matchedTripInfo));	
 		}
 		if (validMatchedTripInfos.size() == 0) {
-			logger.debug("No matching Ride Request found for Ride Id:"+ rideId);
+			logger.info("No matching Ride Request found for Ride Id:"+ rideId);
 		}
 
 		return rideRequestSearchResult;
@@ -976,7 +976,7 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 	 * 
 	 */
 	public void cancelRideRequest(long rideRequestId){
-		logger.debug("Cancelling Ride Request:"+rideRequestId);
+		logger.info("Cancelling Ride Request:"+rideRequestId);
 		rideRequest = getAllData(rideRequestId);
 		RideRequestStatus rideRequestStatus = rideRequest.getStatus();
 		if (rideRequestStatus.equals(RideRequestStatus.Unfulfilled)){
@@ -1052,7 +1052,7 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 				try {
 					RideRequest rideRequest = getAllData(matchedTripInfo.getRideRequestId());
 					rideDO.acceptRideRequest(ride, rideRequest, matchedTripInfo);
-					logger.debug("Found Matching Ride Request for Ride ID:"+rideId);	
+					logger.info("Found Matching Ride Request for Ride ID:"+rideId);	
 					//IMP - This is good as in one shot i can match many ride request, so if a driver has offered 4 seats, then 4 ride request can be served
 					//otherwise, we need to wait for 4 rides to match each request which is not good
 					int seatOccupied = 0;
@@ -1077,7 +1077,7 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 				}
 			}
 		} 
-		logger.debug("No Matching Ride Request Found for Ride ID:"+rideId);
+		logger.info("No Matching Ride Request Found for Ride ID:"+rideId);
 		return null;
 	}
 

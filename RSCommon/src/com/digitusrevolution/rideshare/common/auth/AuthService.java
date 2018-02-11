@@ -113,7 +113,7 @@ public class AuthService implements AuthServiceInf{
 
 		} catch (SignatureException e) {
 			//don't trust the JWT!
-			logger.debug("Token Authentication failed");
+			logger.error("Token Authentication failed");
 			return false;
 		}
 	}
@@ -194,7 +194,7 @@ public class AuthService implements AuthServiceInf{
 				logger.debug("Valid Google SignIn Token for email id:"+email);
 				return true;
 			} else {
-				logger.debug("Invalid Google SignIn Token for email id:"+email);
+				logger.error("Invalid Google SignIn Token for email id:"+email);
 				return false;
 			}
 

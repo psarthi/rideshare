@@ -22,7 +22,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 	@Override
 	public Response toResponse(Throwable exception) {
 		
-		logger.debug("Caught in GenericExceptionMapper");
+		logger.error("Caught in GenericExceptionMapper");
 		ErrorMessage errorMessage = null;
 		int errorCode = Status.INTERNAL_SERVER_ERROR.getStatusCode();
 		if (exception.getCause()!=null){
@@ -33,7 +33,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 			exception.printStackTrace();
 			errorMessage = new ErrorMessage(errorCode, exception.getClass().getSimpleName(), exception.getMessage());			
 		}
-		logger.debug("Error Msg:"+errorMessage.toString());
+		logger.error("Error Msg:"+errorMessage.toString());
 		Response response = Response.status(errorCode).entity(errorMessage).build();
 		return response;
 	}

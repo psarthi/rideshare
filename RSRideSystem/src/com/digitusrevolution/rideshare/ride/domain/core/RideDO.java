@@ -288,7 +288,7 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 						ride.setEndTime(endTimeUTC.plusDays(i));
 						id = create(ride);	
 						rideIds.add(id);
-						logger.debug("Ride has been created with id:" + id);						
+						logger.info("Ride has been created with id:" + id);						
 					}
 				}
 
@@ -297,7 +297,7 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 					rideIds.add(id);
 					//Below is imp, else it won't be able to update the ride which has been just created
 					ride.setId(id);
-					logger.debug("Ride has been created with id:" + id);
+					logger.info("Ride has been created with id:" + id);
 				}
 
 				RouteDO routeDO = new RouteDO();
@@ -445,7 +445,7 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 	 */
 	public List<MatchedTripInfo> searchRides(long rideRequestId){		
 
-		logger.debug("[Searching Rides for Ride Request Id]:"+ rideRequestId);
+		logger.info("[Searching Rides for Ride Request Id]:"+ rideRequestId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		//This is important else you will not get cancelled rides info
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
@@ -520,10 +520,10 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 
 		JSONUtil<MatchedTripInfo> jsonUtil = new JSONUtil<>(MatchedTripInfo.class);
 		for (MatchedTripInfo matchedTripInfo : matchedTripInfos) {
-			logger.debug("Final Matching Trip Info:"+ jsonUtil.getJson(matchedTripInfo));	
+			logger.info("Final Matching Trip Info:"+ jsonUtil.getJson(matchedTripInfo));	
 		}
 		if (matchedTripInfos.size() == 0) {
-			logger.debug("No matching Ride found for Ride Request Id:"+ rideRequestId);
+			logger.info("No matching Ride found for Ride Request Id:"+ rideRequestId);
 		}
 
 		return matchedTripInfos;
@@ -590,7 +590,7 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 				try {
 					Ride ride = getAllData(matchedTripInfo.getRideId());
 					acceptRideRequest(ride, rideRequest, matchedTripInfo);
-					logger.debug("Found Matching Ride for Ride Request ID:"+rideRequestId);
+					logger.info("Found Matching Ride for Ride Request ID:"+rideRequestId);
 					return matchedTripInfo;				
 				} catch (Exception e) {
 					if (e instanceof RideUnavailableException || e instanceof InSufficientBalanceException) {
@@ -604,7 +604,7 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 				}
 			}
 		} 
-		logger.debug("No Matching Ride Found for Ride Request ID:"+rideRequestId);
+		logger.info("No Matching Ride Found for Ride Request ID:"+rideRequestId);
 		return null;
 	}
 

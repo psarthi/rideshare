@@ -90,7 +90,7 @@ public class RideAction {
 	 * 
 	 */
 	public void acceptRideRequest(Ride ride, RideRequest rideRequest, MatchedTripInfo matchedTripInfo){
-		logger.debug("Accept Ride Request Request for [Ride Id/Ride Request Id]:"+matchedTripInfo.getRideId()+","+matchedTripInfo.getRideRequestId());
+		logger.info("Accept Ride Request Request for [Ride Id/Ride Request Id]:"+matchedTripInfo.getRideId()+","+matchedTripInfo.getRideRequestId());
 		long rideId = matchedTripInfo.getRideId();
 		long rideRequestId = matchedTripInfo.getRideRequestId();
 		//Ride ride = rideDO.getAllData(rideId);
@@ -192,10 +192,10 @@ public class RideAction {
 						rideRequestDO.update(rideRequest);
 						//TODO Implement notification here
 						NotificationService.sendMatchedRideNotification(ride, rideRequest);
-						logger.debug("Ride Request Accepted.[Ride Id/Ride Request Id]:"+rideId+","+rideRequestId);						
+						logger.info("Ride Request Accepted.[Ride Id/Ride Request Id]:"+rideId+","+rideRequestId);						
 					} else {
 						NotificationService.sendInsufficientBalanceNotification(rideRequest);
-						logger.debug("Ride Request can't be accepted due to insufficient balance.[Ride Id/Ride Request Id]:"+rideId+","+rideRequestId);
+						logger.info("Ride Request can't be accepted due to insufficient balance.[Ride Id/Ride Request Id]:"+rideId+","+rideRequestId);
 						throw new InSufficientBalanceException("Not enough balance to pay for the bill of ride request Id:"+rideRequestId);
 					}
 				}
@@ -437,7 +437,7 @@ public class RideAction {
 	 * 
 	 */
 	public void dropPassenger(long rideId, long rideRequestId, RideMode rideMode, String paymentCode){
-		logger.debug("Drop Passenger for Ride Id/Ride RequestId:"+rideId+","+rideRequestId);
+		logger.info("Drop Passenger for Ride Id/Ride RequestId:"+rideId+","+rideRequestId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
 		Ride ride = rideDO.getAllData(rideId);
@@ -462,7 +462,7 @@ public class RideAction {
 							//Payment not required here as its a free ride, so calls to billing system to makePayment, 
 							//only we need to updated the BillStatus without any transaction
 							rideRequest.getBill().setStatus(BillStatus.Free);
-							logger.debug("Its a Free Ride, so no payment is required for Ride Request Id:"+rideRequestId);
+							logger.info("Its a Free Ride, so no payment is required for Ride Request Id:"+rideRequestId);
 						} 
 						//This is scenario for Paid ride
 						else {
@@ -470,7 +470,7 @@ public class RideAction {
 								//Not doing payment here to avoid any transactional failures in between, 
 								//instead we will do payment post successful drop in separate transaction
 								rideRequest.getBill().setStatus(BillStatus.Approved);
-								logger.debug("Its a Paid Ride, and payment is approved for Ride Request Id:"+rideRequestId);
+								logger.info("Its a Paid Ride, and payment is approved for Ride Request Id:"+rideRequestId);
 							} else {
 								throw new NotAcceptableException("Payment code is invalid for the ride request"+rideRequest.getId());
 							}
@@ -603,7 +603,7 @@ public class RideAction {
 	 * 
 	 */
 	public void cancelAcceptedRideRequest(long rideId, long rideRequestId, CancellationType cancellationType){
-		logger.debug("Cancelling Accepted Ride Request - ride Id/Ride Request Id:"+rideId+","+rideRequestId);
+		logger.info("Cancelling Accepted Ride Request - ride Id/Ride Request Id:"+rideId+","+rideRequestId);
 		//RidesInfo ridesInfo = new RidesInfo();
 		Ride ride = rideDO.getAllData(rideId);
 		RideRequestDO rideRequestDO = new RideRequestDO();
@@ -713,7 +713,7 @@ public class RideAction {
 	 * 
 	 */
 	public void cancelRide(long rideId){
-		logger.debug("Cancelling Ride:"+rideId);
+		logger.info("Cancelling Ride:"+rideId);
 		Ride ride = rideDO.getAllData(rideId);
 		RideStatus rideStatus = ride.getStatus();
 		//Check if ride has not been finished
