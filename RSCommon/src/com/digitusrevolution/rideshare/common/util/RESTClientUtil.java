@@ -13,8 +13,13 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.ws.rs.core.UriBuilder;
 
+import com.digitusrevolution.rideshare.common.service.NotificationService;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
@@ -46,6 +51,8 @@ import com.digitusrevolution.rideshare.model.user.dto.UserFeedbackInfo;
  *
  */
 public class RESTClientUtil {
+	
+	private static final Logger logger = LogManager.getLogger(NotificationService.class.getName());
 	
 	//Note - We are using -1 as user id so that we can create dummy token for internal use
 	private static final long systemId = Long.valueOf(PropertyReader.getInstance().getProperty("SYSTEM_INTERNAL_USER_ID"));
@@ -366,7 +373,7 @@ public class RESTClientUtil {
 		headers.add("Authorization", "key="+key);
 		Response response = restClientUtil.post(uri, notificationMessage, headers);
 		String responseString = response.readEntity(String.class);
-		System.out.println("Response:"+responseString);
+		logger.debug("Response:"+responseString);
 		if (response.getStatus() == Status.OK.getStatusCode()) {
 			return true;
 		} else {

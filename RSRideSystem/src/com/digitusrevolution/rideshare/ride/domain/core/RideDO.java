@@ -631,7 +631,7 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 					r2SeatOccupied += acceptedRideRequest.getSeatRequired();
 				}
 
-				logger.debug("Seats Occupied of R1,R2 -"+r1.getId()+","+r2.getId()+"["+r1SeatOccupied+","+r2SeatOccupied+"]");
+				logger.info("Seats Occupied of R1,R2 -"+r1.getId()+","+r2.getId()+"["+r1SeatOccupied+","+r2SeatOccupied+"]");
 				//This will ensure we get sorted list in asc order i.e. seats which has less occupancy would show up first
 				return r1SeatOccupied - r2SeatOccupied;
 			}

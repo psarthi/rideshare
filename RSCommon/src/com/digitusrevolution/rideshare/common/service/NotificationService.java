@@ -22,14 +22,14 @@ public class NotificationService {
 		notificationMessage.setTo(ride.getDriver().getPushNotificationToken());
 		notificationMessage.getNotification().setTitle("Offered Ride - "+DateTimeUtil.getFormattedDateTimeString(ride.getStartTime()));
 		notificationMessage.getNotification().setBody("Found matching coTraveller "+rideRequest.getPassenger().getFirstName());
-		logger.debug("Sending Ride Match Notification to Driver:"+jsonUtil.getJson(notificationMessage));
+		logger.info("Sending Ride Match Notification to Driver:"+jsonUtil.getJson(notificationMessage));
 		RESTClientUtil.sendNotification(notificationMessage);
 
 		//Sending Notification to Passenger
 		notificationMessage.setTo(rideRequest.getPassenger().getPushNotificationToken());
 		notificationMessage.getNotification().setTitle("Requested Ride - "+DateTimeUtil.getFormattedDateTimeString(rideRequest.getPickupTime()));
 		notificationMessage.getNotification().setBody("Found matching ride owner "+ride.getDriver().getFirstName());
-		logger.debug("Sending Ride Match Notification to Passenger:"+jsonUtil.getJson(notificationMessage));
+		logger.info("Sending Ride Match Notification to Passenger:"+jsonUtil.getJson(notificationMessage));
 		RESTClientUtil.sendNotification(notificationMessage);	
 	}
 
@@ -39,14 +39,14 @@ public class NotificationService {
 		notificationMessage.setTo(ride.getDriver().getPushNotificationToken());
 		notificationMessage.getNotification().setTitle("Offered Ride - "+DateTimeUtil.getFormattedDateTimeString(ride.getStartTime()));
 		notificationMessage.getNotification().setBody(rideRequest.getPassenger().getFirstName() + " cancelled the ride");
-		logger.debug("Sending Ride Cancellation Notification to Driver:"+jsonUtil.getJson(notificationMessage));
+		logger.info("Sending Ride Cancellation Notification to Driver:"+jsonUtil.getJson(notificationMessage));
 		RESTClientUtil.sendNotification(notificationMessage);
 		
 		//Sending Notification to Passenger
 		notificationMessage.setTo(rideRequest.getPassenger().getPushNotificationToken());
 		notificationMessage.getNotification().setTitle("Requested Ride - "+DateTimeUtil.getFormattedDateTimeString(rideRequest.getPickupTime()));
 		notificationMessage.getNotification().setBody(ride.getDriver().getFirstName() + " cancelled the ride");
-		logger.debug("Sending Ride Cancellation Notification to Passenger:"+jsonUtil.getJson(notificationMessage));
+		logger.info("Sending Ride Cancellation Notification to Passenger:"+jsonUtil.getJson(notificationMessage));
 		RESTClientUtil.sendNotification(notificationMessage);
 	}
 
@@ -55,7 +55,7 @@ public class NotificationService {
 		notificationMessage.setTo(rideRequest.getPassenger().getPushNotificationToken());
 		notificationMessage.getNotification().setTitle("Requested Ride - "+DateTimeUtil.getFormattedDateTimeString(rideRequest.getPickupTime()));
 		notificationMessage.getNotification().setBody("Insufficient balance, ride match failed");
-		logger.debug("Sending Insufficient Balance Notification to Passenger:"+jsonUtil.getJson(notificationMessage));
+		logger.info("Sending Insufficient Balance Notification to Passenger:"+jsonUtil.getJson(notificationMessage));
 		RESTClientUtil.sendNotification(notificationMessage);		
 	}
 
@@ -64,7 +64,7 @@ public class NotificationService {
 		notificationMessage.setTo(user.getPushNotificationToken());
 		notificationMessage.getNotification().setTitle("Group "+group.getName());
 		notificationMessage.getNotification().setBody("Membership request Approved");
-		logger.debug("Sending Membership Request Approved notification:"+jsonUtil.getJson(notificationMessage));
+		logger.info("Sending Membership Request Approved notification:"+jsonUtil.getJson(notificationMessage));
 		RESTClientUtil.sendNotification(notificationMessage);		
 	}
 
@@ -73,7 +73,7 @@ public class NotificationService {
 		notificationMessage.setTo(user.getPushNotificationToken());
 		notificationMessage.getNotification().setTitle("Group "+group.getName());
 		notificationMessage.getNotification().setBody("Membership request Rejected");
-		logger.debug("Sending Membership Request Rejected notification:"+jsonUtil.getJson(notificationMessage));
+		logger.info("Sending Membership Request Rejected notification:"+jsonUtil.getJson(notificationMessage));
 		RESTClientUtil.sendNotification(notificationMessage);		
 	}
 
