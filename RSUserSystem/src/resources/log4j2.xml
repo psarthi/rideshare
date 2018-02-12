@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
-<!-- Development Environment -->
+<!-- Production Environment -->
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>
@@ -10,7 +10,7 @@
     <Root level="info">
       <AppenderRef ref="Console"/>
     </Root>
-     <Logger name="com.digitusrevolution.rideshare" level="debug" additivity="false">
+     <Logger name="com.digitusrevolution.rideshare" level="info" additivity="false">
       <AppenderRef ref="Console"/>
     </Logger>
   </Loggers>
