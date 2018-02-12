@@ -324,12 +324,10 @@ public class RESTClientUtil {
 		RESTClientImpl<BasicUser> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("SEND_OTP");
 		String authkey = PropertyReader.getInstance().getProperty("OTP_AUTH_KEY");
-		String message = PropertyReader.getInstance().getProperty("OTP_MESSAGE");
-		message = message.replace("#OTP#", otp);
 		String senderId = PropertyReader.getInstance().getProperty("OTP_SENDER_ID");
 		String otp_expiry_mins = PropertyReader.getInstance().getProperty("OTP_EXPIRY_TIME_IN_MINS");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
-		URI uri = uriBuilder.build(authkey, message, senderId, mobile, otp, otp_expiry_mins);
+		URI uri = uriBuilder.build(authkey, senderId, mobile, otp, otp_expiry_mins);
 		Response response = restClientUtil.post(uri, null);
 		//Don't readEntity and try to store in OTPResponse as media type is not application/json
 		//but the response media content type is text/html, so you can read only as String

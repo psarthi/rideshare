@@ -442,7 +442,7 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 				rideRequestsMap = rideRequestPointDAO.getAllMatchingRideRequestWithinMultiPolygonOfRide(ride,polygonAroundRoute);
 
 				rideRequestResultCount = rideRequestsMap.size();
-				logger.debug("Ride Request Result Count:"+rideRequestResultCount);
+				logger.info("Ride Request Result Count:"+rideRequestResultCount);
 
 				counter++;
 			}		

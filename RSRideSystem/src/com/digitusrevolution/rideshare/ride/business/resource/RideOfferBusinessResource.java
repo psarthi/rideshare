@@ -13,6 +13,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
@@ -22,13 +26,16 @@ import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferResult;
 import com.digitusrevolution.rideshare.ride.business.RideOfferBusinessService;
+import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.service.RideDomainService;
 
 @Path("/users/{userId}/rides")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class RideOfferBusinessResource {
-
+	
+	private static final Logger logger = LogManager.getLogger(RideOfferBusinessResource.class.getName());
+	
 	/**
 	 * 
 	 * @param rideOfferInfo containing Basic Ride with additional information e.g. google Direction
@@ -75,7 +82,8 @@ public class RideOfferBusinessResource {
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
 		FullRide ride = rideOfferBusinessService.getCurrentRide(userId);
 		if (ride==null) {
-			throw new NotFoundException("No current ride for the user id:"+userId);
+			logger.debug("No Current ride found for userId:"+userId);
+			return Response.status(Status.NOT_FOUND).build();
 		}
 		return Response.ok().entity(ride).build();			
 	}

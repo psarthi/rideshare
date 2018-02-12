@@ -13,6 +13,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
@@ -28,6 +32,8 @@ import com.digitusrevolution.rideshare.ride.domain.service.RideRequestDomainServ
 @Consumes(MediaType.APPLICATION_JSON)
 public class RideRequestBusinessResource {
 
+	private static final Logger logger = LogManager.getLogger(RideRequestBusinessResource.class.getName());
+	
 	/**
 	 * 
 	 * @param Basic Ride Request domain model
@@ -74,7 +80,8 @@ public class RideRequestBusinessResource {
 			RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
 			FullRideRequest rideRequest = rideRequestBusinessService.getCurrentRideRequest(userId);
 			if (rideRequest==null) {
-				throw new NotFoundException("No current ride request for the user id:"+userId);
+				logger.debug("No current ride request for the user id:"+userId);
+				return Response.status(Status.NOT_FOUND).build();
 			}
 			return Response.ok().entity(rideRequest).build();			
 	}
