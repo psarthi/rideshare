@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Production Environment -->
+<!-- Development Environment -->
 <Configuration status="WARN">
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT">
@@ -11,27 +11,27 @@
 		<Root level="info">
 			<AppenderRef ref="Console" />
 		</Root>
-		<Logger name="com.digitusrevolution.rideshare" level="info"
+		<Logger name="com.digitusrevolution.rideshare" level="debug"
 			additivity="false">
 			<AppenderRef ref="Console" />
 		</Logger>
 		<Logger name="com.digitusrevolution.rideshare.ride.domain"
-			level="info" additivity="false">
+			level="debug" additivity="false">
 			<AppenderRef ref="Console" />
 		</Logger>
 		<Logger
 			name="com.digitusrevolution.rideshare.ride.data"
-			level="info" additivity="false">
+			level="debug" additivity="false">
 			<AppenderRef ref="Console" />
 		</Logger>
 		<Logger
 			name="com.digitusrevolution.rideshare.common.util.external.RouteBoxer"
-			level="info" additivity="false">
+			level="debug" additivity="false">
 			<AppenderRef ref="Console" />
 		</Logger>
 		<Logger
 			name="com.digitusrevolution.rideshare.ride.data.RidePointDAO"
-			level="info" additivity="false">
+			level="debug" additivity="false">
 			<AppenderRef ref="Console" />
 		</Logger>
 	</Loggers>

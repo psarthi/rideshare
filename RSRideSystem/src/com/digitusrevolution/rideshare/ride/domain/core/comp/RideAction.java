@@ -611,7 +611,7 @@ public class RideAction {
 		RideStatus rideStatus = ride.getStatus();
 		RidePassenger ridePassenger = ride.getRidePassenger(rideRequest.getPassenger().getId());
 		PassengerStatus passengerStatus = rideRequest.getPassengerStatus();
-		logger.debug("Passenger Count pre cancellation:"+ride.getAcceptedRideRequests().size());
+		logger.info("Passenger Count pre cancellation:"+ride.getAcceptedRideRequests().size());
 		//Check if ride request has been accepted by this ride
 		//Accepted ride would be null for unfulfilled ride request, so need to check for null condition 
 		if (rideRequest.getAcceptedRide() !=null ? rideRequest.getAcceptedRide().getId() == ride.getId() : false){
@@ -664,8 +664,8 @@ public class RideAction {
 					rideRequestDO.update(rideRequest);
 					rideDO.update(ride); 
 					NotificationService.sendCancelRideNotification(ride, rideRequest);
-					logger.debug("RideRequest has been cancelled for Id:"+rideRequest.getId());
-					logger.debug("Passenger Count post cancellation:"+ride.getAcceptedRideRequests().size());
+					logger.info("RideRequest has been cancelled for Id:"+rideRequest.getId());
+					logger.info("Passenger Count post cancellation:"+ride.getAcceptedRideRequests().size());
 					//Commenting this as its not in use by anyone
 					//ridesInfo.setRide(ride);
 					//ridesInfo.setRideRequest(rideRequest);

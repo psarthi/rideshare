@@ -452,14 +452,14 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 		//Get all rides around radius of pickup variation from pickup point
 		Map<Long, RidePointInfo> pickupRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint());
 		Map<Long, RidePointInfo> dropRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getDropPoint());
-		logger.debug("[Matching Pickup Rides: Based on Time and Distance]:"+pickupRidePoints.keySet());
-		logger.debug("[Matching Drop Rides: Based on Time and Distance]:"+dropRidePoints.keySet());
+		logger.info("[Matching Pickup Rides: Based on Time and Distance]:"+pickupRidePoints.keySet());
+		logger.info("[Matching Drop Rides: Based on Time and Distance]:"+dropRidePoints.keySet());
 
 		//Step 1 - This will remove all rides which doesn't have corresponding pair i.e. if prickup and drop both doesn't exist then its invalid
 		pickupRidePoints.keySet().retainAll(dropRidePoints.keySet());
 		dropRidePoints.keySet().retainAll(pickupRidePoints.keySet());
-		logger.debug("[Valid Pickup Rides: Based on Matching Pickup and Drop Point]:"+pickupRidePoints.keySet());
-		logger.debug("[Valid Drop Rides: Based on Matching Pickup and Drop Point]:"+dropRidePoints.keySet());
+		logger.info("[Valid Pickup Rides: Based on Matching Pickup and Drop Point]:"+pickupRidePoints.keySet());
+		logger.info("[Valid Drop Rides: Based on Matching Pickup and Drop Point]:"+dropRidePoints.keySet());
 
 		Iterator<Long> iterator = pickupRidePoints.keySet().iterator();
 
@@ -470,8 +470,8 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 				iterator.remove();
 			}		
 		}
-		logger.debug("[Valid Pickup Rides: Based on Sequence of Pickup and Drop Points]:"+pickupRidePoints.keySet());
-		logger.debug("[Valid Drop Rides: Based on Sequence of Pickup and Drop Points]:"+dropRidePoints.keySet());
+		logger.info("[Valid Pickup Rides: Based on Sequence of Pickup and Drop Points]:"+pickupRidePoints.keySet());
+		logger.info("[Valid Drop Rides: Based on Sequence of Pickup and Drop Points]:"+dropRidePoints.keySet());
 
 		Set<Long> rideIds = pickupRidePoints.keySet(); 
 
@@ -482,23 +482,23 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 			cancelledRideIds.add(ride.getId());
 		}
 
-		logger.debug("Cancelled Rides List:"+cancelledRideIds);
+		logger.info("Cancelled Rides List:"+cancelledRideIds);
 		rideIds.removeAll(cancelledRideIds);
-		logger.debug("Valid Rides List after exclusion of cancelled Rides:"+rideIds);
+		logger.info("Valid Rides List after exclusion of cancelled Rides:"+rideIds);
 
 		//Step 3 - This will remove all rides which doesn't match the business criteria e.g. if its not available
 		if (!rideIds.isEmpty()){
 			Set<Long> validRideIds = getValidRides(rideIds, rideRequest.getSeatRequired(), rideRequest.getRideMode(), 
 					rideRequest.getPassenger(), rideRequest.getTrustNetwork());
-			logger.debug("[Valid Rides Based on Business Criteria]:"+validRideIds);
+			logger.info("[Valid Rides Based on Business Criteria]:"+validRideIds);
 			//This will remove all invalid rides from the list
 			pickupRidePoints.keySet().retainAll(validRideIds);
 		}
 
 		//Basic Cleanup - Remove invalid drop points again based on sequence and business criteria
 		dropRidePoints.keySet().retainAll(pickupRidePoints.keySet());
-		logger.debug("[Valid Pickup Rides: Based on Business Criteria]:"+pickupRidePoints.keySet());
-		logger.debug("[Valid Drop Rides: Based on Business Criteria]:"+dropRidePoints.keySet());
+		logger.info("[Valid Pickup Rides: Based on Business Criteria]:"+pickupRidePoints.keySet());
+		logger.info("[Valid Drop Rides: Based on Business Criteria]:"+dropRidePoints.keySet());
 
 		iterator = pickupRidePoints.keySet().iterator();
 		//TODO Later find a better logic to evenly fill the seats
@@ -611,9 +611,9 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 	//This will sort the matched list based on seats occupied, so that we fill the seats evenly 
 	public List<MatchedTripInfo> getSortedMatchedList(List<MatchedTripInfo> matchedTripInfos) {
 
-		logger.debug("Pre Sorted ride list-");
+		logger.info("Pre Sorted ride list-");
 		for (MatchedTripInfo tripInfo : matchedTripInfos) {
-			logger.debug("Ride Id:"+tripInfo.getRideId());	
+			logger.info("Ride Id:"+tripInfo.getRideId());	
 		}
 
 		Collections.sort(matchedTripInfos, new Comparator<MatchedTripInfo>() {
@@ -637,9 +637,9 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 			}
 		});
 
-		logger.debug("Post Sorted ride list-");
+		logger.info("Post Sorted ride list-");
 		for (MatchedTripInfo tripInfo : matchedTripInfos) {
-			logger.debug("Ride Id:"+tripInfo.getRideId());
+			logger.info("Ride Id:"+tripInfo.getRideId());
 		}
 
 		return matchedTripInfos;

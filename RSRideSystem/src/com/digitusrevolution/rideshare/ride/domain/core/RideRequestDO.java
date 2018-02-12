@@ -398,7 +398,7 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 
 		//If its first time search, lastSearchDistance = 0 && lastResultIndex=0
 		if (lastSearchDistance!=0 && lastResultIndex!=0){
-			logger.debug("Additional result set requested. Last search distance and index is: "+lastSearchDistance+","+lastResultIndex);
+			logger.info("Additional result set requested. Last search distance and index is: "+lastSearchDistance+","+lastResultIndex);
 			//This is the search request for additional result set, so it will start from last searched distance instead of starting from scratch again
 			minDistance = lastSearchDistance;
 			expectedResultCount=expectedResultCount+lastResultIndex;
@@ -414,7 +414,7 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 		int counter = 0;
 		//Run this loop till the time we get valid request more than or equal expected result count or search is completed at max distance
 		//In case search is not completed at max distance and valid result count has not exceeded expected count, then fetch more result and process it
-		logger.debug("Min, Max, Incremental Distance:" + minDistance+","+maxDistance +","+incrementalDistance);
+		logger.info("Min, Max, Incremental Distance:" + minDistance+","+maxDistance +","+incrementalDistance);
 		while (rideRequestResultValidCount <= expectedResultCount && !rideRequestSearchCompleted){
 			//Run this loop till the time we have reached max distance or result set is more than expected result count
 
@@ -437,7 +437,7 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 					//else it would go in infinite loop in case you never get expected count e.g. final valid count = 2 < would always be less than 10
 					rideRequestSearchCompleted = true;
 				}
-				logger.debug("Ride Id and Distance:" + rideId+","+distance);
+				logger.info("Ride Id and Distance:" + rideId+","+distance);
 				polygonAroundRoute = getPolygonAroundRouteUsingRouteBoxer(ridePoints, distance);
 				rideRequestsMap = rideRequestPointDAO.getAllMatchingRideRequestWithinMultiPolygonOfRide(ride,polygonAroundRoute);
 
@@ -451,10 +451,10 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 			//**** Get valid ride request with nearest ride pickup and drop points - Start
 			if (rideRequestResultCount > 0){
 
-				logger.debug("Ride Request Ids from Previous Result:"+rideRequestsIdsFromPreviousResult);
+				logger.info("Ride Request Ids from Previous Result:"+rideRequestsIdsFromPreviousResult);
 				//*** This is important - It will remove all the old ride requests so that only new ones get processed again
 				rideRequestsMap.keySet().removeAll(rideRequestsIdsFromPreviousResult);
-				logger.debug("New Ride Request Ids for Processing:"+rideRequestsMap.keySet());
+				logger.info("New Ride Request Ids for Processing:"+rideRequestsMap.keySet());
 				//This will store the previous result ride request Ids, which would be used to get only new results so that we process only new ride requests
 				//Don't just copy map keyset to this set here, as that would be copy by reference and removing from any set would effect both of them
 				//So, below method would ensure that we get seperate copy of data
@@ -543,7 +543,7 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 		if (validMatchedTripInfos.size() < resultEndIndex){
 			resultEndIndex = validMatchedTripInfos.size();
 		}
-		logger.debug("[Search Completed Rides Requests for Ride Id]:"+ rideId);
+		logger.info("[Search Completed Rides Requests for Ride Id]:"+ rideId);
 		logger.debug("StartIndex,EndIndex:"+resultStartIndex+","+resultEndIndex);
 		logger.debug("Result count:"+(resultEndIndex - resultStartIndex));
 		rideRequestSearchResult.setMatchedTripInfos(validMatchedTripInfos.subList(resultStartIndex, resultEndIndex));
@@ -596,13 +596,13 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 			//Validate if Ride pickup and Ride drop both exist
 			//If there is any valid Ride pickup or Ride drop point then value would not be null
 			//i.e. both point exist
-			logger.debug("Phase 1 - Checking status of Ride Request Id:"+entry.getKey());
+			logger.info("Phase 1 - Checking status of Ride Request Id:"+entry.getKey());
 			if (matchedTripInfo.getRidePickupPoint()!=null && matchedTripInfo.getRideDropPoint()!=null){
 				//Validate if Ride pickup is before Ride drop
 				//Ride pickup sequence number should be smaller than drop sequence number, then we can say pickup point is before drop point
 				if (matchedTripInfo.getRidePickupPoint().getSequence() < matchedTripInfo.getRideDropPoint().getSequence()){
-					logger.debug("Valid Ride Request Id based on ride direction:"+entry.getKey());
-					logger.debug("Ride Pickup and Drop Sequence number:"+matchedTripInfo.getRidePickupPoint().getSequence()+","
+					logger.info("Valid Ride Request Id based on ride direction:"+entry.getKey());
+					logger.info("Ride Pickup and Drop Sequence number:"+matchedTripInfo.getRidePickupPoint().getSequence()+","
 							+matchedTripInfo.getRideDropPoint().getSequence());
 
 					//Get Ride Request Points from Request Map
@@ -624,29 +624,29 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 
 					if (!pickupPointValidation || !dropPointValidation) {
 						//Remove the invalid ride request ids entry from the map based on Time & Distance variation condition
-						logger.debug("InValid Ride Request Id as its not meeting distance variation and time variation criteria:"+entry.getKey());
-						logger.debug("Phase 1 - InValid Ride Request Id:"+entry.getKey());
+						logger.info("InValid Ride Request Id as its not meeting distance variation and time variation criteria:"+entry.getKey());
+						logger.info("Phase 1 - InValid Ride Request Id:"+entry.getKey());
 						iterator.remove();
 					} else {
-						logger.debug("Phase 1 - Valid Ride Request Id:"+entry.getKey());
+						logger.info("Phase 1 - Valid Ride Request Id:"+entry.getKey());
 					}
 				} else {
 					//Note - This can't be done before finding out the shortest ride point for each ride request points, as sequence is of ride point and ride request points
 					//And direction can be found only when we know which are the matching ride points corresponding to pickup and drop points of ride request
 					//Remove the invalid ride request ids entry from the map
-					logger.debug("Phase 1 - InValid Ride Request Id as its going in opp direction:"+entry.getKey());
-					logger.debug("Ride Pickup and Drop Sequence number:"+matchedTripInfo.getRidePickupPoint().getSequence()+","
+					logger.info("Phase 1 - InValid Ride Request Id as its going in opp direction:"+entry.getKey());
+					logger.info("Ride Pickup and Drop Sequence number:"+matchedTripInfo.getRidePickupPoint().getSequence()+","
 							+matchedTripInfo.getRideDropPoint().getSequence());
 					iterator.remove();
 				}
 			}
 			else {
 				//Remove the invalid ride request ids entry from the map
-				logger.debug("Phase 1 - InValid Ride Request Id as there is no matching ride pickup and drop point :"+entry.getKey());
+				logger.info("Phase 1 - InValid Ride Request Id as there is no matching ride pickup and drop point :"+entry.getKey());
 				iterator.remove();
 			}
 		}
-		logger.debug("Phase 1 - Valid Ride Request Ids of Ride Id["+ride.getId()+"]:"+matchedTripInfoMap.keySet());
+		logger.info("Phase 1 - Valid Ride Request Ids of Ride Id["+ride.getId()+"]:"+matchedTripInfoMap.keySet());
 		return matchedTripInfoMap;
 	}
 
@@ -662,11 +662,11 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 		//This will just create a single common list of all excluded list
 		Set<Long> excludedRideRequestIds = new HashSet<>();
 		excludedRideRequestIds.addAll(cancelledRideRequestIds);
-		logger.debug("Excluded List of Ride Request Ids:"+excludedRideRequestIds);
+		logger.info("Excluded List of Ride Request Ids:"+excludedRideRequestIds);
 
 		//IMP - This will remove all the entries of excluded list of ride requests from the ride requestMap
 		rideRequestsMap.keySet().removeAll(excludedRideRequestIds);
-		logger.debug("Final List of Ride Request Ids for validation:"+rideRequestsMap.keySet());
+		logger.info("Final List of Ride Request Ids for validation:"+rideRequestsMap.keySet());
 
 		if (!rideRequestsMap.keySet().isEmpty()){
 			int seatOccupied = 0;
@@ -679,7 +679,7 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 					ride.getDriver(), ride.getTrustNetwork());
 			//Removing all the invalid ride request Ids
 			rideRequestsMap.keySet().retainAll(validRideRequestIds);
-			logger.debug("Phase 0 - Valid Ride Request Ids based on all business criteria of Ride Id["+ride.getId()+"]:"+rideRequestsMap.keySet());
+			logger.info("Phase 0 - Valid Ride Request Ids based on all business criteria of Ride Id["+ride.getId()+"]:"+rideRequestsMap.keySet());
 		}
 	}
 
@@ -703,10 +703,10 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 		ZonedDateTime ridePointTime = ridePoint.getRidePointProperties().get(0).getDateTime();
 		//Note - We are validating all this with the shortest distance ride point, so this doesn't match then no other ride point can match
 		if (ridePointTime.isAfter(rideRequestPointEarliestTime) && ridePointTime.isBefore(rideRequestPointLatestTime) && pointDistance <= distanceVariation) {
-			logger.debug("Valid Ride Request Point based on Time and distance variation criteria:[Ride Request Id, Point Id]"+rideRequestPoint.getRideRequestId()+","+rideRequestPoint.get_id());
+			logger.info("Valid Ride Request Point based on Time and distance variation criteria:[Ride Request Id, Point Id]"+rideRequestPoint.getRideRequestId()+","+rideRequestPoint.get_id());
 			return true;
 		}
-		logger.debug("InValid Ride Request Point based on Time and distance variation criteria:[Ride Request Id, Point Id]"+rideRequestPoint.getRideRequestId()+","+rideRequestPoint.get_id());
+		logger.info("InValid Ride Request Point based on Time and distance variation criteria:[Ride Request Id, Point Id]"+rideRequestPoint.getRideRequestId()+","+rideRequestPoint.get_id());
 		return false;
 	}
 
