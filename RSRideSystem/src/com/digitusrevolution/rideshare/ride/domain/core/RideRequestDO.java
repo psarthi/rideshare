@@ -44,6 +44,7 @@ import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.common.util.external.LatLngBounds;
 import com.digitusrevolution.rideshare.common.util.external.RouteBoxer;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
+import com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
@@ -837,20 +838,34 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 		//as we have removed the friend category, so logically it would be either All or Group 	
 		TrustCategory trustCategory = trustNetwork.getTrustCategories().iterator().next();
 		
+		
+		//Logic for matching Group
+		//Get Group of Driver irrespective of his request trust category is groups or all
+		//Case 1 - Check if Ride Request Trust Category is All & Ride Trust Category is All - then its valid
+		//Case 2 - If Ride Request Trust category is Groups
+		//Then check ride driver groups and see if there is any common groups
+		//If there is common group, then its valid 
+		//Case 3 - If Ride Trust category is Groups 
+		//Then check ride driver groups and see if there is any common groups
+		//If there is common group, then its valid 
+		
 		List<GroupDetail> driverGroups = null;
-		if (trustCategory.getName().equals(TrustCategoryName.Groups)) {
-			driverGroups = RESTClientUtil.getGroups(driver.getId());
-		}
+		//Get groups of Driver
+		driverGroups = RESTClientUtil.getGroups(driver.getId());
 		
 		Set<Long> validRideRequestIds = new HashSet<>();
 		for (RideRequestEntity rideRequestEntity : validRideRequestEntities) {
-			if (trustCategory.getName().equals(TrustCategoryName.Groups)) {
+			TrustCategoryEntity rideRequestTrustCategoryEntity = rideRequestEntity.getTrustNetwork().getTrustCategories().iterator().next();
+			//Case 2 - Ride Request Trust category is Groups OR Case 3 - Ride Trust category is Groups
+			if (trustCategory.getName().equals(TrustCategoryName.Groups) || rideRequestTrustCategoryEntity.getName().equals(TrustCategoryName.Groups)) {
 				List<GroupDetail> passengerGroups = RESTClientUtil.getGroups(rideRequestEntity.getPassenger().getId());
 				//This will check if there is any common groups between driver and passenger
 				if (driverGroups!=null && !Collections.disjoint(driverGroups, passengerGroups)) {
 					validRideRequestIds.add(rideRequestEntity.getId());
 				}
-			} else {
+			}
+			//Case 1 - Ride Request & Ride both trust category is Anonymous
+			else {
 				validRideRequestIds.add(rideRequestEntity.getId());
 			}
 		}
