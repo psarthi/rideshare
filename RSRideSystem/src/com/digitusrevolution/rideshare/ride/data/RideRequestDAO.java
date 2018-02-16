@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.ride.data;
 
+import java.math.BigInteger;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
@@ -12,11 +13,14 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
+import org.hibernate.transform.Transformers;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
@@ -29,6 +33,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
+import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
 public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Long>{
@@ -77,7 +82,10 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Long>{
 
 	/*
 	 * Purpose - Get current ride request
-	 */
+	 * 
+	 * This doesn't meet the buisess requirement, we are using native custom sql query below 
+	 * keeping here for reference purpose 
+	 *
 	public RideRequestEntity getCurrentRideRequest(UserEntity passenger){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -92,6 +100,26 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Long>{
 
 		return rideRequestEntity;		
 	}
+	*/
+	
+	public RideRequestEntity getCurrentRideRequest(UserEntity passenger){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		//VERY IMP - In case you want to pass any Enum as parameter, convert it to String then only pass
+		//otherwise it will have some weired behavior
+		Query query = session.getNamedQuery("CurrentRideRequest.byPassengerIdAndStatus")
+				.setParameter("passengerId", Long.toString(passenger.getId()));
+		//IMP - Reason for getting the object [] and not the List<> as result is an primitive array type only
+		//if you use list, you will get exception
+		Object[] result = (Object[]) query.uniqueResult();
+		//Convert the object to an BigInt and then to Long as database type is bigInt which hibernate has choosen
+		//but our data type is of long
+		if (result!=null) {
+			BigInteger id = (BigInteger) result[0];
+			return get(id.longValue());			
+		} 
+		return null;
+	}
+
 
 	/*
 	 * Commented this as we have found a better way to get the result set as shown in another function below

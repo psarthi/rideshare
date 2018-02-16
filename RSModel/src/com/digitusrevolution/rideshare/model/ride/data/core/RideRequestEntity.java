@@ -19,6 +19,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -38,6 +42,28 @@ import com.digitusrevolution.rideshare.model.user.domain.UserFeedback;
 
 @Entity
 @Table(name="rideRequest")
+@NamedNativeQueries({
+	//IMP Note 1- Its important to not get select * as we can't convert the result to entity easily 
+	//as columns data type is bigInt but our pojo is of long, so transformation is not difficult 
+	//Apart from that we need to get pickupTime as we are doing orderby on that, else it would fail
+	//IMP Note 2- Do note we are using NATIVE Named query and not Named query, as union is not supported in 
+	//named query, so using nativeNamedquery would support all SQL statements as it is
+	//IMP Note 3- No need to add extra buffer in current time as we already have +/- pickup time variation buffer
+	//so if someone gets ride early, then also current ride request would show up till max end time is reached
+	//IMP Note 4 - Note that here, we are not using entity name e.g. RideRequestEntity instead we 
+	//are using Table name as we are using native sql and also not adding database name 
+	//so that we its independent of the name and internally hibermnate takes care of that
+	@NamedNativeQuery(name="CurrentRideRequest.byPassengerIdAndStatus", 
+			query="SELECT id, pickupTime from ( " + 
+					"SELECT * FROM rideRequest " + 
+					"where passenger_id=:passengerId and status='Fulfilled' " + 
+					"and addtime(addtime(pickupTime,pickupTimeVariation),sec_to_time(travelTime)) > (select now()) " +  
+					"union " + 
+					"SELECT * FROM rideRequest " + 
+					"where passenger_id=:passengerId and status='Unfulfilled' " + 
+					"and addtime(pickupTime,pickupTimeVariation) > (select now()) " + 
+					") as t order by pickupTime asc limit 1")
+})
 public class RideRequestEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

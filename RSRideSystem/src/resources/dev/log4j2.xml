@@ -34,5 +34,11 @@
 			level="debug" additivity="false">
 			<AppenderRef ref="Console" />
 		</Logger>
+		<!-- This is required only if you want to see parameters passed in SQL statement 
+		<Logger
+			name="org.hibernate.type"
+			level="trace" additivity="false">
+			<AppenderRef ref="Console" />
+		</Logger>-->
 	</Loggers>
 </Configuration>

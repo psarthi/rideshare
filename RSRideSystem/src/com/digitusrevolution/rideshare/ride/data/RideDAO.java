@@ -151,6 +151,12 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Long>{
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
 		ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+		//VERY IMP - Don't add any extra buffer in the current time so that you can show current ride for some extra time than the end time
+		//what would happen with that, if you add buffer in the current time then your comparision would be with extra and you may not even 
+		//get any current ride as your start time and end time may be before the current time + buffer time
+		//If you compare with current time, benefit is even if start time is same as current time with few seconds difference 
+		//but your end time would atleast be ahead of your current time due to travel time
+		//so you will always get current ride post creation of ride
 		RideEntity rideEntity = (RideEntity) criteria.add(Restrictions.eq("driver", driver))
 		.add(Restrictions.or(Restrictions.ge("startTime", currentTime),Restrictions.ge("endTime", currentTime)))
 		.add(Restrictions.or(Restrictions.eq("status", RideStatus.Planned),Restrictions.eq("status", RideStatus.Started)))

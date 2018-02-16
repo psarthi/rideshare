@@ -208,6 +208,9 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 	 */
 	private void setRoute(Ride ride) {
 		List<RidePoint> ridePoints = ridePointDAO.getAllRidePointsOfRide(ride.getId());
+		//VERY IMP - This will sort the route points by sequence number otherwise you will 
+		//get zig-zag line while drawing route in map 
+		Collections.sort(ridePoints);
 		Route route = new Route();
 		route.setRidePoints(ridePoints);
 		ride.setRoute(route);
