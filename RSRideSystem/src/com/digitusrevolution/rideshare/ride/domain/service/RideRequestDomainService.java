@@ -11,6 +11,7 @@ import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.inf.DomainServiceInteger;
 import com.digitusrevolution.rideshare.common.inf.DomainServiceLong;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
 
 public class RideRequestDomainService implements DomainServiceLong<RideRequest>{
@@ -75,5 +76,32 @@ public class RideRequestDomainService implements DomainServiceLong<RideRequest>{
 			}
 		}
 		return rideRequests;	
+	}
+	
+	public MatchedTripInfo autoMatchRideRequest(long rideId) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		MatchedTripInfo matchedTripInfo = null;
+		try {
+			transaction = session.beginTransaction();
+
+			RideRequestDO rideRequestDO = new RideRequestDO();
+			matchedTripInfo = rideRequestDO.autoMatchRideRequest(rideId)	;		
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return matchedTripInfo;	
 	}
 }

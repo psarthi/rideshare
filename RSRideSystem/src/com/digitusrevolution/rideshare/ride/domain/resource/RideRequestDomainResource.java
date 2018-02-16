@@ -16,6 +16,7 @@ import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.inf.DomainResourceInteger;
 import com.digitusrevolution.rideshare.common.inf.DomainResourceLong;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.ride.domain.service.RideRequestDomainService;
 
 @Path("/domain/riderequests")
@@ -42,4 +43,13 @@ public class RideRequestDomainResource implements DomainResourceLong<RideRequest
 		GenericEntity<List<RideRequest>> entity = new GenericEntity<List<RideRequest>>(rideRequests) {};
 		return Response.ok(entity).build();
 	}	
+	
+	@Secured
+	@GET
+	@Path("match/{id}")
+	public Response autoMatchRideRequest(@PathParam("id") long rideId) {
+		RideRequestDomainService rideRequestDomainService = new RideRequestDomainService();
+		MatchedTripInfo matchedTripInfo = rideRequestDomainService.autoMatchRideRequest(rideId);
+		return Response.ok(matchedTripInfo).build();
+	}
 }
