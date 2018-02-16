@@ -538,7 +538,8 @@ public class GroupDO implements DomainObjectPKLong<Group>{
 			UserDO userDO = new UserDO();
 			User user = userDO.getAllData(userId);
 			user.getGroupInvites().add(group);
-			userDO.update(user);						
+			userDO.update(user);
+			NotificationService.sendGroupInviteNotification(group, user);
 		}
 	}
 

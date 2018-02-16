@@ -77,5 +77,13 @@ public class NotificationService {
 		RESTClientUtil.sendNotification(notificationMessage);		
 	}
 
+	public static void sendGroupInviteNotification(Group group, User user) {
+		NotificationMessage notificationMessage = new NotificationMessage();
+		notificationMessage.setTo(user.getPushNotificationToken());
+		notificationMessage.getNotification().setTitle("Group "+group.getName());
+		notificationMessage.getNotification().setBody("You are invited");
+		logger.info("Sending Group Invitation notification:"+jsonUtil.getJson(notificationMessage));
+		RESTClientUtil.sendNotification(notificationMessage);		
+	}
 
 }
