@@ -254,6 +254,7 @@ public class GroupDO implements DomainObjectPKLong<Group>{
 				//So directly using membershipDO
 				MembershipRequestDO membershipRequestDO = new MembershipRequestDO();
 				membershipRequestDO.update(membershipRequest);
+				NotificationService.sendGroupMembershipRequestNotification(group, user);
 			}
 		}
 		//This is the case, when its a new request
@@ -265,6 +266,7 @@ public class GroupDO implements DomainObjectPKLong<Group>{
 			//Remove group invitation from the user
 			user.getGroupInvites().remove(group);
 			userDO.update(user);
+			NotificationService.sendGroupMembershipRequestNotification(group, user);
 		}
 	}
 
@@ -352,6 +354,8 @@ public class GroupDO implements DomainObjectPKLong<Group>{
 	 */
 	public void rejectMembershipRequest(long groupId, long requesterUserId, String remark){
 		MembershipRequest membershipRequest = getMembershipRequest(groupId, requesterUserId);
+		//Getting just the basic group as its only used for notification purpose
+		group = get(groupId);
 		if (membershipRequest!=null){
 			if (membershipRequest.getStatus().equals(ApprovalStatus.Pending)){
 				membershipRequest.setAdminRemark(remark);
@@ -712,11 +716,7 @@ public class GroupDO implements DomainObjectPKLong<Group>{
 	}
 	
 	public boolean isGroupNameExist(String name) {
-		Set<GroupEntity> groupEntities = groupDAO.searchGroupByName(name, 0);
-		if (groupEntities.size()!=0) {
-			return true;
-		} 
-		return false;
+		return groupDAO.isGroupNameExist(name);
 	}
 
 	/*

@@ -41,7 +41,13 @@ public class RideRequestBusinessService {
 		long rideRequestId = 0;
 		try {
 			transaction = session.beginTransaction();
+			
+			RideRequestDO rideRequestDO = new RideRequestDO();
+			rideRequestId = rideRequestDO.requestRide(JsonObjectMapper.getMapper().convertValue(rideRequest, RideRequest.class));
+			RideDO rideDO = new RideDO();
+			rideDO.autoMatchRide(rideRequestId);				
 
+			/* Commenting this as we are setting the travel time, pickup point address and drop point address in android itself
 			//This is written here as there is no difference between calling this API from Android or backend from the cost perspective
 			RouteDO routeDO = new RouteDO();
 			ZonedDateTime pickupTimeUTC = rideRequest.getPickupTime().withZoneSameInstant(ZoneOffset.UTC);
@@ -71,6 +77,8 @@ public class RideRequestBusinessService {
 			} else {
 				throw new NotFoundException("No Valid Route Found");
 			}
+			*/
+			
 			transaction.commit();
 		} catch (RuntimeException e) {
 			if (transaction!=null){

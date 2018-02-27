@@ -663,7 +663,7 @@ public class RideAction {
 					//This will update ride and ride request in db
 					rideRequestDO.update(rideRequest);
 					rideDO.update(ride); 
-					NotificationService.sendCancelRideNotification(ride, rideRequest);
+					NotificationService.sendCancelRideNotification(ride, rideRequest, cancellationType);
 					logger.info("RideRequest has been cancelled for Id:"+rideRequest.getId());
 					logger.info("Passenger Count post cancellation:"+ride.getAcceptedRideRequests().size());
 					//Commenting this as its not in use by anyone

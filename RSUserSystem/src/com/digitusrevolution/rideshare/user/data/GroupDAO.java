@@ -171,6 +171,17 @@ public class GroupDAO extends GenericDAOImpl<GroupEntity, Long>{
 		return groupEntities;
 	}
 	
+	public boolean isGroupNameExist(String name) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass)
+				.add(Restrictions.eq("name", name));
+		GroupEntity groupEntity = (GroupEntity) criteria.uniqueResult();
+		if (groupEntity == null) {
+			return false;
+		}
+		return true;
+	}
+	
 	/*
 	 * VERY IMP - Don't use Criteria way and fetching Results as its not working and its having some weired outcome
 	 * so don't implement function similar to getUserMembershipRequests of UserDAO instead use the Query way

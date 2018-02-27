@@ -702,6 +702,11 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 
 		//Check if Ride Pickup distance is within range
 		ZonedDateTime ridePointTime = ridePoint.getRidePointProperties().get(0).getDateTime();
+		logger.info("\nridePointTime:"+ridePointTime+
+				"\nrideRequestPointEarliestTime:"+rideRequestPointEarliestTime+
+				"\nrideRequestPointLatestTime:"+rideRequestPointLatestTime+
+				"\npointDistance:"+pointDistance+
+				"\ndistanceVariation:"+distanceVariation);
 		//Note - We are validating all this with the shortest distance ride point, so this doesn't match then no other ride point can match
 		if (ridePointTime.isAfter(rideRequestPointEarliestTime) && ridePointTime.isBefore(rideRequestPointLatestTime) && pointDistance <= distanceVariation) {
 			logger.info("Valid Ride Request Point based on Time and distance variation criteria:[Ride Request Id, Point Id]"+rideRequestPoint.getRideRequestId()+","+rideRequestPoint.get_id());
