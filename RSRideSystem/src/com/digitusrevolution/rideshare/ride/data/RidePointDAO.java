@@ -22,6 +22,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RideRequestPoint;
 import com.digitusrevolution.rideshare.model.ride.dto.RidePointInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideSearchPoint;
+import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -153,12 +154,26 @@ public class RidePointDAO{
 	 *  
 	 * 1. Reason behind this function in this class instead of riderequestDAO as collection used is ride_point and not rideRequest_point 
 	 */
-	private Map<Long, RidePointInfo> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, long rideId){
+	private Map<Long, RidePointInfo> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, long rideId, boolean flexible){
 
 		logger.trace("Ride Request Point:"+rideRequestPoint.getPoint().toString());	
 		long variationInSeconds = DateTimeUtil.getSeconds(rideRequestPoint.getTimeVariation());
 		logger.trace("Time Variation in Seconds:" + variationInSeconds);
 		double minDistance = Double.parseDouble(PropertyReader.getInstance().getProperty("RIDE_SEARCH_MIN_DISTANCE"));
+		int maxDistance = rideRequestPoint.getDistanceVariation();
+		//IMP - This will take care of finding options for flexible time and distance
+		long flexiblePickupTimeVariationInSeconds = Long.parseLong(PropertyReader.getInstance().getProperty("FLEXIBLE_PICKUP_TIME_VARIATION"));
+		double flexibleDistanceVariationPercentage = Double.parseDouble(PropertyReader.getInstance().getProperty("FLEXIBLE_DISTANCE_VARIATION"));
+		RideRequestDO rideRequestDO = new RideRequestDO();
+		int flexibleDistance = (int) (rideRequestDO.get(rideRequestPoint.getRideRequestId()).getTravelDistance() * flexibleDistanceVariationPercentage);
+		
+		if (flexible) {
+			//IMP - This will ensure before and after flexible variation has been applied
+			//i.e. if pickup time was 9 then it will search between 7 to 11 if flexible time is 2 Hrs.
+			variationInSeconds = flexiblePickupTimeVariationInSeconds;
+			if (flexibleDistance > maxDistance)maxDistance = flexibleDistance;
+		}
+
 		Document query;
 		long earliestTimeEpocSecond = rideRequestPoint.getDateTime().minusSeconds(variationInSeconds).toEpochSecond();
 		long latestTimeEpochSecond = rideRequestPoint.getDateTime().plusSeconds(variationInSeconds).toEpochSecond();
@@ -170,6 +185,8 @@ public class RidePointDAO{
 		if (currentTimeEpochSecond >= earliestTimeEpocSecond) {
 			earliestTimeEpocSecond = currentTimeEpochSecond;
 		}
+		
+		
 
 		//***This is important, as depending on the input of rideId, it will either get all matching rides or specific ride
 		//This will get all ride points based on ride request point date time and its variation
@@ -191,7 +208,7 @@ public class RidePointDAO{
 		//i.e circle with center as ride request point and radius as max distance 
 		Document geoNear = new Document("$geoNear",new Document("spherical",true)
 				.append("limit", PropertyReader.getInstance().getProperty("RIDE_POINT_SEARCH_RESULT_LIMIT"))
-				.append("maxDistance", rideRequestPoint.getDistanceVariation())
+				.append("maxDistance", maxDistance)
 				.append("minDistance", minDistance)
 				.append("query", query)
 				.append("near", Document.parse(pointJson))
@@ -255,12 +272,12 @@ public class RidePointDAO{
 		return getRidePointInfoMap(rideSearchPointMap);
 	}
 
-	public Map<Long, RidePointInfo> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint){
-		return getAllMatchingRidePointNearGivenPoint(rideRequestPoint,-1);
+	public Map<Long, RidePointInfo> getAllMatchingRidePointNearGivenPoint(RideRequestPoint rideRequestPoint, boolean flexible){
+		return getAllMatchingRidePointNearGivenPoint(rideRequestPoint,-1, flexible);
 	}
 	
 	public RidePointInfo getRidePointOfSpecificRideNearGivenPoint(RideRequestPoint rideRequestPoint, long rideId){
-		Map<Long, RidePointInfo> ridePointInfoMap = getAllMatchingRidePointNearGivenPoint(rideRequestPoint,rideId);	
+		Map<Long, RidePointInfo> ridePointInfoMap = getAllMatchingRidePointNearGivenPoint(rideRequestPoint,rideId, false);	
 		return ridePointInfoMap.get(rideId);
 	}
 

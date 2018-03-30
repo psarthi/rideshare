@@ -3,6 +3,8 @@ package com.digitusrevolution.rideshare.ride.business;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ws.rs.NotFoundException;
@@ -14,14 +16,20 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
+import com.digitusrevolution.rideshare.common.util.GoogleUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
 import com.digitusrevolution.rideshare.model.ride.domain.RideType;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
+import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
+import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.PreBookingRideRequestResult;
 import com.digitusrevolution.rideshare.model.ride.dto.RideRequestResult;
+import com.digitusrevolution.rideshare.model.ride.dto.SuggestedMatchedRideInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.google.Element;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDistance;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
@@ -110,10 +118,38 @@ public class RideRequestBusinessService {
 			//Since we are trying to get all data before even committing, all child objects may not come so its cleaner to have getAllData post commit in different transaction
 			RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
 			rideRequestResult.setRideRequest(JsonObjectMapper.getMapper().convertValue(rideRequest, FullRideRequest.class));
-			RideRequest currentRideRequest = rideRequestDO.getCurrentRideRequest(rideRequest.getPassenger().getId());
-
-			if (rideRequest.getId() == currentRideRequest.getId()) {
-				rideRequestResult.setCurrentRideRequest(true);
+			
+			ZonedDateTime pickupTime = rideRequest.getPickupTime();
+			long varitaionInseconds = DateTimeUtil.getSeconds(rideRequest.getPickupTimeVariation());
+			pickupTime = pickupTime.plusSeconds(varitaionInseconds);
+			
+			//This will ensure we do rides suggestion and current rides search only for non expired ride request
+			if (pickupTime.toInstant().isAfter(ZonedDateTime.now().toInstant()) && rideRequest.getStatus().equals(RideRequestStatus.Unfulfilled)) {
+				
+				RideRequest currentRideRequest = rideRequestDO.getCurrentRideRequest(rideRequest.getPassenger().getId());
+				if (rideRequest.getId() == currentRideRequest.getId()) {
+					rideRequestResult.setCurrentRideRequest(true);
+				}
+				
+				if (rideRequest.getAcceptedRide()==null) {
+					RideDO rideDO = new RideDO();
+					List<MatchedTripInfo> matchedTripInfos = rideDO.searchRides(rideRequestId, true);
+					List<SuggestedMatchedRideInfo> suggestedMatchedRideInfos = new LinkedList<>();
+					for (MatchedTripInfo matchedTripInfo: matchedTripInfos) {
+						SuggestedMatchedRideInfo suggestedMatchedRideInfo = JsonObjectMapper.getMapper()
+								.convertValue(matchedTripInfo, SuggestedMatchedRideInfo.class);
+						suggestedMatchedRideInfo.setRide(JsonObjectMapper.getMapper()
+								.convertValue(rideDO.get(matchedTripInfo.getRideId()), BasicRide.class));
+						String rideRidePickupPointAddress = GoogleUtil.getAddress(matchedTripInfo.getRidePickupPoint().getPoint().getLatitude(), 
+								matchedTripInfo.getRidePickupPoint().getPoint().getLongitude());
+						String rideRideDropPointAddress = GoogleUtil.getAddress(matchedTripInfo.getRideDropPoint().getPoint().getLatitude(), 
+								matchedTripInfo.getRideDropPoint().getPoint().getLongitude());
+						suggestedMatchedRideInfo.setRidePickupPointAddress(rideRidePickupPointAddress);
+						suggestedMatchedRideInfo.setRideDropPointAddress(rideRideDropPointAddress);
+						suggestedMatchedRideInfos.add(suggestedMatchedRideInfo);
+					}
+					rideRequestResult.setSuggestedMatchedRideInfos(suggestedMatchedRideInfos);				
+				}
 			}
 
 			transaction.commit();
@@ -164,6 +200,11 @@ public class RideRequestBusinessService {
 		return basicRideRequests;
 	}
 
+	/*
+	 * Note - This function is not in use now as we have replaced this with RideRequestResult output so that we get suggestion as well
+	 * This is here only for reference purpose for now
+	 * 
+	 */
 	public FullRideRequest getRideRequest(long rideRequestId){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();

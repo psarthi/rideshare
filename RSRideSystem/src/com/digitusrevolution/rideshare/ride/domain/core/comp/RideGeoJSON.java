@@ -50,7 +50,7 @@ public class RideGeoJSON {
 	 * This function internally calls search ride and convert the data into GeoJson format 
 	 */
 	public FeatureCollection getMatchingRides(long rideRequestId){
-		List<MatchedTripInfo> matchedTripInfos = rideDO.searchRides(rideRequestId);
+		List<MatchedTripInfo> matchedTripInfos = rideDO.searchRides(rideRequestId, false);
 		FeatureCollection featureCollection = getMatchingRidesGeoJson(rideRequestId, matchedTripInfos);
 		return featureCollection;
 	}

@@ -64,8 +64,8 @@ public class RideRequestBusinessResource {
 	@Path("/{id}")
 	public Response getRideRequest(@PathParam("id") long id){
 		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
-		FullRideRequest rideRequest = rideRequestBusinessService.getRideRequest(id);
-		return Response.ok(rideRequest).build();
+		RideRequestResult rideRequestResult = rideRequestBusinessService.getRideRequestResult(id);
+		return Response.ok(rideRequestResult).build();
 	}
 	
 	/**

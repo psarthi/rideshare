@@ -58,7 +58,7 @@ public class RideSearchTest {
 	public void searchRide(){
 		
 		RideDO rideDO = new RideDO();
-		rideDO.searchRides(42);
+		rideDO.searchRides(42, false);
 //		rideRequest = rideRequestDO.get(2);
 //		rideRequestDO.searchRides(rideRequest);
 		
@@ -74,7 +74,7 @@ public class RideSearchTest {
 		double minDistance = 0;
 		LocalTime localTime = LocalTime.of(0, 30);
 		
-		ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint());
+		ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint(), false);
 		Set<RidePoint> ridePointsSet = new HashSet<>();
 		List<RidePoint> ridePointsSorted = new LinkedList<>();
 

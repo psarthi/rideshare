@@ -448,15 +448,15 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 	 * 
 	 * 
 	 */
-	public List<MatchedTripInfo> searchRides(long rideRequestId){		
+	public List<MatchedTripInfo> searchRides(long rideRequestId, boolean flexible){		
 
-		logger.info("[Searching Rides for Ride Request Id]:"+ rideRequestId);
+		logger.info("[Searching Rides for Ride Request Id]:"+ rideRequestId + "With Flexible options: " +flexible);
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		//This is important else you will not get cancelled rides info
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
 		//Get all rides around radius of pickup variation from pickup point
-		Map<Long, RidePointInfo> pickupRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint());
-		Map<Long, RidePointInfo> dropRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getDropPoint());
+		Map<Long, RidePointInfo> pickupRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getPickupPoint(), flexible);
+		Map<Long, RidePointInfo> dropRidePoints = ridePointDAO.getAllMatchingRidePointNearGivenPoint(rideRequest.getDropPoint(), flexible);
 		logger.info("[Matching Pickup Rides: Based on Time and Distance]:"+pickupRidePoints.keySet());
 		logger.info("[Matching Drop Rides: Based on Time and Distance]:"+dropRidePoints.keySet());
 
@@ -493,8 +493,14 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 
 		//Step 3 - This will remove all rides which doesn't match the business criteria e.g. if its not available
 		if (!rideIds.isEmpty()){
+			TrustNetwork trustNetwork = rideRequest.getTrustNetwork();
+			if (flexible) {
+				//IMP - This will overwrite Trustcategory but since this is not being used anywhere to update so we are fine
+				//but in case its getting updated then we need create a new copy of the same to avoid overwriting issue
+				trustNetwork.getTrustCategories().iterator().next().setName(TrustCategoryName.Anonymous);
+			}
 			Set<Long> validRideIds = getValidRides(rideIds, rideRequest.getSeatRequired(), rideRequest.getRideMode(), 
-					rideRequest.getPassenger(), rideRequest.getTrustNetwork());
+					rideRequest.getPassenger(), trustNetwork);
 			logger.info("[Valid Rides Based on Business Criteria]:"+validRideIds);
 			//This will remove all invalid rides from the list
 			pickupRidePoints.keySet().retainAll(validRideIds);
@@ -530,7 +536,8 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 		if (matchedTripInfos.size() == 0) {
 			logger.info("No matching Ride found for Ride Request Id:"+ rideRequestId);
 		}
-
+		//This will sort by Pickup time
+		matchedTripInfos = getSortedMatchedListByPickupTime(matchedTripInfos);
 		return matchedTripInfos;
 	}
 
@@ -597,7 +604,7 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 	}
 
 	public MatchedTripInfo autoMatchRide(long rideRequestId) {		
-		List<MatchedTripInfo> matchedTripInfos = searchRides(rideRequestId);
+		List<MatchedTripInfo> matchedTripInfos = searchRides(rideRequestId, false);
 		//IMP - This will sort the matched list based on seats occupied, so that we fill the seats evenly
 		//matchedTripInfos = getSortedMatchedListBySeatsOccupied(matchedTripInfos);
 		//IMP - This will sort the matched list based on matched interest count, so that we find most compatible ride partners
@@ -654,6 +661,37 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 				logger.info("Seats Occupied of R1,R2 -"+r1.getId()+","+r2.getId()+"["+r1SeatOccupied+","+r2SeatOccupied+"]");
 				//This will ensure we get sorted list in asc order i.e. seats which has less occupancy would show up first
 				return r1SeatOccupied - r2SeatOccupied;
+			}
+		});
+
+		logger.info("Post Sorted ride list-");
+		for (MatchedTripInfo tripInfo : matchedTripInfos) {
+			logger.info("Ride Id:"+tripInfo.getRideId());
+		}
+
+		return matchedTripInfos;
+	}
+	
+	//This will sort the matched list based on pickup time in asc order
+	public List<MatchedTripInfo> getSortedMatchedListByPickupTime(List<MatchedTripInfo> matchedTripInfos) {
+
+		logger.info("Pre Sorted ride list-");
+		for (MatchedTripInfo tripInfo : matchedTripInfos) {
+			logger.info("Ride Id:"+tripInfo.getRideId());	
+		}
+
+		//This will return in asc order
+		Collections.sort(matchedTripInfos, new Comparator<MatchedTripInfo>() {
+			@Override
+			public int compare(MatchedTripInfo m1, MatchedTripInfo m2) {
+				if (m1.getRidePickupPoint().getRidePointProperties().get(0).getDateTime().toInstant()
+						.isAfter(m2.getRidePickupPoint().getRidePointProperties().get(0).getDateTime().toInstant())) {
+					return 1;
+				} else if (m1.getRidePickupPoint().getRidePointProperties().get(0).getDateTime().toInstant()
+						.isBefore(m2.getRidePickupPoint().getRidePointProperties().get(0).getDateTime().toInstant())) {
+					return -1;
+				}
+				return  0;
 			}
 		});
 
