@@ -73,7 +73,8 @@
 		<mapping class="com.digitusrevolution.rideshare.model.user.data.OTPEntity" />
 		<mapping
 			class="com.digitusrevolution.rideshare.model.user.data.UserFeedbackEntity" />
-
+		<mapping
+			class="com.digitusrevolution.rideshare.model.user.data.InterestEntity" />
 
 		<!-- Service Provider System -->
 		<mapping

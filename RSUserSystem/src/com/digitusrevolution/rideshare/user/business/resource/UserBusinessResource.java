@@ -33,9 +33,11 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
+import com.digitusrevolution.rideshare.model.user.domain.Interest;
 import com.digitusrevolution.rideshare.model.user.domain.Preference;
 import com.digitusrevolution.rideshare.model.user.domain.RegistrationType;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.dto.BasicInterest;
 import com.digitusrevolution.rideshare.model.user.dto.BasicMembershipRequest;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.FullUser;
@@ -369,6 +371,18 @@ public class UserBusinessResource {
 		responseMessage.setStatus(Code.OK);
 		return Response.ok(responseMessage).build();
 	}
+	
+	@Secured
+	@POST
+	@Path("/{userId}/interests")
+	public Response saveInterests(@PathParam("userId") long userId, List<BasicInterest> basicInterests){
+		UserBusinessService userBusinessService = new UserBusinessService();
+		userBusinessService.saveInterests(userId, basicInterests);
+		ResponseMessage responseMessage = new ResponseMessage();
+		responseMessage.setStatus(Code.OK);
+		return Response.ok(responseMessage).build();
+	}
+
 }
 
 

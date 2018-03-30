@@ -11,6 +11,7 @@ import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper
 import com.digitusrevolution.rideshare.common.mapper.user.CityMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.CountryMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.FriendRequestMapper;
+import com.digitusrevolution.rideshare.common.mapper.user.InterestMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.MembershipRequestMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.PhotoMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.PreferenceMapper;
@@ -77,6 +78,11 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		
 		PreferenceMapper preferenceMapper = new PreferenceMapper();
 		if (user.getPreference()!=null) userEntity.setPreference(preferenceMapper.getEntity(user.getPreference(), fetchChild));
+		
+		//Reason for not fetching child as user has interest and interest has users, so it will get into recursive loop
+		//Apart from that, we would need user interest as part of basic profile
+		InterestMapper interestMapper = new InterestMapper();
+		userEntity.setInterests(interestMapper.getEntities(userEntity.getInterests(), user.getInterests(), false));
 				
 		if (fetchChild){
 			userEntity = getEntityChild(user, userEntity);			
@@ -180,6 +186,11 @@ public class UserMapper implements Mapper<User, UserEntity> {
 
 		PreferenceMapper preferenceMapper = new PreferenceMapper();
 		if (userEntity.getPreference()!=null)  user.setPreference(preferenceMapper.getDomainModel(userEntity.getPreference(), fetchChild));
+		
+		//Reason for not fetching child as user has interest and interest has users, so it will get into recursive loop
+		//Apart from that, we would need user interest as part of basic profile
+		InterestMapper interestMapper = new InterestMapper();
+		user.setInterests(interestMapper.getDomainModels(user.getInterests(), userEntity.getInterests(), false));
 		
 		if (fetchChild){
 			user = getDomainModelChild(user, userEntity);

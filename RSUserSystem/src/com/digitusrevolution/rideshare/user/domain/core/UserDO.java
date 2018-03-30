@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,7 @@ import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.FriendRequest;
+import com.digitusrevolution.rideshare.model.user.domain.Interest;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 import com.digitusrevolution.rideshare.model.user.domain.Preference;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
@@ -65,6 +67,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.Group;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.model.user.dto.BasicGroup;
+import com.digitusrevolution.rideshare.model.user.dto.BasicInterest;
 import com.digitusrevolution.rideshare.model.user.dto.BasicMembershipRequest;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.FullUser;
@@ -503,6 +506,7 @@ public class UserDO implements DomainObjectPKLong<User>{
 		userProfile.setRequestedRides(userDAO.getRideRequests(userId));
 		
 		userProfile.setCommonGroups(getCommonGroups(userId, signedInUserId));
+		userProfile.setCommonInterests(getCommonInterests(userId, signedInUserId));
 		
 		return userProfile;
 	}
@@ -553,6 +557,24 @@ public class UserDO implements DomainObjectPKLong<User>{
 		return groupDO.getGroupDetails(signedInUserId, groups);
 	}
 	
+	public List<BasicInterest> getCommonInterests(long userId, long signedInUserId){
+		User user = get(userId);
+		User signedInUser = get(signedInUserId);
+		Collection<Interest> userInterests = user.getInterests();
+		Collection<Interest> signedInUserInterests = signedInUser.getInterests();
+		userInterests.retainAll(signedInUserInterests);
+		//Reason for not just doing direct type casting as you can't type cast hashset to list directly
+		//Else you will get runtime expection of type mismatch
+		List<Interest> commonInterests = new LinkedList<>(userInterests);
+		Collections.sort(commonInterests);
+		
+		List<BasicInterest> basicInterests = new LinkedList<>();
+		for (Interest interest: commonInterests) {
+			basicInterests.add(JsonObjectMapper.getMapper().convertValue(interest, BasicInterest.class));
+		}
+		return basicInterests;
+	}
+	
 	
 	public boolean isInvited(long groupId, long userId){
 		return userDAO.isInvited(groupId, userId);
@@ -589,6 +611,13 @@ public class UserDO implements DomainObjectPKLong<User>{
 		//This is important so that we get updated group detail instead of empty information on membercount and group status
 		basicMembershipRequest.setGroup(groupDetail);
 		return basicMembershipRequest;
+	}
+	
+	public void saveInterests(long userId, List<Interest> interests) {
+		User user = getAllData(userId);
+		user.getInterests().clear();
+		user.getInterests().addAll(interests);
+		update(user);
 	}
 }
 

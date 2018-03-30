@@ -21,8 +21,10 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
+import com.digitusrevolution.rideshare.model.user.domain.Interest;
 import com.digitusrevolution.rideshare.model.user.domain.Preference;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
+import com.digitusrevolution.rideshare.model.user.dto.BasicInterest;
 import com.digitusrevolution.rideshare.model.user.dto.BasicMembershipRequest;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.FullUser;
@@ -629,6 +631,35 @@ public class UserBusinessService {
 			User user = userDO.getAllData(userId);
 			user.setPushNotificationToken(token);
 			userDO.update(user);
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}		
+	}
+	
+	public void saveInterests(long userId, List<BasicInterest> basicInterests) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		try {
+			transaction = session.beginTransaction();
+
+			UserDO userDO = new UserDO();
+			List<Interest> interests = new LinkedList<>();
+			for (BasicInterest basicInterest: basicInterests) {
+				interests.add(JsonObjectMapper.getMapper().convertValue(basicInterest, Interest.class));
+			}
+			userDO.saveInterests(userId, interests);
 
 			transaction.commit();
 		} catch (RuntimeException e) {

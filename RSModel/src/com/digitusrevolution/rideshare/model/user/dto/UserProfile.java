@@ -8,6 +8,7 @@ public class UserProfile {
 	private int requestedRides;
 	private int offeredRides;
 	private List<GroupDetail> commonGroups;
+	private List<BasicInterest> commonInterests;
 	
 	public BasicUser getUser() {
 		return user;
@@ -32,6 +33,12 @@ public class UserProfile {
 	}
 	public void setCommonGroups(List<GroupDetail> commonGroups) {
 		this.commonGroups = commonGroups;
+	}
+	public List<BasicInterest> getCommonInterests() {
+		return commonInterests;
+	}
+	public void setCommonInterests(List<BasicInterest> commonInterests) {
+		this.commonInterests = commonInterests;
 	}
 	
 }

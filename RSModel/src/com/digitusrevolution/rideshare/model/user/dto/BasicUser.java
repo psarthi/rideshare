@@ -6,6 +6,7 @@ import java.util.HashSet;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
+import com.digitusrevolution.rideshare.model.user.domain.Interest;
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.Preference;
 import com.digitusrevolution.rideshare.model.user.domain.RegistrationType;
@@ -37,6 +38,7 @@ public class BasicUser {
 	private Preference preference;
 	private RegistrationType registrationType;
 	private String pushNotificationToken;
+	private Collection<BasicInterest> interests = new HashSet<BasicInterest>();
 
 	public long getId() {
 		return id;
@@ -145,6 +147,12 @@ public class BasicUser {
 	}
 	public void setRegistrationType(RegistrationType registrationType) {
 		this.registrationType = registrationType;
+	}
+	public Collection<BasicInterest> getInterests() {
+		return interests;
+	}
+	public void setInterests(Collection<BasicInterest> interests) {
+		this.interests = interests;
 	}
 	
 }

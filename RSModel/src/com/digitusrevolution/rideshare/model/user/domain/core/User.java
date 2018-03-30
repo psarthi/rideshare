@@ -12,6 +12,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.FriendRequest;
+import com.digitusrevolution.rideshare.model.user.domain.Interest;
 import com.digitusrevolution.rideshare.model.user.domain.MembershipRequest;
 import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.Preference;
@@ -59,7 +60,7 @@ public class User implements Comparable<User>{
 	private Collection<MembershipRequest> membershipRequests = new HashSet<MembershipRequest>();
 	private RegistrationType registrationType;
 	private String pushNotificationToken;
-	
+	private Collection<Interest> interests = new HashSet<Interest>();
 	
 	public long getId() {
 		return id;
@@ -310,6 +311,12 @@ public class User implements Comparable<User>{
 	}
 	public void setPushNotificationToken(String pushNotificationToken) {
 		this.pushNotificationToken = pushNotificationToken;
+	}
+	public Collection<Interest> getInterests() {
+		return interests;
+	}
+	public void setInterests(Collection<Interest> interests) {
+		this.interests = interests;
 	}
 
 }

@@ -31,12 +31,14 @@ import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.data.CountryEntity;
 import com.digitusrevolution.rideshare.model.user.data.FriendRequestEntity;
+import com.digitusrevolution.rideshare.model.user.data.InterestEntity;
 import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
 import com.digitusrevolution.rideshare.model.user.data.PreferenceEntity;
 import com.digitusrevolution.rideshare.model.user.data.RoleEntity;
 import com.digitusrevolution.rideshare.model.user.data.StateEntity;
 import com.digitusrevolution.rideshare.model.user.data.UserFeedbackEntity;
+import com.digitusrevolution.rideshare.model.user.domain.Interest;
 import com.digitusrevolution.rideshare.model.user.domain.RegistrationType;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
 
@@ -130,6 +132,9 @@ public class UserEntity {
 	@Enumerated(EnumType.STRING)
 	private RegistrationType registrationType;
 	private String pushNotificationToken;
+	@ManyToMany
+	@JoinTable(name="user_interest",joinColumns=@JoinColumn(name="user_id"), inverseJoinColumns=@JoinColumn(name="interest_id"))
+	private Collection<InterestEntity> interests = new HashSet<InterestEntity>();
 		
 	public long getId() {
 		return id;
@@ -351,6 +356,14 @@ public class UserEntity {
 
 	public void setPushNotificationToken(String pushNotificationToken) {
 		this.pushNotificationToken = pushNotificationToken;
+	}
+
+	public Collection<InterestEntity> getInterests() {
+		return interests;
+	}
+
+	public void setInterests(Collection<InterestEntity> interests) {
+		this.interests = interests;
 	}
 	
 
