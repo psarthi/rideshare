@@ -1065,7 +1065,7 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 		RideDO rideDO = new RideDO();
 		Ride ride = rideDO.getAllData(rideId);
 		//IMP - This will sort the matched list based on seats occupied, so that we fill the seats evenly
-		matchedTripInfos = rideDO.getSortedMatchedList(matchedTripInfos);
+		matchedTripInfos = rideDO.getSortedMatchedListBySeatsOccupied(matchedTripInfos);
 		if (matchedTripInfos.size() > 0) {
 			for (int i=0; i < matchedTripInfos.size(); i++) {
 				MatchedTripInfo matchedTripInfo = matchedTripInfos.get(i);

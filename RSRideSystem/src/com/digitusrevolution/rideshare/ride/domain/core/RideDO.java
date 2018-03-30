@@ -52,6 +52,7 @@ import com.digitusrevolution.rideshare.model.ride.dto.RidesInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
 import com.digitusrevolution.rideshare.model.ride.dto.google.Leg;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
+import com.digitusrevolution.rideshare.model.user.domain.Interest;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
@@ -598,7 +599,9 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 	public MatchedTripInfo autoMatchRide(long rideRequestId) {		
 		List<MatchedTripInfo> matchedTripInfos = searchRides(rideRequestId);
 		//IMP - This will sort the matched list based on seats occupied, so that we fill the seats evenly
-		matchedTripInfos = getSortedMatchedList(matchedTripInfos);
+		//matchedTripInfos = getSortedMatchedListBySeatsOccupied(matchedTripInfos);
+		//IMP - This will sort the matched list based on matched interest count, so that we find most compatible ride partners
+		matchedTripInfos = getSortedMatchedListByMatchedInterest(matchedTripInfos);
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		RideRequest rideRequest = rideRequestDO.getAllData(rideRequestId);
 		if (matchedTripInfos.size() > 0) {
@@ -626,7 +629,7 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 	}
 
 	//This will sort the matched list based on seats occupied, so that we fill the seats evenly 
-	public List<MatchedTripInfo> getSortedMatchedList(List<MatchedTripInfo> matchedTripInfos) {
+	public List<MatchedTripInfo> getSortedMatchedListBySeatsOccupied(List<MatchedTripInfo> matchedTripInfos) {
 
 		logger.info("Pre Sorted ride list-");
 		for (MatchedTripInfo tripInfo : matchedTripInfos) {
@@ -661,6 +664,47 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 
 		return matchedTripInfos;
 	}
+	
+	//This will sort the matched list based on matched interest, so that we get the most compatible people matched 
+	public List<MatchedTripInfo> getSortedMatchedListByMatchedInterest(List<MatchedTripInfo> matchedTripInfos) {
+
+		logger.info("Pre Sorted ride list-");
+		for (MatchedTripInfo tripInfo : matchedTripInfos) {
+			logger.info("Ride Id:"+tripInfo.getRideId());	
+		}
+
+		Collections.sort(matchedTripInfos, new Comparator<MatchedTripInfo>() {
+			@Override
+			public int compare(MatchedTripInfo m1, MatchedTripInfo m2) {
+				int c1 = getCommonInterestCount(m1);
+				int c2 = getCommonInterestCount(m2);
+				logger.info("Matched Interest Count of M1,M2 -"+m1.getRideId()+","+m2.getRideId()+"["+c1+","+c2+"]");
+				//This will ensure we get sorted list in desc order i.e. more matched interest count would show up first
+				return c2 - c1;
+			}
+
+		});
+
+		logger.info("Post Sorted ride list-");
+		for (MatchedTripInfo tripInfo : matchedTripInfos) {
+			logger.info("Ride Id:"+tripInfo.getRideId());
+		}
+
+		return matchedTripInfos;
+	}
+	
+	private int getCommonInterestCount(MatchedTripInfo matchedTripInfo) {
+		User u1 = get(matchedTripInfo.getRideId()).getDriver();
+		RideRequestDO rideRequestDO = new RideRequestDO();
+		User u2 = rideRequestDO.get(matchedTripInfo.getRideRequestId()).getPassenger();
+		
+		Collection<Interest> u1Interests = u1.getInterests();
+		Collection<Interest> u2Interests = u2.getInterests();
+		u1Interests.retainAll(u2Interests);
+		int matchedInterestCount = u1Interests.size();
+		return matchedInterestCount;
+	}
+
 
 	public List<RidePoint> getAllRidePointsOfRide(long rideId) {
 		return ridePointDAO.getAllRidePointsOfRide(rideId);

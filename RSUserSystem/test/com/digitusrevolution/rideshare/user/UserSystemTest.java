@@ -78,8 +78,19 @@ public class UserSystemTest {
 	public void test(){
 				
 		UserDO userDO = new UserDO();
-		User user = userDO.getAllData(1);
 		InterestDO interestDO = new InterestDO();
+		for (int i =5 ; i <10 ; i++){
+			Interest interest = new Interest();
+			interest.setName("Interest"+" "+i);
+			Photo photo = new Photo();
+			photo.setImageLocation("https://s3.ap-south-1.amazonaws.com/group.photos.rideshare.testenv/01bfd70e-b870-460b-b8ac-32aeefe838e7.jpg");
+			interest.setPhoto(photo);
+			interestDO.create(interest);
+		}
+
+		/*
+
+		User user = userDO.getAllData(1);
 		user.getInterests().clear();
 		Interest interest1 = interestDO.get(1);
 		Interest interest2 = interestDO.get(2);
@@ -87,15 +98,6 @@ public class UserSystemTest {
 		user.getInterests().add(interest2);
 		userDO.update(user);
 		
-		/*
-		for (int i =0 ; i <5 ; i++){
-			Interest interest = new Interest();
-			interest.setName("Interest"+" "+i);
-			Photo photo = new Photo();
-			photo.setImageLocation("https://s3.ap-south-1.amazonaws.com/com.parift.rideshare.test.photos/4ea90afa-ee1c-4aed-b5a9-201e56849218.jpg");
-			interest.setPhoto(photo);
-			interestDO.create(interest);
-		}
 		*/
 		
 		/*User user = userDO.get(1);
