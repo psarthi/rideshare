@@ -29,6 +29,7 @@ import com.digitusrevolution.rideshare.common.exception.RideUnavailableException
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKLong;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
+import com.digitusrevolution.rideshare.common.service.NotificationService;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
@@ -368,6 +369,7 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 		if (!driverStatus) {
 			throw new WebApplicationException("Can't offer ride as user is not a driver. User Id:" + ride.getDriver().getId());
 		} else {
+			NotificationService.sendRideOfferAdminNotification(ride);
 			return rideIds;
 		}
 	}

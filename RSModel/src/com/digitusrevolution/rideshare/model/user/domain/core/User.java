@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.model.user.domain.core;
 
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -31,6 +32,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class User implements Comparable<User>{
 	
 	private long id;
+	private ZonedDateTime registrationDateTime;
 	private String firstName;
 	private String lastName;
 	private Sex sex;
@@ -318,7 +320,12 @@ public class User implements Comparable<User>{
 	public void setInterests(Collection<Interest> interests) {
 		this.interests = interests;
 	}
-
+	public ZonedDateTime getRegistrationDateTime() {
+		return registrationDateTime;
+	}
+	public void setRegistrationDateTime(ZonedDateTime registrationDateTime) {
+		this.registrationDateTime = registrationDateTime;
+	}
 }
 
 

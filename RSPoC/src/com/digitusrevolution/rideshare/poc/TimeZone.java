@@ -28,7 +28,7 @@ public class TimeZone {
 		System.out.println(zonedDateTime1.getOffset()+","+zonedDateTime1.getZone());
 		
 		
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d yyyy hh:mm a");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, MMM d yyyy hh:mm a");
 		LocalDateTime dateTime2 = LocalDateTime.of(2015, Month.DECEMBER, 7, 9, 30);
 		 
 		ZonedDateTime zonedDateTime2 = ZonedDateTime.of(dateTime2, india);

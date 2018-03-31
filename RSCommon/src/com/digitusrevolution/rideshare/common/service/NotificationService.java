@@ -99,5 +99,51 @@ public class NotificationService {
 		logger.info("Sending Group Invitation notification:"+jsonUtil.getJson(notificationMessage));
 		RESTClientUtil.sendNotification(notificationMessage);		
 	}
+	
+	public static void sendRideOfferAdminNotification(Ride ride) {
+		NotificationMessage notificationMessage = new NotificationMessage();
+		User admin = RESTClientUtil.getBasicUser(1);
+		//Sending Notification to Admin
+		notificationMessage.setTo(admin.getPushNotificationToken());
+		notificationMessage.getNotification().setTitle("Offered Ride - "+DateTimeUtil.getFormattedDateTimeString(ride.getStartTime()));
+		notificationMessage.getNotification().setBody("From:"+ride.getStartPointAddress()+"\n"+"To:"+ride.getEndPointAddress());
+		logger.info("Sending Offered Ride Notification to Admin:"+jsonUtil.getJson(notificationMessage));
+		RESTClientUtil.sendNotification(notificationMessage);
+	}
+	
+	public static void sendRideRequestAdminNotification(RideRequest rideRequest) {
+		NotificationMessage notificationMessage = new NotificationMessage();
+		User admin = RESTClientUtil.getBasicUser(1);
+		//Sending Notification to Admin
+		notificationMessage.setTo(admin.getPushNotificationToken());
+		notificationMessage.getNotification().setTitle("Requested Ride - "+DateTimeUtil.getFormattedDateTimeString(rideRequest.getPickupTime()));
+		notificationMessage.getNotification().setBody("From:"+rideRequest.getPickupPointAddress()+"\n"+"To:"+rideRequest.getDropPointAddress());
+		logger.info("Sending Requested Ride Notification to Admin:"+jsonUtil.getJson(notificationMessage));
+		RESTClientUtil.sendNotification(notificationMessage);
+	}
+	
+	public static void sendRideMatchAdminNotification(Ride ride, RideRequest rideRequest) {
+		NotificationMessage notificationMessage = new NotificationMessage();
+		User admin = RESTClientUtil.getBasicUser(1);
+		//Sending Notification to Admin
+		notificationMessage.setTo(admin.getPushNotificationToken());
+		notificationMessage.getNotification().setTitle("Matched Ride - "+DateTimeUtil.getFormattedDateTimeString(
+				rideRequest.getRidePickupPoint().getRidePointProperties().get(0).getDateTime()));
+		notificationMessage.getNotification().setBody("From:"+rideRequest.getRidePickupPointAddress()+"\n"+"To:"+rideRequest.getRideDropPointAddress());
+		logger.info("Sending Matched Ride Notification to Admin:"+jsonUtil.getJson(notificationMessage));
+		RESTClientUtil.sendNotification(notificationMessage);
+	}
+
+	public static void sendUserRegistrationAdminNotification(User newUser) {
+		NotificationMessage notificationMessage = new NotificationMessage();
+		User admin = RESTClientUtil.getBasicUser(1);
+		//Sending Notification to Admin
+		notificationMessage.setTo(admin.getPushNotificationToken());
+		notificationMessage.getNotification().setTitle("New User registered - "+DateTimeUtil.getFormattedDateTimeString(newUser.getRegistrationDateTime()));
+		notificationMessage.getNotification().setBody("User Name - "+newUser.getFirstName()+" "+newUser.getLastName());
+		logger.info("Sending New User Registration Notification to Admin:"+jsonUtil.getJson(notificationMessage));
+		RESTClientUtil.sendNotification(notificationMessage);
+	}
+
 
 }

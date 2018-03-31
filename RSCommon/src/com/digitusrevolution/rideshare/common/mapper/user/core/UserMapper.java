@@ -30,6 +30,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 	public UserEntity getEntity(User user, boolean fetchChild){
 		UserEntity userEntity = new UserEntity();
 		userEntity.setId(user.getId());
+		userEntity.setRegistrationDateTime(user.getRegistrationDateTime());
 		userEntity.setFirstName(user.getFirstName());
 		userEntity.setLastName(user.getLastName());
 		userEntity.setSex(user.getSex());
@@ -139,6 +140,7 @@ public class UserMapper implements Mapper<User, UserEntity> {
 	public User getDomainModel(UserEntity userEntity, boolean fetchChild){
 		User user = new User();
 		user.setId(userEntity.getId());
+		user.setRegistrationDateTime(userEntity.getRegistrationDateTime());
 		user.setFirstName(userEntity.getFirstName());
 		user.setLastName(userEntity.getLastName());
 		user.setSex(userEntity.getSex());

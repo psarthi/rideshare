@@ -31,6 +31,7 @@ import com.digitusrevolution.rideshare.common.mapper.billing.core.TransactionMap
 import com.digitusrevolution.rideshare.common.mapper.user.MembershipRequestMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.GroupMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
+import com.digitusrevolution.rideshare.common.service.NotificationService;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
@@ -236,9 +237,11 @@ public class UserDO implements DomainObjectPKLong<User>{
 			}
 			//This will associate the same virtual account to the user
 			user.getAccounts().add(account);
+			user.setRegistrationDateTime(ZonedDateTime.now());
 			id = create(user);		
 			logger.info("New user registered with email id/userId:"+user.getEmail()+"/"+id);
 		}
+		NotificationService.sendUserRegistrationAdminNotification(user);
 		return id;
 	}
 		

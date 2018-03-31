@@ -67,6 +67,18 @@ public class RESTClientUtil {
 		User user = response.readEntity(User.class);
 		return user;
 	}
+	
+	public static User getBasicUser(long id){
+
+		RESTClientImpl<User> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_BASIC_USER_URL");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Long.toString(id));
+		Response response = restClientUtil.get(uri);
+		User user = response.readEntity(User.class);
+		return user;
+	}
+
 
 	public static Collection<Role> getRoles(long id){
 

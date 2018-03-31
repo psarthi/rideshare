@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.model.user.data.core;
 
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -59,6 +60,7 @@ public class UserEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
+	private ZonedDateTime registrationDateTime;
 	private String firstName;
 	private String lastName;
 	@Column
@@ -365,6 +367,14 @@ public class UserEntity {
 	public void setInterests(Collection<InterestEntity> interests) {
 		this.interests = interests;
 	}
-	
+
+	public ZonedDateTime getRegistrationDateTime() {
+		return registrationDateTime;
+	}
+
+	public void setRegistrationDateTime(ZonedDateTime registrationDateTime) {
+		this.registrationDateTime = registrationDateTime;
+	}
+
 
 }

@@ -35,6 +35,7 @@ import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.math.google.LatLng;
 import com.digitusrevolution.rideshare.common.math.google.SphericalUtil;
+import com.digitusrevolution.rideshare.common.service.NotificationService;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
@@ -258,6 +259,7 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 		rideRequest.setId(id);
 		update(rideRequest);
 		logger.info("Ride Request has been created with id:" + id);
+		NotificationService.sendRideRequestAdminNotification(rideRequest);
 		return id;
 	}
 

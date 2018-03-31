@@ -192,6 +192,7 @@ public class RideAction {
 						rideRequestDO.update(rideRequest);
 						//TODO Implement notification here
 						NotificationService.sendMatchedRideNotification(ride, rideRequest);
+						NotificationService.sendRideMatchAdminNotification(ride, rideRequest);
 						logger.info("Ride Request Accepted.[Ride Id/Ride Request Id]:"+rideId+","+rideRequestId);						
 					} else {
 						NotificationService.sendInsufficientBalanceNotification(rideRequest);
