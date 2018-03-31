@@ -9,6 +9,7 @@ public class SuggestedMatchedRideInfo extends MatchedTripInfo {
 	private BasicRide ride;
 	private String ridePickupPointAddress;
 	private String rideDropPointAddress;
+	private float price;
 
 	public BasicRide getRide() {
 		return ride;
@@ -27,6 +28,12 @@ public class SuggestedMatchedRideInfo extends MatchedTripInfo {
 	}
 	public void setRideDropPointAddress(String rideDropPointAddress) {
 		this.rideDropPointAddress = rideDropPointAddress;
+	}
+	public float getPrice() {
+		return price;
+	}
+	public void setPrice(float price) {
+		this.price = price;
 	}
 
 }

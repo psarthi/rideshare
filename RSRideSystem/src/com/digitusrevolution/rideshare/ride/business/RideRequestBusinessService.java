@@ -21,6 +21,7 @@ import com.digitusrevolution.rideshare.common.util.GoogleUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
 import com.digitusrevolution.rideshare.model.ride.domain.RideType;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
@@ -146,6 +147,7 @@ public class RideRequestBusinessService {
 								matchedTripInfo.getRideDropPoint().getPoint().getLongitude());
 						suggestedMatchedRideInfo.setRidePickupPointAddress(rideRidePickupPointAddress);
 						suggestedMatchedRideInfo.setRideDropPointAddress(rideRideDropPointAddress);
+						suggestedMatchedRideInfo.setPrice(rideDO.getPrice(rideRequest));
 						suggestedMatchedRideInfos.add(suggestedMatchedRideInfo);
 					}
 					rideRequestResult.setSuggestedMatchedRideInfos(suggestedMatchedRideInfos);				
@@ -306,6 +308,33 @@ public class RideRequestBusinessService {
 			} else {
 				throw new WebApplicationException("User Feedback failed, so unable to cancel driver");
 			}
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+	}
+	
+	public void acceptRideRequest(long rideId, long rideRequestId, MatchedTripInfo matchedTripInfo){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		try {
+			transaction = session.beginTransaction();
+
+			logger.debug("Mannually Accepting Ride for ride Id/Ride Request Id:"+rideId+","+rideRequestId);
+			RideDO rideDO = new RideDO();
+			RideRequestDO rideRequestDO = new RideRequestDO();
+			rideDO.acceptRideRequest(rideDO.get(rideId), rideRequestDO.get(rideRequestId), matchedTripInfo);
 
 			transaction.commit();
 		} catch (RuntimeException e) {

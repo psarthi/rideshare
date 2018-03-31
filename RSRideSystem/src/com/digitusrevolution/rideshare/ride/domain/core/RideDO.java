@@ -537,7 +537,11 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 			logger.info("No matching Ride found for Ride Request Id:"+ rideRequestId);
 		}
 		//This will sort by Pickup time
-		matchedTripInfos = getSortedMatchedListByPickupTime(matchedTripInfos);
+		//No need to do this sorting in case of standard option without flexibility 
+		//as this would be called from auto match and there we are already doing sorting, so its a waste of processing
+		if (flexible) {
+			matchedTripInfos = getSortedMatchedListByPickupTime(matchedTripInfos);	
+		}
 		return matchedTripInfos;
 	}
 

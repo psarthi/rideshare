@@ -22,6 +22,7 @@ import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
+import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.PreBookingRideRequestResult;
 import com.digitusrevolution.rideshare.model.ride.dto.RideRequestResult;
 import com.digitusrevolution.rideshare.ride.business.RideRequestBusinessService;
@@ -121,6 +122,26 @@ public class RideRequestBusinessResource {
 		return Response.ok(rideRequest).build();				
 	}
 
+	
+	/**
+	 * 
+	 * @param rideId Ride Id
+	 * @param rideRequestId Ride Request Id
+	 * @return Updated Ride Request
+	 */
+	@Secured
+	@POST
+	@Path("{rideRequestId}/accept/{rideId}")
+	public Response acceptRideRequest(@PathParam("rideId") long rideId, @PathParam("rideRequestId") long rideRequestId, MatchedTripInfo matchedTripInfo){
+		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
+		rideRequestBusinessService.acceptRideRequest(rideId, rideRequestId, matchedTripInfo);
+		//This will ensure that we are getting fully updated data once transaction is committed
+		RideRequestDomainService rideRequestDomainService = new RideRequestDomainService();
+		FullRideRequest rideRequest = JsonObjectMapper.getMapper().convertValue(rideRequestDomainService.get(rideRequestId, true), FullRideRequest.class);
+		return Response.ok(rideRequest).build();				
+	}
+
+	
 	/**
 	 * 
 	 * @param rideRequestId Ride Request Id

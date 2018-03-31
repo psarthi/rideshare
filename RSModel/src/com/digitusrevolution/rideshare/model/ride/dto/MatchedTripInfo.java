@@ -1,7 +1,10 @@
 package com.digitusrevolution.rideshare.model.ride.dto;
 
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+//Reason behind this jsonignore so that it doesn't throw error while converting from Domain Model to DTO which has less fields
+@JsonIgnoreProperties (ignoreUnknown=true)
 public class MatchedTripInfo {
 
 	private long rideId;
