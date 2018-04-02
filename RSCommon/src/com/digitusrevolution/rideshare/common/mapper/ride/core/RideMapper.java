@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.common.mapper.ride.core;
 import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
+import com.digitusrevolution.rideshare.common.mapper.billing.core.InvoiceMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.TrustNetworkMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.VehicleMapper;
@@ -56,6 +57,9 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		User user = ride.getDriver();
 		//Don't fetch child of user as it will get into recursive loop as driver has ride and ride has driver
 		rideEntity.setDriver(userMapper.getEntity(user, false));
+		
+		InvoiceMapper invoiceMapper = new InvoiceMapper();
+		if (ride.getInvoice()!=null) rideEntity.setInvoice(invoiceMapper.getEntity(ride.getInvoice(), fetchChild));
 		
 		if (fetchChild){
 			rideEntity = getEntityChild(ride, rideEntity);
@@ -134,6 +138,9 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		UserEntity userEntity = rideEntity.getDriver();
 		//Don't fetch child of user as it will get into recursive loop as driver has ride and ride has driver
 		ride.setDriver(userMapper.getDomainModel(userEntity, false));
+		
+		InvoiceMapper invoiceMapper = new InvoiceMapper();
+		if (rideEntity.getInvoice()!=null) ride.setInvoice(invoiceMapper.getDomainModel(rideEntity.getInvoice(), fetchChild));
 						
 		if (fetchChild){
 			ride = getDomainModelChild(ride, rideEntity);

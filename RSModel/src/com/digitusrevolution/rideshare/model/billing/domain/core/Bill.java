@@ -19,8 +19,6 @@ public class Bill {
 	private RideRequest rideRequest;
 	private float rate;
 	private float amount;
-	//Reason for storing this value, as if the service charge changes in between, so old bill would not get affected
-	private float serviceChargePercentage;
 	private float discountPercentage;
 	private BillStatus status;
 	
@@ -83,12 +81,6 @@ public class Bill {
 			return false;
 		}
 		return true;
-	}
-	public float getServiceChargePercentage() {
-		return serviceChargePercentage;
-	}
-	public void setServiceChargePercentage(float serviceChargePercentage) {
-		this.serviceChargePercentage = serviceChargePercentage;
 	}
 	public RideRequest getRideRequest() {
 		return rideRequest;

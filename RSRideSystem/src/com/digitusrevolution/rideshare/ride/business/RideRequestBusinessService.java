@@ -125,7 +125,7 @@ public class RideRequestBusinessService {
 			pickupTime = pickupTime.plusSeconds(varitaionInseconds);
 			
 			//This will ensure we do rides suggestion and current rides search only for non expired ride request
-			if (pickupTime.toInstant().isAfter(ZonedDateTime.now().toInstant()) && rideRequest.getStatus().equals(RideRequestStatus.Unfulfilled)) {
+			if (pickupTime.toInstant().isAfter(DateTimeUtil.getCurrentTimeInUTC().toInstant()) && rideRequest.getStatus().equals(RideRequestStatus.Unfulfilled)) {
 				
 				RideRequest currentRideRequest = rideRequestDO.getCurrentRideRequest(rideRequest.getPassenger().getId());
 				if (rideRequest.getId() == currentRideRequest.getId()) {

@@ -18,6 +18,7 @@ public class RemarkMapper implements Mapper<Remark, RemarkEntity>{
 		remarkEntity.setPurpose(remark.getPurpose());
 		remarkEntity.setRideId(remark.getRideId());
 		remarkEntity.setRideRequestId(remark.getRideRequestId());
+		remarkEntity.setInvoiceNumber(remark.getInvoiceNumber());
 		return remarkEntity;
 	}
 
@@ -37,6 +38,7 @@ public class RemarkMapper implements Mapper<Remark, RemarkEntity>{
 		remark.setPurpose(remarkEntity.getPurpose());
 		remark.setRideId(remarkEntity.getRideId());
 		remark.setRideRequestId(remarkEntity.getRideRequestId());
+		remark.setInvoiceNumber(remarkEntity.getInvoiceNumber());
 		// TODO Auto-generated method stub
 		return remark;
 	}

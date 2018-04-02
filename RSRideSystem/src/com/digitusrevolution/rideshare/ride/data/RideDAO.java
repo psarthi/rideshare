@@ -19,6 +19,7 @@ import org.hibernate.criterion.Restrictions;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
@@ -77,7 +78,7 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Long>{
 	public Set<RideEntity> getAllUpcomingRides(UserEntity driver, int limit){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
-		ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+		ZonedDateTime currentTime = DateTimeUtil.getCurrentTimeInUTC();
 		//VERY IMP - Get the result in Set else you would get duplicate values
 		@SuppressWarnings("unchecked")
 		Set<RideEntity> rideEntities = new HashSet<> (criteria.add(Restrictions.eq("driver", driver))
@@ -150,7 +151,7 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Long>{
 	public RideEntity getCurrentRide(UserEntity driver){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Criteria criteria = session.createCriteria(entityClass);
-		ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+		ZonedDateTime currentTime = DateTimeUtil.getCurrentTimeInUTC();
 		//VERY IMP - Don't add any extra buffer in the current time so that you can show current ride for some extra time than the end time
 		//what would happen with that, if you add buffer in the current time then your comparision would be with extra and you may not even 
 		//get any current ride as your start time and end time may be before the current time + buffer time

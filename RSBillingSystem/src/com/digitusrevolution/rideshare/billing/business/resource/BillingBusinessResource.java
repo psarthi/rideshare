@@ -15,6 +15,7 @@ import com.digitusrevolution.rideshare.billing.business.BillingBusinessService;
 import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 
 @Path("/users/{userId}/billing")
@@ -52,16 +53,16 @@ public class BillingBusinessResource {
 	
 	/**
 	 * 
-	 * @param billInfo DTO containing bill number with account which is primarily Passenger Account
+	 * @param Ride ride
 	 * @return status OK
 	 */
 	@Secured
 	@POST
 	@Path("/pay")
-	public Response makePayment(BillInfo billInfo){
+	public Response makePayment(Ride ride){
 		BillingBusinessService billingBusinessService = new BillingBusinessService();
-		Bill bill = billingBusinessService.makePayment(billInfo);
-		return Response.ok(bill).build();
+		billingBusinessService.makePayment(ride);
+		return Response.ok().build();
 	}
 	
 	/**

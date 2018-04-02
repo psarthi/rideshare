@@ -1,5 +1,8 @@
 package com.digitusrevolution.rideshare.serviceprovider;
 
+import java.util.Collection;
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
@@ -13,7 +16,9 @@ import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
+import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
+import com.digitusrevolution.rideshare.model.user.domain.State;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.CompanyDO;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.HelpQuestionAnswerDO;
 
@@ -31,7 +36,7 @@ public class CompanyDataLoader {
 			transaction = session.beginTransaction();
 			CompanyDataLoader dataLoader = new CompanyDataLoader();
 			dataLoader.loadCompany();
-			dataLoader.addAccount();
+			//dataLoader.addAccount();
 			
 			transaction.commit();
 
@@ -57,13 +62,37 @@ public class CompanyDataLoader {
 	
 	public void loadCompany(){
 		
-		Company company = new Company();
-		company.setName("Parift Technologies");
+		CompanyDO companyDO = new CompanyDO();
+		//Ensure you get all Data before updating otherwise account details would be deleted
+		Company company = companyDO.getAllData(1);
+		company.setName("Parift Technologies Private Limited");
+		List<Country> countries = (List<Country>) RESTClientUtil.getCountries();
+		
+		for (Country country: countries) {
+			if (country.getName().equals("India")) {
+				company.setCountry(country);
+				for (State state: country.getStates()) {
+					if (state.getId() == 1 ) {
+						company.setState(state);
+						break;
+					}
+				}
+				break;
+			}
+		}
+		
 		Currency currency = RESTClientUtil.getCurrency(1);
 		company.setCurrency(currency);
 		company.setServiceChargePercentage(10);
-		CompanyDO companyDO = new CompanyDO();
-		companyDO.create(company);		
+		company.setAddress("Villa No. 38, MS Shelters,Kammasandra(A), Kasaba(H),Anekal Taluk, Bangalore, Karnataka, India, 562106");
+		company.setGstNumber("29AAJCP6630K1ZX");
+		company.setGstCode("00441480");
+		company.setPan("AAJCP6630K");
+		company.setCgstPercentage(9);
+		company.setSgstPercentage(9);
+		company.setIgstPercentage(18);
+		company.setTcsPercentage(0);
+		companyDO.update(company);		
 	}
 	
 	public void addAccount(){

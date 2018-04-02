@@ -11,7 +11,7 @@ public class BillTest {
 		billingService.approveBill(1);
 		BillInfo billInfo = new BillInfo();
 		billInfo.setBillNumber(1);
-		billingService.makePayment(billInfo);
+		//billingService.makePayment(billInfo);
 	}
 
 }

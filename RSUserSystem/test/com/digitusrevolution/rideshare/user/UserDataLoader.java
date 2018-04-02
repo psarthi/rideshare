@@ -18,6 +18,8 @@ import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.model.user.domain.Fuel;
 import com.digitusrevolution.rideshare.model.user.domain.FuelType;
+import com.digitusrevolution.rideshare.model.user.domain.Interest;
+import com.digitusrevolution.rideshare.model.user.domain.Photo;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
 import com.digitusrevolution.rideshare.model.user.domain.Sex;
@@ -29,6 +31,7 @@ import com.digitusrevolution.rideshare.model.user.domain.core.Vehicle;
 import com.digitusrevolution.rideshare.user.business.UserBusinessService;
 import com.digitusrevolution.rideshare.user.domain.CityDO;
 import com.digitusrevolution.rideshare.user.domain.CountryDO;
+import com.digitusrevolution.rideshare.user.domain.InterestDO;
 import com.digitusrevolution.rideshare.user.domain.RoleDO;
 import com.digitusrevolution.rideshare.user.domain.StateDO;
 import com.digitusrevolution.rideshare.user.domain.VehicleCategoryDO;
@@ -51,10 +54,11 @@ public class UserDataLoader {
 			
 			UserDataLoader dataLoader = new UserDataLoader();
 	
-			dataLoader.loadCountry();
-			dataLoader.loadRole();
-			dataLoader.loadVehicleCategory();
-			dataLoader.loadVehicleSubCategory();
+			//dataLoader.loadCountry();
+			//dataLoader.loadRole();
+			//dataLoader.loadVehicleCategory();
+			//dataLoader.loadVehicleSubCategory();
+			dataLoader.loadInterest();
 			
 			transaction.commit();
 
@@ -168,4 +172,38 @@ public class UserDataLoader {
 		vehicleCategory.getSubCategories().add(vehicleSubCategory2);
 		vehicleCategoryDO.update(vehicleCategory);
 	}
+	
+	public void loadInterest() {
+		
+		String[] interests = {"Cooking", "Startup", "Reading", "Singing", "Painting", "Trekking", "Instruments", "Dancing", 
+				"Photography", "Running", "Badminton", "Cycling", "Yoga", "Football", "Cricket"};
+		String[] photo_name = {"cooking", "startup", "reading", "singing", "painting", "trekking", "musical_intstruments", "dancing", 
+				"photography", "running", "badminton", "cycling", "yoga", "football", "cricket"};
+
+		String awsRootUrl = PropertyReader.getInstance().getProperty("AWS_S3_ROOT_URL");
+		String bucketName = PropertyReader.getInstance().getProperty("GROUP_PHOTO_BUCKET_NAME");
+		String interestFolder = "interest";
+		
+		InterestDO interestDO = new InterestDO();
+
+		for (int i =0; i< interests.length; i++) {
+	        String fullUrl = awsRootUrl + "/" + bucketName + "/" + interestFolder + "/" + photo_name[i] +".jpg";
+			System.out.println("Interest Name: "+interests[i]+" / "+ photo_name[i]);
+	        System.out.println("File Path:"+fullUrl);
+	        Interest interest = new Interest();
+	        interest.setName(interests[i]);
+	        Photo photo = new Photo();
+	        photo.setImageLocation(fullUrl);
+	        interest.setPhoto(photo);
+	        interestDO.create(interest);
+		}
+
+	}
 }
+
+
+
+
+
+
+

@@ -33,6 +33,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
+import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
@@ -210,6 +211,17 @@ public class RESTClientUtil {
 		return currency;
 	}
 
+	public static Collection<Country> getCountries(){
+
+		RESTClientImpl<Country> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_COUNTRIES_URL");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build();
+		Response response = restClientUtil.get(uri);
+		Collection<Country> countries = response.readEntity(new GenericType<Collection<Country>>() {});
+		return countries;
+	}
+
 	public static Company getCompany(int id){
 
 		RESTClientImpl<Currency> restClientUtil = new RESTClientImpl<>();
@@ -264,13 +276,13 @@ public class RESTClientUtil {
 		return rideRequest;
 	}
 	
-	public static boolean makePayment(BillInfo billInfo){
-		RESTClientImpl<BillInfo> restClientUtil = new RESTClientImpl<>();
+	public static boolean makePayment(Ride ride){
+		RESTClientImpl<Ride> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("BILL_PAYMENT_URL");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
 		//We are passing systemId as its an internal call and we need to pass the id in URL
 		URI uri = uriBuilder.build(Long.toString(systemId));
-		Response response = restClientUtil.post(uri, billInfo);
+		Response response = restClientUtil.post(uri, ride);
 		if (response.getStatus() == Status.OK.getStatusCode()) {
 			return true;
 		} 

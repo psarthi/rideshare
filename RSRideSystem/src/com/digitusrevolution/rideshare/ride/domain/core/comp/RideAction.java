@@ -1,5 +1,7 @@
 package com.digitusrevolution.rideshare.ride.domain.core.comp;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -18,6 +20,7 @@ import com.digitusrevolution.rideshare.common.exception.InSufficientBalanceExcep
 import com.digitusrevolution.rideshare.common.exception.RideRequestUnavailableException;
 import com.digitusrevolution.rideshare.common.exception.RideUnavailableException;
 import com.digitusrevolution.rideshare.common.service.NotificationService;
+import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.GoogleUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
@@ -27,6 +30,8 @@ import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.domain.core.BillStatus;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Invoice;
+import com.digitusrevolution.rideshare.model.billing.domain.core.InvoiceStatus;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 import com.digitusrevolution.rideshare.model.common.NotificationMessage;
@@ -261,7 +266,6 @@ public class RideAction {
 			discountPercentage = getDiscountPercentage(rideRequest);
 		}
 		Company company = RESTClientUtil.getCompany(1);
-		float serviceChargePercentage = company.getServiceChargePercentage();
 		//Note - Fare and Discount is used here just to store in the bill but calculation
 		//of the discount is already taken care as part of price calculation
 		float farePerMeter = getFarePerMeter(rideRequest.getVehicleSubCategory(), rideRequest.getPassenger());
@@ -271,7 +275,6 @@ public class RideAction {
 		bill.setAmount(amount);
 		bill.setRate(farePerKm);
 		bill.setDiscountPercentage(discountPercentage);
-		bill.setServiceChargePercentage(serviceChargePercentage);
 		bill.setCompany(company);
 		bill.setDriver(driver);
 		bill.setPassenger(passenger);
@@ -517,7 +520,7 @@ public class RideAction {
 	 * 
 	 */
 	public void endRide(long rideId){
-		logger.debug("Ending Ride:"+rideId);
+		logger.info("Ending Ride:"+rideId);
 		Ride ride = rideDO.getAllData(rideId);
 		RideStatus rideStatus = ride.getStatus();
 		//Check if the ride has been started
@@ -573,10 +576,61 @@ public class RideAction {
 			//changed while dropping the passenger or cancelling the rid request
 			ride = rideDO.getAllData(rideId);
 			ride.setStatus(RideStatus.Finished);
+
+			if (ride.getAcceptedRideRequests().size()!=0) {				
+				float totalFare = 0;
+				for (RideRequest rideRequest: ride.getAcceptedRideRequests()) {
+					totalFare = totalFare + rideRequest.getBill().getAmount();
+				}
+				//This will generate invoice which will get updated in the system when we do update of ride
+				//Invoice should only be generated when driver has earned any money from the ride
+				if (totalFare!=0) {
+					logger.info("Ride has been ended and invoice generated for ride id:"+rideId);
+					Invoice invoice = generateInvoice(ride);
+					ride.setInvoice(invoice);						
+				} else {
+					logger.info("Ride has been ended but no invoice generated as total fare for ride id:"+rideId+" is:"+totalFare);
+				}
+			}			
+			
 			rideDO.update(ride);
 		} else {
 			throw new NotAcceptableException("Ride can't be ended as its not in valid state. Current ride status:"+rideStatus);
 		}
+	}
+	
+	public Invoice generateInvoice(Ride ride){
+		
+		Invoice invoice = new Invoice();
+		float totalFare = 0;
+		for (RideRequest rideRequest: ride.getAcceptedRideRequests()) {
+			totalFare = totalFare + rideRequest.getBill().getAmount();
+		}
+		
+		invoice.setTotalAmountEarned(totalFare);
+		Company company = RESTClientUtil.getCompany(1);
+		float serviceCharge = totalFare * company.getServiceChargePercentage() / 100 ;
+		invoice.setServiceCharge(serviceCharge);
+		invoice.setDate(DateTimeUtil.getCurrentTimeInUTC());
+		invoice.setStatus(InvoiceStatus.Pending);
+		
+		String stateName = company.getState().getName();
+		//This will take care of within state GST
+		if (ride.getStartPointAddress().contains(stateName)) {
+			invoice.setCgst(serviceCharge * company.getCgstPercentage() / 100);
+			invoice.setSgst(serviceCharge * company.getSgstPercentage() / 100);
+		}
+		//This will take care of outside state GST
+		else {
+			invoice.setIgst(serviceCharge * company.getIgstPercentage() / 100);
+		}
+		
+		//This will take care of TCS requirement in future
+		if (company.getTcsPercentage()!=0) {
+			invoice.setTcs(serviceCharge * company.getTcsPercentage() / 100);
+		}
+		
+		return invoice;
 	}
 
 	/*

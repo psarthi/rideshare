@@ -19,6 +19,7 @@ import com.digitusrevolution.rideshare.common.exception.InSufficientBalanceExcep
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKLong;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.AccountMapper;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.TransactionMapper;
+import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
 import com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
@@ -120,7 +121,7 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 			account.setBalance(balance - amount);
 			Transaction transaction = new Transaction();
 			transaction.setAmount(amount);
-			ZonedDateTime dateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+			ZonedDateTime dateTime = DateTimeUtil.getCurrentTimeInUTC();
 			transaction.setDateTime(dateTime);
 			transaction.setType(TransactionType.Debit);
 			transaction.setRemark(remark);
@@ -141,7 +142,7 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 		account.setBalance(balance + amount);
 		Transaction transaction = new Transaction();
 		transaction.setAmount(amount);
-		ZonedDateTime dateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+		ZonedDateTime dateTime = DateTimeUtil.getCurrentTimeInUTC();
 		transaction.setDateTime(dateTime);
 		transaction.setType(TransactionType.Credit);
 		transaction.setRemark(remark);

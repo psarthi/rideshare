@@ -14,6 +14,7 @@ import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 
@@ -72,15 +73,14 @@ public class BillingBusinessService {
 	}
 
 	//We are using BillInfo from future perspective so that we can add more fields if required
-	public Bill makePayment(BillInfo billInfo){
+	public void makePayment(Ride ride){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		Bill bill = null;
 		try {
 			transaction = session.beginTransaction();
 
 			BillDO billDO = new BillDO();	
-			bill = billDO.makePayment(billInfo.getBillNumber());
+			billDO.makePayment(ride);
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -96,7 +96,6 @@ public class BillingBusinessService {
 				session.close();				
 			}
 		}
-		return bill;
 	}
 	
 	

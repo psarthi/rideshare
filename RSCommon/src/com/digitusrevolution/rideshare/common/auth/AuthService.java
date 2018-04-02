@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.SecureRandom;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Base64;
@@ -28,6 +29,7 @@ import org.apache.logging.log4j.Logger;
 import com.digitusrevolution.rideshare.common.exception.EmailExistExceptionMapper;
 import com.digitusrevolution.rideshare.common.exception.InvalidTokenException;
 import com.digitusrevolution.rideshare.common.inf.AuthServiceInf;
+import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -78,7 +80,7 @@ public class AuthService implements AuthServiceInf{
 				.setClaims(claims)
 				.signWith(SignatureAlgorithm.HS512, getKey())
 				.setIssuedAt(new Date())
-				.setExpiration(Date.from(ZonedDateTime.now().plusDays(30).toInstant()))
+				.setExpiration(Date.from(DateTimeUtil.getCurrentTimeInUTC().plusDays(30).toInstant()))
 				.compact();
 
 		return compactJws;
@@ -97,7 +99,7 @@ public class AuthService implements AuthServiceInf{
 				.setClaims(claims)
 				.signWith(SignatureAlgorithm.HS512, getKey())
 				.setIssuedAt(new Date())
-				.setExpiration(Date.from(ZonedDateTime.now().plusMinutes(5).toInstant()))
+				.setExpiration(Date.from(DateTimeUtil.getCurrentTimeInUTC().plusMinutes(5).toInstant()))
 				.compact();
 
 		return compactJws;

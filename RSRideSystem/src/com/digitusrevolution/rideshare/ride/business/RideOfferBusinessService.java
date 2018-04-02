@@ -367,20 +367,6 @@ public class RideOfferBusinessService {
 			}
 		}
 	}
-
-	public boolean makePayment(long rideRequestId) {
-
-		RideRequestDomainService rideRequestDomainService = new RideRequestDomainService();
-		RideRequest rideRequest = rideRequestDomainService.get(rideRequestId, true);
-		BillInfo billInfo = new BillInfo();
-		billInfo.setBillNumber(rideRequest.getBill().getNumber());
-		if (rideRequest.getRideMode().equals(RideMode.Paid)) {
-			return RESTClientUtil.makePayment(billInfo);	
-		} 
-		//This will be the case when its a free ride request and no payment is required
-		return true;
-	}
-
 }
 
 

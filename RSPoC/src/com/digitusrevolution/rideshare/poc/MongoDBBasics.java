@@ -219,9 +219,9 @@ public class MongoDBBasics {
 
 		Document geometry = (Document) document.get("geometry");
 		
-		System.out.println(ZonedDateTime.now() + ":Start Query geoWithin");
+		System.out.println(DateTimeUtil.getCurrentTimeInUTC() + ":Start Query geoWithin");
 		MongoCursor<Document> cursor = collectionRestaurant.find(Filters.geoWithin("location", geometry)).iterator();
-		System.out.println(ZonedDateTime.now() +":End Query geoWithin");
+		System.out.println(DateTimeUtil.getCurrentTimeInUTC() +":End Query geoWithin");
 		int i=0;
 		try {
 			while (cursor.hasNext()){

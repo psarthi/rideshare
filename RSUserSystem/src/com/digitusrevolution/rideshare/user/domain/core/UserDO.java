@@ -237,7 +237,7 @@ public class UserDO implements DomainObjectPKLong<User>{
 			}
 			//This will associate the same virtual account to the user
 			user.getAccounts().add(account);
-			user.setRegistrationDateTime(ZonedDateTime.now());
+			user.setRegistrationDateTime(DateTimeUtil.getCurrentTimeInUTC());
 			id = create(user);		
 			logger.info("New user registered with email id/userId:"+user.getEmail()+"/"+id);
 		}

@@ -7,6 +7,7 @@ public class Remark {
 	private String paidBy;
 	private String paidTo;
 	private long billNumber;
+	private long invoiceNumber;
 	private long rideId;
 	private long rideRequestId;
 	
@@ -51,6 +52,12 @@ public class Remark {
 	}
 	public void setRideRequestId(long rideRequestId) {
 		this.rideRequestId = rideRequestId;
+	}
+	public long getInvoiceNumber() {
+		return invoiceNumber;
+	}
+	public void setInvoiceNumber(long invoiceNumber) {
+		this.invoiceNumber = invoiceNumber;
 	}
 	
 	

@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.digitusrevolution.rideshare.model.billing.domain.core.Invoice;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
@@ -36,6 +37,7 @@ public class BasicRide {
 	private BasicUser driver;
 	private int travelDistance;
 	private RideMode rideMode;
+	private Invoice invoice;
 	
 	public long getId() {
 		return id;
@@ -138,5 +140,11 @@ public class BasicRide {
 	}
 	public void setEndPointAddress(String endPointAddress) {
 		this.endPointAddress = endPointAddress;
+	}
+	public Invoice getInvoice() {
+		return invoice;
+	}
+	public void setInvoice(Invoice invoice) {
+		this.invoice = invoice;
 	}	
 }

@@ -23,6 +23,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
+import com.digitusrevolution.rideshare.model.billing.data.core.InvoiceEntity;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Invoice;
 import com.digitusrevolution.rideshare.model.ride.data.RecurringDetailEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
@@ -87,6 +89,8 @@ public class RideEntity {
 	@Column (name="rideMode")
 	@Enumerated(EnumType.STRING)
 	private RideMode rideMode;
+	@OneToOne(cascade=CascadeType.MERGE)
+	private InvoiceEntity invoice;
 	
 
 	public RideMode getRideMode() {
@@ -245,5 +249,12 @@ public class RideEntity {
 	public void setEndPointAddress(String endPointAddress) {
 		this.endPointAddress = endPointAddress;
 	}
+	public InvoiceEntity getInvoice() {
+		return invoice;
+	}
+	public void setInvoice(InvoiceEntity invoice) {
+		this.invoice = invoice;
+	}
+	
 
 }

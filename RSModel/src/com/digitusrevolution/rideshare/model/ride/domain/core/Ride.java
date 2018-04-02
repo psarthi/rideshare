@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Invoice;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RecurringDetail;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
@@ -47,6 +48,7 @@ public class Ride implements Comparable<Ride>{
 	private Collection<RideRequest> cancelledRideRequests = new HashSet<RideRequest>();
 	private int travelDistance;
 	private RideMode rideMode;
+	private Invoice invoice;
 	
 	public long getId() {
 		return id;
@@ -238,6 +240,12 @@ public class Ride implements Comparable<Ride>{
 
 		//descending order
 		return Long.compare(ride.id, this.id);
+	}
+	public Invoice getInvoice() {
+		return invoice;
+	}
+	public void setInvoice(Invoice invoice) {
+		this.invoice = invoice;
 	}
 
 	

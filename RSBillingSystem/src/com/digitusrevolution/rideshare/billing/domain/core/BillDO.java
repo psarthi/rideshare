@@ -22,6 +22,8 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.domain.core.BillStatus;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Invoice;
+import com.digitusrevolution.rideshare.model.billing.domain.core.InvoiceStatus;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Purpose;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Remark;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
@@ -34,13 +36,13 @@ import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 public class BillDO implements DomainObjectPKLong<Bill>{
-	
+
 	private Bill bill;
 	private BillEntity billEntity;
 	private final BillDAO billDAO;
 	private BillMapper billMapper;
 	private static final Logger logger = LogManager.getLogger(BillDO.class.getName());
-	
+
 	public BillDO() {
 		bill = new Bill();
 		billEntity = new BillEntity();
@@ -113,11 +115,11 @@ public class BillDO implements DomainObjectPKLong<Bill>{
 		setBill(bill);
 		billDAO.delete(billEntity);
 	}
-	
+
 	private BillStatus getStatus(long billNumber){
 		return billDAO.getStatus(billNumber);
 	}
-	
+
 	public void approveBill(long billNumber){
 		bill = getAllData(billNumber);
 		if (bill.getStatus().equals(BillStatus.Pending) || bill.getStatus().equals(BillStatus.Rejected)){
@@ -128,7 +130,7 @@ public class BillDO implements DomainObjectPKLong<Bill>{
 		}
 
 	}
-	
+
 	public void rejectBill(long billNumber){
 		bill = getAllData(billNumber);
 		if (bill.getStatus().equals(BillStatus.Pending)){
@@ -143,42 +145,81 @@ public class BillDO implements DomainObjectPKLong<Bill>{
 	 * Purpose - Make payment to driver and company from Passenger account
 	 * 
 	 */
-	public Bill makePayment(long billNumber){
-		bill = getAllData(billNumber);
-		if (bill.getStatus().equals(BillStatus.Approved)){
-			float amount = bill.getAmount();
-			float serviceChargePercentage = bill.getServiceChargePercentage();
-			float serviceCharge = amount * serviceChargePercentage / 100;
-			float driverAmount = amount - serviceCharge;
-			//Get AccountDO for specific account type
-			//This is more from future usage if there are multiple types of account associated with user, 
-			//so we can use it for the current usage, we always need to withdraw money from Virtual account
-			AccountDO accountDO = getAccountDO(AccountType.Virtual);
-			Remark remark = new Remark();
-			remark.setBillNumber(billNumber);
-			remark.setPaidBy(bill.getPassenger().getFirstName()+" "+bill.getPassenger().getLastName());
-			remark.setPaidTo(bill.getDriver().getFirstName()+ " "+ bill.getDriver().getLastName());
-			remark.setPurpose(Purpose.Ride);
-			remark.setRideId(bill.getRide().getId());
-			remark.setRideRequestId(bill.getRideRequest().getId());
-			String message = "Bill:"+billNumber+",Ride:"+bill.getRide().getId()+",RideRequest:"+bill.getRideRequest().getId();
-			remark.setMessage(message);
-			//This will ensure that we don't do any transaction if the bill amount is ZERO which would be applicable for lets say Free Rides or 100% discounted rides
-			if (amount!=0) {
-				accountDO.debit(bill.getPassenger().getAccount(AccountType.Virtual).getNumber(), amount, remark);
-				accountDO.credit(bill.getDriver().getAccount(AccountType.Virtual).getNumber(), driverAmount, remark);
-				//This will ensure that paidTo field is updated for service charge
-				remark.setPaidTo(bill.getCompany().getName());
-				accountDO.credit(bill.getCompany().getAccount(AccountType.Virtual).getNumber(), serviceCharge, remark);						
+	public void makePayment(Ride ride){
+		Invoice invoice = ride.getInvoice();
+		String consolidatedBillNumber = ""; 
+		String consolidatedRideRequestNumber = ""; 
+		AccountDO accountDO = getAccountDO(AccountType.Virtual);
+		for (RideRequest rideRequest: ride.getAcceptedRideRequests()) {
+			bill = rideRequest.getBill();
+			if (bill.getStatus().equals(BillStatus.Approved)){
+				float amount = bill.getAmount();
+				//Get AccountDO for specific account type
+				//This is more from future usage if there are multiple types of account associated with user, 
+				//so we can use it for the current usage, we always need to withdraw money from Virtual account
+				Remark remark = new Remark();
+				remark.setBillNumber(bill.getNumber());
+				remark.setPaidBy(bill.getPassenger().getFirstName()+" "+bill.getPassenger().getLastName());
+				remark.setPaidTo(bill.getDriver().getFirstName()+ " "+ bill.getDriver().getLastName());
+				remark.setPurpose(Purpose.Ride);
+				remark.setRideId(bill.getRide().getId());
+				remark.setRideRequestId(bill.getRideRequest().getId());
+				String message = "Bill:"+bill.getNumber()+",RideRequest:"+bill.getRideRequest().getId()+",Ride:"+bill.getRide().getId();
+				remark.setMessage(message);
+				//This will ensure that we don't do any transaction if the bill amount is ZERO which would be applicable for lets say Free Rides or 100% discounted rides
+				if (amount!=0) {
+					accountDO.debit(bill.getPassenger().getAccount(AccountType.Virtual).getNumber(), amount, remark);
+					consolidatedBillNumber = Long.toString(bill.getNumber()) + ",";
+					consolidatedRideRequestNumber = Long.toString(rideRequest.getId()) + ",";
+				}
+				bill.setStatus(BillStatus.Paid);
+				update(bill);
 			}
-			bill.setStatus(BillStatus.Paid);
-			update(bill);
-		} else {
-			throw new NotAcceptableException("Can't make payment as bill is either not Approved or Paid. Bill current status:"+bill.getStatus());
+			else {
+				throw new NotAcceptableException("Can't make payment as bill is either not Approved or Paid. Bill current status:"+bill.getStatus());
+			}
 		}
-		return bill;
+		
+		float totalDeduction = invoice.getServiceCharge() + invoice.getCgst() + invoice.getSgst() + invoice.getIgst() + invoice.getTcs();
+		float driverAmount = invoice.getTotalAmountEarned() - totalDeduction;
+		//Company name is common across all bills so even for the last bill which would be the reference on last iteration, company name would be same
+		Company company = bill.getCompany();
+		
+		if (driverAmount!=0) {
+			Remark driverRemark = new Remark();
+			if (ride.getAcceptedRideRequests().size()==1) {
+				RideRequest rideRequest = ride.getAcceptedRideRequests().iterator().next();
+				driverRemark.setPaidBy(rideRequest.getPassenger().getFirstName()+" "+rideRequest.getPassenger().getLastName());
+			} else {
+				//Applicable for more than one passenger in the ride
+				driverRemark.setPaidBy("CoTravellers");
+			}
+			driverRemark.setPaidTo(ride.getDriver().getFirstName()+ " "+ ride.getDriver().getLastName());
+			driverRemark.setPurpose(Purpose.Ride);
+			driverRemark.setRideId(ride.getId());
+			String message = "Bill:"+consolidatedBillNumber+"RideRequest:"+consolidatedRideRequestNumber+"Ride:"+ride.getId();
+			driverRemark.setMessage(message);
+			
+			//Crediting consolidated earning in driver account
+			accountDO.credit(ride.getDriver().getAccount(AccountType.Virtual).getNumber(), driverAmount, driverRemark);
+			
+			Remark companyRemark = new Remark();
+			companyRemark.setPaidBy(ride.getDriver().getFirstName()+ " "+ ride.getDriver().getLastName());
+			companyRemark.setPaidTo(company.getName());
+			companyRemark.setPurpose(Purpose.ServiceChargeAndTaxes);
+			companyRemark.setRideId(ride.getId());
+			companyRemark.setInvoiceNumber(invoice.getNumber());
+			message = "Invoice:"+invoice.getNumber()+",RideRequest:"+consolidatedRideRequestNumber+"Ride:"+ride.getId();
+			companyRemark.setMessage(message);
+
+			//Crediting service charge plus taxes in company account
+			accountDO.credit(company.getAccount(AccountType.Virtual).getNumber(), totalDeduction, companyRemark);
+			invoice.setStatus(InvoiceStatus.Paid);
+			InvoiceDO invoiceDO = new InvoiceDO();
+			invoiceDO.update(invoice);
+		}
 	}
-	
+
 	/*
 	 * Purpose - It should return appropriate Account DO Impl based on Account type
 	 */
@@ -188,7 +229,7 @@ public class BillDO implements DomainObjectPKLong<Bill>{
 		}
 		throw new NotFoundException("No appropriate account DO found for account type:"+accountType);
 	}
-	
+
 	public List<Bill> getPendingBills(User passenger){
 		UserMapper userMapper = new UserMapper();
 		UserEntity userEntity = userMapper.getEntity(passenger, false);

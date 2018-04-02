@@ -16,6 +16,7 @@ import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKString;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
 import com.digitusrevolution.rideshare.common.mapper.user.OTPMapper;
+import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.user.data.OTPEntity;
@@ -112,9 +113,9 @@ public class OTPDO implements DomainObjectPKString<OTP>{
 			otp.setMobileNumber(mobileNumber);
 			otp.setOTP(otpNumber);
 			String otp_expiry_time = PropertyReader.getInstance().getProperty("OTP_EXPIRY_TIME_IN_MINS");
-			otp.setExpirationTime(ZonedDateTime.now().plusMinutes(Long.parseLong(otp_expiry_time)));
+			otp.setExpirationTime(DateTimeUtil.getCurrentTimeInUTC().plusMinutes(Long.parseLong(otp_expiry_time)));
 			logger.debug("Mobile Number & OTP is:" + otp.getMobileNumber() +","+ otp.getOTP());
-			logger.debug("Current Time is:" + ZonedDateTime.now());
+			logger.debug("Current Time is:" + DateTimeUtil.getCurrentTimeInUTC());
 			logger.debug("OTP Expiry Time is:" + otp.getExpirationTime());
 			//Reason behind update and not create is: We want to have only one entry into the DB for each mobile number, 
 			//so in case entry exist, then update is required else insert is required
@@ -129,7 +130,7 @@ public class OTPDO implements DomainObjectPKString<OTP>{
 	public boolean validateOTP(String mobileNumber, String otpNumber) {
 		
 		otp = get(mobileNumber);
-		if (otp.getExpirationTime().isAfter(ZonedDateTime.now()) && otp.getOTP().equals(otpNumber)) {
+		if (otp.getExpirationTime().isAfter(DateTimeUtil.getCurrentTimeInUTC()) && otp.getOTP().equals(otpNumber)) {
 			return true;
 		} 
 		return false;

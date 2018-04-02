@@ -20,6 +20,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
@@ -116,10 +118,12 @@ public class RideOfferBusinessResource {
 	public Response endRide(@PathParam("rideId") long rideId){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
 		rideOfferBusinessService.endRide(rideId);
-		//This will ensure that we are getting fully updated data once transaction is committed
 		RideDomainService rideDomainService = new RideDomainService();
-		FullRide ride = JsonObjectMapper.getMapper().convertValue(rideDomainService.get(rideId, true), FullRide.class);
-		return Response.ok(ride).build();				
+		Ride ride = rideDomainService.get(rideId, true);
+		RESTClientUtil.makePayment(ride);
+		//This will ensure that we are getting fully updated data once transaction is committed
+		FullRide fullRide = JsonObjectMapper.getMapper().convertValue(rideDomainService.get(rideId, true), FullRide.class);
+		return Response.ok(fullRide).build();				
 	}
 
 	/**
@@ -182,16 +186,12 @@ public class RideOfferBusinessResource {
 	 * @return Updated Ride
 	 */
 	@Secured
-	@GET
+	@GET	
 	@Path("/{rideId}/drop/{rideRequestId}")
 	public Response dropPassenger(@PathParam("rideId") long rideId, @PathParam("rideRequestId") long rideRequestId, 
 			@QueryParam("ridemode") RideMode rideMode, @QueryParam("paymentcode") String paymentCode){
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
 		rideOfferBusinessService.dropPassenger(rideId, rideRequestId, rideMode, paymentCode);
-		//Imp - We don't have to worry about payment success or failure as in failure case, we will provide option to pay to passenger 
-		//Another important point, payment can only be done if its approved by passenger so this has to be done post the drop transaction
-		//and also this would avoid issue with transactional rollbacks
-		rideOfferBusinessService.makePayment(rideRequestId);
 		//This will ensure that we are getting fully updated data once transaction is committed
 		RideDomainService rideDomainService = new RideDomainService();
 		FullRide ride = JsonObjectMapper.getMapper().convertValue(rideDomainService.get(rideId, true), FullRide.class);
