@@ -25,14 +25,6 @@ public class BillEntity {
 	private long number;
 	@ManyToOne
 	private UserEntity passenger;
-	@ManyToOne
-	private UserEntity driver;
-	@ManyToOne
-	private CompanyEntity company;
-	@ManyToOne
-	private RideEntity ride;
-	@OneToOne
-	private RideRequestEntity rideRequest;
 	private float rate;
 	private float amount;
 	private float discountPercentage;
@@ -52,29 +44,11 @@ public class BillEntity {
 	public void setAmount(float amount) {
 		this.amount = amount;
 	}
-	public CompanyEntity getCompany() {
-		return company;
-	}
-	public void setCompany(CompanyEntity company) {
-		this.company = company;
-	}
-	public RideEntity getRide() {
-		return ride;
-	}
-	public void setRide(RideEntity ride) {
-		this.ride = ride;
-	}
 	public UserEntity getPassenger() {
 		return passenger;
 	}
 	public void setPassenger(UserEntity passenger) {
 		this.passenger = passenger;
-	}
-	public UserEntity getDriver() {
-		return driver;
-	}
-	public void setDriver(UserEntity driver) {
-		this.driver = driver;
 	}
 	@Override
 	public int hashCode() {
@@ -99,12 +73,6 @@ public class BillEntity {
 			return false;
 		}
 		return true;
-	}
-	public RideRequestEntity getRideRequest() {
-		return rideRequest;
-	}
-	public void setRideRequest(RideRequestEntity rideRequest) {
-		this.rideRequest = rideRequest;
 	}
 	public BillStatus getStatus() {
 		return status;

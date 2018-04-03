@@ -10,16 +10,9 @@ import com.digitusrevolution.rideshare.model.user.domain.UserFeedback;
 public class FullRideRequest extends BasicRideRequest{
 
 	private FullRide acceptedRide;
-	private Bill bill;
 	private Collection<FullRide> cancelledRides = new HashSet<FullRide>();
 	private Collection<UserFeedback> feedbacks = new LinkedList<UserFeedback>();
 
-	public Bill getBill() {
-		return bill;
-	}
-	public void setBill(Bill bill) {
-		this.bill = bill;
-	}
 	public FullRide getAcceptedRide() {
 		return acceptedRide;
 	}

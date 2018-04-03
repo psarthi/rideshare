@@ -20,7 +20,9 @@ public class BillMapper implements Mapper<Bill, BillEntity>{
 		billEntity.setAmount(bill.getAmount());
 		billEntity.setDiscountPercentage(bill.getDiscountPercentage());
 		billEntity.setStatus(bill.getStatus());
-		
+		UserMapper userMapper = new UserMapper();
+		billEntity.setPassenger(userMapper.getEntity(bill.getPassenger(), false));
+
 		if (fetchChild){
 			billEntity = getEntityChild(bill, billEntity);
 		}
@@ -30,17 +32,6 @@ public class BillMapper implements Mapper<Bill, BillEntity>{
 
 	@Override
 	public BillEntity getEntityChild(Bill bill, BillEntity billEntity) {
-		CompanyMapper companyMapper = new CompanyMapper();
-		billEntity.setCompany(companyMapper.getEntity(bill.getCompany(), true));
-		UserMapper userMapper = new UserMapper();
-		billEntity.setPassenger(userMapper.getEntity(bill.getPassenger(), false));
-		billEntity.setDriver(userMapper.getEntity(bill.getDriver(), false));
-		RideMapper rideMapper = new RideMapper();
-		billEntity.setRide(rideMapper.getEntity(bill.getRide(), false));
-		RideRequestMapper rideRequestMapper = new RideRequestMapper();
-		//Very Imp - Don't get child of Ride Request otherwise it will get into recursive loop
-		billEntity.setRideRequest(rideRequestMapper.getEntity(bill.getRideRequest(), false));
-
 		return billEntity;
 	}
 
@@ -52,6 +43,9 @@ public class BillMapper implements Mapper<Bill, BillEntity>{
 		bill.setAmount(billEntity.getAmount());
 		bill.setDiscountPercentage(billEntity.getDiscountPercentage());
 		bill.setStatus(billEntity.getStatus());
+		UserMapper userMapper = new UserMapper();
+		bill.setPassenger(userMapper.getDomainModel(billEntity.getPassenger(), false));
+
 		if (fetchChild){
 			bill = getDomainModelChild(bill, billEntity);
 		}		
@@ -60,16 +54,6 @@ public class BillMapper implements Mapper<Bill, BillEntity>{
 
 	@Override
 	public Bill getDomainModelChild(Bill bill, BillEntity billEntity) {
-		CompanyMapper companyMapper = new CompanyMapper();
-		bill.setCompany(companyMapper.getDomainModel(billEntity.getCompany(), true));
-		UserMapper userMapper = new UserMapper();
-		bill.setPassenger(userMapper.getDomainModel(billEntity.getPassenger(), false));
-		bill.setDriver(userMapper.getDomainModel(billEntity.getDriver(), false));
-		RideMapper rideMapper = new RideMapper();
-		bill.setRide(rideMapper.getDomainModel(billEntity.getRide(), false));
-		RideRequestMapper rideRequestMapper = new RideRequestMapper();
-		//Very Imp - Don't get child of Ride Request otherwise it will get into recursive loop
-		bill.setRideRequest(rideRequestMapper.getDomainModel(billEntity.getRideRequest(), false));
 		return bill;
 	}
 

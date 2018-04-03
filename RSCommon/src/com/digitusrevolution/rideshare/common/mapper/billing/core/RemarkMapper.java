@@ -11,14 +11,10 @@ public class RemarkMapper implements Mapper<Remark, RemarkEntity>{
 	@Override
 	public RemarkEntity getEntity(Remark remark, boolean fetchChild) {
 		RemarkEntity remarkEntity = new RemarkEntity();
-		remarkEntity.setBillNumber(remark.getBillNumber());
 		remarkEntity.setMessage(remark.getMessage());
 		remarkEntity.setPaidBy(remark.getPaidBy());
 		remarkEntity.setPaidTo(remark.getPaidTo());
 		remarkEntity.setPurpose(remark.getPurpose());
-		remarkEntity.setRideId(remark.getRideId());
-		remarkEntity.setRideRequestId(remark.getRideRequestId());
-		remarkEntity.setInvoiceNumber(remark.getInvoiceNumber());
 		return remarkEntity;
 	}
 
@@ -31,15 +27,10 @@ public class RemarkMapper implements Mapper<Remark, RemarkEntity>{
 	@Override
 	public Remark getDomainModel(RemarkEntity remarkEntity, boolean fetchChild) {
 		Remark remark = new Remark();
-		remark.setBillNumber(remarkEntity.getBillNumber());
 		remark.setMessage(remarkEntity.getMessage());
 		remark.setPaidBy(remarkEntity.getPaidBy());
 		remark.setPaidTo(remarkEntity.getPaidTo());
 		remark.setPurpose(remarkEntity.getPurpose());
-		remark.setRideId(remarkEntity.getRideId());
-		remark.setRideRequestId(remarkEntity.getRideRequestId());
-		remark.setInvoiceNumber(remarkEntity.getInvoiceNumber());
-		// TODO Auto-generated method stub
 		return remark;
 	}
 

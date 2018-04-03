@@ -12,11 +12,6 @@ public class Bill {
 	//Reason for storing Passenger, Driver so that we have data handy available with every bill, instead of fetching data from ride/ride request
 	//Basic logic of all properties here is to have relationship available at one go instead of doing search again
 	private User passenger;
-	private User driver;
-	private Company company;
-	private Ride ride;
-	//Reason for rideRequest field, so that we don't have to search ride request number later on if required
-	private RideRequest rideRequest;
 	private float rate;
 	private float amount;
 	private float discountPercentage;
@@ -33,24 +28,6 @@ public class Bill {
 	}
 	public void setPassenger(User passenger) {
 		this.passenger = passenger;
-	}
-	public User getDriver() {
-		return driver;
-	}
-	public void setDriver(User driver) {
-		this.driver = driver;
-	}
-	public Company getCompany() {
-		return company;
-	}
-	public void setCompany(Company company) {
-		this.company = company;
-	}
-	public Ride getRide() {
-		return ride;
-	}
-	public void setRide(Ride ride) {
-		this.ride = ride;
 	}
 	public float getAmount() {
 		return amount;
@@ -81,12 +58,6 @@ public class Bill {
 			return false;
 		}
 		return true;
-	}
-	public RideRequest getRideRequest() {
-		return rideRequest;
-	}
-	public void setRideRequest(RideRequest rideRequest) {
-		this.rideRequest = rideRequest;
 	}
 	public BillStatus getStatus() {
 		return status;

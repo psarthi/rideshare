@@ -265,7 +265,6 @@ public class RideAction {
 			amount = getPrice(rideRequest);
 			discountPercentage = getDiscountPercentage(rideRequest);
 		}
-		Company company = RESTClientUtil.getCompany(1);
 		//Note - Fare and Discount is used here just to store in the bill but calculation
 		//of the discount is already taken care as part of price calculation
 		float farePerMeter = getFarePerMeter(rideRequest.getVehicleSubCategory(), rideRequest.getPassenger());
@@ -275,11 +274,7 @@ public class RideAction {
 		bill.setAmount(amount);
 		bill.setRate(farePerKm);
 		bill.setDiscountPercentage(discountPercentage);
-		bill.setCompany(company);
-		bill.setDriver(driver);
 		bill.setPassenger(passenger);
-		bill.setRide(ride);
-		bill.setRideRequest(rideRequest);
 		if (discountPercentage==100) {
 			bill.setStatus(BillStatus.Free);
 		} else {

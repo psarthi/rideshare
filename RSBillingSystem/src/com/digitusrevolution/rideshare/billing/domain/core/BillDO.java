@@ -158,13 +158,10 @@ public class BillDO implements DomainObjectPKLong<Bill>{
 				//This is more from future usage if there are multiple types of account associated with user, 
 				//so we can use it for the current usage, we always need to withdraw money from Virtual account
 				Remark remark = new Remark();
-				remark.setBillNumber(bill.getNumber());
 				remark.setPaidBy(bill.getPassenger().getFirstName()+" "+bill.getPassenger().getLastName());
-				remark.setPaidTo(bill.getDriver().getFirstName()+ " "+ bill.getDriver().getLastName());
+				remark.setPaidTo(ride.getDriver().getFirstName()+ " "+ ride.getDriver().getLastName());
 				remark.setPurpose(Purpose.Ride);
-				remark.setRideId(bill.getRide().getId());
-				remark.setRideRequestId(bill.getRideRequest().getId());
-				String message = "Bill:"+bill.getNumber()+",RideRequest:"+bill.getRideRequest().getId()+",Ride:"+bill.getRide().getId();
+				String message = "Bill:"+bill.getNumber()+",RideRequest:"+rideRequest.getId()+",Ride:"+ride.getId();
 				remark.setMessage(message);
 				//This will ensure that we don't do any transaction if the bill amount is ZERO which would be applicable for lets say Free Rides or 100% discounted rides
 				if (amount!=0) {
@@ -183,7 +180,7 @@ public class BillDO implements DomainObjectPKLong<Bill>{
 		float totalDeduction = invoice.getServiceCharge() + invoice.getCgst() + invoice.getSgst() + invoice.getIgst() + invoice.getTcs();
 		float driverAmount = invoice.getTotalAmountEarned() - totalDeduction;
 		//Company name is common across all bills so even for the last bill which would be the reference on last iteration, company name would be same
-		Company company = bill.getCompany();
+		Company company = RESTClientUtil.getCompany(1);
 		
 		if (driverAmount!=0) {
 			Remark driverRemark = new Remark();
@@ -196,7 +193,6 @@ public class BillDO implements DomainObjectPKLong<Bill>{
 			}
 			driverRemark.setPaidTo(ride.getDriver().getFirstName()+ " "+ ride.getDriver().getLastName());
 			driverRemark.setPurpose(Purpose.Ride);
-			driverRemark.setRideId(ride.getId());
 			String message = "Bill:"+consolidatedBillNumber+"RideRequest:"+consolidatedRideRequestNumber+"Ride:"+ride.getId();
 			driverRemark.setMessage(message);
 			
@@ -207,8 +203,6 @@ public class BillDO implements DomainObjectPKLong<Bill>{
 			companyRemark.setPaidBy(ride.getDriver().getFirstName()+ " "+ ride.getDriver().getLastName());
 			companyRemark.setPaidTo(company.getName());
 			companyRemark.setPurpose(Purpose.ServiceChargeAndTaxes);
-			companyRemark.setRideId(ride.getId());
-			companyRemark.setInvoiceNumber(invoice.getNumber());
 			message = "Invoice:"+invoice.getNumber()+",RideRequest:"+consolidatedRideRequestNumber+"Ride:"+ride.getId();
 			companyRemark.setMessage(message);
 

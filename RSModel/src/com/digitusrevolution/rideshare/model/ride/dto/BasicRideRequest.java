@@ -48,6 +48,7 @@ public class BasicRideRequest {
 	private int travelDistance;
 	private RideMode rideMode;
 	private String confirmationCode;
+	private Bill bill;
 	
 	public long getId() {
 		return id;
@@ -217,4 +218,11 @@ public class BasicRideRequest {
 	public void setConfirmationCode(String confirmationCode) {
 		this.confirmationCode = confirmationCode;
 	}
+	public Bill getBill() {
+		return bill;
+	}
+	public void setBill(Bill bill) {
+		this.bill = bill;
+	}
+
 }
