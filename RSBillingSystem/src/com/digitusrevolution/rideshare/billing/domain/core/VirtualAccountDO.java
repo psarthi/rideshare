@@ -125,6 +125,7 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 			transaction.setDateTime(dateTime);
 			transaction.setType(TransactionType.Debit);
 			transaction.setRemark(remark);
+			transaction.setAccount(account);
 			account.getTransactions().add(transaction);
 			update(account);
 		} else {
@@ -146,6 +147,7 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 		transaction.setDateTime(dateTime);
 		transaction.setType(TransactionType.Credit);
 		transaction.setRemark(remark);
+		transaction.setAccount(account);
 		account.getTransactions().add(transaction);
 		update(account);
 	}

@@ -10,8 +10,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Remark;
 import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionType;
 
@@ -28,6 +30,8 @@ public class TransactionEntity {
 	private float amount;
 	@Embedded
 	private RemarkEntity remark;
+	@OneToOne
+	private AccountEntity account;
 	
 	public long getId() {
 		return id;
@@ -82,6 +86,12 @@ public class TransactionEntity {
 	}
 	public void setRemark(RemarkEntity remark) {
 		this.remark = remark;
+	}
+	public AccountEntity getAccount() {
+		return account;
+	}
+	public void setAccount(AccountEntity account) {
+		this.account = account;
 	}
 	
 }

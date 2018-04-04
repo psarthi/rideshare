@@ -17,6 +17,9 @@ public class TransactionMapper implements Mapper<Transaction, TransactionEntity>
 		transactionEntity.setType(transaction.getType());
 		RemarkMapper remarkMapper = new RemarkMapper();
 		transactionEntity.setRemark(remarkMapper.getEntity(transaction.getRemark(), fetchChild));
+		AccountMapper accountMapper = new AccountMapper();
+		//IMP - Don't fetch child as transaction has account and account has transaction
+		transactionEntity.setAccount(accountMapper.getEntity(transaction.getAccount(), false));
 		return transactionEntity;
 	}
 
@@ -34,6 +37,9 @@ public class TransactionMapper implements Mapper<Transaction, TransactionEntity>
 		transaction.setType(transactionEntity.getType());
 		RemarkMapper remarkMapper = new RemarkMapper();
 		transaction.setRemark(remarkMapper.getDomainModel(transactionEntity.getRemark(), fetchChild));
+		AccountMapper accountMapper = new AccountMapper();
+		//IMP - Don't fetch child as transaction has account and account has transaction
+		transaction.setAccount(accountMapper.getDomainModel(transactionEntity.getAccount(), false));
 		return transaction;
 	}
 

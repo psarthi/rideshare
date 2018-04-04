@@ -10,6 +10,7 @@ public class Transaction implements Comparable<Transaction>{
 	private TransactionType type;
 	private float amount;
 	private Remark remark;
+	private Account account;
 	
 	public long getId() {
 		return id;
@@ -71,6 +72,12 @@ public class Transaction implements Comparable<Transaction>{
 		//return transaction.getDateTime().getNano() - this.getDateTime().getNano();
 		//Unable to compare with date somehow so comparing based on Id which should be changed to datetime
 		return Long.compare(transaction.getId(),this.getId());
+	}
+	public Account getAccount() {
+		return account;
+	}
+	public void setAccount(Account account) {
+		this.account = account;
 	}
 
 }

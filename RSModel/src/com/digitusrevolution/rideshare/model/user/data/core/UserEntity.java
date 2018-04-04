@@ -26,6 +26,8 @@ import javax.persistence.Table;
 
 import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
 import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
+import com.digitusrevolution.rideshare.model.billing.data.core.FinancialTransactionEntity;
+import com.digitusrevolution.rideshare.model.billing.domain.core.FinancialTransaction;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
@@ -121,15 +123,6 @@ public class UserEntity {
 	private Collection<GroupEntity> groupInvites = new HashSet<GroupEntity>();
 	@OneToMany(mappedBy="user")
 	private Collection<MembershipRequestEntity> membershipRequests = new HashSet<MembershipRequestEntity>();
-	
-	public Collection<MembershipRequestEntity> getMembershipRequests() {
-		return membershipRequests;
-	}
-
-	public void setMembershipRequests(Collection<MembershipRequestEntity> membershipRequests) {
-		this.membershipRequests = membershipRequests;
-	}
-
 	@Column
 	@Enumerated(EnumType.STRING)
 	private RegistrationType registrationType;
@@ -137,6 +130,8 @@ public class UserEntity {
 	@ManyToMany
 	@JoinTable(name="user_interest",joinColumns=@JoinColumn(name="user_id"), inverseJoinColumns=@JoinColumn(name="interest_id"))
 	private Collection<InterestEntity> interests = new HashSet<InterestEntity>();
+	@OneToMany(mappedBy="user")
+	private Collection<FinancialTransactionEntity> financialTransactions = new HashSet<FinancialTransactionEntity>();
 		
 	public long getId() {
 		return id;
@@ -375,6 +370,22 @@ public class UserEntity {
 	public void setRegistrationDateTime(ZonedDateTime registrationDateTime) {
 		this.registrationDateTime = registrationDateTime;
 	}
+	public Collection<MembershipRequestEntity> getMembershipRequests() {
+		return membershipRequests;
+	}
+
+	public void setMembershipRequests(Collection<MembershipRequestEntity> membershipRequests) {
+		this.membershipRequests = membershipRequests;
+	}
+
+	public Collection<FinancialTransactionEntity> getFinancialTransactions() {
+		return financialTransactions;
+	}
+
+	public void setFinancialTransactions(Collection<FinancialTransactionEntity> financialTransactions) {
+		this.financialTransactions = financialTransactions;
+	}
+
 
 
 }

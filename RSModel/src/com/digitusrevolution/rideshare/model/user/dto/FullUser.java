@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
+import com.digitusrevolution.rideshare.model.billing.domain.core.FinancialTransaction;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
 import com.digitusrevolution.rideshare.model.user.domain.FriendRequest;
@@ -23,7 +24,7 @@ public class FullUser extends BasicUser {
 	private Collection<UserFeedback> feedbacks = new LinkedList<UserFeedback>();
 	private Collection<FriendRequest> friendRequests = new HashSet<FriendRequest>();	
 	private Collection<BasicGroup> groupInvites = new HashSet<BasicGroup>();
-
+	private Collection<FinancialTransaction> financialTransactions = new HashSet<FinancialTransaction>();
 
 	public Collection<BasicGroup> getGroups() {
 		return groups;
@@ -87,6 +88,14 @@ public class FullUser extends BasicUser {
 
 	public void setFriendRequests(Collection<FriendRequest> friendRequests) {
 		this.friendRequests = friendRequests;
+	}
+
+	public Collection<FinancialTransaction> getFinancialTransactions() {
+		return financialTransactions;
+	}
+
+	public void setFinancialTransactions(Collection<FinancialTransaction> financialTransactions) {
+		this.financialTransactions = financialTransactions;
 	}
 }
 

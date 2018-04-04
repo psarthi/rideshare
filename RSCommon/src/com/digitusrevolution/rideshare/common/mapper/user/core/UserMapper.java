@@ -6,6 +6,7 @@ import java.util.HashSet;
 import com.digitusrevolution.rideshare.common.inf.Mapper;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.AccountMapper;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.BillMapper;
+import com.digitusrevolution.rideshare.common.mapper.billing.core.FinancialTransactionMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.CityMapper;
@@ -132,6 +133,9 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		MembershipRequestMapper membershipRequestMapper = new MembershipRequestMapper();
 		userEntity.setMembershipRequests(membershipRequestMapper.getEntities(userEntity.getMembershipRequests(), user.getMembershipRequests(), false));
 		
+		FinancialTransactionMapper transactionMapper = new FinancialTransactionMapper();
+		userEntity.setFinancialTransactions(transactionMapper.getEntities(userEntity.getFinancialTransactions(), user.getFinancialTransactions(), false));
+		
 		return userEntity;
 		
 	}
@@ -238,6 +242,9 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		//Don't fetch child as user has request and request has user, so recursive loop
 		MembershipRequestMapper membershipRequestMapper = new MembershipRequestMapper();
 		user.setMembershipRequests(membershipRequestMapper.getDomainModels(user.getMembershipRequests(), userEntity.getMembershipRequests(), false));
+		
+		FinancialTransactionMapper transactionMapper = new FinancialTransactionMapper();
+		user.setFinancialTransactions(transactionMapper.getDomainModels(user.getFinancialTransactions(), userEntity.getFinancialTransactions(), false));
 
 		return user;
 	}
