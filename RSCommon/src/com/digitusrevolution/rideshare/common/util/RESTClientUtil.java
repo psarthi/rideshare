@@ -5,8 +5,10 @@ import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.TransferHandler.TransferSupport;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedHashMap;
@@ -23,6 +25,7 @@ import com.digitusrevolution.rideshare.common.service.NotificationService;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
+import com.digitusrevolution.rideshare.model.billing.dto.PaytmTransactionStatus;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 import com.digitusrevolution.rideshare.model.common.NotificationMessage;
 import com.digitusrevolution.rideshare.model.common.ResponseMessage;
@@ -44,6 +47,7 @@ import com.digitusrevolution.rideshare.model.user.dto.BasicUser;
 import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
 import com.digitusrevolution.rideshare.model.user.dto.OTPProviderResponse;
 import com.digitusrevolution.rideshare.model.user.dto.UserFeedbackInfo;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * 
@@ -52,9 +56,9 @@ import com.digitusrevolution.rideshare.model.user.dto.UserFeedbackInfo;
  *
  */
 public class RESTClientUtil {
-	
+
 	private static final Logger logger = LogManager.getLogger(NotificationService.class.getName());
-	
+
 	//Note - We are using -1 as user id so that we can create dummy token for internal use
 	private static final long systemId = Long.valueOf(PropertyReader.getInstance().getProperty("SYSTEM_INTERNAL_USER_ID"));
 
@@ -68,7 +72,7 @@ public class RESTClientUtil {
 		User user = response.readEntity(User.class);
 		return user;
 	}
-	
+
 	public static User getBasicUser(long id){
 
 		RESTClientImpl<User> restClientUtil = new RESTClientImpl<>();
@@ -91,7 +95,7 @@ public class RESTClientUtil {
 		Collection<Role> roles = response.readEntity(new GenericType<Collection<Role>>() {});
 		return roles;
 	}
-	
+
 	public static List<GroupDetail> getGroups(long id){
 
 		RESTClientImpl<Role> restClientUtil = new RESTClientImpl<>();
@@ -102,7 +106,7 @@ public class RESTClientUtil {
 		List<GroupDetail> groups = response.readEntity(new GenericType<List<GroupDetail>>() {});
 		return groups;
 	}
-	
+
 
 	public static Vehicle getVehicle(long userId, long vehicleId){
 
@@ -114,7 +118,7 @@ public class RESTClientUtil {
 		Vehicle vehicle = response.readEntity(Vehicle.class);
 		return vehicle;
 	}
-	
+
 	public static String getGeocode(String address){
 
 		RESTClientImpl<String> restClientUtil = new RESTClientImpl<>();
@@ -126,7 +130,7 @@ public class RESTClientUtil {
 		String json = response.readEntity(String.class);
 		return json;
 	}
-	
+
 	public static String getReverserGeocode(Double lat, Double lng){
 
 		RESTClientImpl<String> restClientUtil = new RESTClientImpl<>();
@@ -139,9 +143,9 @@ public class RESTClientUtil {
 		return json;
 	}
 
-	
+
 	public static String getDirection(Double originLat, Double originLng, Double destinationLat, Double destinationLng, ZonedDateTime departureTimeUTC){
-		
+
 		long departureEpochSecond = departureTimeUTC.toEpochSecond(); 
 		RESTClientImpl<String> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_GOOGLE_DIRECTION_URL");
@@ -152,9 +156,9 @@ public class RESTClientUtil {
 		String json = response.readEntity(String.class);
 		return json;
 	}
-	
+
 	public static String getDistance(Double originLat, Double originLng, Double destinationLat, Double destinationLng, ZonedDateTime departureTimeUTC){
-		
+
 		long departureEpochSecond = departureTimeUTC.toEpochSecond(); 
 		RESTClientImpl<String> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_GOOGLE_DISTANCE_URL");
@@ -165,7 +169,7 @@ public class RESTClientUtil {
 		String json = response.readEntity(String.class);
 		return json;
 	}
-	
+
 	public static VehicleCategory getVehicleCategory(int id){
 
 		RESTClientImpl<VehicleCategory> restClientUtil = new RESTClientImpl<>();
@@ -176,7 +180,7 @@ public class RESTClientUtil {
 		VehicleCategory vehicleCategory = response.readEntity(VehicleCategory.class);
 		return vehicleCategory;
 	}
-	
+
 	public static VehicleSubCategory getVehicleSubCategory(int id){
 
 		RESTClientImpl<VehicleCategory> restClientUtil = new RESTClientImpl<>();
@@ -188,7 +192,7 @@ public class RESTClientUtil {
 		return vehicleSubCategory;
 	}
 
-	
+
 	public static Account getVirtualAccount(long number){
 
 		RESTClientImpl<Account> restClientUtil = new RESTClientImpl<>();
@@ -232,7 +236,7 @@ public class RESTClientUtil {
 		Company company= response.readEntity(Company.class);
 		return company;
 	}
-	
+
 	public static Account createVirtualAccount(){
 
 		RESTClientImpl<Account> restClientUtil = new RESTClientImpl<>();
@@ -247,7 +251,7 @@ public class RESTClientUtil {
 			return null;
 		}
 	}
-	
+
 	public static FullRide getCurrentRide(long driverId){
 
 		RESTClientImpl<Ride> restClientUtil = new RESTClientImpl<>();
@@ -261,7 +265,7 @@ public class RESTClientUtil {
 		FullRide ride= response.readEntity(FullRide.class);
 		return ride;
 	}
-	
+
 	public static FullRideRequest getCurrentRideRequest(long passengerId){
 
 		RESTClientImpl<RideRequest> restClientUtil = new RESTClientImpl<>();
@@ -275,7 +279,7 @@ public class RESTClientUtil {
 		FullRideRequest rideRequest= response.readEntity(FullRideRequest.class);
 		return rideRequest;
 	}
-	
+
 	public static boolean makePayment(Ride ride){
 		RESTClientImpl<Ride> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("BILL_PAYMENT_URL");
@@ -288,7 +292,7 @@ public class RESTClientUtil {
 		} 
 		return false;
 	}
-	
+
 	public static Account addMoneyToWallet(long accountNumber, float amount){
 		RESTClientImpl<Account> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("ADD_MONEY_TO_WALLET");
@@ -301,20 +305,20 @@ public class RESTClientUtil {
 		} 
 		return null;
 	}
-	
+
 	public static boolean userFeedback(long userId, UserFeedbackInfo userFeedbackInfo, RideType rideType){
 		RESTClientImpl<UserFeedbackInfo> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("POST_USER_FEEDBACK");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
 		URI uri = uriBuilder.build(Long.toString(userId), rideType.toString());
-		
+
 		Response response = restClientUtil.post(uri, userFeedbackInfo);
 		if (response.getStatus() == Status.OK.getStatusCode()) {
 			return true;
 		} 
 		return false;
 	}
-	
+
 	public static List<Bill> getPendingBills(BasicUser passenger){
 		RESTClientImpl<BasicUser> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_PENDING_BILLS");
@@ -324,7 +328,7 @@ public class RESTClientUtil {
 		List<Bill> bills = response.readEntity(new GenericType<List<Bill>>() {});
 		return bills;
 	}
-	
+
 	public static Ride getRide(long rideId) {
 		RESTClientImpl<Ride> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_RIDE");
@@ -337,7 +341,7 @@ public class RESTClientUtil {
 		} 
 		return null;
 	}
-	
+
 	public static RideRequest getRideRequest(long rideRequestId) {
 		RESTClientImpl<RideRequest> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_RIDE_REQUEST");
@@ -369,7 +373,7 @@ public class RESTClientUtil {
 		OTPProviderResponse otpResponse = jsonUtil.getModel(otpResponseString);
 		return otpResponse;
 	}
-	
+
 	public static OTPProviderResponse getOTPOnCall(String mobile){
 		RESTClientImpl<BasicUser> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("GET_OTP_ON_CALL");
@@ -386,7 +390,7 @@ public class RESTClientUtil {
 		OTPProviderResponse otpResponse = jsonUtil.getModel(otpResponseString);
 		return otpResponse;
 	}
-	
+
 	public static boolean sendNotification(NotificationMessage notificationMessage){
 		RESTClientImpl<NotificationMessage> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("FIREBASE_SEND_MESSAGE");
@@ -404,7 +408,33 @@ public class RESTClientUtil {
 			return false;
 		}
 	}
-	
+
+	public static PaytmTransactionStatus getFinancialTransactionStatus(Map<String, String> paramMap) {
+		String json="";
+		try {
+			json = JsonObjectMapper.getMapper().writeValueAsString(paramMap);
+			logger.debug("Json:"+json);
+		} catch (JsonProcessingException e) {
+			throw new WebApplicationException("Unable to convert to Json");
+		}
+		RESTClientImpl<RideRequest> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_PAYTM_TRANSACTION_STATUS");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(json);
+		Response response = restClientUtil.get(uri);
+		if (response.getStatus() == Status.OK.getStatusCode()) {
+			//Don't readEntity and try to store in PaytmTransactionStatus as media type is not application/json
+			//but the response media content type is text/html, so you can read only as String
+			String responseString = response.readEntity(String.class);
+			//Don't use JsonObjectMapper to convert String to PaytmTransactionStatus as both types are different
+			//so use below way to get POJO from response string
+			JSONUtil<PaytmTransactionStatus> jsonUtil = new JSONUtil<>(PaytmTransactionStatus.class);
+			PaytmTransactionStatus status = jsonUtil.getModel(responseString);
+			return status;
+		} 
+		return null;
+	}
+
 }
 
 

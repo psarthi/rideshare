@@ -25,8 +25,7 @@ public class AccountEntity {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long number;
 	private float balance;
-	@OneToMany (cascade=CascadeType.ALL)
-	@JoinTable(name="account_transaction",joinColumns=@JoinColumn(name="account_number"))
+	@OneToMany (mappedBy="account")
 	private Collection<TransactionEntity> transactions = new HashSet<TransactionEntity>();
 	@Column
 	@Enumerated(EnumType.STRING)

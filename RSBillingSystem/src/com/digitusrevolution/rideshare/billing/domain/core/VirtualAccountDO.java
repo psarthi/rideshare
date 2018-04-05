@@ -111,7 +111,7 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 	}
 	
 	@Override
-	public void debit(long accountNumber, float amount, Remark remark){
+	public long debit(long accountNumber, float amount, Remark remark){
 		//Its important to get child, else old transaction would get deleted as transactions is part of child
 		//And if you just get account without old transactions, then it will consider only new transaction as part of this account
 		//Since account owns the relationship of transaction, so you need to get all child before updating
@@ -126,15 +126,19 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 			transaction.setType(TransactionType.Debit);
 			transaction.setRemark(remark);
 			transaction.setAccount(account);
-			account.getTransactions().add(transaction);
+			TransactionDO transactionDO = new TransactionDO();
+			long id = transactionDO.create(transaction);
+			//This will take care of updating the balance
+			//IMP - No need to add transaction in the account again as it would not add transaction entry 
 			update(account);
+			return id;
 		} else {
 			throw new InSufficientBalanceException("Not enough balance in the account. Current balance is:"+balance);			
 		}
 	}
 	
 	@Override
-	public void credit(long accountNumber, float amount, Remark remark){
+	public long credit(long accountNumber, float amount, Remark remark){
 		//Its important to get child, else old transaction would get deleted as transactions is part of child
 		//And if you just get account without old transactions, then it will consider only new transaction as part of this account
 		//Since account owns the relationship of transaction, so you need to get all child before updating
@@ -148,11 +152,15 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 		transaction.setType(TransactionType.Credit);
 		transaction.setRemark(remark);
 		transaction.setAccount(account);
-		account.getTransactions().add(transaction);
+		TransactionDO transactionDO = new TransactionDO();
+		long id = transactionDO.create(transaction);
+		//This will take care of updating the balance
+		//IMP - No need to add transaction in the account again as it would not add transaction entry
 		update(account);
+		return id;
 	}
 	
-	public void addMoneyToWallet(long accountNumber, float amount) {
+	public long addMoneyToWallet(long accountNumber, float amount) {
 		//TODO Connect with Payment Gateway and on successful transaction, credit to its wallet which is virtual account
 		boolean paymentSuccess=true;
 		if (paymentSuccess) {
@@ -161,7 +169,7 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 			remark.setPaidBy("Self");
 			remark.setPaidTo("Self");
 			remark.setMessage(Purpose.TopUp.toString());
-			credit(accountNumber, amount, remark);	
+			return credit(accountNumber, amount, remark);
 		} else {
 			throw new WebApplicationException("Recharge Failed");
 		}
@@ -172,7 +180,7 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 		return account.getBalance();
 	}
 	
-	public void redeemFromWallet(long virtualAccountNumber, float amount) {
+	public long redeemFromWallet(long virtualAccountNumber, float amount) {
 		//TODO Connect with payment gateway and on successful transaction, debit money from its wallet which is virtual account
 		boolean transferSuccess=true;
 		if (transferSuccess) {
@@ -181,7 +189,7 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 			remark.setPaidBy("Self");
 			remark.setPaidTo("Self");
 			remark.setMessage(Purpose.Redeem.toString());
-			debit(virtualAccountNumber, amount, remark);
+			return debit(virtualAccountNumber, amount, remark);
 		} else {
 			throw new WebApplicationException("Redemption Failed");
 		}

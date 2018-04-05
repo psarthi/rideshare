@@ -16,7 +16,6 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.PaymentGateway;
 import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionStatus;
 import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionType;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
-import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 @Entity
 @Table(name="financial_transaction")
@@ -40,6 +39,9 @@ public class FinancialTransactionEntity{
 	private TransactionEntity walletTransaction;
 	@OneToOne
 	private UserEntity user;
+	private String pgTransactionStatus; 
+	private String pgResponseCode;
+	private String pgResponseMsg;
 	
 	public long getId() {
 		return id;
@@ -95,5 +97,24 @@ public class FinancialTransactionEntity{
 	public void setUser(UserEntity user) {
 		this.user = user;
 	}
+	public String getPgTransactionStatus() {
+		return pgTransactionStatus;
+	}
+	public void setPgTransactionStatus(String pgTransactionStatus) {
+		this.pgTransactionStatus = pgTransactionStatus;
+	}
+	public String getPgResponseCode() {
+		return pgResponseCode;
+	}
+	public void setPgResponseCode(String pgResponseCode) {
+		this.pgResponseCode = pgResponseCode;
+	}
+	public String getPgResponseMsg() {
+		return pgResponseMsg;
+	}
+	public void setPgResponseMsg(String pgResponseMsg) {
+		this.pgResponseMsg = pgResponseMsg;
+	}
+	
 	
 }

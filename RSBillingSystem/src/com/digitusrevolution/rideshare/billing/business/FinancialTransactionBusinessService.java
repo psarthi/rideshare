@@ -9,6 +9,8 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.billing.domain.core.FinancialTransactionDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.model.billing.dto.PaytmTransactionResponse;
+import com.digitusrevolution.rideshare.model.common.ResponseMessage;
 
 public class FinancialTransactionBusinessService {
 	
@@ -41,4 +43,90 @@ public class FinancialTransactionBusinessService {
 		return paramMap;
 	}
 	
+	public String validatePaytmResponseAndProcessPayment(Map<String, String> paytmResponseHashMap) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		String responseMessage = null;
+		try {
+			transaction = session.beginTransaction();
+
+			FinancialTransactionDO transactionDO = new FinancialTransactionDO();
+			responseMessage = transactionDO.validatePaytmResponseAndProcessPayment(paytmResponseHashMap);			
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return responseMessage;
+	}
+	
+	public void cancelFinancialTransaction(long orderId) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		try {
+			transaction = session.beginTransaction();
+
+			FinancialTransactionDO transactionDO = new FinancialTransactionDO();
+			transactionDO.cancelFinancialTransaction(orderId);			
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+	}
+	
+	public void handlePendingTransactionNotificationFromPaytm(PaytmTransactionResponse paytmTransactionResponse) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		try {
+			transaction = session.beginTransaction();
+
+			FinancialTransactionDO transactionDO = new FinancialTransactionDO();
+			transactionDO.handlePendingTransactionNotificationFromPaytm(paytmTransactionResponse);			
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+	}
+	
 }
+
+
+
+
+
+
+
+
+

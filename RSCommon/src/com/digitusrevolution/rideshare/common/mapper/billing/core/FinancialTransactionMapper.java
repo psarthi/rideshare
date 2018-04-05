@@ -25,6 +25,9 @@ public class FinancialTransactionMapper implements Mapper<FinancialTransaction, 
 		}
 		UserMapper userMapper = new UserMapper();
 		transactionEntity.setUser(userMapper.getEntity(transaction.getUser(), false));
+		transactionEntity.setPgTransactionStatus(transaction.getPgTransactionStatus());
+		transactionEntity.setPgResponseCode(transaction.getPgResponseCode());
+		transactionEntity.setPgResponseMsg(transaction.getPgResponseMsg());
 		return transactionEntity;
 	}
 
@@ -50,6 +53,9 @@ public class FinancialTransactionMapper implements Mapper<FinancialTransaction, 
 		}
 		UserMapper userMapper = new UserMapper();
 		transaction.setUser(userMapper.getDomainModel(transactionEntity.getUser(), false));
+		transaction.setPgTransactionStatus(transactionEntity.getPgTransactionStatus());
+		transaction.setPgResponseCode(transactionEntity.getPgResponseCode());
+		transaction.setPgResponseMsg(transactionEntity.getPgResponseMsg());
 		return transaction;
 	}
 
