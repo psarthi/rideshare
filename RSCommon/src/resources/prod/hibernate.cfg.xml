@@ -106,6 +106,9 @@
 			class="com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity" />
 		<mapping
 			class="com.digitusrevolution.rideshare.model.billing.data.core.InvoiceEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.billing.data.core.FinancialTransactionEntity" />
+			
 
 	</session-factory>
 </hibernate-configuration>

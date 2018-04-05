@@ -2,8 +2,11 @@ package com.digitusrevolution.rideshare.billing.domain.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -14,6 +17,7 @@ import javax.ws.rs.WebApplicationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.digitusrevolution.rideshare.billing.data.FinancialTransactionDAO;
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKLong;
 import com.digitusrevolution.rideshare.common.inf.GenericDAO;
@@ -44,7 +48,7 @@ public class FinancialTransactionDO implements DomainObjectPKLong<FinancialTrans
 
 	private FinancialTransaction financialTransaction;
 	private FinancialTransactionEntity financialTransactionEntity;
-	private final GenericDAO<FinancialTransactionEntity, Long> genericDAO;
+	private final FinancialTransactionDAO financialTransactionDAO;
 	private FinancialTransactionMapper financialTransactionMapper;
 	private static final Logger logger = LogManager.getLogger(FinancialTransactionDO.class.getName());
 
@@ -52,7 +56,7 @@ public class FinancialTransactionDO implements DomainObjectPKLong<FinancialTrans
 	public FinancialTransactionDO() {
 		financialTransaction = new FinancialTransaction();
 		financialTransactionEntity = new FinancialTransactionEntity();
-		genericDAO = new GenericDAOImpl<>(FinancialTransactionEntity.class);
+		financialTransactionDAO = new FinancialTransactionDAO();
 		financialTransactionMapper = new FinancialTransactionMapper();
 	}
 
@@ -69,7 +73,7 @@ public class FinancialTransactionDO implements DomainObjectPKLong<FinancialTrans
 	@Override
 	public List<FinancialTransaction> getAll() {
 		List<FinancialTransaction> financialTransactions = new ArrayList<>();
-		List<FinancialTransactionEntity> financialTransactionEntities = genericDAO.getAll();
+		List<FinancialTransactionEntity> financialTransactionEntities = financialTransactionDAO.getAll();
 		for (FinancialTransactionEntity financialTransactionEntity : financialTransactionEntities) {
 			setFinancialTransactionEntity(financialTransactionEntity);
 			financialTransactions.add(financialTransaction);
@@ -83,7 +87,7 @@ public class FinancialTransactionDO implements DomainObjectPKLong<FinancialTrans
 			throw new InvalidKeyException("Updated failed due to Invalid key: "+financialTransaction.getId());
 		}
 		setFinancialTransaction(financialTransaction);
-		genericDAO.update(financialTransactionEntity);
+		financialTransactionDAO.update(financialTransactionEntity);
 	}
 
 	@Override
@@ -94,13 +98,13 @@ public class FinancialTransactionDO implements DomainObjectPKLong<FinancialTrans
 	@Override
 	public long create(FinancialTransaction financialTransaction) {
 		setFinancialTransaction(financialTransaction);
-		long id = genericDAO.create(financialTransactionEntity);
+		long id = financialTransactionDAO.create(financialTransactionEntity);
 		return id;
 	}
 
 	@Override
 	public FinancialTransaction get(long number) {
-		financialTransactionEntity = genericDAO.get(number);
+		financialTransactionEntity = financialTransactionDAO.get(number);
 		if (financialTransactionEntity == null){
 			throw new NotFoundException("No Data found with number: "+number);
 		}
@@ -119,7 +123,7 @@ public class FinancialTransactionDO implements DomainObjectPKLong<FinancialTrans
 	public void delete(long number) {
 		financialTransaction = get(number);
 		setFinancialTransaction(financialTransaction);
-		genericDAO.delete(financialTransactionEntity);
+		financialTransactionDAO.delete(financialTransactionEntity);
 	}
 
 	public Map<String, String> getPaytmOrderInfo(long userId, float amount) {
@@ -224,6 +228,56 @@ public class FinancialTransactionDO implements DomainObjectPKLong<FinancialTrans
 			throw new WebApplicationException(PropertyReader.getInstance().getProperty("TECHNICAL_ERROR_MESSAGE"));
 		}
 	}
+	
+	public void processAllPendingOrders() {
+		Set<FinancialTransactionEntity> pendingTransactions = financialTransactionDAO.getPendingTransactions();
+		Iterator<FinancialTransactionEntity> iterator = pendingTransactions.iterator();
+		LinkedList<Long> list = new LinkedList<>(); 
+		while (iterator.hasNext()) {
+			FinancialTransactionEntity financialTransactionEntity = iterator.next();
+			list.add(financialTransactionEntity.getId());
+		}
+		long[] orderIds = new long[list.size()];
+		for (int i=0; i<orderIds.length; i++) {
+			orderIds[i] = list.get(i);
+		}
+		processPendingOrders(orderIds);
+	}
+
+	public void processPendingOrders(long[] orderIds) {
+		for (int i=0; i<orderIds.length; i++) {
+			PaytmTransactionStatus transactionStatus = getPaytmTransactionStatusAPIResponse(Long.toString(orderIds[i]));
+			FinancialTransaction financialTransaction = get(orderIds[i]); 
+			long accountNumber = financialTransaction.getUser().getAccount(AccountType.Virtual).getNumber();
+
+			//This is a defensive check to ensure that payment is not already processed earlier 
+			if (transactionStatus.getSTATUS().equals("TXN_SUCCESS") && !financialTransaction.getStatus().equals(TransactionStatus.Success)) {
+				VirtualAccountDO accountDO= new VirtualAccountDO();
+				long id = accountDO.addMoneyToWallet(accountNumber, financialTransaction.getAmount());
+				TransactionDO transactionDO = new TransactionDO();
+				Transaction walletTransaction = transactionDO.get(id);		
+
+				//Updated wallet transaction in financial transaction
+				financialTransaction.setWalletTransaction(walletTransaction);	
+				financialTransaction.setStatus(TransactionStatus.Success);
+			}
+			//Note - IMP For invalid order Id also we get TXN_FAILURE, so this will take care of all orders which was initiated but never reached paytm
+			if (transactionStatus.getSTATUS().equals("TXN_FAILURE")) {
+				financialTransaction.setStatus(TransactionStatus.Failed);
+			}
+			if (transactionStatus.getSTATUS().equals("PENDING")) {
+				financialTransaction.setStatus(TransactionStatus.Pending);
+			}
+			if (transactionStatus.getSTATUS().equals("OPEN")) {
+				financialTransaction.setStatus(TransactionStatus.Open);
+			}
+			//Common for all status 
+			financialTransaction.setPgTransactionStatus(transactionStatus.getSTATUS());
+			financialTransaction.setPgResponseCode(transactionStatus.getRESPCODE());
+			financialTransaction.setPgResponseMsg(transactionStatus.getRESPMSG());
+			update(financialTransaction);
+		}
+	}
 
 	public void cancelFinancialTransaction(long orderId) {
 		FinancialTransaction financialTransaction = get(orderId);
@@ -265,7 +319,13 @@ public class FinancialTransactionDO implements DomainObjectPKLong<FinancialTrans
 					update(financialTransaction);
 				}
 				logger.debug("Pending Transaction is already processed for id:"+financialTransaction.getId());
+			}else {
+				logger.error("Invalid Paytm response - Mismatch with Transaction Status API");
+				throw new WebApplicationException(PropertyReader.getInstance().getProperty("TECHNICAL_ERROR_MESSAGE"));
 			}
+		} else {
+			logger.error("Invalid Paytm response - Checksum Failed");
+			throw new WebApplicationException(PropertyReader.getInstance().getProperty("TECHNICAL_ERROR_MESSAGE"));
 		}
 	}
 
@@ -295,7 +355,7 @@ public class FinancialTransactionDO implements DomainObjectPKLong<FinancialTrans
 		JSONUtil<PaytmTransactionResponse> jsonUtil = new JSONUtil<>(PaytmTransactionResponse.class);
 		PaytmTransactionResponse paytmResponse = jsonUtil.getModel(json);
 		return paytmResponse;
-		*/
+		 */
 	}
 
 

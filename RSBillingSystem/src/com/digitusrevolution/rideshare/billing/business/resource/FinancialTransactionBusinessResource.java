@@ -64,4 +64,29 @@ public class FinancialTransactionBusinessResource {
 		message.setStatus(Code.OK);
 		return Response.ok(message).build();
 	}	
+	
+	@Secured
+	@POST
+	@Path("/processpendingorders")
+	public Response processPendingOrder(long[] orderIds) {
+		FinancialTransactionBusinessService transactionBusinessService = new FinancialTransactionBusinessService();
+		transactionBusinessService.processPendingOrders(orderIds);			
+		return Response.ok().build();		
+	}
+	
+	@Secured
+	@GET
+	@Path("/processallpendingorders")
+	public Response processAllPendingOrders() {
+		FinancialTransactionBusinessService transactionBusinessService = new FinancialTransactionBusinessService();
+		transactionBusinessService.processAllPendingOrders();			
+		return Response.ok().build();		
+	}
+
 }
+
+
+
+
+
+
