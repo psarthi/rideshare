@@ -214,5 +214,12 @@
 			<version>1.11.271</version>
 		</dependency>
 		<!-- End AWS S3 SDK -->
+		<!-- Java Mail Start-->
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<!-- Java Mail End-->
 	</dependencies>
 </project>

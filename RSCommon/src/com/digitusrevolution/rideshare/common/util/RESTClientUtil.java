@@ -25,6 +25,8 @@ import com.digitusrevolution.rideshare.common.service.NotificationService;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
+import com.digitusrevolution.rideshare.model.billing.dto.PaytmGratificationRequest;
+import com.digitusrevolution.rideshare.model.billing.dto.PaytmGratificationStatusRequest;
 import com.digitusrevolution.rideshare.model.billing.dto.PaytmTransactionStatus;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 import com.digitusrevolution.rideshare.model.common.NotificationMessage;
@@ -433,6 +435,35 @@ public class RESTClientUtil {
 			return status;
 		} 
 		return null;
+	}
+	
+	public static String postPaytmGratificationRequest(PaytmGratificationRequest gratificationRequest, String checksum) {
+
+		RESTClientImpl<PaytmGratificationRequest> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("POST_PAYTM_GRATIFICATION_REQUEST_URL");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build();
+		MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+		headers.add("mid", gratificationRequest.getRequest().getMerchantGuid());
+		headers.add("checksumhash", checksum);
+		Response response = restClientUtil.post(uri, gratificationRequest, headers);
+		String responseString = response.readEntity(String.class);
+		logger.debug("Response:"+responseString);	
+		return "failure";
+	}
+	
+	public static void getPaytmGratificationRequestStatus(PaytmGratificationStatusRequest gratificationStatusRequest, String checksum) {
+
+		RESTClientImpl<PaytmGratificationStatusRequest> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("POST_PAYTM_GRATIFICATION_CHECK_STATUS_URL");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build();
+		MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+		headers.add("mid", gratificationStatusRequest.getRequest().getMerchantGuid());
+		headers.add("checksumhash", checksum);
+		Response response = restClientUtil.post(uri, gratificationStatusRequest, headers);
+		String responseString = response.readEntity(String.class);
+		logger.debug("Response:"+responseString);		
 	}
 
 }

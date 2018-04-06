@@ -10,6 +10,7 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.billing.domain.core.VirtualAccountDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.model.billing.domain.core.FinancialTransaction;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 
 public class AccountBusinessService {
@@ -41,14 +42,15 @@ public class AccountBusinessService {
 		}
 	}
 	
-	public void redeemFromWallet(long accountNumber, float amount) {
+	public long redeemFromWallet(long userId, float amount) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
+		long id = 0;
 		try {
 			transaction = session.beginTransaction();
 
 			VirtualAccountDO virtualAccountDO = new VirtualAccountDO();	
-			virtualAccountDO.redeemFromWallet(accountNumber, amount);
+			id = virtualAccountDO.redeemFromWallet(userId, amount); 
 
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -64,6 +66,7 @@ public class AccountBusinessService {
 				session.close();				
 			}
 		}
+		return id;
 	}
 	
 	public List<com.digitusrevolution.rideshare.model.billing.domain.core.Transaction> getTransactions(long accountNumber, int page) {

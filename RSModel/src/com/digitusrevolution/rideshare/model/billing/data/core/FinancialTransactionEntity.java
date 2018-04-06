@@ -39,6 +39,7 @@ public class FinancialTransactionEntity{
 	private TransactionEntity walletTransaction;
 	@OneToOne
 	private UserEntity user;
+	private String pgTransactionId;
 	private String pgTransactionStatus; 
 	private String pgResponseCode;
 	private String pgResponseMsg;
@@ -114,6 +115,12 @@ public class FinancialTransactionEntity{
 	}
 	public void setPgResponseMsg(String pgResponseMsg) {
 		this.pgResponseMsg = pgResponseMsg;
+	}
+	public String getPgTransactionId() {
+		return pgTransactionId;
+	}
+	public void setPgTransactionId(String pgTransactionId) {
+		this.pgTransactionId = pgTransactionId;
 	}
 	
 	

@@ -20,23 +20,29 @@ import com.digitusrevolution.rideshare.common.inf.DomainObjectPKLong;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.AccountMapper;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.TransactionMapper;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
 import com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
+import com.digitusrevolution.rideshare.model.billing.domain.core.FinancialTransaction;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Purpose;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Remark;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
+import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionStatus;
 import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionType;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
 //Need to implement Account Interface which is standard for any AccountDO implementation so that all type of account has same behavior
 public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
-	
+
 	private Account account;
 	private AccountEntity accountEntity;
 	private AccountMapper accountMapper;
 	private AccountDAO accountDAO;
 	private static final Logger logger = LogManager.getLogger(VirtualAccountDO.class.getName());
-	
+
 	public VirtualAccountDO() {
 		account = new Account();
 		accountEntity = new AccountEntity();
@@ -109,14 +115,14 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 		setAccount(account);
 		accountDAO.delete(accountEntity);
 	}
-	
+
 	@Override
-	public long debit(long accountNumber, float amount, Remark remark){
+	public Transaction debit(long accountNumber, float amount, Remark remark){
 		//Its important to get child, else old transaction would get deleted as transactions is part of child
 		//And if you just get account without old transactions, then it will consider only new transaction as part of this account
 		//Since account owns the relationship of transaction, so you need to get all child before updating
 		account = getAllData(accountNumber);
-		float balance = account.getBalance();
+		float balance = getCalculatedBalance(account);
 		if (balance >= amount){
 			account.setBalance(balance - amount);
 			Transaction transaction = new Transaction();
@@ -128,22 +134,23 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 			transaction.setAccount(account);
 			TransactionDO transactionDO = new TransactionDO();
 			long id = transactionDO.create(transaction);
+			transaction.setId(id);
 			//This will take care of updating the balance
 			//IMP - No need to add transaction in the account again as it would not add transaction entry 
 			update(account);
-			return id;
+			return transaction;
 		} else {
 			throw new InSufficientBalanceException("Not enough balance in the account. Current balance is:"+balance);			
 		}
 	}
-	
+
 	@Override
-	public long credit(long accountNumber, float amount, Remark remark){
+	public Transaction credit(long accountNumber, float amount, Remark remark){
 		//Its important to get child, else old transaction would get deleted as transactions is part of child
 		//And if you just get account without old transactions, then it will consider only new transaction as part of this account
 		//Since account owns the relationship of transaction, so you need to get all child before updating
 		account = getAllData(accountNumber);
-		float balance = account.getBalance();
+		float balance = getCalculatedBalance(account);
 		account.setBalance(balance + amount);
 		Transaction transaction = new Transaction();
 		transaction.setAmount(amount);
@@ -154,50 +161,77 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 		transaction.setAccount(account);
 		TransactionDO transactionDO = new TransactionDO();
 		long id = transactionDO.create(transaction);
+		transaction.setId(id);
 		//This will take care of updating the balance
 		//IMP - No need to add transaction in the account again as it would not add transaction entry
 		update(account);
-		return id;
+		return transaction;
 	}
-	
-	public long addMoneyToWallet(long accountNumber, float amount) {
-		//TODO Connect with Payment Gateway and on successful transaction, credit to its wallet which is virtual account
-		boolean paymentSuccess=true;
-		if (paymentSuccess) {
-			Remark remark = new Remark();
-			remark.setPurpose(Purpose.TopUp);
-			remark.setPaidBy("Self");
-			remark.setPaidTo("Self");
-			remark.setMessage(Purpose.TopUp.toString());
-			return credit(accountNumber, amount, remark);
-		} else {
-			throw new WebApplicationException("Recharge Failed");
+
+	public Transaction addMoneyToWallet(long accountNumber, float amount) {
+		Remark remark = new Remark();
+		remark.setPurpose(Purpose.TopUp);
+		remark.setPaidBy("Self");
+		remark.setPaidTo("Self");
+		remark.setMessage(Purpose.TopUp.toString());
+		return credit(accountNumber, amount, remark);
+	}
+
+	public float getCalculatedBalance(Account account) {
+		float balance = 0;
+		for (Transaction transaction: account.getTransactions()) {
+			if (transaction.getType().equals(TransactionType.Credit)) {
+				balance = balance + transaction.getAmount();
+			} else {
+				balance = balance - transaction.getAmount();
+			}
 		}
+		return balance;
+	}
+
+	public long redeemFromWallet(long userId, float amount) {
+		Company company = RESTClientUtil.getCompany(1);
+		User user = RESTClientUtil.getBasicUser(userId); 
+		Remark debitRemark = new Remark();
+		debitRemark.setPurpose(Purpose.Redeem);
+		debitRemark.setPaidBy("Self");
+		debitRemark.setPaidTo("Self");
+		debitRemark.setMessage(Purpose.Redeem.toString());
+		//Debit money from user wallet
+		Transaction debitTransaction = debit(user.getAccount(AccountType.Virtual).getNumber(), amount, debitRemark);
+		FinancialTransactionDO financialTransactionDO = new FinancialTransactionDO();
+		FinancialTransaction financialTransaction = new FinancialTransaction();
+		financialTransaction.setAmount(amount);
+		financialTransaction.setDateTime(DateTimeUtil.getCurrentTimeInUTC());
+		financialTransaction.setStatus(TransactionStatus.Initiated);
+		financialTransaction.setType(TransactionType.Debit);	
+		financialTransaction.setUser(user);
+		financialTransaction.setWalletTransaction(debitTransaction);
+		financialTransaction.setRemark(Purpose.Redeem.toString());
+		//Add Financial Transaction entry for the PayTM transaction to transfer money to user account
+		long financialTransactionId = financialTransactionDO.create(financialTransaction);
+		return financialTransactionId;
 	}
 	
-	public float getBalance(long accountNumber) {
-		account = get(accountNumber);
-		return account.getBalance();
+	public void rollbackRedemptionRequest(FinancialTransaction financialTransaction) {
+		
+		//Debit Company Account
+		//Credit User Account
+		Company company = RESTClientUtil.getCompany(1);
+		User user = financialTransaction.getUser();
+		Remark remark = new Remark();
+		remark.setPurpose(Purpose.Reversal);
+		remark.setPaidBy(company.getName());
+		remark.setPaidTo(user.getFirstName() + " "+user.getLastName());
+		remark.setMessage(Purpose.Reversal.toString()+"#User Id:"+user.getId());
+		//Credit money to user wallet
+		Transaction creditTransaction = credit(user.getAccount(AccountType.Virtual).getNumber(), financialTransaction.getAmount(), remark);
+		//TODO Send Notification to user
 	}
-	
-	public long redeemFromWallet(long virtualAccountNumber, float amount) {
-		//TODO Connect with payment gateway and on successful transaction, debit money from its wallet which is virtual account
-		boolean transferSuccess=true;
-		if (transferSuccess) {
-			Remark remark = new Remark();
-			remark.setPurpose(Purpose.Redeem);
-			remark.setPaidBy("Self");
-			remark.setPaidTo("Self");
-			remark.setMessage(Purpose.Redeem.toString());
-			return debit(virtualAccountNumber, amount, remark);
-		} else {
-			throw new WebApplicationException("Redemption Failed");
-		}
-	}
-	
+
 	//This will get transaction sublist in ascending order
 	public List<Transaction> getTransactions(long accountNumber, int page){
-		
+
 		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
 		int itemsCount = 10;
 		int startIndex = page*itemsCount; 

@@ -24,6 +24,7 @@ public class FinancialTransactionMapper implements Mapper<FinancialTransaction, 
 			transactionEntity.setWalletTransaction(transactionMapper.getEntity(transaction.getWalletTransaction(), fetchChild));
 		}
 		UserMapper userMapper = new UserMapper();
+		transactionEntity.setPgTransactionId(transaction.getPgTransactionId());
 		transactionEntity.setUser(userMapper.getEntity(transaction.getUser(), false));
 		transactionEntity.setPgTransactionStatus(transaction.getPgTransactionStatus());
 		transactionEntity.setPgResponseCode(transaction.getPgResponseCode());
@@ -33,8 +34,7 @@ public class FinancialTransactionMapper implements Mapper<FinancialTransaction, 
 
 	@Override
 	public FinancialTransactionEntity getEntityChild(FinancialTransaction model, FinancialTransactionEntity entity) {
-		// TODO Auto-generated method stub
-		return null;
+		return entity;
 	}
 
 	@Override
@@ -53,6 +53,7 @@ public class FinancialTransactionMapper implements Mapper<FinancialTransaction, 
 		}
 		UserMapper userMapper = new UserMapper();
 		transaction.setUser(userMapper.getDomainModel(transactionEntity.getUser(), false));
+		transaction.setPgTransactionId(transactionEntity.getPgTransactionId());
 		transaction.setPgTransactionStatus(transactionEntity.getPgTransactionStatus());
 		transaction.setPgResponseCode(transactionEntity.getPgResponseCode());
 		transaction.setPgResponseMsg(transactionEntity.getPgResponseMsg());
@@ -61,8 +62,7 @@ public class FinancialTransactionMapper implements Mapper<FinancialTransaction, 
 
 	@Override
 	public FinancialTransaction getDomainModelChild(FinancialTransaction model, FinancialTransactionEntity entity) {
-		// TODO Auto-generated method stub
-		return null;
+		return model;
 	}
 
 	@Override

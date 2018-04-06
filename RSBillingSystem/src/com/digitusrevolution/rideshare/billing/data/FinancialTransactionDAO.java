@@ -15,6 +15,7 @@ import com.digitusrevolution.rideshare.model.billing.data.core.BillEntity;
 import com.digitusrevolution.rideshare.model.billing.data.core.FinancialTransactionEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.BillStatus;
 import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionStatus;
+import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionType;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
@@ -34,6 +35,7 @@ public class FinancialTransactionDAO extends GenericDAOImpl<FinancialTransaction
 				add(Restrictions.or(Restrictions.eq("status", TransactionStatus.Pending))
 						.add(Restrictions.eq("status", TransactionStatus.Open))
 						.add(Restrictions.eq("status", TransactionStatus.Initiated)))
+				.add(Restrictions.eq("type", TransactionType.Credit))
 				.list());
 	
 		return transactionEntities;

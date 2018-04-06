@@ -12,7 +12,7 @@ import com.digitusrevolution.rideshare.model.billing.dto.PaytmTransactionRespons
 
 @Path("/financialtransaction")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes({MediaType.APPLICATION_JSON})
+@Consumes({MediaType.APPLICATION_FORM_URLENCODED})
 public class ExternalCallBacksResource {
 
 	@POST
@@ -22,5 +22,6 @@ public class ExternalCallBacksResource {
 		transactionBusinessService.handlePendingTransactionNotificationFromPaytm(paytmTransactionResponse);
 		return Response.ok().build();
 	}
+	
 
 }
