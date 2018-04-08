@@ -17,14 +17,14 @@ public class AccountBusinessService {
 
 	private static final Logger logger = LogManager.getLogger(AccountBusinessService.class.getName());
 
-	public void addMoneyToWallet(long accountNumber, float amount) {
+	public void addMoneyToWallet(long userId, long accountNumber, float amount) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();
 
 			VirtualAccountDO virtualAccountDO = new VirtualAccountDO();	
-			virtualAccountDO.addMoneyToWallet(accountNumber, amount);
+			virtualAccountDO.addMoneyToWallet(userId, accountNumber, amount);
 
 			transaction.commit();
 		} catch (RuntimeException e) {

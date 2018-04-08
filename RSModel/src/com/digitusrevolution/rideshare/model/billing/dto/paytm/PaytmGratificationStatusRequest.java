@@ -1,4 +1,4 @@
-package com.digitusrevolution.rideshare.model.billing.dto;
+package com.digitusrevolution.rideshare.model.billing.dto.paytm;
 
 public class PaytmGratificationStatusRequest {
 	

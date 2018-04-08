@@ -25,10 +25,12 @@ import com.digitusrevolution.rideshare.common.service.NotificationService;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
-import com.digitusrevolution.rideshare.model.billing.dto.PaytmGratificationRequest;
-import com.digitusrevolution.rideshare.model.billing.dto.PaytmGratificationStatusRequest;
-import com.digitusrevolution.rideshare.model.billing.dto.PaytmTransactionStatus;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
+import com.digitusrevolution.rideshare.model.billing.dto.paytm.PaytmGratificationRequest;
+import com.digitusrevolution.rideshare.model.billing.dto.paytm.PaytmGratificationResponse;
+import com.digitusrevolution.rideshare.model.billing.dto.paytm.PaytmGratificationStatusRequest;
+import com.digitusrevolution.rideshare.model.billing.dto.paytm.PaytmGratificationStatusResponse;
+import com.digitusrevolution.rideshare.model.billing.dto.paytm.PaytmTransactionStatus;
 import com.digitusrevolution.rideshare.model.common.NotificationMessage;
 import com.digitusrevolution.rideshare.model.common.ResponseMessage;
 import com.digitusrevolution.rideshare.model.ride.domain.RideType;
@@ -437,8 +439,9 @@ public class RESTClientUtil {
 		return null;
 	}
 	
-	public static String postPaytmGratificationRequest(PaytmGratificationRequest gratificationRequest, String checksum) {
-
+	public static PaytmGratificationResponse postPaytmGratificationRequest(PaytmGratificationRequest gratificationRequest, String checksum) {
+		JSONUtil<PaytmGratificationRequest> jsonUtilRequest = new JSONUtil<>(PaytmGratificationRequest.class);
+		
 		RESTClientImpl<PaytmGratificationRequest> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("POST_PAYTM_GRATIFICATION_REQUEST_URL");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
@@ -446,13 +449,18 @@ public class RESTClientUtil {
 		MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
 		headers.add("mid", gratificationRequest.getRequest().getMerchantGuid());
 		headers.add("checksumhash", checksum);
+		//IMP - When we are trying to set this, jersey throw warning. So removed it and its working fine for now
+		//headers.add("Content-Length", jsonUtilRequest.getJson(gratificationRequest).getBytes().length);
+		
 		Response response = restClientUtil.post(uri, gratificationRequest, headers);
 		String responseString = response.readEntity(String.class);
 		logger.debug("Response:"+responseString);	
-		return "failure";
+		JSONUtil<PaytmGratificationResponse> jsonUtil = new JSONUtil<>(PaytmGratificationResponse.class);
+		PaytmGratificationResponse paytmGratificationResponse = jsonUtil.getModel(responseString);
+		return paytmGratificationResponse;
 	}
 	
-	public static void getPaytmGratificationRequestStatus(PaytmGratificationStatusRequest gratificationStatusRequest, String checksum) {
+	public static PaytmGratificationStatusResponse getPaytmGratificationRequestStatus(PaytmGratificationStatusRequest gratificationStatusRequest, String checksum) {
 
 		RESTClientImpl<PaytmGratificationStatusRequest> restClientUtil = new RESTClientImpl<>();
 		String url = PropertyReader.getInstance().getProperty("POST_PAYTM_GRATIFICATION_CHECK_STATUS_URL");
@@ -463,7 +471,10 @@ public class RESTClientUtil {
 		headers.add("checksumhash", checksum);
 		Response response = restClientUtil.post(uri, gratificationStatusRequest, headers);
 		String responseString = response.readEntity(String.class);
-		logger.debug("Response:"+responseString);		
+		logger.debug("Response:"+responseString);
+		JSONUtil<PaytmGratificationStatusResponse> jsonUtil = new JSONUtil<>(PaytmGratificationStatusResponse.class);
+		PaytmGratificationStatusResponse paytmGratificationStatusResponse = jsonUtil.getModel(responseString);	
+		return paytmGratificationStatusResponse;		
 	}
 
 }

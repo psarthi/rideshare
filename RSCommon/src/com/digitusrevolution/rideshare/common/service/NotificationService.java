@@ -5,6 +5,9 @@ import org.apache.logging.log4j.Logger;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
+import com.digitusrevolution.rideshare.common.util.RSUtil;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Remark;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
 import com.digitusrevolution.rideshare.model.common.NotificationMessage;
 import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
@@ -144,6 +147,27 @@ public class NotificationService {
 		logger.info("Sending New User Registration Notification to Admin:"+jsonUtil.getJson(notificationMessage));
 		RESTClientUtil.sendNotification(notificationMessage);
 	}
+	
+	public static void sendDebitNotification(User user, Transaction transaction) {
+		NotificationMessage notificationMessage = new NotificationMessage();
+		notificationMessage.setTo(user.getPushNotificationToken());
+		notificationMessage.getNotification().setTitle("Wallet Debit - "+DateTimeUtil.getFormattedDateTimeString(transaction.getDateTime()));
+		notificationMessage.getNotification().setBody(RSUtil.getCurrencySymbol(user.getCountry()) 
+				+ Float.toString(transaction.getAmount()) +" debited from your wallet. Purpose - "+transaction.getRemark().getPurpose());
+		logger.info("Sending Debit Notification to User:"+jsonUtil.getJson(notificationMessage));
+		RESTClientUtil.sendNotification(notificationMessage);
+	}
+	
+	public static void sendCreditNotification(User user, Transaction transaction) {
+		NotificationMessage notificationMessage = new NotificationMessage();
+		notificationMessage.setTo(user.getPushNotificationToken());
+		notificationMessage.getNotification().setTitle("Wallet Credit - "+DateTimeUtil.getFormattedDateTimeString(transaction.getDateTime()));
+		notificationMessage.getNotification().setBody(RSUtil.getCurrencySymbol(user.getCountry()) 
+				+ Float.toString(transaction.getAmount()) +" credited to your wallet. Purpose - "+transaction.getRemark().getPurpose());
+		logger.info("Sending Credit Notification to User:"+jsonUtil.getJson(notificationMessage));
+		RESTClientUtil.sendNotification(notificationMessage);
+	}
+	
 
 
 }

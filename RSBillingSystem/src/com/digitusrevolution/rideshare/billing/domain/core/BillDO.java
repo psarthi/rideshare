@@ -165,7 +165,7 @@ public class BillDO implements DomainObjectPKLong<Bill>{
 				remark.setMessage(message);
 				//This will ensure that we don't do any transaction if the bill amount is ZERO which would be applicable for lets say Free Rides or 100% discounted rides
 				if (amount!=0) {
-					accountDO.debit(bill.getPassenger().getAccount(AccountType.Virtual).getNumber(), amount, remark);
+					accountDO.debit(bill.getPassenger(), bill.getPassenger().getAccount(AccountType.Virtual).getNumber(), amount, remark);
 					consolidatedBillNumber = Long.toString(bill.getNumber()) + ",";
 					consolidatedRideRequestNumber = Long.toString(rideRequest.getId()) + ",";
 				}
@@ -197,7 +197,7 @@ public class BillDO implements DomainObjectPKLong<Bill>{
 			driverRemark.setMessage(message);
 			
 			//Crediting consolidated earning in driver account
-			accountDO.credit(ride.getDriver().getAccount(AccountType.Virtual).getNumber(), driverAmount, driverRemark);
+			accountDO.credit(ride.getDriver(), ride.getDriver().getAccount(AccountType.Virtual).getNumber(), driverAmount, driverRemark);
 			
 			Remark companyRemark = new Remark();
 			companyRemark.setPaidBy(ride.getDriver().getFirstName()+ " "+ ride.getDriver().getLastName());
@@ -207,7 +207,7 @@ public class BillDO implements DomainObjectPKLong<Bill>{
 			companyRemark.setMessage(message);
 
 			//Crediting service charge plus taxes in company account
-			accountDO.credit(company.getAccount(AccountType.Virtual).getNumber(), totalDeduction, companyRemark);
+			accountDO.credit(null,company.getAccount(AccountType.Virtual).getNumber(), totalDeduction, companyRemark);
 			invoice.setStatus(InvoiceStatus.Paid);
 			InvoiceDO invoiceDO = new InvoiceDO();
 			invoiceDO.update(invoice);

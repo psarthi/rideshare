@@ -18,8 +18,8 @@ import com.digitusrevolution.rideshare.billing.business.FinancialTransactionBusi
 import com.digitusrevolution.rideshare.billing.domain.service.AccountDomainService;
 import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
-import com.digitusrevolution.rideshare.model.billing.dto.PaytmTransactionResponse;
 import com.digitusrevolution.rideshare.model.billing.dto.TopUpResponse;
+import com.digitusrevolution.rideshare.model.billing.dto.paytm.PaytmTransactionResponse;
 import com.digitusrevolution.rideshare.model.common.ResponseMessage;
 import com.digitusrevolution.rideshare.model.common.ResponseMessage.Code;
 
@@ -66,20 +66,20 @@ public class FinancialTransactionBusinessResource {
 	}	
 	
 	@Secured
-	@POST
-	@Path("/processpendingorders")
-	public Response processPendingOrder(long[] orderIds) {
+	@GET
+	@Path("/processallpending/topuporders")
+	public Response processAllPendingTopUpOrders() {
 		FinancialTransactionBusinessService transactionBusinessService = new FinancialTransactionBusinessService();
-		transactionBusinessService.processPendingOrders(orderIds);			
+		transactionBusinessService.processAllPendingTopUpOrders();			
 		return Response.ok().build();		
 	}
-	
+
 	@Secured
 	@GET
-	@Path("/processallpendingorders")
-	public Response processAllPendingOrders() {
+	@Path("/processallpending/redemptionorders")
+	public Response processAllPendingRedemptionOrders() {
 		FinancialTransactionBusinessService transactionBusinessService = new FinancialTransactionBusinessService();
-		transactionBusinessService.processAllPendingOrders();			
+		transactionBusinessService.processAllPendingRedemptionOrders();			
 		return Response.ok().build();		
 	}
 

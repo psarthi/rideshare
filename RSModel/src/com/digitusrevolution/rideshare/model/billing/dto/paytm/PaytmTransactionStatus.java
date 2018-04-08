@@ -1,5 +1,5 @@
 
-package com.digitusrevolution.rideshare.model.billing.dto;
+package com.digitusrevolution.rideshare.model.billing.dto.paytm;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,11 +25,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "MID",
     "PAYMENTMODE",
     "REFUNDAMT",
-    "TXNDATE",
-    "CHECKSUMHASH",
-    "CURRENCY"
+    "TXNDATE"
 })
-public class PaytmTransactionResponse {
+public class PaytmTransactionStatus {
 
     @JsonProperty("TXNID")
     private String tXNID;
@@ -59,10 +57,6 @@ public class PaytmTransactionResponse {
     private String rEFUNDAMT;
     @JsonProperty("TXNDATE")
     private String tXNDATE;
-    @JsonProperty("CHECKSUMHASH")
-    private String cHECKSUMHASH;
-    @JsonProperty("CURRENCY")
-    private String cURRENCY;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -204,26 +198,6 @@ public class PaytmTransactionResponse {
     @JsonProperty("TXNDATE")
     public void setTXNDATE(String tXNDATE) {
         this.tXNDATE = tXNDATE;
-    }
-
-    @JsonProperty("CHECKSUMHASH")
-    public String getCHECKSUMHASH() {
-        return cHECKSUMHASH;
-    }
-
-    @JsonProperty("CHECKSUMHASH")
-    public void setCHECKSUMHASH(String cHECKSUMHASH) {
-        this.cHECKSUMHASH = cHECKSUMHASH;
-    }
-
-    @JsonProperty("CURRENCY")
-    public String getCURRENCY() {
-        return cURRENCY;
-    }
-
-    @JsonProperty("CURRENCY")
-    public void setCURRENCY(String cURRENCY) {
-        this.cURRENCY = cURRENCY;
     }
 
     @JsonAnyGetter

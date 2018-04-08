@@ -25,16 +25,18 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
 public class AccountBusinessResource {
 	
 	/**
+	 * Purpose - This function can be used for cashback purpose
 	 * 
 	 * @param billNumber Bill Number of a Ride
 	 * @return status OK
+	 * 
 	 */
 	@Secured
 	@GET
 	@Path("/{accountNumber}/addmoney/{amount}")
-	public Response addMoneyToWallet(@PathParam("accountNumber") long accountNumber, @PathParam("amount") float amount) {
+	public Response addMoneyToWallet(@PathParam("userId") long userId, @PathParam("accountNumber") long accountNumber, @PathParam("amount") float amount) {
 		AccountBusinessService accountBusinessService = new AccountBusinessService();
-		accountBusinessService.addMoneyToWallet(accountNumber, amount);
+		accountBusinessService.addMoneyToWallet(userId, accountNumber, amount);
 		AccountDomainService accountDomainService = new AccountDomainService();
 		Account account = accountDomainService.get(accountNumber, false);
 		return Response.ok(account).build();

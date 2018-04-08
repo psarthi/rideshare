@@ -9,7 +9,7 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.billing.domain.core.FinancialTransactionDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
-import com.digitusrevolution.rideshare.model.billing.dto.PaytmTransactionResponse;
+import com.digitusrevolution.rideshare.model.billing.dto.paytm.PaytmTransactionResponse;
 import com.digitusrevolution.rideshare.model.common.ResponseMessage;
 
 public class FinancialTransactionBusinessService {
@@ -119,40 +119,15 @@ public class FinancialTransactionBusinessService {
 			}
 		}
 	}
-	
-	public void processPendingOrders(long[] orderIds) {
+		
+	public void processAllPendingTopUpOrders() {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();
 
 			FinancialTransactionDO transactionDO = new FinancialTransactionDO();
-			transactionDO.processPendingOrders(orderIds);			
-
-			transaction.commit();
-		} catch (RuntimeException e) {
-			if (transaction!=null){
-				logger.error("Transaction Failed, Rolling Back");
-				transaction.rollback();
-				throw e;
-			}
-		}
-		finally {
-			if (session.isOpen()){
-				logger.info("Closing Session");
-				session.close();				
-			}
-		}
-	}
-	
-	public void processAllPendingOrders() {
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
-		Transaction transaction = null;
-		try {
-			transaction = session.beginTransaction();
-
-			FinancialTransactionDO transactionDO = new FinancialTransactionDO();
-			transactionDO.processAllPendingOrders();			
+			transactionDO.processAllPendingTopUpOrders();			
 
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -194,6 +169,31 @@ public class FinancialTransactionBusinessService {
 			}
 		}
 		
+	}
+	
+	public void processAllPendingRedemptionOrders() {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		try {
+			transaction = session.beginTransaction();
+
+			FinancialTransactionDO transactionDO = new FinancialTransactionDO();
+			transactionDO.processAllPendingRedemptionOrders();			
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
 	}
 	
 }

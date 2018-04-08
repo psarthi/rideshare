@@ -19,6 +19,7 @@ import com.digitusrevolution.rideshare.common.exception.InSufficientBalanceExcep
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKLong;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.AccountMapper;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.TransactionMapper;
+import com.digitusrevolution.rideshare.common.service.NotificationService;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
@@ -117,7 +118,7 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 	}
 
 	@Override
-	public Transaction debit(long accountNumber, float amount, Remark remark){
+	public Transaction debit(User user, long accountNumber, float amount, Remark remark){
 		//Its important to get child, else old transaction would get deleted as transactions is part of child
 		//And if you just get account without old transactions, then it will consider only new transaction as part of this account
 		//Since account owns the relationship of transaction, so you need to get all child before updating
@@ -138,6 +139,10 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 			//This will take care of updating the balance
 			//IMP - No need to add transaction in the account again as it would not add transaction entry 
 			update(account);
+			//Reason for checking that null for user as for company this value is null
+			if (user!=null) {
+				NotificationService.sendDebitNotification(user, transaction);	
+			}
 			return transaction;
 		} else {
 			throw new InSufficientBalanceException("Not enough balance in the account. Current balance is:"+balance);			
@@ -145,7 +150,7 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 	}
 
 	@Override
-	public Transaction credit(long accountNumber, float amount, Remark remark){
+	public Transaction credit(User user, long accountNumber, float amount, Remark remark){
 		//Its important to get child, else old transaction would get deleted as transactions is part of child
 		//And if you just get account without old transactions, then it will consider only new transaction as part of this account
 		//Since account owns the relationship of transaction, so you need to get all child before updating
@@ -165,16 +170,21 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 		//This will take care of updating the balance
 		//IMP - No need to add transaction in the account again as it would not add transaction entry
 		update(account);
+		//Reason for checking that null for user as for company this value is null
+		if (user!=null) {
+			NotificationService.sendCreditNotification(user, transaction);	
+		}
 		return transaction;
 	}
 
-	public Transaction addMoneyToWallet(long accountNumber, float amount) {
+	public Transaction addMoneyToWallet(long userId, long accountNumber, float amount) {
+		User user = RESTClientUtil.getBasicUser(userId);
 		Remark remark = new Remark();
 		remark.setPurpose(Purpose.TopUp);
 		remark.setPaidBy("Self");
 		remark.setPaidTo("Self");
 		remark.setMessage(Purpose.TopUp.toString());
-		return credit(accountNumber, amount, remark);
+		return credit(user, accountNumber, amount, remark);
 	}
 
 	public float getCalculatedBalance(Account account) {
@@ -190,7 +200,6 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 	}
 
 	public long redeemFromWallet(long userId, float amount) {
-		Company company = RESTClientUtil.getCompany(1);
 		User user = RESTClientUtil.getBasicUser(userId); 
 		Remark debitRemark = new Remark();
 		debitRemark.setPurpose(Purpose.Redeem);
@@ -198,7 +207,7 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 		debitRemark.setPaidTo("Self");
 		debitRemark.setMessage(Purpose.Redeem.toString());
 		//Debit money from user wallet
-		Transaction debitTransaction = debit(user.getAccount(AccountType.Virtual).getNumber(), amount, debitRemark);
+		Transaction debitTransaction = debit(user, user.getAccount(AccountType.Virtual).getNumber(), amount, debitRemark);
 		FinancialTransactionDO financialTransactionDO = new FinancialTransactionDO();
 		FinancialTransaction financialTransaction = new FinancialTransaction();
 		financialTransaction.setAmount(amount);
@@ -213,7 +222,7 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 		return financialTransactionId;
 	}
 	
-	public void rollbackRedemptionRequest(FinancialTransaction financialTransaction) {
+	public Transaction rollbackRedemptionRequest(FinancialTransaction financialTransaction) {
 		
 		//Debit Company Account
 		//Credit User Account
@@ -223,9 +232,10 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 		remark.setPurpose(Purpose.Reversal);
 		remark.setPaidBy(company.getName());
 		remark.setPaidTo(user.getFirstName() + " "+user.getLastName());
-		remark.setMessage(Purpose.Reversal.toString()+"#User Id:"+user.getId());
+		remark.setMessage(Purpose.Reversal.toString()+" #Financial Transaction Id:"+financialTransaction.getId());
 		//Credit money to user wallet
-		Transaction creditTransaction = credit(user.getAccount(AccountType.Virtual).getNumber(), financialTransaction.getAmount(), remark);
+		Transaction creditTransaction = credit(user, user.getAccount(AccountType.Virtual).getNumber(), financialTransaction.getAmount(), remark);
+		return creditTransaction;
 		//TODO Send Notification to user
 	}
 

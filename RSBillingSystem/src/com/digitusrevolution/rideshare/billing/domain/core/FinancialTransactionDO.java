@@ -1,6 +1,7 @@
 package com.digitusrevolution.rideshare.billing.domain.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -35,12 +36,14 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Purpose;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
 import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionStatus;
 import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionType;
-import com.digitusrevolution.rideshare.model.billing.dto.PaytmGratificationRequest;
-import com.digitusrevolution.rideshare.model.billing.dto.PaytmGratificationRequest.Request;
-import com.digitusrevolution.rideshare.model.billing.dto.PaytmGratificationStatusRequest;
-import com.digitusrevolution.rideshare.model.billing.dto.PaytmTransactionResponse;
-import com.digitusrevolution.rideshare.model.billing.dto.PaytmTransactionStatus;
 import com.digitusrevolution.rideshare.model.billing.dto.TopUpResponse;
+import com.digitusrevolution.rideshare.model.billing.dto.paytm.PaytmGratificationRequest;
+import com.digitusrevolution.rideshare.model.billing.dto.paytm.PaytmGratificationResponse;
+import com.digitusrevolution.rideshare.model.billing.dto.paytm.PaytmGratificationStatusRequest;
+import com.digitusrevolution.rideshare.model.billing.dto.paytm.PaytmGratificationStatusResponse;
+import com.digitusrevolution.rideshare.model.billing.dto.paytm.PaytmTransactionResponse;
+import com.digitusrevolution.rideshare.model.billing.dto.paytm.PaytmTransactionStatus;
+import com.digitusrevolution.rideshare.model.billing.dto.paytm.PaytmGratificationRequest.Request;
 import com.digitusrevolution.rideshare.model.common.ResponseMessage;
 import com.digitusrevolution.rideshare.model.common.ResponseMessage.Code;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
@@ -160,13 +163,13 @@ public class FinancialTransactionDO implements DomainObjectPKLong<FinancialTrans
 		paramMap.put( "MOBILE_NO" , user.getMobileNumber().substring(3));
 		paramMap.put( "ORDER_ID", Long.toString(orderId));
 
-		String checksum = generateCheckSum(paramMap);
+		String checksum = generateCheckSumForPG(paramMap);
 		paramMap.put("CHECKSUMHASH", checksum);
 
 		return paramMap;
 	}
 	
-	public String generateCheckSum(Map<String, String> paramHashMap) {
+	private String generateCheckSumForPG(Map<String, String> paramHashMap) {
 
 		TreeMap<String, String> paramTreeMap = new TreeMap<>();
 		//Its mandatory to convert hashmap to treemap for checksum generation 
@@ -183,45 +186,28 @@ public class FinancialTransactionDO implements DomainObjectPKLong<FinancialTrans
 			throw new WebApplicationException("Unable to generate checksum");
 		}
 	}
-
+	
 	public String validatePaytmResponseAndProcessPayment(Map<String, String> paytmResponseHashMap) {
 		if (verifyChecksumOfPaytmResponse(paytmResponseHashMap)) {
 			PaytmTransactionResponse paytmResponse = JsonObjectMapper.getMapper().convertValue(paytmResponseHashMap, PaytmTransactionResponse.class);
 			String orderId = paytmResponse.getORDERID();
 			PaytmTransactionStatus transactionStatus = getPaytmTransactionStatusAPIResponse(orderId);
-			FinancialTransaction financialTransaction = get(Long.parseLong(orderId));
-			String responseMsg = null; 
-			long accountNumber = financialTransaction.getUser().getAccount(AccountType.Virtual).getNumber();
-
+			FinancialTransaction financialTransaction = get(Long.parseLong(orderId)); 
 			if (validatePaytmResponseWithTransactionStatusAPI(paytmResponse, transactionStatus, financialTransaction)) {
-				//This is a defensive check to ensure that payment is not already processed earlier 
-				if (transactionStatus.getSTATUS().equals("TXN_SUCCESS") && !financialTransaction.getStatus().equals(TransactionStatus.Success)) {
-					VirtualAccountDO accountDO= new VirtualAccountDO();
-					Transaction walletTransaction = accountDO.addMoneyToWallet(accountNumber, financialTransaction.getAmount());
-
-					//Updated wallet transaction in financial transaction
-					financialTransaction.setWalletTransaction(walletTransaction);	
-					financialTransaction.setStatus(TransactionStatus.Success);
+				processPayTMResponse(transactionStatus, financialTransaction);
+				String responseMsg = null;
+				if (transactionStatus.getSTATUS().equals("TXN_SUCCESS")) {
 					responseMsg = PropertyReader.getInstance().getProperty("WALLET_TOPUP_SUCCESS");
 				}
 				if (transactionStatus.getSTATUS().equals("TXN_FAILURE")) {
-					financialTransaction.setStatus(TransactionStatus.Failed);
 					responseMsg = PropertyReader.getInstance().getProperty("WALLET_TOPUP_FAILURE");
 				}
 				if (transactionStatus.getSTATUS().equals("PENDING")) {
-					financialTransaction.setStatus(TransactionStatus.Pending);
 					responseMsg = PropertyReader.getInstance().getProperty("WALLET_TOPUP_PENDING");
 				}
 				if (transactionStatus.getSTATUS().equals("OPEN")) {
-					financialTransaction.setStatus(TransactionStatus.Open);
 					responseMsg = PropertyReader.getInstance().getProperty("WALLET_TOPUP_OPEN");
 				}
-				//Common for all status 
-				financialTransaction.setPgTransactionId(transactionStatus.getTXNID());
-				financialTransaction.setPgTransactionStatus(transactionStatus.getSTATUS());
-				financialTransaction.setPgResponseCode(transactionStatus.getRESPCODE());
-				financialTransaction.setPgResponseMsg(transactionStatus.getRESPMSG());
-				update(financialTransaction);
 				return responseMsg;
 			} else {
 				logger.error("Invalid Paytm response - Mismatch with Transaction Status API");
@@ -233,52 +219,59 @@ public class FinancialTransactionDO implements DomainObjectPKLong<FinancialTrans
 		}
 	}
 	
-	public void processAllPendingOrders() {
-		Set<FinancialTransactionEntity> pendingTransactions = financialTransactionDAO.getPendingTransactions();
+	public void processAllPendingTopUpOrders() {
+		Set<FinancialTransactionEntity> pendingTransactions = financialTransactionDAO.getPendingTopUpTransactions();
 		Iterator<FinancialTransactionEntity> iterator = pendingTransactions.iterator();
 		LinkedList<Long> list = new LinkedList<>(); 
 		while (iterator.hasNext()) {
 			FinancialTransactionEntity financialTransactionEntity = iterator.next();
 			list.add(financialTransactionEntity.getId());
 		}
-		long[] orderIds = new long[list.size()];
-		for (int i=0; i<orderIds.length; i++) {
-			orderIds[i] = list.get(i);
+		long[] financialTransactionIds = new long[list.size()];
+		for (int i=0; i<financialTransactionIds.length; i++) {
+			financialTransactionIds[i] = list.get(i);
 		}
-		processPendingOrders(orderIds);
+		logger.info("Pending TopUp Order Ids:"+Arrays.toString(financialTransactionIds));
+		processPendingTopUpOrders(financialTransactionIds);
 	}
 
-	public void processPendingOrders(long[] orderIds) {
-		for (int i=0; i<orderIds.length; i++) {
-			PaytmTransactionStatus transactionStatus = getPaytmTransactionStatusAPIResponse(Long.toString(orderIds[i]));
-			FinancialTransaction financialTransaction = get(orderIds[i]); 
-			long accountNumber = financialTransaction.getUser().getAccount(AccountType.Virtual).getNumber();
-
-			//This is a defensive check to ensure that payment is not already processed earlier 
-			if (transactionStatus.getSTATUS().equals("TXN_SUCCESS") && !financialTransaction.getStatus().equals(TransactionStatus.Success)) {
-				VirtualAccountDO accountDO= new VirtualAccountDO();
-				Transaction walletTransaction = accountDO.addMoneyToWallet(accountNumber, financialTransaction.getAmount());
-
-				//Updated wallet transaction in financial transaction
-				financialTransaction.setWalletTransaction(walletTransaction);	
-				financialTransaction.setStatus(TransactionStatus.Success);
-			}
-			//Note - IMP For invalid order Id also we get TXN_FAILURE, so this will take care of all orders which was initiated but never reached paytm
-			if (transactionStatus.getSTATUS().equals("TXN_FAILURE")) {
-				financialTransaction.setStatus(TransactionStatus.Failed);
-			}
-			if (transactionStatus.getSTATUS().equals("PENDING")) {
-				financialTransaction.setStatus(TransactionStatus.Pending);
-			}
-			if (transactionStatus.getSTATUS().equals("OPEN")) {
-				financialTransaction.setStatus(TransactionStatus.Open);
-			}
-			//Common for all status 
-			financialTransaction.setPgTransactionStatus(transactionStatus.getSTATUS());
-			financialTransaction.setPgResponseCode(transactionStatus.getRESPCODE());
-			financialTransaction.setPgResponseMsg(transactionStatus.getRESPMSG());
-			update(financialTransaction);
+	public void processPendingTopUpOrders(long[] financialTransactionIds) {
+		for (int i=0; i<financialTransactionIds.length; i++) {
+			PaytmTransactionStatus transactionStatus = getPaytmTransactionStatusAPIResponse(Long.toString(financialTransactionIds[i]));
+			FinancialTransaction financialTransaction = get(financialTransactionIds[i]); 
+			processPayTMResponse(transactionStatus, financialTransaction);
 		}
+	}
+
+	private void processPayTMResponse(PaytmTransactionStatus transactionStatus, FinancialTransaction financialTransaction) {
+		logger.info("Processing TopUp Paytm Response for Transaction id:"+financialTransaction.getId());
+		long accountNumber = financialTransaction.getUser().getAccount(AccountType.Virtual).getNumber();
+		//This is a defensive check to ensure that payment is not already processed earlier 
+		if (transactionStatus.getSTATUS().equals("TXN_SUCCESS") && !financialTransaction.getStatus().equals(TransactionStatus.Success)) {
+			VirtualAccountDO accountDO= new VirtualAccountDO();
+			Transaction walletTransaction = accountDO.addMoneyToWallet(financialTransaction.getUser().getId(), accountNumber, financialTransaction.getAmount());
+
+			//Updated wallet transaction in financial transaction
+			financialTransaction.setWalletTransaction(walletTransaction);	
+			financialTransaction.setStatus(TransactionStatus.Success);
+		}
+		//Note - IMP For invalid order Id also we get TXN_FAILURE, so this will take care of all orders which was initiated but never reached paytm
+		if (transactionStatus.getSTATUS().equals("TXN_FAILURE")) {
+			financialTransaction.setStatus(TransactionStatus.Failed);
+		}
+		if (transactionStatus.getSTATUS().equals("PENDING")) {
+			financialTransaction.setStatus(TransactionStatus.Pending);
+		}
+		if (transactionStatus.getSTATUS().equals("OPEN")) {
+			financialTransaction.setStatus(TransactionStatus.Open);
+		}
+		//Common for all status 
+		financialTransaction.setPgTransactionStatus(transactionStatus.getSTATUS());
+		financialTransaction.setPgResponseCode(transactionStatus.getRESPCODE());
+		financialTransaction.setPgResponseMsg(transactionStatus.getRESPMSG());
+		financialTransaction.setPgTransactionId(transactionStatus.getTXNID());
+		update(financialTransaction);
+		logger.info("Processing Completed of TopUp Paytm Response for Transaction id:"+financialTransaction.getId());
 	}
 
 	public void cancelFinancialTransaction(long orderId) {
@@ -297,26 +290,10 @@ public class FinancialTransactionDO implements DomainObjectPKLong<FinancialTrans
 
 			long accountNumber = financialTransaction.getUser().getAccount(AccountType.Virtual).getNumber();
 
-			if (validatePaytmResponseWithTransactionStatusAPI(paytmResponse, transactionStatus, financialTransaction)) {
-				//This is a defensive check to ensure that we are only processing request for pending transactions only		
-				if (financialTransaction.getPgTransactionStatus().equals("PENDING") && !financialTransaction.getStatus().equals(TransactionStatus.Success)) {
-					logger.debug("Processing Pending Transaction of id:"+financialTransaction.getId());
-					if (transactionStatus.getSTATUS().equals("TXN_SUCCESS")){
-						VirtualAccountDO accountDO= new VirtualAccountDO();
-						Transaction walletTransaction = accountDO.addMoneyToWallet(accountNumber, financialTransaction.getAmount());
-
-						//Updated wallet transaction in financial transaction
-						financialTransaction.setWalletTransaction(walletTransaction);	
-						financialTransaction.setStatus(TransactionStatus.Success);
-					}
-					if (transactionStatus.getSTATUS().equals("TXN_FAILURE")) {
-						financialTransaction.setStatus(TransactionStatus.Failed);
-					}
-					//Common for all status 
-					financialTransaction.setPgTransactionStatus(transactionStatus.getSTATUS());
-					financialTransaction.setPgResponseCode(transactionStatus.getRESPCODE());
-					financialTransaction.setPgResponseMsg(transactionStatus.getRESPMSG());
-					update(financialTransaction);
+			if (validatePaytmResponseWithTransactionStatusAPI(paytmResponse, transactionStatus, financialTransaction)) {		
+				if (financialTransaction.getPgTransactionStatus().equals("PENDING")) {
+					logger.info("Processing Pending TopUp Transaction id:"+financialTransaction.getId());					
+					processPayTMResponse(transactionStatus, financialTransaction);
 				}
 				logger.debug("Pending Transaction is already processed for id:"+financialTransaction.getId());
 			}else {
@@ -334,7 +311,7 @@ public class FinancialTransactionDO implements DomainObjectPKLong<FinancialTrans
 		String mid = PropertyReader.getInstance().getProperty("PAYTM_PG_MID");
 		paramMap.put( "MID" , mid);
 		paramMap.put( "ORDER_ID", orderId);
-		String checksum = generateCheckSum(paramMap);
+		String checksum = generateCheckSumForPG(paramMap);
 		paramMap.put( "CHECKSUMHASH", checksum);
 		PaytmTransactionStatus transactionStatus = RESTClientUtil.
 				getFinancialTransactionStatus(paramMap);
@@ -359,7 +336,7 @@ public class FinancialTransactionDO implements DomainObjectPKLong<FinancialTrans
 	}
 
 
-	public boolean verifyChecksumOfPaytmResponse(Map<String, String> paytmResponseHashMap) {
+	private boolean verifyChecksumOfPaytmResponse(Map<String, String> paytmResponseHashMap) {
 		String paytmChecksum = "";
 		TreeMap<String, String> paytmParamsTreeMap = new  TreeMap<String,String>();
 		//We are doing like this instead of putAll as we need to iterate anyhow to get response checksum value
@@ -412,82 +389,141 @@ public class FinancialTransactionDO implements DomainObjectPKLong<FinancialTrans
 		
 		FinancialTransaction financialTransaction = getAllData(financialTransactionId);
 		
-		//Create GratificationRequest
-		//Generate Checksum
-		//Send Post Request
-		
 		PaytmGratificationRequest gratificationRequest = new PaytmGratificationRequest();
 		Request request = gratificationRequest.getRequest();
-		request.setRequestType("null");
+		request.setRequestType(PropertyReader.getInstance().getProperty("PAYTM_GRATIFICATION_REQUEST_TYPE"));
 		request.setMerchantGuid(PropertyReader.getInstance().getProperty("PAYTM_GRATIFICATION_MERCHANT_GUID"));
 		request.setSalesWalletGuid(PropertyReader.getInstance().getProperty("PAYTM_GRATIFICATION_SALES_WALLET_GUID"));
 		request.setMerchantOrderId(Long.toString(financialTransaction.getId()));
 		request.setSalesWalletName(PropertyReader.getInstance().getProperty("PAYTM_GRATIFICATION_SALES_WALLET_NAME"));
 		request.setPayeeEmailId(financialTransaction.getUser().getEmail());
-		request.setPayeePhoneNumber("7777777777");
+		//IMP - This will switch the phone number based on staging and production
+		if (PropertyReader.getInstance().getProperty("POST_PAYTM_GRATIFICATION_REQUEST_URL").contains("trust-uat.paytm.in")) {
+			request.setPayeePhoneNumber("7777777777");	
+		} else {
+			request.setPayeePhoneNumber(financialTransaction.getUser().getMobileNumber().substring(3));
+		}
 		request.setPayeeSsoId("");
 		request.setAppliedToNewUsers("Y");
 		request.setAmount(Float.toString(financialTransaction.getAmount()));
 		request.setCurrencyCode(financialTransaction.getUser().getCountry().getCurrency().getName());
 		
-		gratificationRequest.setIpAddress(PropertyReader.getInstance().getProperty("PAYTM_GRATIFICATION_IP"));
 		gratificationRequest.setMetadata(PropertyReader.getInstance().getProperty("PAYTM_GRATIFICATION_METADATA"));
 		gratificationRequest.setPlatformName(PropertyReader.getInstance().getProperty("PAYTM_GRATIFICATION_PLATFORM_NAME"));
-		gratificationRequest.setOperationType("SALES_TO_USER_CREDIT");
+		gratificationRequest.setOperationType(PropertyReader.getInstance().getProperty("PAYTM_GRATIFICATION_OPERATION_TYPE_NAME"));
 		gratificationRequest.setIpAddress(PropertyReader.getInstance().getProperty("PAYTM_GRATIFICATION_IP_ADDRESS"));
-		
-		Map<String, String> paramMap = JsonObjectMapper.getMapper().convertValue(request, new TypeReference<Map<String, Object>>() {});
-		String checksum = generateCheckSum(paramMap);
+
 		JSONUtil<PaytmGratificationRequest> jsonUtil = new JSONUtil<>(PaytmGratificationRequest.class);
-		logger.debug("PayTM Gratification payload is:"+jsonUtil.getJson(gratificationRequest));
+		String gratificationRequestJson = jsonUtil.getJson(gratificationRequest);
+		String checksum = generateCheckSumForGratification(gratificationRequestJson);
+		logger.debug("PayTM Gratification payload is:"+gratificationRequestJson);
 		
-		String status = RESTClientUtil.postPaytmGratificationRequest(gratificationRequest, checksum);
-		getPaytmGratificationRequestStatus(financialTransactionId);
+		PaytmGratificationResponse gratificationResponse = RESTClientUtil.postPaytmGratificationRequest(gratificationRequest, checksum);
+				
+		processPayTMGratificationResponse(financialTransaction, gratificationResponse.getStatus());
 		
 		financialTransaction.setPaymentGateway(PaymentGateway.PayTM);
-		financialTransaction.setPgResponseCode("");
-		financialTransaction.setPgResponseMsg("");
-		financialTransaction.setPgTransactionId("");
-		
-		if (status.equals("success")) {
-			financialTransaction.setStatus(TransactionStatus.Success);
-		}
-		if (status.equals("failure")) {
-			financialTransaction.setStatus(TransactionStatus.Failed);
-			financialTransaction.setRemark("Reversal Successful");
-			VirtualAccountDO accountDO = new VirtualAccountDO();
-			accountDO.rollbackRedemptionRequest(financialTransaction);
-		}
-		if (status.equals("pending")) {
-			financialTransaction.setStatus(TransactionStatus.Pending);
-		}
-		
+		financialTransaction.setPgTransactionStatus(gratificationResponse.getStatus());
+		financialTransaction.setPgResponseCode(gratificationResponse.getStatusCode());
+		financialTransaction.setPgResponseMsg(gratificationResponse.getStatusMessage());
+		financialTransaction.setPgTransactionId(gratificationResponse.getResponse().getWalletSysTransactionId());
 		update(financialTransaction);
 	}
-	
-	public void getPaytmGratificationRequestStatus(long financialTransactionId) {
-		
-		FinancialTransaction financialTransaction = getAllData(financialTransactionId);
-		PaytmGratificationStatusRequest gratificationStatusRequest = new PaytmGratificationStatusRequest();
-		com.digitusrevolution.rideshare.model.billing.dto.PaytmGratificationStatusRequest.Request request = 
-				gratificationStatusRequest.getRequest();
-		
-		request.setRequestType("merchanttxnid");
-		request.setTxnType("withdraw");
-		//What would happen to those cases where there is no response recieved from server initally itself 
-		request.setTxnId(Long.toString(financialTransaction.getId()));
-		request.setMerchantGuid(PropertyReader.getInstance().getProperty("PAYTM_GRATIFICATION_MERCHANT_GUID"));
-		
-		gratificationStatusRequest.setPlatformName(PropertyReader.getInstance().getProperty("PAYTM_GRATIFICATION_PLATFORM_NAME"));
-		gratificationStatusRequest.setOperationType("CHECK_TXN_STATUS");
 
-		Map<String, String> paramMap = JsonObjectMapper.getMapper().convertValue(request, new TypeReference<Map<String, Object>>() {});
-		String checksum = generateCheckSum(paramMap);
-		JSONUtil<PaytmGratificationStatusRequest> jsonUtil = new JSONUtil<>(PaytmGratificationStatusRequest.class);
-		logger.debug("PayTM Gratification payload is:"+jsonUtil.getJson(gratificationStatusRequest));
+	//Note - We are not passing the response object as this a generic function to handle 
+	//gratificationResponse as well as gratification transaction status api response
+	private void processPayTMGratificationResponse(FinancialTransaction financialTransaction, String payTMTransactionStatus) {
+		logger.info("Processing Redemption request of transaction id:"+financialTransaction.getId());
+		if (payTMTransactionStatus.equals("SUCCESS")) {
+			//IMP - This is update by reference, so when we are updaing the financial transaction in calling function
+			//value would be updated properly
+			financialTransaction.setStatus(TransactionStatus.Success);
+		}
+		//IMP - Adding defensive check on financial transaction status so that we don't do double reversal
+		if (payTMTransactionStatus.equals("FAILURE") && !financialTransaction.getStatus().equals(TransactionStatus.Failed)) {
+			VirtualAccountDO accountDO = new VirtualAccountDO();
+			Transaction transaction = accountDO.rollbackRedemptionRequest(financialTransaction);
+			//IMP - Its important to update the transaction id from the new transaction and not the one which is already there in financial transaction
+			//as its the old one which was used for redemption
+			financialTransaction.setStatus(TransactionStatus.Failed);
+			financialTransaction.setRemark("Reversal Successful. #Transaction Id:"+transaction.getId());
+
+		}
+		if (payTMTransactionStatus.equals("PENDING")) {
+			financialTransaction.setStatus(TransactionStatus.Pending);
+		}
+		if (payTMTransactionStatus.equals("OPEN")) {
+			financialTransaction.setStatus(TransactionStatus.Open);
+		}
+		logger.info("Processing Completed for Redemption request of transaction id:"+financialTransaction.getId());
+	}
+	
+	private String generateCheckSumForGratification(String request) {
+		logger.debug("Paytm Payload for checksum generation: "+ request);
+		try{
+			String checkSum =  CheckSumServiceHelper.getCheckSumServiceHelper()
+					.genrateCheckSum(PropertyReader.getInstance().getProperty("PAYTM_GRATIFICATION_MERCHANT_KEY"), request);
+			return checkSum;
+
+		}catch(Exception e) {
+			throw new WebApplicationException("Unable to generate checksum");
+		}
+	}
+	
+	public void processPendingRedemptionOrders(long[] financialTransactionIds) {
 		
-		RESTClientUtil.getPaytmGratificationRequestStatus(gratificationStatusRequest, checksum);
+		for (int i=0; i<financialTransactionIds.length;i++) {
+			long financialTransactionId = financialTransactionIds[i];
+			FinancialTransaction financialTransaction = getAllData(financialTransactionId);
+			PaytmGratificationStatusRequest gratificationStatusRequest = new PaytmGratificationStatusRequest();
+			com.digitusrevolution.rideshare.model.billing.dto.paytm.PaytmGratificationStatusRequest.Request request = 
+					gratificationStatusRequest.getRequest();
+			
+			request.setRequestType(PropertyReader.getInstance().getProperty("PAYTM_GRATIFICATION_TXN_STATUS_REQUEST_TYPE"));
+			request.setTxnType(PropertyReader.getInstance().getProperty("PAYTM_GRATIFICATION_TXN_STATUS_TXN_TYPE")); 
+			request.setMerchantGuid(PropertyReader.getInstance().getProperty("PAYTM_GRATIFICATION_MERCHANT_GUID"));
+			request.setTxnId(Long.toString(financialTransactionId));
+			
+			gratificationStatusRequest.setPlatformName(PropertyReader.getInstance().getProperty("PAYTM_GRATIFICATION_PLATFORM_NAME"));
+			gratificationStatusRequest.setOperationType("CHECK_TXN_STATUS");
+
+			JSONUtil<PaytmGratificationStatusRequest> jsonUtil = new JSONUtil<>(PaytmGratificationStatusRequest.class);
+			String gratificationStatusRequestJson = jsonUtil.getJson(gratificationStatusRequest);
+			String checksum = generateCheckSumForGratification(gratificationStatusRequestJson);
+			logger.debug("PayTM Gratification payload is:"+gratificationStatusRequestJson);
+			
+			PaytmGratificationStatusResponse gratificationStatusResponse = RESTClientUtil.getPaytmGratificationRequestStatus(gratificationStatusRequest, checksum);
+			
+			logger.info("Processing Pending Redemption Request of transaction id:"+financialTransactionId);
+			processPayTMGratificationResponse(financialTransaction,gratificationStatusResponse.getStatus());
+			
+			financialTransaction.setPaymentGateway(PaymentGateway.PayTM);
+			financialTransaction.setPgTransactionStatus(gratificationStatusResponse.getStatus());
+			financialTransaction.setPgResponseCode(gratificationStatusResponse.getStatusCode());
+			financialTransaction.setPgResponseMsg(gratificationStatusResponse.getStatusMessage());
+			//This is the case when you pass invalid order id, so response is null
+			if (gratificationStatusResponse.getResponse()!=null) {
+				financialTransaction.setPgTransactionId(gratificationStatusResponse.getResponse().getTxnList().get(0).getTxnGuid());
+			}
+			update(financialTransaction);
+		}
 		
+	}
+	
+	public void processAllPendingRedemptionOrders() {
+		Set<FinancialTransactionEntity> pendingTransactions = financialTransactionDAO.getPendingRedemptionTransactions();
+		Iterator<FinancialTransactionEntity> iterator = pendingTransactions.iterator();
+		LinkedList<Long> list = new LinkedList<>(); 
+		while (iterator.hasNext()) {
+			FinancialTransactionEntity financialTransactionEntity = iterator.next();
+			list.add(financialTransactionEntity.getId());
+		}
+		long[] financialTransactionIds = new long[list.size()];
+		for (int i=0; i<financialTransactionIds.length; i++) {
+			financialTransactionIds[i] = list.get(i);
+		}
+		logger.info("Pending Redemption Order Ids:"+Arrays.toString(financialTransactionIds));
+		processPendingRedemptionOrders(financialTransactionIds);
 	}
 }
 

@@ -8,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.billing.business.FinancialTransactionBusinessService;
-import com.digitusrevolution.rideshare.model.billing.dto.PaytmTransactionResponse;
+import com.digitusrevolution.rideshare.model.billing.dto.paytm.PaytmTransactionResponse;
 
 @Path("/financialtransaction")
 @Produces(MediaType.APPLICATION_JSON)
