@@ -16,17 +16,21 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 
 import com.digitusrevolution.rideshare.common.db.GenericDAOImpl;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
+import com.digitusrevolution.rideshare.model.billing.domain.core.InvoiceStatus;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
+import com.digitusrevolution.rideshare.model.user.domain.ApprovalStatus;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 
 public class RideDAO extends GenericDAOImpl<RideEntity, Long>{
@@ -178,6 +182,17 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Long>{
 		RideStatus status = (RideStatus) criteria.add(Restrictions.eq("id",rideId))
 				.setProjection(Projections.property("status")).uniqueResult();
 		return status;
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public List<RideEntity> getRidesWithPendingInvoice(){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass);
+		Set rideEntities = new HashSet<>(criteria.createCriteria("invoice", "invoice",JoinType.RIGHT_OUTER_JOIN)
+				.add(Restrictions.eq("status", InvoiceStatus.Pending))
+				.list());
+		List<RideEntity> rideEntitiesList = new LinkedList<>(rideEntities);
+		return rideEntitiesList;	
 	}
 
 }

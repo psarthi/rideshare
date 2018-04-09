@@ -86,7 +86,7 @@ public class CompanyDataLoader {
 		company.setServiceChargePercentage(10);
 		company.setAddress("Villa No. 38, MS Shelters,Kammasandra(A), Kasaba(H),Anekal Taluk, Bangalore, Karnataka, India, 562106");
 		company.setGstNumber("29AAJCP6630K1ZX");
-		company.setGstCode("00441480");
+		company.setGstCode("999799");
 		company.setPan("AAJCP6630K");
 		company.setCgstPercentage(9);
 		company.setSgstPercentage(9);

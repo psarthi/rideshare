@@ -196,6 +196,31 @@ public class FinancialTransactionBusinessService {
 		}
 	}
 	
+	public void processAllInitiatedRedemptionOrders() {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		try {
+			transaction = session.beginTransaction();
+
+			FinancialTransactionDO transactionDO = new FinancialTransactionDO();
+			transactionDO.processAllInitiatedRedemptionOrders();			
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+	}
+	
 }
 
 

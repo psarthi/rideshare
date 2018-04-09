@@ -77,6 +77,7 @@ public class UserSystemTest {
 	
 	public void test(){
 				
+		/*
 		UserDO userDO = new UserDO();
 		InterestDO interestDO = new InterestDO();
 		for (int i =5 ; i <10 ; i++){
@@ -88,7 +89,7 @@ public class UserSystemTest {
 			interestDO.create(interest);
 		}
 
-		/*
+
 
 		User user = userDO.getAllData(1);
 		user.getInterests().clear();

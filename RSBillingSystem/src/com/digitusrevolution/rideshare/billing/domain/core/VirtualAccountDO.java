@@ -22,10 +22,12 @@ import com.digitusrevolution.rideshare.common.mapper.billing.core.TransactionMap
 import com.digitusrevolution.rideshare.common.service.NotificationService;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
+import com.digitusrevolution.rideshare.common.util.RSUtil;
 import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
 import com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.domain.core.FinancialTransaction;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Purpose;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Remark;
@@ -200,26 +202,43 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 	}
 
 	public long redeemFromWallet(long userId, float amount) {
-		User user = RESTClientUtil.getBasicUser(userId); 
-		Remark debitRemark = new Remark();
-		debitRemark.setPurpose(Purpose.Redeem);
-		debitRemark.setPaidBy("Self");
-		debitRemark.setPaidTo("Self");
-		debitRemark.setMessage(Purpose.Redeem.toString());
-		//Debit money from user wallet
-		Transaction debitTransaction = debit(user, user.getAccount(AccountType.Virtual).getNumber(), amount, debitRemark);
-		FinancialTransactionDO financialTransactionDO = new FinancialTransactionDO();
-		FinancialTransaction financialTransaction = new FinancialTransaction();
-		financialTransaction.setAmount(amount);
-		financialTransaction.setDateTime(DateTimeUtil.getCurrentTimeInUTC());
-		financialTransaction.setStatus(TransactionStatus.Initiated);
-		financialTransaction.setType(TransactionType.Debit);	
-		financialTransaction.setUser(user);
-		financialTransaction.setWalletTransaction(debitTransaction);
-		financialTransaction.setRemark(Purpose.Redeem.toString());
-		//Add Financial Transaction entry for the PayTM transaction to transfer money to user account
-		long financialTransactionId = financialTransactionDO.create(financialTransaction);
-		return financialTransactionId;
+		User user = RESTClientUtil.getBasicUser(userId);
+		BillDO billDO = new BillDO();
+		List<Bill> pendingBills = billDO.getPendingBills(user);
+		
+		float pendingBillAmount = 0;
+		for (Bill bill: pendingBills) {
+			pendingBillAmount = pendingBillAmount + bill.getAmount();
+		}
+		float maxRedemtionAmount = user.getAccount(AccountType.Virtual).getBalance() - pendingBillAmount;
+		if (amount >= maxRedemtionAmount) {
+		
+			Remark debitRemark = new Remark();
+			debitRemark.setPurpose(Purpose.Redeem);
+			debitRemark.setPaidBy("Self");
+			debitRemark.setPaidTo("Self");
+			debitRemark.setMessage(Purpose.Redeem.toString());
+			//Debit money from user wallet
+			Transaction debitTransaction = debit(user, user.getAccount(AccountType.Virtual).getNumber(), amount, debitRemark);
+			FinancialTransactionDO financialTransactionDO = new FinancialTransactionDO();
+			FinancialTransaction financialTransaction = new FinancialTransaction();
+			financialTransaction.setAmount(amount);
+			financialTransaction.setDateTime(DateTimeUtil.getCurrentTimeInUTC());
+			financialTransaction.setStatus(TransactionStatus.Initiated);
+			financialTransaction.setType(TransactionType.Debit);	
+			financialTransaction.setUser(user);
+			financialTransaction.setWalletTransaction(debitTransaction);
+			financialTransaction.setRemark(Purpose.Redeem.toString());
+			//Add Financial Transaction entry for the PayTM transaction to transfer money to user account
+			long financialTransactionId = financialTransactionDO.create(financialTransaction);
+			return financialTransactionId;
+			
+		} else {
+			
+			throw new WebApplicationException("Maximum redemption available amount is: "
+			+ RSUtil.getCurrencySymbol(user.getCountry()) + maxRedemtionAmount + " excluding your pending bills");
+			
+		}
 	}
 	
 	public Transaction rollbackRedemptionRequest(FinancialTransaction financialTransaction) {

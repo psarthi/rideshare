@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
+import com.digitusrevolution.rideshare.common.util.MathUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.common.util.RSUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Remark;
@@ -153,7 +154,7 @@ public class NotificationService {
 		notificationMessage.setTo(user.getPushNotificationToken());
 		notificationMessage.getNotification().setTitle("Wallet Debit - "+DateTimeUtil.getFormattedDateTimeString(transaction.getDateTime()));
 		notificationMessage.getNotification().setBody(RSUtil.getCurrencySymbol(user.getCountry()) 
-				+ Float.toString(transaction.getAmount()) +" debited from your wallet. Purpose - "+transaction.getRemark().getPurpose());
+				+ MathUtil.getDecimalFormattedString(transaction.getAmount()) +" debited from your wallet. Purpose - "+transaction.getRemark().getPurpose());
 		logger.info("Sending Debit Notification to User:"+jsonUtil.getJson(notificationMessage));
 		RESTClientUtil.sendNotification(notificationMessage);
 	}
@@ -163,7 +164,7 @@ public class NotificationService {
 		notificationMessage.setTo(user.getPushNotificationToken());
 		notificationMessage.getNotification().setTitle("Wallet Credit - "+DateTimeUtil.getFormattedDateTimeString(transaction.getDateTime()));
 		notificationMessage.getNotification().setBody(RSUtil.getCurrencySymbol(user.getCountry()) 
-				+ Float.toString(transaction.getAmount()) +" credited to your wallet. Purpose - "+transaction.getRemark().getPurpose());
+				+ MathUtil.getDecimalFormattedString(transaction.getAmount()) +" credited to your wallet. Purpose - "+transaction.getRemark().getPurpose());
 		logger.info("Sending Credit Notification to User:"+jsonUtil.getJson(notificationMessage));
 		RESTClientUtil.sendNotification(notificationMessage);
 	}

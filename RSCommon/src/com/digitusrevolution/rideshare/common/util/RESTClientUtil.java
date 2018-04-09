@@ -240,6 +240,17 @@ public class RESTClientUtil {
 		Company company= response.readEntity(Company.class);
 		return company;
 	}
+	
+	public static Company getBasicCompany(int id){
+
+		RESTClientImpl<Currency> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_BASIC_COMPANY_URL");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Long.toString(id));
+		Response response = restClientUtil.get(uri);
+		Company company= response.readEntity(Company.class);
+		return company;
+	}
 
 	public static Account createVirtualAccount(){
 
@@ -430,6 +441,7 @@ public class RESTClientUtil {
 			//Don't readEntity and try to store in PaytmTransactionStatus as media type is not application/json
 			//but the response media content type is text/html, so you can read only as String
 			String responseString = response.readEntity(String.class);
+			logger.debug("Response:"+responseString);
 			//Don't use JsonObjectMapper to convert String to PaytmTransactionStatus as both types are different
 			//so use below way to get POJO from response string
 			JSONUtil<PaytmTransactionStatus> jsonUtil = new JSONUtil<>(PaytmTransactionStatus.class);

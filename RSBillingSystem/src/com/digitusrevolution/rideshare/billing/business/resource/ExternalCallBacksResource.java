@@ -15,8 +15,9 @@ import com.digitusrevolution.rideshare.model.billing.dto.paytm.PaytmTransactionR
 @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
 public class ExternalCallBacksResource {
 
-	@POST
-	@Path("/pendingnotification")
+	//Commenting this as we are not using as of now
+	//@POST
+	//@Path("/pendingnotification")
 	public Response handlePendingTransactionNotificationFromPaytm(PaytmTransactionResponse paytmTransactionResponse) {
 		FinancialTransactionBusinessService transactionBusinessService = new FinancialTransactionBusinessService();
 		transactionBusinessService.handlePendingTransactionNotificationFromPaytm(paytmTransactionResponse);

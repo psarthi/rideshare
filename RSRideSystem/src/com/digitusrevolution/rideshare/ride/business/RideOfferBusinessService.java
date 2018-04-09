@@ -367,6 +367,31 @@ public class RideOfferBusinessService {
 			}
 		}
 	}
+	
+	public void processAllPendingInvoicePayment() {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		try {
+			transaction = session.beginTransaction();
+			
+			RideDO rideDO = new RideDO();
+			rideDO.processAllPendingInvoicePayment();
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+	}
 }
 
 

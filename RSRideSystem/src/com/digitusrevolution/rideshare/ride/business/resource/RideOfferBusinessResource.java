@@ -197,6 +197,15 @@ public class RideOfferBusinessResource {
 		FullRide ride = JsonObjectMapper.getMapper().convertValue(rideDomainService.get(rideId, true), FullRide.class);
 		return Response.ok(ride).build();				
 	}
+
+	@Secured
+	@GET	
+	@Path("/processpending/invoice")
+	public Response processAllPendingInvoicePayment() {
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		rideOfferBusinessService.processAllPendingInvoicePayment();
+		return Response.ok().build();
+	}
 }
 
 

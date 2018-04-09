@@ -49,12 +49,26 @@ public class FinancialTransactionDAO extends GenericDAOImpl<FinancialTransaction
 		@SuppressWarnings("unchecked")
 		Set<FinancialTransactionEntity> transactionEntities = new HashSet<> (criteria.
 				add(Restrictions.or(Restrictions.eq("status", TransactionStatus.Pending))
-						.add(Restrictions.eq("status", TransactionStatus.Open))
-						.add(Restrictions.eq("status", TransactionStatus.Initiated)))
+						.add(Restrictions.eq("status", TransactionStatus.Open)))
 				.add(Restrictions.eq("type", TransactionType.Debit))
 				.list());
 	
 		return transactionEntities;
 	}
+	
+	//Reason for keeping this function sperate than TopUp for future perspective 
+	//so that we can accomodate special requirement separately
+	public Set<FinancialTransactionEntity> getInitiatedRedemptionTransactions(){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass);
+		@SuppressWarnings("unchecked")
+		Set<FinancialTransactionEntity> transactionEntities = new HashSet<> (criteria.
+				add(Restrictions.or(Restrictions.eq("status", TransactionStatus.Initiated)))
+				.add(Restrictions.eq("type", TransactionType.Debit))
+				.list());
+	
+		return transactionEntities;
+	}
+
 	
 }

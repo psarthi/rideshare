@@ -48,11 +48,12 @@ public class AccountBusinessResource {
 	public Response redeemFromWallet(@PathParam("userId") long userId, @PathParam("accountNumber") long accountNumber, @PathParam("amount") float amount) {
 		AccountBusinessService accountBusinessService = new AccountBusinessService();
 		long financialTransactionId = accountBusinessService.redeemFromWallet(userId, amount);
-		
+
+		/* Commented this to stop auto payment, lets run it manually for sometime before enabling it
 		if (financialTransactionId !=0) {
 			FinancialTransactionBusinessService financialTransactionBusinessService = new FinancialTransactionBusinessService();
 			financialTransactionBusinessService.sendMoneyToUserPayTMWallet(financialTransactionId);			
-		}
+		}*/
 		
 		AccountDomainService accountDomainService = new AccountDomainService();
 		Account account = accountDomainService.get(accountNumber, false);

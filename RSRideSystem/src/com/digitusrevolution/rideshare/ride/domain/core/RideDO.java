@@ -748,6 +748,16 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 		int matchedInterestCount = u1Interests.size();
 		return matchedInterestCount;
 	}
+	
+	
+	public void processAllPendingInvoicePayment() {
+		List<RideEntity> ridesWithPendingInvoice = rideDAO.getRidesWithPendingInvoice();
+		for (RideEntity rideEntity: ridesWithPendingInvoice) {
+			setRideEntity(rideEntity);
+			logger.info("Processing Payments of pending invoice with ride id:"+ride.getId());
+			RESTClientUtil.makePayment(ride);
+		}
+	}
 
 
 	public List<RidePoint> getAllRidePointsOfRide(long rideId) {

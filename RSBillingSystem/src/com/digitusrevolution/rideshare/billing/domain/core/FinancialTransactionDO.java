@@ -525,6 +525,24 @@ public class FinancialTransactionDO implements DomainObjectPKLong<FinancialTrans
 		logger.info("Pending Redemption Order Ids:"+Arrays.toString(financialTransactionIds));
 		processPendingRedemptionOrders(financialTransactionIds);
 	}
+	
+	public void processAllInitiatedRedemptionOrders() {
+		Set<FinancialTransactionEntity> pendingTransactions = financialTransactionDAO.getInitiatedRedemptionTransactions();
+		Iterator<FinancialTransactionEntity> iterator = pendingTransactions.iterator();
+		LinkedList<Long> list = new LinkedList<>(); 
+		while (iterator.hasNext()) {
+			FinancialTransactionEntity financialTransactionEntity = iterator.next();
+			list.add(financialTransactionEntity.getId());
+			sendMoneyToUserPayTMWallet(financialTransactionEntity.getId());
+		}
+		long[] financialTransactionIds = new long[list.size()];
+		for (int i=0; i<financialTransactionIds.length; i++) {
+			financialTransactionIds[i] = list.get(i);
+		}
+		logger.info("Proccessed all Initiated Redemption Order Ids:"+Arrays.toString(financialTransactionIds));
+
+	}
+
 }
 
 

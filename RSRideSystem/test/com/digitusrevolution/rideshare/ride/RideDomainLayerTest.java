@@ -4,6 +4,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.geojson.FeatureCollection;
@@ -39,10 +42,12 @@ import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
 import com.digitusrevolution.rideshare.ride.domain.resource.RideRequestDomainResource;
 
+@Path("/domain/test")
 public class RideDomainLayerTest {
 
 	private static final Logger logger = LogManager.getLogger(RideDomainLayerTest.class.getName());
-
+	
+	@GET
 	public static void main(String args[]){
 
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
@@ -76,8 +81,9 @@ public class RideDomainLayerTest {
 	public void test(){
 	
 		RideDO rideDO = new RideDO();
-		RideRequestDO requestDO = new RideRequestDO();
-		NotificationService.sendMatchedRideNotification(rideDO.get(21), requestDO.get(1));
+
+//		RideRequestDO requestDO = new RideRequestDO();
+//		NotificationService.sendMatchedRideNotification(rideDO.get(21), requestDO.get(1));
 //		rideDO.acceptRideRequest(1, 1);
 //		Ride currentRide = rideDO.getUpcomingRide(1);
 //		System.out.println("Current Ride Id is:"+currentRide.getId());

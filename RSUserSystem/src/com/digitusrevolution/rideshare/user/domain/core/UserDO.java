@@ -453,6 +453,7 @@ public class UserDO implements DomainObjectPKLong<User>{
 		userSignInResult.setUser(JsonObjectMapper.getMapper().convertValue(user, BasicUser.class));
 		userSignInResult.setCurrentRide(RESTClientUtil.getCurrentRide(user.getId()));
 		userSignInResult.setCurrentRideRequest(RESTClientUtil.getCurrentRideRequest(user.getId()));
+		userSignInResult.setCompany(RESTClientUtil.getBasicCompany(1));
 		if (userDAO.getGroups(user.getId()).size()!=0) {
 			userSignInResult.setGroupMember(true);	
 			//Else default value is false;

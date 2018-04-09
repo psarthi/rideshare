@@ -82,6 +82,16 @@ public class FinancialTransactionBusinessResource {
 		transactionBusinessService.processAllPendingRedemptionOrders();			
 		return Response.ok().build();		
 	}
+	
+	@Secured
+	@GET
+	@Path("/processallinitiated/redemptionorders")
+	public Response processAllInitiatedRedemptionOrders() {
+		FinancialTransactionBusinessService transactionBusinessService = new FinancialTransactionBusinessService();
+		transactionBusinessService.processAllInitiatedRedemptionOrders();			
+		return Response.ok().build();		
+	}
+
 
 }
 

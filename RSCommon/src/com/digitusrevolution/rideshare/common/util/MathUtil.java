@@ -30,4 +30,10 @@ public class MathUtil {
 	public static double getMod360(double degree){
 		return degree % 360;
 	}
+	
+    public static String getDecimalFormattedString(double number){
+        String result = String.format("%.2f", number);
+        return result;
+    }
+
 }
