@@ -271,7 +271,7 @@ public class UserDO implements DomainObjectPKLong<User>{
 		trustCategory.setName(TrustCategoryName.Anonymous);
 		preference.setTrustCategory(trustCategory);
 		
-		preference.setRideMode(RideMode.Free);
+		preference.setRideMode(RideMode.Paid);
 
 		return preference;
 	}

@@ -167,7 +167,7 @@ public class RideAction {
 					RideSeatStatus newRideSeatStatus = getRideSeatStatusPostAcceptance(rideRequest.getSeatRequired(), seatOccupied, ride.getSeatOffered());
 					ride.setSeatStatus(newRideSeatStatus);
 
-					Bill bill = generateBill(ride, rideRequest);
+					Bill bill = generateBill(ride, rideRequest, matchedTripInfo);
 
 					if (rideRequest.getBill()!=null) {
 						//IMP - This will update the bill instead of regeneration
@@ -251,7 +251,7 @@ public class RideAction {
 	 * - Create bill in the system
 	 * 
 	 */
-	public Bill generateBill(Ride ride, RideRequest rideRequest){
+	public Bill generateBill(Ride ride, RideRequest rideRequest, MatchedTripInfo matchedTripInfo){
 
 		User passenger = rideRequest.getPassenger();
 		User driver = ride.getDriver();
@@ -263,6 +263,12 @@ public class RideAction {
 			discountPercentage = 100;
 		} else {
 			amount = getPrice(rideRequest);
+			float walkingDistance = (float) (matchedTripInfo.getDropPointDistance() + matchedTripInfo.getPickupPointDistance()); 
+			float walkingDistancePrice = getPriceForWalkingDistance(rideRequest, walkingDistance);
+			//This will deduct the price of walking distance for pickup and drop points
+			//IMP - This is not 100% accurate result but its close. 
+			//For accuracy we need to store the distance for each ride points which is complicated, so this would do
+			amount = amount - walkingDistancePrice;
 			discountPercentage = getDiscountPercentage(rideRequest);
 		}
 		//Note - Fare and Discount is used here just to store in the bill but calculation
@@ -288,6 +294,16 @@ public class RideAction {
 		//Distance is in meters
 		float distance = rideRequest.getTravelDistance();
 		float amount = farePerMeter * distance * rideRequest.getSeatRequired();
+		float discountPercentage = getDiscountPercentage(rideRequest);
+		//This is post applying discount
+		amount = amount * (100 - discountPercentage) / 100;
+		return amount;
+	}
+	
+	public float getPriceForWalkingDistance(RideRequest rideRequest, float walkingDistance) {
+		float farePerMeter = getFarePerMeter(rideRequest.getVehicleSubCategory(), rideRequest.getPassenger());
+		//Distance is in meters
+		float amount = farePerMeter * walkingDistance * rideRequest.getSeatRequired();
 		float discountPercentage = getDiscountPercentage(rideRequest);
 		//This is post applying discount
 		amount = amount * (100 - discountPercentage) / 100;
