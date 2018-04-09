@@ -177,7 +177,7 @@ public class UserDataLoader {
 		
 		String[] interests = {"Cooking", "Startup", "Reading", "Singing", "Painting", "Trekking", "Instruments", "Dancing", 
 				"Photography", "Running", "Badminton", "Cycling", "Yoga", "Football", "Cricket"};
-		String[] photo_name = {"cooking", "startup", "reading", "singing", "painting", "trekking", "musical_intstruments", "dancing", 
+		String[] photo_name = {"cooking", "startup", "reading", "singing", "painting", "trekking", "instrument", "dancing", 
 				"photography", "running", "badminton", "cycling", "yoga", "football", "cricket"};
 
 		String awsRootUrl = PropertyReader.getInstance().getProperty("AWS_S3_ROOT_URL");
