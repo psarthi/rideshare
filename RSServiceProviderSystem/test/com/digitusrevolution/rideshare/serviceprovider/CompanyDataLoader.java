@@ -83,7 +83,7 @@ public class CompanyDataLoader {
 		
 		Currency currency = RESTClientUtil.getCurrency(1);
 		company.setCurrency(currency);
-		company.setServiceChargePercentage(10);
+		company.setServiceChargePercentage(15);
 		company.setAddress("Villa No. 38, MS Shelters,Kammasandra(A), Kasaba(H),Anekal Taluk, Bangalore, Karnataka, India, 562106");
 		company.setGstNumber("29AAJCP6630K1ZX");
 		company.setGstCode("999799");
