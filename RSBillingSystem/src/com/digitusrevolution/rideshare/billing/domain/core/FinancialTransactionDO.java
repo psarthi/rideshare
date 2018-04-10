@@ -154,7 +154,12 @@ public class FinancialTransactionDO implements DomainObjectPKLong<FinancialTrans
 		paramMap.put( "INDUSTRY_TYPE_ID" , PropertyReader.getInstance().getProperty("PAYTM_PG_INDUSTRY_TYPE_ID"));
 		paramMap.put( "CHANNEL_ID" , PropertyReader.getInstance().getProperty("PAYTM_PG_CHANNEL_ID"));
 		paramMap.put( "WEBSITE" , PropertyReader.getInstance().getProperty("PAYTM_PG_WEBSITE"));
-		paramMap.put( "CALLBACK_URL" , PropertyReader.getInstance().getProperty("PAYTM_PG_CALLBACK_URL"));
+		
+		String callBackURL = PropertyReader.getInstance().getProperty("PAYTM_PG_CALLBACK_URL");
+		if (callBackURL.contains("{orderId}")) {
+			callBackURL = callBackURL.replace("{orderId}", Long.toString(orderId));	
+		}
+		paramMap.put( "CALLBACK_URL" , callBackURL);
 
 		//Order Specific Params
 		paramMap.put( "CUST_ID" , Long.toString(userId));
