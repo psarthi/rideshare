@@ -14,8 +14,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.common.auth.Secured;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.HelpQuestionAnswer;
+import com.digitusrevolution.rideshare.model.serviceprovider.dto.AppInfo;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.CompanyAccount;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.serviceprovider.business.CompanyBusinessService;
@@ -63,6 +65,17 @@ public class CompanyBusinessResource {
 		List<HelpQuestionAnswer> helpQuestionAnswers = companyBusinessService.getAllHelpQuestionAnswer();
 		GenericEntity<List<HelpQuestionAnswer>> entity = new GenericEntity<List<HelpQuestionAnswer>>(helpQuestionAnswers) {};
 		return Response.ok(entity).build();
+	}
+	
+	@Secured
+	@GET
+	@Path("/appinfo")
+	public Response getAppInfo() {
+		AppInfo appInfo = new AppInfo();
+		appInfo.setMinAppVersionCode(Integer.parseInt(PropertyReader.getInstance().getProperty("MIN_APP_VERSION_CODE")));
+		appInfo.setAppUrl(PropertyReader.getInstance().getProperty("APP_URL"));
+		appInfo.setShareMsg(PropertyReader.getInstance().getProperty("APP_SHARE_MSG"));
+		return Response.ok(appInfo).build();
 	}
 
 }
