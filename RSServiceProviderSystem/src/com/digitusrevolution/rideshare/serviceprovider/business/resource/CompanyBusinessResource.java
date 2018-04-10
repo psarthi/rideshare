@@ -67,7 +67,6 @@ public class CompanyBusinessResource {
 		return Response.ok(entity).build();
 	}
 	
-	@Secured
 	@GET
 	@Path("/appinfo")
 	public Response getAppInfo() {
