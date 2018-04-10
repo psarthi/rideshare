@@ -8,6 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -30,17 +31,15 @@ public class AccountBusinessResource {
 	 * 
 	 * @param billNumber Bill Number of a Ride
 	 * @return status OK
-	 * 
+	 * */
 	@Secured
 	@GET
 	@Path("/{accountNumber}/addmoney/{amount}")
 	public Response addMoneyToWallet(@PathParam("userId") long userId, @PathParam("accountNumber") long accountNumber, @PathParam("amount") float amount) {
-		AccountBusinessService accountBusinessService = new AccountBusinessService();
-		accountBusinessService.addMoneyToWallet(userId, accountNumber, amount);
-		AccountDomainService accountDomainService = new AccountDomainService();
-		Account account = accountDomainService.get(accountNumber, false);
-		return Response.ok(account).build();
-	}*/
+		//IMP - This has been added just to throw message to the app running old version 
+		//as wallet is enabled for them as well due to DB settings, so this msg would help
+		throw new WebApplicationException("Please upgrade the app to enable wallet functionality");
+	}
 	
 	@Secured
 	@GET
