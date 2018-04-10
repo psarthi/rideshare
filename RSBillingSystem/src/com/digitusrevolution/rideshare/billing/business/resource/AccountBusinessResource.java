@@ -26,11 +26,11 @@ public class AccountBusinessResource {
 	
 	/**
 	 * Purpose - This function can be used for cashback purpose
+	 * Note - Commented this as its a straigth way of adding money by passing all payment gateway
 	 * 
 	 * @param billNumber Bill Number of a Ride
 	 * @return status OK
 	 * 
-	 */
 	@Secured
 	@GET
 	@Path("/{accountNumber}/addmoney/{amount}")
@@ -40,7 +40,7 @@ public class AccountBusinessResource {
 		AccountDomainService accountDomainService = new AccountDomainService();
 		Account account = accountDomainService.get(accountNumber, false);
 		return Response.ok(account).build();
-	}
+	}*/
 	
 	@Secured
 	@GET
