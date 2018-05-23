@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.AccountMapper;
+import com.digitusrevolution.rideshare.common.mapper.user.CityMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.CountryMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.CurrencyMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.StateMapper;
@@ -34,6 +35,9 @@ public class CompanyMapper implements Mapper<Company, CompanyEntity>{
 		companyEntity.setGstNumber(company.getGstNumber());
 		companyEntity.setGstCode(company.getGstCode());
 		companyEntity.setPan(company.getPan());
+		
+		CityMapper cityMapper = new CityMapper();
+		companyEntity.setOperatingCities(cityMapper.getEntities(companyEntity.getOperatingCities(), company.getOperatingCities(), true));
 		
 		if (fetchChild){
 			companyEntity = getEntityChild(company, companyEntity);
@@ -71,6 +75,9 @@ public class CompanyMapper implements Mapper<Company, CompanyEntity>{
 		company.setGstNumber(companyEntity.getGstNumber());
 		company.setGstCode(companyEntity.getGstCode());
 		company.setPan(companyEntity.getPan());
+		
+		CityMapper cityMapper = new CityMapper();
+		company.setOperatingCities(cityMapper.getDomainModels(company.getOperatingCities(), companyEntity.getOperatingCities(), true));
 		
 		if (fetchChild){
 			company = getDomainModelChild(company, companyEntity);

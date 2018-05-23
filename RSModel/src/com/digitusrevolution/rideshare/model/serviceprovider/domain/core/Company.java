@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.AccountType;
+import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.model.user.domain.State;
@@ -26,6 +27,7 @@ public class Company {
 	private String gstNumber;
 	private String gstCode; 
 	private String pan;
+	private Collection<City> operatingCities = new HashSet<City>();
 	
 	public int getId() {
 		return id;
@@ -126,6 +128,12 @@ public class Company {
 	}
 	public void setCountry(Country country) {
 		this.country = country;
+	}
+	public Collection<City> getOperatingCities() {
+		return operatingCities;
+	}
+	public void setOperatingCities(Collection<City> operatingCities) {
+		this.operatingCities = operatingCities;
 	}
 
 	

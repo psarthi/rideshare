@@ -104,7 +104,8 @@ public class UserDataLoader {
 		state.setName("Karnataka");
 		
 		City city = new City();
-		city.setName("Bangalore");
+		//NOTE - This has been changed to Bengaluru manually, so don't use this or update this before running
+		city.setName("Bengaluru");
 		state.getCities().add(city);
 
 		country.getStates().add(state);
@@ -175,10 +176,14 @@ public class UserDataLoader {
 	
 	public void loadInterest() {
 		
-		String[] interests = {"Cooking", "Startup", "Reading", "Singing", "Painting", "Trekking", "Instruments", "Dancing", 
-				"Photography", "Running", "Badminton", "Cycling", "Yoga", "Football", "Cricket"};
-		String[] photo_name = {"cooking", "startup", "reading", "singing", "painting", "trekking", "instrument", "dancing", 
-				"photography", "running", "badminton", "cycling", "yoga", "football", "cricket"};
+//		String[] interests = {"Cooking", "Startup", "Reading", "Singing", "Painting", "Trekking", "Instruments", "Dancing", 
+//				"Photography", "Running", "Badminton", "Cycling", "Yoga", "Football", "Cricket"};
+//		String[] photo_name = {"cooking", "startup", "reading", "singing", "painting", "trekking", "instrument", "dancing", 
+//				"photography", "running", "badminton", "cycling", "yoga", "football", "cricket"};
+		
+		String[] interests = {"Finance", "Creative", "Journalism", "Legal", "Marketing", "Sales", "Technology", "Comedy"};
+		String[] photo_name = {"finance", "creative", "journalism", "legal", "marketing", "sales", "technology", "comedy"};
+
 
 		String awsRootUrl = PropertyReader.getInstance().getProperty("AWS_S3_ROOT_URL");
 		String bucketName = PropertyReader.getInstance().getProperty("GROUP_PHOTO_BUCKET_NAME");
@@ -197,7 +202,6 @@ public class UserDataLoader {
 	        interest.setPhoto(photo);
 	        interestDO.create(interest);
 		}
-
 	}
 }
 

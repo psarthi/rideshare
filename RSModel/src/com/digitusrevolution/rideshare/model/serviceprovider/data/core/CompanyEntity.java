@@ -13,9 +13,11 @@ import javax.persistence.Table;
 import javax.persistence.JoinColumn;
 
 import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
+import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.data.CountryEntity;
 import com.digitusrevolution.rideshare.model.user.data.CurrencyEntity;
 import com.digitusrevolution.rideshare.model.user.data.StateEntity;
+import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.State;
 
@@ -49,6 +51,9 @@ public class CompanyEntity {
 	private String gstNumber;
 	private String gstCode; 
 	private String pan;
+	@OneToMany
+	@JoinTable(name="company_operating_city",joinColumns=@JoinColumn(name="company_id"),inverseJoinColumns=@JoinColumn(name="city_id"))
+	private Collection<CityEntity> operatingCities = new HashSet<CityEntity>();
 
 	
 	public int getId() {
@@ -140,6 +145,12 @@ public class CompanyEntity {
 	}
 	public void setCountry(CountryEntity country) {
 		this.country = country;
+	}
+	public Collection<CityEntity> getOperatingCities() {
+		return operatingCities;
+	}
+	public void setOperatingCities(Collection<CityEntity> operatingCities) {
+		this.operatingCities = operatingCities;
 	}
 	
 

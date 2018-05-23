@@ -16,6 +16,7 @@ import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
+import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.model.user.domain.State;
@@ -35,8 +36,9 @@ public class CompanyDataLoader {
 		try {
 			transaction = session.beginTransaction();
 			CompanyDataLoader dataLoader = new CompanyDataLoader();
-			dataLoader.loadCompany();
+			//dataLoader.loadCompany();
 			//dataLoader.addAccount();
+			dataLoader.addOperaringCities();
 			
 			transaction.commit();
 
@@ -104,6 +106,34 @@ public class CompanyDataLoader {
 		}
 		CompanyDO companyDO = new CompanyDO();
 		companyDO.addAccount(1, account);
+	}
+	
+	public void addOperaringCities() {
+		CompanyDO companyDO = new CompanyDO();
+		//Ensure you get all Data before updating otherwise account details would be deleted
+		Company company = companyDO.getAllData(1);
+		
+		List<Country> countries = (List<Country>) RESTClientUtil.getCountries();
+	
+		for (Country country: countries) {
+			if (country.getName().equals("India")) {
+				for (State state: country.getStates()) {
+					if (state.getId() == 1 ) {
+						for (City city: state.getCities()) {
+							//Add || condition to add new cities
+							if (city.getId() == 1){
+								company.getOperatingCities().add(city);	
+							}
+						}
+						break;
+					}
+				}
+				break;
+			}
+		}
+
+		companyDO.update(company);
+		
 	}
 
 }
