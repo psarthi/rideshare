@@ -211,7 +211,7 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 			pendingBillAmount = pendingBillAmount + bill.getAmount();
 		}
 		float maxRedemtionAmount = user.getAccount(AccountType.Virtual).getBalance() - pendingBillAmount;
-		if (amount >= maxRedemtionAmount) {
+		if (Float.compare(amount, maxRedemtionAmount) < 0) {
 		
 			Remark debitRemark = new Remark();
 			debitRemark.setPurpose(Purpose.Redeem);
