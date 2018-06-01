@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.common.exception;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.common.ErrorMessage;
 
+@Provider
 public class InvalidTokenExceptionMapper implements ExceptionMapper<InvalidTokenException>{
 	
 	private static final Logger logger = LogManager.getLogger(InvalidTokenExceptionMapper.class.getName());

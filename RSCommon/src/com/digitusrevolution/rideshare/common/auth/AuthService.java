@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.activity.InvalidActivityException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.ws.rs.WebApplicationException;
@@ -40,6 +41,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -113,9 +115,9 @@ public class AuthService implements AuthServiceInf{
 			//OK, we can trust this JWT
 			return true;
 
-		} catch (SignatureException e) {
+		} catch (Exception e) {
 			//don't trust the JWT!
-			logger.error("Token Authentication failed");
+			logger.error("Token Authentication failed with exception:"+e.getMessage());
 			return false;
 		}
 	}
