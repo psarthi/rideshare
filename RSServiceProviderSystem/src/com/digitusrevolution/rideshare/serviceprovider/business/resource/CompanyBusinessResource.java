@@ -19,7 +19,6 @@ import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.HelpQuestionAnswer;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.AppInfo;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.CompanyAccount;
-import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.serviceprovider.business.CompanyBusinessService;
 
 @Path("/serviceprovider")
@@ -76,5 +75,4 @@ public class CompanyBusinessResource {
 		appInfo.setShareMsg(PropertyReader.getInstance().getProperty("APP_SHARE_MSG"));
 		return Response.ok(appInfo).build();
 	}
-
 }

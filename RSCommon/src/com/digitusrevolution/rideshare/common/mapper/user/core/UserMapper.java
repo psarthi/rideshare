@@ -9,6 +9,8 @@ import com.digitusrevolution.rideshare.common.mapper.billing.core.BillMapper;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.FinancialTransactionMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideRequestMapper;
+import com.digitusrevolution.rideshare.common.mapper.serviceprovider.core.RewardCouponTransactionMapper;
+import com.digitusrevolution.rideshare.common.mapper.serviceprovider.core.RewardReimbursementTransactionMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.CityMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.CountryMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.FriendRequestMapper;
@@ -21,6 +23,7 @@ import com.digitusrevolution.rideshare.common.mapper.user.StateMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.UserFeedbackMapper;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RewardReimbursementTransaction;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
@@ -136,6 +139,15 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		FinancialTransactionMapper transactionMapper = new FinancialTransactionMapper();
 		userEntity.setFinancialTransactions(transactionMapper.getEntities(userEntity.getFinancialTransactions(), user.getFinancialTransactions(), false));
 		
+		RewardCouponTransactionMapper couponTransactionMapper = new RewardCouponTransactionMapper();
+		//Don't fetch child as reward has user and user has reward
+		userEntity.setRewardCouponTransactions(couponTransactionMapper.getEntities(userEntity.getRewardCouponTransactions(), user.getRewardCouponTransactions(), false));
+		
+		RewardReimbursementTransactionMapper reimbursementTransactionMapper = new RewardReimbursementTransactionMapper();
+		//Don't fetch child as reward has user and user has reward
+		userEntity.setRewardReimbursementTransactions(reimbursementTransactionMapper.getEntities(userEntity.getRewardReimbursementTransactions(), user.getRewardReimbursementTransactions(), false));
+
+		
 		return userEntity;
 		
 	}
@@ -245,6 +257,14 @@ public class UserMapper implements Mapper<User, UserEntity> {
 		
 		FinancialTransactionMapper transactionMapper = new FinancialTransactionMapper();
 		user.setFinancialTransactions(transactionMapper.getDomainModels(user.getFinancialTransactions(), userEntity.getFinancialTransactions(), false));
+		
+		RewardCouponTransactionMapper couponTransactionMapper = new RewardCouponTransactionMapper();
+		//Don't fetch child as reward has user and user has reward
+		user.setRewardCouponTransactions(couponTransactionMapper.getDomainModels(user.getRewardCouponTransactions(), userEntity.getRewardCouponTransactions(), false));
+		
+		RewardReimbursementTransactionMapper reimbursementTransactionMapper = new RewardReimbursementTransactionMapper();
+		//Don't fetch child as reward has user and user has reward
+		user.setRewardReimbursementTransactions(reimbursementTransactionMapper.getDomainModels(user.getRewardReimbursementTransactions(), userEntity.getRewardReimbursementTransactions(), false));
 
 		return user;
 	}

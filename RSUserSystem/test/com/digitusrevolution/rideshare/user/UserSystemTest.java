@@ -16,9 +16,15 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.auth.AuthService;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.common.NotificationMessage;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.CouponStatus;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Offer;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.ReimbursementStatus;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RewardCouponTransaction;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RewardReimbursementTransaction;
 import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.GroupEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
@@ -76,8 +82,9 @@ public class UserSystemTest {
 	}	
 	
 	public void test(){
+			
 				
-		/*
+/*		
 		UserDO userDO = new UserDO();
 		InterestDO interestDO = new InterestDO();
 		for (int i =5 ; i <10 ; i++){

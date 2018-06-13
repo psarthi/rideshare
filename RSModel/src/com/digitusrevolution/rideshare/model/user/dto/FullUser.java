@@ -8,6 +8,8 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.domain.core.FinancialTransaction;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRideRequest;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RewardCouponTransaction;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RewardReimbursementTransaction;
 import com.digitusrevolution.rideshare.model.user.domain.FriendRequest;
 import com.digitusrevolution.rideshare.model.user.domain.UserFeedback;
 import com.digitusrevolution.rideshare.model.user.domain.core.Group;
@@ -25,6 +27,8 @@ public class FullUser extends BasicUser {
 	private Collection<FriendRequest> friendRequests = new HashSet<FriendRequest>();	
 	private Collection<BasicGroup> groupInvites = new HashSet<BasicGroup>();
 	private Collection<FinancialTransaction> financialTransactions = new HashSet<FinancialTransaction>();
+	private Collection<RewardCouponTransaction> rewardCouponTransactions = new HashSet<RewardCouponTransaction>();
+	private Collection<RewardReimbursementTransaction> rewardReimbursementTransactions = new HashSet<RewardReimbursementTransaction>();
 
 	public Collection<BasicGroup> getGroups() {
 		return groups;
@@ -96,6 +100,22 @@ public class FullUser extends BasicUser {
 
 	public void setFinancialTransactions(Collection<FinancialTransaction> financialTransactions) {
 		this.financialTransactions = financialTransactions;
+	}
+
+	public Collection<RewardCouponTransaction> getRewardCouponTransactions() {
+		return rewardCouponTransactions;
+	}
+
+	public void setRewardCouponTransactions(Collection<RewardCouponTransaction> rewardCouponTransactions) {
+		this.rewardCouponTransactions = rewardCouponTransactions;
+	}
+
+	public Collection<RewardReimbursementTransaction> getRewardReimbursementTransactions() {
+		return rewardReimbursementTransactions;
+	}
+
+	public void setRewardReimbursementTransactions(Collection<RewardReimbursementTransaction> rewardReimbursementTransactions) {
+		this.rewardReimbursementTransactions = rewardReimbursementTransactions;
 	}
 }
 

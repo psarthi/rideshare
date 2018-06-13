@@ -40,6 +40,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Offer;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
@@ -250,6 +251,17 @@ public class RESTClientUtil {
 		Response response = restClientUtil.get(uri);
 		Company company= response.readEntity(Company.class);
 		return company;
+	}
+	
+	public static Offer getOffer(int id){
+
+		RESTClientImpl<Currency> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_OFFER_URL");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Long.toString(id));
+		Response response = restClientUtil.get(uri);
+		Offer offer= response.readEntity(Offer.class);
+		return offer;
 	}
 
 	public static Account createVirtualAccount(){

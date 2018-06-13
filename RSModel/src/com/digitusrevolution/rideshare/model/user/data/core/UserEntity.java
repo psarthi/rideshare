@@ -31,6 +31,12 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.FinancialTransa
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RidePassengerEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
+import com.digitusrevolution.rideshare.model.serviceprovider.data.core.RewardCouponTransactionEntity;
+import com.digitusrevolution.rideshare.model.serviceprovider.data.core.RewardReimbursementTransactionEntity;
+import com.digitusrevolution.rideshare.model.serviceprovider.data.core.RewardTransactionEntity;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RewardCouponTransaction;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RewardReimbursementTransaction;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RewardTransaction;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.data.CountryEntity;
 import com.digitusrevolution.rideshare.model.user.data.FriendRequestEntity;
@@ -132,6 +138,11 @@ public class UserEntity {
 	private Collection<InterestEntity> interests = new HashSet<InterestEntity>();
 	@OneToMany(mappedBy="user")
 	private Collection<FinancialTransactionEntity> financialTransactions = new HashSet<FinancialTransactionEntity>();
+	@OneToMany(mappedBy="user")
+	private Collection<RewardCouponTransactionEntity> rewardCouponTransactions = new HashSet<RewardCouponTransactionEntity>();
+	@OneToMany(mappedBy="user")
+	private Collection<RewardReimbursementTransactionEntity> rewardReimbursementTransactions = new HashSet<RewardReimbursementTransactionEntity>();
+
 		
 	public long getId() {
 		return id;
@@ -386,6 +397,21 @@ public class UserEntity {
 		this.financialTransactions = financialTransactions;
 	}
 
+	public Collection<RewardCouponTransactionEntity> getRewardCouponTransactions() {
+		return rewardCouponTransactions;
+	}
 
+	public void setRewardCouponTransactions(Collection<RewardCouponTransactionEntity> rewardCouponTransactions) {
+		this.rewardCouponTransactions = rewardCouponTransactions;
+	}
+
+	public Collection<RewardReimbursementTransactionEntity> getRewardReimbursementTransactions() {
+		return rewardReimbursementTransactions;
+	}
+
+	public void setRewardReimbursementTransactions(
+			Collection<RewardReimbursementTransactionEntity> rewardReimbursementTransactions) {
+		this.rewardReimbursementTransactions = rewardReimbursementTransactions;
+	}
 
 }

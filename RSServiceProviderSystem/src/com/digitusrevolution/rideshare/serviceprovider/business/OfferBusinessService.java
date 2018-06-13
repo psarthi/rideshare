@@ -1,0 +1,76 @@
+package com.digitusrevolution.rideshare.serviceprovider.business;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
+import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Offer;
+import com.digitusrevolution.rideshare.serviceprovider.domain.core.OfferDO;
+
+public class OfferBusinessService {
+
+	private static final Logger logger = LogManager.getLogger(CompanyBusinessService.class.getName());
+	
+	public Offer get(int id, boolean fetchChild) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		Offer offer = null;
+		try {
+			transaction = session.beginTransaction();
+
+			OfferDO offerDO = new OfferDO();
+			if (fetchChild){
+				offer = offerDO.getAllData(id);
+			} else {
+				offer = offerDO.get(id);			
+			}
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return offer;	
+	}
+	
+	public List<Offer> getAll(int page) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		List<Offer> offers = new LinkedList<>();
+		try {
+			transaction = session.beginTransaction();
+
+			OfferDO offerDO = new OfferDO();
+			offers = offerDO.getOffers(page);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return offers;	
+	}
+}

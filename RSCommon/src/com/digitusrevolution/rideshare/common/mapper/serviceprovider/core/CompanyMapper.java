@@ -51,6 +51,13 @@ public class CompanyMapper implements Mapper<Company, CompanyEntity>{
 		//Don't fetch Child of Account as it has transaction which in turn has bill and bill has company so it will get into recursive loop
 		AccountMapper accountMapper = new AccountMapper();
 		companyEntity.setAccounts(accountMapper.getEntities(companyEntity.getAccounts(), company.getAccounts(), false));
+		
+		OfferMapper offerMapper = new OfferMapper();
+		companyEntity.setOffers(offerMapper.getEntities(companyEntity.getOffers(), company.getOffers(), true));
+		
+		PartnerMapper partnerMapper = new PartnerMapper();
+		companyEntity.setPartners(partnerMapper.getEntities(companyEntity.getPartners(), company.getPartners(), true));
+		
 		return companyEntity;
 	}
 
@@ -90,6 +97,13 @@ public class CompanyMapper implements Mapper<Company, CompanyEntity>{
 		//Don't fetch Child of Account as it has transaction which in turn has bill and bill has company so it will get into recursive loop
 		AccountMapper accountMapper = new AccountMapper();
 		company.setAccounts(accountMapper.getDomainModels(company.getAccounts(), companyEntity.getAccounts(), false));
+		
+		OfferMapper offerMapper = new OfferMapper();
+		company.setOffers(offerMapper.getDomainModels(company.getOffers(), companyEntity.getOffers(), true));
+		
+		PartnerMapper partnerMapper = new PartnerMapper();
+		company.setPartners(partnerMapper.getDomainModels(company.getPartners(), companyEntity.getPartners(), true));
+		
 		return company;
 	}
 

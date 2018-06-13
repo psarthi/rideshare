@@ -28,6 +28,8 @@ public class Company {
 	private String gstCode; 
 	private String pan;
 	private Collection<City> operatingCities = new HashSet<City>();
+	private Collection<Partner> partners = new HashSet<Partner>();
+	private Collection<Offer> offers = new HashSet<Offer>();
 	
 	public int getId() {
 		return id;
@@ -134,6 +136,18 @@ public class Company {
 	}
 	public void setOperatingCities(Collection<City> operatingCities) {
 		this.operatingCities = operatingCities;
+	}
+	public Collection<Partner> getPartners() {
+		return partners;
+	}
+	public void setPartners(Collection<Partner> partners) {
+		this.partners = partners;
+	}
+	public Collection<Offer> getOffers() {
+		return offers;
+	}
+	public void setOffers(Collection<Offer> offers) {
+		this.offers = offers;
 	}
 
 	

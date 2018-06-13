@@ -13,6 +13,8 @@ import javax.persistence.Table;
 import javax.persistence.JoinColumn;
 
 import com.digitusrevolution.rideshare.model.billing.data.core.AccountEntity;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Offer;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Partner;
 import com.digitusrevolution.rideshare.model.user.data.CityEntity;
 import com.digitusrevolution.rideshare.model.user.data.CountryEntity;
 import com.digitusrevolution.rideshare.model.user.data.CurrencyEntity;
@@ -54,6 +56,12 @@ public class CompanyEntity {
 	@OneToMany
 	@JoinTable(name="company_operating_city",joinColumns=@JoinColumn(name="company_id"),inverseJoinColumns=@JoinColumn(name="city_id"))
 	private Collection<CityEntity> operatingCities = new HashSet<CityEntity>();
+	@OneToMany
+	@JoinTable(name="company_partner",joinColumns=@JoinColumn(name="company_id"),inverseJoinColumns=@JoinColumn(name="partner_id"))
+	private Collection<PartnerEntity> partners = new HashSet<PartnerEntity>();
+	@OneToMany
+	@JoinTable(name="company_offer",joinColumns=@JoinColumn(name="company_id"),inverseJoinColumns=@JoinColumn(name="offer_id"))
+	private Collection<OfferEntity> offers = new HashSet<OfferEntity>();
 
 	
 	public int getId() {
@@ -151,6 +159,18 @@ public class CompanyEntity {
 	}
 	public void setOperatingCities(Collection<CityEntity> operatingCities) {
 		this.operatingCities = operatingCities;
+	}
+	public Collection<PartnerEntity> getPartners() {
+		return partners;
+	}
+	public void setPartners(Collection<PartnerEntity> partners) {
+		this.partners = partners;
+	}
+	public Collection<OfferEntity> getOffers() {
+		return offers;
+	}
+	public void setOffers(Collection<OfferEntity> offers) {
+		this.offers = offers;
 	}
 	
 

@@ -11,6 +11,9 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
 import com.digitusrevolution.rideshare.model.billing.domain.core.FinancialTransaction;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RewardCouponTransaction;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RewardReimbursementTransaction;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RewardTransaction;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.FriendRequest;
@@ -65,6 +68,8 @@ public class User implements Comparable<User>{
 	private String pushNotificationToken;
 	private Collection<Interest> interests = new HashSet<Interest>();
 	private Collection<FinancialTransaction> financialTransactions = new HashSet<FinancialTransaction>();
+	private Collection<RewardCouponTransaction> rewardCouponTransactions = new HashSet<RewardCouponTransaction>();
+	private Collection<RewardReimbursementTransaction> rewardReimbursementTransactions = new HashSet<RewardReimbursementTransaction>();
 	
 	public long getId() {
 		return id;
@@ -334,6 +339,20 @@ public class User implements Comparable<User>{
 	public void setFinancialTransactions(Collection<FinancialTransaction> financialTransactions) {
 		this.financialTransactions = financialTransactions;
 	}
+	public Collection<RewardCouponTransaction> getRewardCouponTransactions() {
+		return rewardCouponTransactions;
+	}
+	public void setRewardCouponTransactions(Collection<RewardCouponTransaction> rewardCouponTransactions) {
+		this.rewardCouponTransactions = rewardCouponTransactions;
+	}
+	public Collection<RewardReimbursementTransaction> getRewardReimbursementTransactions() {
+		return rewardReimbursementTransactions;
+	}
+	public void setRewardReimbursementTransactions(
+			Collection<RewardReimbursementTransaction> rewardReimbursementTransactions) {
+		this.rewardReimbursementTransactions = rewardReimbursementTransactions;
+	}
+
 }
 
 

@@ -38,15 +38,23 @@ public class PhotoMapper implements Mapper<Photo, PhotoEntity>{
 	@Override
 	public Collection<Photo> getDomainModels(Collection<Photo> photos, Collection<PhotoEntity> photoEntities,
 			boolean fetchChild) {
-		// TODO Auto-generated method stub
-		return null;
+		for (PhotoEntity photoEntity: photoEntities) {
+			Photo photo = new Photo();
+			photo = getDomainModel(photoEntity, fetchChild);
+			photos.add(photo);
+		}
+		return photos;
 	}
 
 	@Override
 	public Collection<PhotoEntity> getEntities(Collection<PhotoEntity> photoEntities, Collection<Photo> photos,
 			boolean fetchChild) {
-		// TODO Auto-generated method stub
-		return null;
+		for (Photo photo: photos) {
+			PhotoEntity photoEntity = new PhotoEntity();
+			photoEntity = getEntity(photo, fetchChild);
+			photoEntities.add(photoEntity);
+		}
+		return photoEntities;
 	}
 
 }
