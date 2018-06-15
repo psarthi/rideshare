@@ -1,5 +1,5 @@
 package com.digitusrevolution.rideshare.model.billing.domain.core;
 
 public enum Purpose {
-	Ride, TopUp, Redeem, ServiceChargeAndTaxes, Reversal
+	Ride, TopUp, Redeem, ServiceChargeAndTaxes, Reversal, Reward
 }

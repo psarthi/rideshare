@@ -1,12 +1,17 @@
 package com.digitusrevolution.rideshare.poc;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
 import java.util.Set;
+
+import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 
 public class TimeZone {
 
@@ -58,6 +63,15 @@ public class TimeZone {
 		}
 
 
+		ZonedDateTime firstOfWeek = DateTimeUtil.getCurrentTimeInUTC().with ( ChronoField.DAY_OF_WEEK , 1 ).with(LocalTime.MIDNIGHT); // ISO 8601, Monday is first day of week.
+		ZonedDateTime firstOfNextWeek = firstOfWeek.plusWeeks ( 1 );
+		System.out.println("Current Time-"+DateTimeUtil.getCurrentTimeInUTC());
+		System.out.println("FirstDayOfWeek"+firstOfWeek);
+		System.out.println("FirstDayOfNextWeek"+firstOfNextWeek);
+		
+		System.out.println(DateTimeUtil.getStartDateOfTheWeek(DateTimeUtil.getCurrentTimeInUTC()));
+		System.out.println(DateTimeUtil.getStartDateOfNextWeek(DateTimeUtil.getCurrentTimeInUTC()));
+		System.out.println(DateTimeUtil.getCurrentTimeInUTC().with(LocalDate.of(2018, 02, 10)).with(LocalTime.of(12, 30)));
 		
 		
 	}

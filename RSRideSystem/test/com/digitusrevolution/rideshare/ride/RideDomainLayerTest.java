@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.ride;
 
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -23,6 +24,7 @@ import com.digitusrevolution.rideshare.common.math.google.LatLng;
 import com.digitusrevolution.rideshare.common.math.google.PolyUtil;
 import com.digitusrevolution.rideshare.common.math.google.SphericalUtil;
 import com.digitusrevolution.rideshare.common.service.NotificationService;
+import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.GeoJSONUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
@@ -35,6 +37,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RidesDuration;
 import com.digitusrevolution.rideshare.ride.data.RideRequestPointDAO;
 import com.digitusrevolution.rideshare.ride.domain.TrustCategoryDO;
 import com.digitusrevolution.rideshare.ride.domain.TrustNetworkDO;
@@ -81,6 +84,9 @@ public class RideDomainLayerTest {
 	public void test(){
 	
 		RideDO rideDO = new RideDO();
+		rideDO.getUserRidesCountInSpecificDuration(13, DateTimeUtil.getCurrentTimeInUTC().with(LocalDate.of(2018, 02, 10)), RidesDuration.Month, 2);
+		RideRequestDO requestDO = new RideRequestDO();
+		requestDO.getUserRideRequestsCountInSpecificDuration(13, DateTimeUtil.getCurrentTimeInUTC().with(LocalDate.of(2018, 02, 10)), RidesDuration.Week, 2);
 
 //		RideRequestDO requestDO = new RideRequestDO();
 //		NotificationService.sendMatchedRideNotification(rideDO.get(21), requestDO.get(1));

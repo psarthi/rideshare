@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.serviceprovider.business;
 
+import java.time.ZonedDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,6 +11,8 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Offer;
+import com.digitusrevolution.rideshare.model.serviceprovider.dto.OfferEligibilityResult;
+import com.digitusrevolution.rideshare.model.serviceprovider.dto.UserOffer;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.OfferDO;
 
 public class OfferBusinessService {
@@ -47,15 +50,15 @@ public class OfferBusinessService {
 		return offer;	
 	}
 	
-	public List<Offer> getAll(int page) {
+	public List<UserOffer> getAll(long userId, int page) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;	
-		List<Offer> offers = new LinkedList<>();
+		List<UserOffer> userOffers = new LinkedList<>();
 		try {
 			transaction = session.beginTransaction();
 
 			OfferDO offerDO = new OfferDO();
-			offers = offerDO.getOffers(page);
+			userOffers = offerDO.getOffers(userId, page);
 			
 			transaction.commit();
 		} catch (RuntimeException e) {
@@ -71,6 +74,33 @@ public class OfferBusinessService {
 				session.close();				
 			}
 		}
-		return offers;	
+		return userOffers;	
+	}
+	
+	public OfferEligibilityResult getUserEligibilityForOffer(long userId, int offerId, ZonedDateTime dateTime) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		OfferEligibilityResult offerEligibilityResult = null;
+		try {
+			transaction = session.beginTransaction();
+
+			OfferDO offerDO = new OfferDO();
+			offerEligibilityResult = offerDO.getUserEligibilityForOffer(userId, offerId, dateTime);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return offerEligibilityResult;	
 	}
 }

@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.ride.domain.core;
 
+import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -7,11 +8,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.management.openmbean.InvalidKeyException;
@@ -30,6 +34,7 @@ import com.digitusrevolution.rideshare.common.inf.DomainObjectPKLong;
 import com.digitusrevolution.rideshare.common.mapper.ride.core.RideMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.service.NotificationService;
+import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
@@ -52,6 +57,7 @@ import com.digitusrevolution.rideshare.model.ride.dto.RidePointInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RidesInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
 import com.digitusrevolution.rideshare.model.ride.dto.google.Leg;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RidesDuration;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Interest;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
@@ -835,6 +841,44 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 	public float getPrice(RideRequest rideRequest) {
 		RideAction rideAction = new RideAction(this);
 		return rideAction.getPrice(rideRequest);
+	}
+	
+	public int getUserRidesCountInSpecificDuration(long userId, ZonedDateTime weekDayDate, RidesDuration ridesDuration, int dailyMaxLimit) {
+
+		User user = RESTClientUtil.getBasicUser(userId);
+		UserMapper userMapper = new UserMapper();
+		UserEntity userEntity = userMapper.getEntity(user, false);
+		ZonedDateTime startDate = null;
+		ZonedDateTime endDate = null;
+		if (ridesDuration.equals(RidesDuration.Week)) {
+			startDate = DateTimeUtil.getStartDateOfTheWeek(weekDayDate);
+			endDate = DateTimeUtil.getStartDateOfNextWeek(weekDayDate);					
+		}
+		if (ridesDuration.equals(RidesDuration.Month)) {
+			startDate = DateTimeUtil.getStartDateOfTheMonth(weekDayDate);
+			endDate = DateTimeUtil.getStartDateOfNextMonth(weekDayDate);					
+		}
+		
+		logger.debug("WeekDayDate:"+weekDayDate+"startDate:"+startDate+"endDate:"+endDate);
+		List<RideEntity> rideEntities = rideDAO.getRidesWithinSpecificDuration(userEntity, startDate, endDate);
+		int rideCount = 0;
+		
+		HashMap<ZonedDateTime, Integer> map = new HashMap<>();
+		for (RideEntity entity: rideEntities) {
+			//MIDNIGHT Time is imp to ensure we has one key for each day and if you have different time then key would become different
+			ZonedDateTime key = entity.getStartTime().with(LocalTime.MIDNIGHT);
+			int count = map.containsKey(key) ? map.get(key) : 0;
+			if (count<dailyMaxLimit) map.put(key, count + 1);
+		}
+	
+		Iterator<Entry<ZonedDateTime, Integer>> it = map.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<ZonedDateTime, Integer> entry = (Map.Entry<ZonedDateTime, Integer>)it.next();
+			logger.debug("Key:Value-"+entry.getKey()+"/"+entry.getValue());
+			rideCount = rideCount + entry.getValue();
+		}
+		
+		return rideCount;
 	}
 }
 

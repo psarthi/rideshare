@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.serviceprovider;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.hibernate.Transaction;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
+import com.digitusrevolution.rideshare.model.ride.dto.UserRidesDurationInfo;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.CouponStatus;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Offer;
@@ -69,12 +71,20 @@ public class ServiceProviderTest {
 	
 	public void test() {
 		/*		
+		UserRidesDurationInfo durationInfo = new UserRidesDurationInfo();
+		durationInfo.setDailyMaxLimit(2);
+		durationInfo.setRidesDuration(RidesDuration.Week);
+		durationInfo.setUserId(13);
+		durationInfo.setWeekDayDate(DateTimeUtil.getCurrentTimeInUTC().with(LocalDate.of(2018, 02, 10)));
+		System.out.println("Rides Count:"+RESTClientUtil.getRidesCount(durationInfo));
+		System.out.println("Rides Request Count:"+RESTClientUtil.getRideRequestsCount(durationInfo));
+		
 		RewardCouponTransactionDO couponTransactionDO = new RewardCouponTransactionDO();
 		Collection<RewardCouponTransaction> couponTransactions = couponTransactionDO.getCouponTransactions(1);
 		
 		RewardReimbursementTransactionDO reimbursementTransactionDO = new RewardReimbursementTransactionDO();
 		Collection<RewardReimbursementTransaction> reimbursementTransactions = reimbursementTransactionDO.getReimbursementTransactions(1);
-		*/
+		
 		
 		Partner partner = new Partner();
 		partner.setAddress("address");
@@ -112,7 +122,7 @@ public class ServiceProviderTest {
 		company.getPartners().add(partner1);
 		companyDO.update(company);
 		
-/*		RewardCouponTransaction couponTransaction = new RewardCouponTransaction();
+		RewardCouponTransaction couponTransaction = new RewardCouponTransaction();
 		Offer offer = RESTClientUtil.getOffer(1);
 		couponTransaction.setOffer(offer);
 		couponTransaction.setRedemptionDateTime(DateTimeUtil.getCurrentTimeInUTC());

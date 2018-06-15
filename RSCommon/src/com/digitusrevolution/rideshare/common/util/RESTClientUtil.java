@@ -24,6 +24,7 @@ import javax.ws.rs.core.UriBuilder;
 import com.digitusrevolution.rideshare.common.service.NotificationService;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Bill;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
 import com.digitusrevolution.rideshare.model.billing.dto.TripInfo;
 import com.digitusrevolution.rideshare.model.billing.dto.paytm.PaytmGratificationRequest;
@@ -39,6 +40,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
+import com.digitusrevolution.rideshare.model.ride.dto.UserRidesDurationInfo;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Offer;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
@@ -332,6 +334,33 @@ public class RESTClientUtil {
 		} 
 		return null;
 	}
+	
+	public static Transaction addRewardToWallet(long userId, long accountNumber, float amount, int rewardReimbursementTransactionId){
+		RESTClientImpl<Account> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("ADD_REWARD_TO_WALLET");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Long.toString(userId), Long.toString(accountNumber), Float.toString(amount), Integer.toString(rewardReimbursementTransactionId));
+		Response response = restClientUtil.get(uri);
+		if (response.getStatus() == Status.OK.getStatusCode()) {
+			Transaction transaction= response.readEntity(Transaction.class);
+			return transaction;
+		} 
+		return null;
+	}
+	
+	public static Transaction getTransaction(long transactionId){
+		RESTClientImpl<Account> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_WALLET_TRANSACTION");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build(Long.toString(transactionId));
+		Response response = restClientUtil.get(uri);
+		if (response.getStatus() == Status.OK.getStatusCode()) {
+			Transaction transaction= response.readEntity(Transaction.class);
+			return transaction;
+		} 
+		return null;
+	}
+
 
 	public static boolean userFeedback(long userId, UserFeedbackInfo userFeedbackInfo, RideType rideType){
 		RESTClientImpl<UserFeedbackInfo> restClientUtil = new RESTClientImpl<>();
@@ -500,6 +529,29 @@ public class RESTClientUtil {
 		PaytmGratificationStatusResponse paytmGratificationStatusResponse = jsonUtil.getModel(responseString);	
 		return paytmGratificationStatusResponse;		
 	}
+	
+	public static int getRidesCount(UserRidesDurationInfo durationInfo){
+		RESTClientImpl<UserRidesDurationInfo> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_RIDE_COUNT");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		//We are passing systemId as its an internal call and we need to pass the id in URL
+		URI uri = uriBuilder.build(Long.toString(systemId));
+		Response response = restClientUtil.post(uri, durationInfo);
+		Integer count = response.readEntity(Integer.class);
+		return count;
+	}
+	
+	public static int getRideRequestsCount(UserRidesDurationInfo durationInfo){
+		RESTClientImpl<UserRidesDurationInfo> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_RIDE_REQUEST_COUNT");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		//We are passing systemId as its an internal call and we need to pass the id in URL
+		URI uri = uriBuilder.build(Long.toString(systemId));
+		Response response = restClientUtil.post(uri, durationInfo);
+		Integer count = response.readEntity(Integer.class);
+		return count;
+	}
+
 
 }
 

@@ -25,6 +25,7 @@ import com.digitusrevolution.rideshare.model.ride.dto.FullRideRequest;
 import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.PreBookingRideRequestResult;
 import com.digitusrevolution.rideshare.model.ride.dto.RideRequestResult;
+import com.digitusrevolution.rideshare.model.ride.dto.UserRidesDurationInfo;
 import com.digitusrevolution.rideshare.ride.business.RideRequestBusinessService;
 import com.digitusrevolution.rideshare.ride.domain.service.RideRequestDomainService;
 
@@ -171,5 +172,13 @@ public class RideRequestBusinessResource {
 		return Response.ok(preBookingRideRequestResult).build();
 	}
 
+	@Secured
+	@POST
+	@Path("/count")
+	public Response getUserRideRequestsCountInSpecificDuration(UserRidesDurationInfo ridesDurationInfo) {
+		RideRequestBusinessService rideRequestBusinessService = new RideRequestBusinessService();
+		int count = rideRequestBusinessService.getUserRideRequestsCountInSpecificDuration(ridesDurationInfo);
+		return Response.ok(count).build();
+	}
 
 }

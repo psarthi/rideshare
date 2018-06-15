@@ -18,7 +18,7 @@ public class RewardTransactionEntity {
 	private int id;
 	@OneToOne
 	private OfferEntity offer;
-	private ZonedDateTime redemptionDateTime;
+	private ZonedDateTime rewardTransactionDateTime;
 	@OneToOne
 	private UserEntity user;
 	
@@ -28,11 +28,11 @@ public class RewardTransactionEntity {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public ZonedDateTime getRedemptionDateTime() {
-		return redemptionDateTime;
+	public ZonedDateTime getRewardTransactionDateTime() {
+		return rewardTransactionDateTime;
 	}
-	public void setRedemptionDateTime(ZonedDateTime redemptionDateTime) {
-		this.redemptionDateTime = redemptionDateTime;
+	public void setRewardTransactionDateTime(ZonedDateTime rewardTransactionDateTime) {
+		this.rewardTransactionDateTime = rewardTransactionDateTime;
 	}
 	public OfferEntity getOffer() {
 		return offer;

@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.ride.business;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,9 @@ import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferResult;
+import com.digitusrevolution.rideshare.model.ride.dto.UserRidesDurationInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RidesDuration;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.core.RideRequestDO;
 import com.digitusrevolution.rideshare.ride.domain.service.RideRequestDomainService;
@@ -391,6 +394,34 @@ public class RideOfferBusinessService {
 				session.close();				
 			}
 		}
+	}
+	
+	public int getUserRidesCountInSpecificDuration(UserRidesDurationInfo ridesDurationInfo) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		int ridesCount=0;
+		try {
+			transaction = session.beginTransaction();
+			
+			RideDO rideDO = new RideDO();
+			ridesCount = rideDO.getUserRidesCountInSpecificDuration(ridesDurationInfo.getUserId(), ridesDurationInfo.getWeekDayDate(),
+					ridesDurationInfo.getRidesDuration(), ridesDurationInfo.getDailyMaxLimit());
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return ridesCount;
 	}
 }
 

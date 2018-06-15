@@ -31,6 +31,7 @@ import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.PreBookingRideRequestResult;
 import com.digitusrevolution.rideshare.model.ride.dto.RideRequestResult;
 import com.digitusrevolution.rideshare.model.ride.dto.SuggestedMatchedRideInfo;
+import com.digitusrevolution.rideshare.model.ride.dto.UserRidesDurationInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.google.Element;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDistance;
 import com.digitusrevolution.rideshare.ride.domain.RouteDO;
@@ -385,6 +386,34 @@ public class RideRequestBusinessService {
 			}
 		}
 		return preBookingRideRequestResult;
+	}
+	
+	public int getUserRideRequestsCountInSpecificDuration(UserRidesDurationInfo ridesDurationInfo) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		int rideRequestsCount=0;
+		try {
+			transaction = session.beginTransaction();
+			
+			RideRequestDO requestDO = new RideRequestDO();
+			rideRequestsCount = requestDO.getUserRideRequestsCountInSpecificDuration(ridesDurationInfo.getUserId(), ridesDurationInfo.getWeekDayDate(),
+					ridesDurationInfo.getRidesDuration(), ridesDurationInfo.getDailyMaxLimit());
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return rideRequestsCount;
 	}
 }
 

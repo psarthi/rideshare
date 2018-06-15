@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.ride.domain.core;
 
+import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ import com.digitusrevolution.rideshare.model.ride.dto.RideRequestSearchResult;
 import com.digitusrevolution.rideshare.model.ride.dto.RidesInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.google.Element;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDistance;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RidesDuration;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleCategory;
 import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
@@ -1121,6 +1123,43 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 		preBookingRideRequestResult.setMaxFare(price);
 		preBookingRideRequestResult.setPendingBills(pendingBills);
 		return preBookingRideRequestResult;
+	}
+	
+	public int getUserRideRequestsCountInSpecificDuration(long userId, ZonedDateTime weekDayDate, RidesDuration ridesDuration, int dailyMaxLimit) {
+		User user = RESTClientUtil.getBasicUser(userId);
+		UserMapper userMapper = new UserMapper();
+		UserEntity userEntity = userMapper.getEntity(user, false);
+		ZonedDateTime startDate = null;
+		ZonedDateTime endDate = null;
+		if (ridesDuration.equals(RidesDuration.Week)) {
+			startDate = DateTimeUtil.getStartDateOfTheWeek(weekDayDate);
+			endDate = DateTimeUtil.getStartDateOfNextWeek(weekDayDate);					
+		}
+		if (ridesDuration.equals(RidesDuration.Month)) {
+			startDate = DateTimeUtil.getStartDateOfTheMonth(weekDayDate);
+			endDate = DateTimeUtil.getStartDateOfNextMonth(weekDayDate);					
+		}
+
+		logger.debug("WeekDayDate:"+weekDayDate+"startDate:"+startDate+"endDate:"+endDate);
+		List<RideRequestEntity> rideRequestEntities = rideRequestDAO.getRideRequestsWithinSpecificDuration(userEntity, startDate, endDate);
+		int rideRequestCount = 0;
+		
+		HashMap<ZonedDateTime, Integer> map = new HashMap<>();
+		for (RideRequestEntity entity: rideRequestEntities) {
+			//MIDNIGHT Time is imp to ensure we has one key for each day and if you have different time then key would become different
+			ZonedDateTime key = entity.getPickupTime().with(LocalTime.MIDNIGHT);
+			int count = map.containsKey(key) ? map.get(key) : 0;
+			if (count<dailyMaxLimit) map.put(key, count + 1);
+		}
+	
+		Iterator<Entry<ZonedDateTime, Integer>> it = map.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<ZonedDateTime, Integer> entry = (Map.Entry<ZonedDateTime, Integer>)it.next();
+			logger.debug("Key:Value-"+entry.getKey()+"/"+entry.getValue());
+			rideRequestCount = rideRequestCount + entry.getValue();
+		}
+		
+		return rideRequestCount;
 	}
 }
 

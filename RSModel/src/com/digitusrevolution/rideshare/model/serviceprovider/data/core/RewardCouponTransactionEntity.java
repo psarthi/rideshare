@@ -1,5 +1,7 @@
 package com.digitusrevolution.rideshare.model.serviceprovider.data.core;
 
+import java.time.ZonedDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,6 +18,7 @@ public class RewardCouponTransactionEntity extends RewardTransactionEntity {
 	@Column
 	@Enumerated(EnumType.STRING)
 	private CouponStatus status;
+	private ZonedDateTime redemptionDateTime;
 	
 	public String getCouponCode() {
 		return couponCode;
@@ -28,6 +31,12 @@ public class RewardCouponTransactionEntity extends RewardTransactionEntity {
 	}
 	public void setStatus(CouponStatus status) {
 		this.status = status;
+	}
+	public ZonedDateTime getRedemptionDateTime() {
+		return redemptionDateTime;
+	}
+	public void setRedemptionDateTime(ZonedDateTime redemptionDateTime) {
+		this.redemptionDateTime = redemptionDateTime;
 	}
 	
 	

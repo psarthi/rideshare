@@ -1,5 +1,6 @@
 package com.digitusrevolution.rideshare.serviceprovider.business;
 
+import java.time.ZonedDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,6 +13,9 @@ import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RewardCouponTransaction;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RewardReimbursementTransaction;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RewardTransaction;
+import com.digitusrevolution.rideshare.model.serviceprovider.dto.OfferEligibilityResult;
+import com.digitusrevolution.rideshare.model.serviceprovider.dto.ReimbursementRequest;
+import com.digitusrevolution.rideshare.serviceprovider.domain.core.OfferDO;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.RewardCouponTransactionDO;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.RewardReimbursementTransactionDO;
 
@@ -126,5 +130,113 @@ public class RewardTransactionBusinessService {
 		}
 		return reimbursementTransaction;	
 	}
+	
+	public void createRewardReimbursementTransaction(long userId, int offerId, ReimbursementRequest reimbursementRequest) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		int id = 0;
+		try {
+			transaction = session.beginTransaction();
 
+			RewardReimbursementTransactionDO reimbursementTransactionDO = new RewardReimbursementTransactionDO();
+			reimbursementTransactionDO.createReimbursementTransactions(userId, offerId, reimbursementRequest);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+	}
+	
+	public OfferEligibilityResult getUserEligibilityForOffer(long userId, int rewardReimbursementTransactionId, ZonedDateTime dateTime) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		OfferEligibilityResult offerEligibilityResult = null;
+		try {
+			transaction = session.beginTransaction();
+
+			RewardReimbursementTransactionDO transactionDO = new RewardReimbursementTransactionDO();
+			RewardReimbursementTransaction rewardReimbursementTransaction = transactionDO.get(rewardReimbursementTransactionId);
+			OfferDO offerDO = new OfferDO();
+			offerEligibilityResult = offerDO.getUserEligibilityForOffer(userId, rewardReimbursementTransaction.getOffer().getId(), dateTime);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return offerEligibilityResult;	
+	}
+	
+	
+	public RewardReimbursementTransaction approveRewardReimbursementTransaction(int id, int approvedAmount, String remarks) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		RewardReimbursementTransaction reimbursementTransaction = null;
+		try {
+			transaction = session.beginTransaction();
+
+			RewardReimbursementTransactionDO transactionDO = new RewardReimbursementTransactionDO();
+			reimbursementTransaction = transactionDO.approveRewardReimbursementTransaction(id, approvedAmount, remarks);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return reimbursementTransaction;
+	}
+	
+	public void processPaymentForRewardReimbursementTransaction(int id, com.digitusrevolution.rideshare.model.billing.domain.core.Transaction walletTransaction) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		try {
+			transaction = session.beginTransaction();
+
+			RewardReimbursementTransactionDO transactionDO = new RewardReimbursementTransactionDO();
+			transactionDO.processPaymentForRewardReimbursementTransaction(id, walletTransaction);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		
+	}
 }

@@ -194,7 +194,19 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Long>{
 		List<RideEntity> rideEntitiesList = new LinkedList<>(rideEntities);
 		return rideEntitiesList;	
 	}
-
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public List<RideEntity> getRidesWithinSpecificDuration(UserEntity driver, ZonedDateTime startDate, ZonedDateTime endDate){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass);
+		Set rideEntities = new HashSet<>(criteria.add(Restrictions.eq("driver", driver))
+				.add(Restrictions.and(Restrictions.ge("startTime", startDate),Restrictions.le("startTime", endDate)))
+				.add(Restrictions.and(Restrictions.ne("status", RideStatus.Cancelled)))
+				.list());
+		List<RideEntity> rideEntitiesList = new LinkedList<>(rideEntities);
+		return rideEntitiesList;	
+	}
+	
 }
 
 

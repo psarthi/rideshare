@@ -11,8 +11,11 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.digitusrevolution.rideshare.model.billing.data.core.TransactionEntity;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.ReimbursementStatus;
 import com.digitusrevolution.rideshare.model.user.data.PhotoEntity;
 
@@ -28,7 +31,10 @@ public class RewardReimbursementTransactionEntity extends RewardTransactionEntit
 	@Column
 	@Enumerated(EnumType.STRING)
 	private ReimbursementStatus status;
-
+	private int approvedAmount;
+	private String remarks;
+	@OneToOne
+	private TransactionEntity transaction;
 	
 	public Collection<PhotoEntity> getPhotos() {
 		return photos;
@@ -41,5 +47,23 @@ public class RewardReimbursementTransactionEntity extends RewardTransactionEntit
 	}
 	public void setStatus(ReimbursementStatus status) {
 		this.status = status;
+	}
+	public int getApprovedAmount() {
+		return approvedAmount;
+	}
+	public void setApprovedAmount(int approvedAmount) {
+		this.approvedAmount = approvedAmount;
+	}
+	public String getRemarks() {
+		return remarks;
+	}
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+	public TransactionEntity getTransaction() {
+		return transaction;
+	}
+	public void setTransaction(TransactionEntity transaction) {
+		this.transaction = transaction;
 	}
 }

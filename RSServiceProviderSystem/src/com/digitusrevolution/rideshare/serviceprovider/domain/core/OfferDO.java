@@ -1,5 +1,7 @@
 package com.digitusrevolution.rideshare.serviceprovider.domain.core;
 
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -13,9 +15,20 @@ import org.apache.logging.log4j.Logger;
 
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.serviceprovider.core.OfferMapper;
+import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
+import com.digitusrevolution.rideshare.common.util.JSONUtil;
+import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
+import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
+import com.digitusrevolution.rideshare.model.ride.dto.UserRidesDurationInfo;
 import com.digitusrevolution.rideshare.model.serviceprovider.data.core.OfferEntity;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Offer;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RewardCouponTransaction;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RidesDuration;
+import com.digitusrevolution.rideshare.model.serviceprovider.dto.OfferEligibilityResult;
+import com.digitusrevolution.rideshare.model.serviceprovider.dto.UserOffer;
+import com.digitusrevolution.rideshare.model.serviceprovider.dto.UserRidesStats;
+import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.serviceprovider.data.OfferDAO;
 
 public class OfferDO implements DomainObjectPKInteger<Offer>{
@@ -100,7 +113,7 @@ public class OfferDO implements DomainObjectPKInteger<Offer>{
 		offerDAO.delete(offerEntity);
 	}
 	
-	public List<Offer> getOffers(int page){
+	public List<UserOffer> getOffers(long userId, int page){
 		//This will help in calculating the index for the result - 0 to 9, 10 to 19, 20 to 29 etc.
 		int itemsCount = 10;
 		int startIndex = page*itemsCount;
@@ -109,8 +122,114 @@ public class OfferDO implements DomainObjectPKInteger<Offer>{
 		offers =  (List<Offer>) offerMapper.getDomainModels(offers, offerEntities, true);
 		//This will sort the offers
 		Collections.sort(offers);
-		return offers;
+		ZonedDateTime dateTime = DateTimeUtil.getCurrentTimeInUTC();
+		UserRidesStats ridesStats = getUserRidesStats(userId, dateTime);
+		List<UserOffer> userOffers = new LinkedList<>();
+		for (Offer offer: offers) {
+			UserOffer userOffer = JsonObjectMapper.getMapper().convertValue(offer, UserOffer.class);
+			userOffer.setUserEligible(isUserEligibleForOffer(ridesStats, offer));
+			userOffer.setBalanceRideRequirement(getRidesBalanceRequirement(ridesStats, userOffer));
+			userOffers.add(userOffer);
+		}
+		return userOffers;
 	}
+	
+	public int getRidesBalanceRequirement(UserRidesStats ridesStats, Offer offer) {
+		if (offer.getRidesDuration().equals(RidesDuration.Week)) {
+			if (ridesStats.getThisWeekCount() <= offer.getRidesRequired()) {
+				return offer.getRidesRequired() - ridesStats.getThisWeekCount();
+			}
+		}
+		if (offer.getRidesDuration().equals(RidesDuration.Month)) {
+			if (ridesStats.getThisMonthCount() <= offer.getRidesRequired()) {
+				return offer.getRidesRequired() - ridesStats.getThisMonthCount();
+			}
+		}
+		return 0;
+	}
+
+	public boolean isUserEligibleForOffer(UserRidesStats ridesStats, Offer offer) {
+
+		//High Level Logic
+		//Get User Total rides for Weekly and Monthly duration for last week / month and current week / month
+		//Check offer eligibility rides requirement with user rides
+		if (offer.getRidesDuration().equals(RidesDuration.Week)) {
+			if (ridesStats.getThisWeekCount() >= offer.getRidesRequired() || ridesStats.getLastWeekCount() >= offer.getRidesRequired()) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		if (offer.getRidesDuration().equals(RidesDuration.Month)) {
+			if (ridesStats.getThisMonthCount() >= offer.getRidesRequired() || ridesStats.getLastMonthCount() >= offer.getRidesRequired()) {
+				return true;
+			} else {
+				return false;
+			}
+		}	
+		return false;
+	}
+	
+	public OfferEligibilityResult getUserEligibilityForOffer(long userId, int offerId, ZonedDateTime dateTime) {
+		UserRidesStats ridesStats = getUserRidesStats(userId, dateTime);
+		offer = get(offerId);
+		boolean status = false;
+		
+		//High Level Logic
+		//Get User Total rides for Weekly and Monthly duration for last week / month and current week / month
+		//Check offer eligibility rides requirement with user rides
+		if (offer.getRidesDuration().equals(RidesDuration.Week)) {
+			if (ridesStats.getThisWeekCount() >= offer.getRidesRequired() || ridesStats.getLastWeekCount() >= offer.getRidesRequired()) {
+				status = true;
+			}
+		}
+		if (offer.getRidesDuration().equals(RidesDuration.Month)) {
+			if (ridesStats.getThisMonthCount() >= offer.getRidesRequired() || ridesStats.getLastMonthCount() >= offer.getRidesRequired()) {
+				status = true;
+			}
+		}	
+		OfferEligibilityResult eligibilityResult = new OfferEligibilityResult();
+		eligibilityResult.setUserEligible(status);
+		eligibilityResult.setUserRidesStats(ridesStats);
+		eligibilityResult.setOffer(offer);
+		return eligibilityResult;
+	}
+	
+	public UserRidesStats getUserRidesStats(long userId, ZonedDateTime dateTime) {
+		
+		UserRidesDurationInfo durationInfo = new UserRidesDurationInfo();
+		durationInfo.setDailyMaxLimit(Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RIDE_DAILY_LIMIT")));
+		durationInfo.setRidesDuration(RidesDuration.Week);
+		durationInfo.setUserId(userId);
+		durationInfo.setWeekDayDate(dateTime);
+		int currentWeekRideCount = RESTClientUtil.getRidesCount(durationInfo);
+		int currentWeekRideRequestCount = RESTClientUtil.getRideRequestsCount(durationInfo);
+		
+		durationInfo.setWeekDayDate(dateTime.minusWeeks(1));
+		int lastWeekRideCount = RESTClientUtil.getRidesCount(durationInfo);
+		int lastWeekRideRequestCount = RESTClientUtil.getRideRequestsCount(durationInfo);
+		
+		durationInfo.setRidesDuration(RidesDuration.Month);
+		durationInfo.setWeekDayDate(dateTime);
+		int currentMonthRideCount = RESTClientUtil.getRidesCount(durationInfo);
+		int currentMonthRideRequestCount = RESTClientUtil.getRideRequestsCount(durationInfo);
+		
+		durationInfo.setWeekDayDate(dateTime.minusMonths(1));
+		int lastMonthRideCount = RESTClientUtil.getRidesCount(durationInfo);
+		int lastMonthRideRequestCount = RESTClientUtil.getRideRequestsCount(durationInfo);
+		
+		UserRidesStats userRidesStats = new UserRidesStats();
+		userRidesStats.setThisWeekCount(currentWeekRideCount + currentWeekRideRequestCount);
+		userRidesStats.setLastWeekCount(lastWeekRideCount + lastWeekRideRequestCount);
+		userRidesStats.setThisMonthCount(currentMonthRideCount + currentMonthRideRequestCount);
+		userRidesStats.setLastMonthCount(lastMonthRideCount + lastMonthRideRequestCount);
+		
+		JSONUtil<UserRidesStats> jsonUtil = new JSONUtil<>(UserRidesStats.class);
+		logger.debug(jsonUtil.getJson(userRidesStats));
+		
+		return userRidesStats;
+	}
+		
 
 }
 

@@ -5,6 +5,8 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
+import java.util.Calendar;
 
 public class DateTimeUtil {
 	
@@ -26,5 +28,30 @@ public class DateTimeUtil {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, MMM d hh:mm a");
 		return dateTimeInIST.format(formatter);
 	}
+	
+	public static ZonedDateTime getStartDateOfTheWeek(ZonedDateTime dateTime) {
+		ZonedDateTime firstOfWeek = dateTime.with ( ChronoField.DAY_OF_WEEK , 1 ).with(LocalTime.MIDNIGHT); // ISO 8601, Monday is first day of week.
+		//ZonedDateTime firstOfNextWeek = firstOfWeek.plusWeeks ( 1 );
+		return firstOfWeek;
+	}
+	
+	public static ZonedDateTime getStartDateOfNextWeek(ZonedDateTime dateTime) {
+		ZonedDateTime firstOfWeek = dateTime.with ( ChronoField.DAY_OF_WEEK , 1 ).with(LocalTime.MIDNIGHT); // ISO 8601, Monday is first day of week.
+		ZonedDateTime firstOfNextWeek = firstOfWeek.plusWeeks ( 1 );
+		return firstOfNextWeek;
+	}
+	
+	public static ZonedDateTime getStartDateOfTheMonth(ZonedDateTime dateTime) {
+		ZonedDateTime firstOfWeek = dateTime.with ( ChronoField.DAY_OF_MONTH , 1 ).with(LocalTime.MIDNIGHT); // ISO 8601, Monday is first day of week.
+		//ZonedDateTime firstOfNextWeek = firstOfWeek.plusWeeks ( 1 );
+		return firstOfWeek;
+	}
+	
+	public static ZonedDateTime getStartDateOfNextMonth(ZonedDateTime dateTime) {
+		ZonedDateTime firstOfWeek = dateTime.with ( ChronoField.DAY_OF_MONTH , 1 ).with(LocalTime.MIDNIGHT); // ISO 8601, Monday is first day of week.
+		ZonedDateTime firstOfNextWeek = firstOfWeek.plusMonths( 1 );
+		return firstOfNextWeek;
+	}
+
 	
 }

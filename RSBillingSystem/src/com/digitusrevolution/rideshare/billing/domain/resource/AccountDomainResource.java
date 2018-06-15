@@ -12,10 +12,12 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.digitusrevolution.rideshare.billing.business.AccountBusinessService;
 import com.digitusrevolution.rideshare.billing.domain.service.AccountDomainService;
 import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.inf.DomainResourceLong;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
 
 @Path("/domain/accounts")
 @Produces(MediaType.APPLICATION_JSON)
@@ -59,4 +61,15 @@ public class AccountDomainResource implements DomainResourceLong<Account>{
 		GenericEntity<List<Account>> entity = new GenericEntity<List<Account>>(accounts) {};
 		return Response.ok(entity).build();
 	}
+	
+	@Secured
+	@GET
+	//Note - IMP We are not passing accountNumber as transaction id's are unique and this would be used for internal purpose
+	@Path("/transaction/{transactionId}")
+	public Response getTransaction(@PathParam("transactionId") int id){
+		AccountDomainService accountDomainService = new AccountDomainService();
+		Transaction transaction = accountDomainService.getTransaction(id);
+		return Response.ok(transaction).build();
+	}
+
 }

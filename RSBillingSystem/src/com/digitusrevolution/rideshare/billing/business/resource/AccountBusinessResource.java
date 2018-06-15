@@ -68,5 +68,15 @@ public class AccountBusinessResource {
 		GenericEntity<List<Transaction>> entity = new GenericEntity<List<Transaction>>(transactions) {};
 		return Response.ok(entity).build();
 	}
+	
+	@Secured
+	@GET
+	@Path("/{accountNumber}/reward/{amount}/reimbursement/{reimbursementTransactionId}")
+	public Response addRewardToWallet(@PathParam("userId") long userId, @PathParam("accountNumber") long accountNumber, 
+			@PathParam("amount") float amount, @PathParam("reimbursementTransactionId") int rewardReimbursementTransactionId) {
+		AccountBusinessService accountBusinessService = new AccountBusinessService();
+		Transaction transaction = accountBusinessService.addRewardToWallet(userId, accountNumber, amount, rewardReimbursementTransactionId);
+		return Response.ok(transaction).build();
+	}
 
 }

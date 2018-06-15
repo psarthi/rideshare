@@ -13,11 +13,12 @@ public class RewardCouponTransactionMapper implements Mapper<RewardCouponTransac
 	public RewardCouponTransactionEntity getEntity(RewardCouponTransaction couponTransaction, boolean fetchChild) {
 		RewardCouponTransactionEntity couponTransactionEntity = new RewardCouponTransactionEntity();
 		couponTransactionEntity.setId(couponTransaction.getId());
-		couponTransactionEntity.setRedemptionDateTime(couponTransaction.getRedemptionDateTime());
+		couponTransactionEntity.setRewardTransactionDateTime(couponTransaction.getRewardTransactionDateTime());
 		OfferMapper offerMapper = new OfferMapper();
 		couponTransactionEntity.setOffer(offerMapper.getEntity(couponTransaction.getOffer(), fetchChild));
 		couponTransactionEntity.setCouponCode(couponTransaction.getCouponCode());
 		couponTransactionEntity.setStatus(couponTransaction.getStatus());
+		couponTransactionEntity.setRedemptionDateTime(couponTransaction.getRedemptionDateTime());
 		
 		if (fetchChild) {
 			couponTransactionEntity = getEntityChild(couponTransaction, couponTransactionEntity);
@@ -39,11 +40,12 @@ public class RewardCouponTransactionMapper implements Mapper<RewardCouponTransac
 	public RewardCouponTransaction getDomainModel(RewardCouponTransactionEntity couponTransactionEntity, boolean fetchChild) {
 		RewardCouponTransaction couponTransaction = new RewardCouponTransaction();
 		couponTransaction.setId(couponTransactionEntity.getId());
-		couponTransaction.setRedemptionDateTime(couponTransactionEntity.getRedemptionDateTime());
+		couponTransaction.setRewardTransactionDateTime(couponTransactionEntity.getRewardTransactionDateTime());
 		OfferMapper offerMapper = new OfferMapper();
 		couponTransaction.setOffer(offerMapper.getDomainModel(couponTransactionEntity.getOffer(), fetchChild));
 		couponTransaction.setCouponCode(couponTransactionEntity.getCouponCode());
 		couponTransaction.setStatus(couponTransactionEntity.getStatus());
+		couponTransaction.setRedemptionDateTime(couponTransactionEntity.getRedemptionDateTime());
 		
 		if (fetchChild) {
 			couponTransaction = getDomainModelChild(couponTransaction, couponTransactionEntity);

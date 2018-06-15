@@ -27,6 +27,7 @@ import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 import com.digitusrevolution.rideshare.model.ride.dto.FullRide;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RideOfferResult;
+import com.digitusrevolution.rideshare.model.ride.dto.UserRidesDurationInfo;
 import com.digitusrevolution.rideshare.ride.business.RideOfferBusinessService;
 import com.digitusrevolution.rideshare.ride.domain.core.RideDO;
 import com.digitusrevolution.rideshare.ride.domain.service.RideDomainService;
@@ -205,6 +206,15 @@ public class RideOfferBusinessResource {
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
 		rideOfferBusinessService.processAllPendingInvoicePayment();
 		return Response.ok().build();
+	}
+	
+	@Secured
+	@POST
+	@Path("/count")
+	public Response getUserRidesCountInSpecificDuration(UserRidesDurationInfo ridesDurationInfo) {
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		int count = rideOfferBusinessService.getUserRidesCountInSpecificDuration(ridesDurationInfo);
+		return Response.ok(count).build();
 	}
 }
 

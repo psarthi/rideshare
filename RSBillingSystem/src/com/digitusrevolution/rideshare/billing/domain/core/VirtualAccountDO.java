@@ -188,6 +188,18 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 		remark.setMessage(Purpose.TopUp.toString());
 		return credit(user, accountNumber, amount, remark);
 	}
+	
+	public Transaction addRewardToWallet(long userId, long accountNumber, float amount, int rewardReimbursementTransactionId) {
+		User user = RESTClientUtil.getBasicUser(userId);
+		Company company = RESTClientUtil.getCompany(1);
+		Remark remark = new Remark();
+		remark.setPurpose(Purpose.Reward);
+		remark.setPaidBy(company.getName());
+		remark.setPaidTo(user.getFirstName()+ " "+user.getLastName());
+		remark.setMessage("RewardReimbursementTransactionId:"+rewardReimbursementTransactionId);
+		return credit(user, accountNumber, amount, remark);
+	}
+
 
 	public float getCalculatedBalance(Account account) {
 		float balance = 0;

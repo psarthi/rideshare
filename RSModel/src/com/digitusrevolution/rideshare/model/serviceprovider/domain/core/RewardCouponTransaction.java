@@ -1,9 +1,12 @@
 package com.digitusrevolution.rideshare.model.serviceprovider.domain.core;
 
+import java.time.ZonedDateTime;
+
 public class RewardCouponTransaction extends RewardTransaction {
 
 	private String couponCode;
 	private CouponStatus status;
+	private ZonedDateTime redemptionDateTime;
 	
 	public String getCouponCode() {
 		return couponCode;
@@ -16,6 +19,12 @@ public class RewardCouponTransaction extends RewardTransaction {
 	}
 	public void setStatus(CouponStatus status) {
 		this.status = status;
+	}
+	public ZonedDateTime getRedemptionDateTime() {
+		return redemptionDateTime;
+	}
+	public void setRedemptionDateTime(ZonedDateTime redemptionDateTime) {
+		this.redemptionDateTime = redemptionDateTime;
 	}
 	
 	

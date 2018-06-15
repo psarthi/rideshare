@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import com.digitusrevolution.rideshare.billing.domain.core.TransactionDO;
 import com.digitusrevolution.rideshare.billing.domain.core.VirtualAccountDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.FinancialTransaction;
@@ -94,6 +95,34 @@ public class AccountBusinessService {
 			}
 		}
 		return transactions;
+	}
+	
+	
+	public com.digitusrevolution.rideshare.model.billing.domain.core.Transaction addRewardToWallet(long userId, long accountNumber, float amount, int rewardReimbursementTransactionId) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		com.digitusrevolution.rideshare.model.billing.domain.core.Transaction walletTransaction = null;
+		try {
+			transaction = session.beginTransaction();
+
+			VirtualAccountDO virtualAccountDO = new VirtualAccountDO();	
+			walletTransaction = virtualAccountDO.addRewardToWallet(userId, accountNumber, amount, rewardReimbursementTransactionId);
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return walletTransaction;
 	}
 }
 

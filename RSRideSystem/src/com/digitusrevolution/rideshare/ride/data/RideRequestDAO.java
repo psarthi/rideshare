@@ -33,6 +33,7 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.PassengerStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RidePassenger;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequestStatus;
+import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.user.data.MembershipRequestEntity;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 
@@ -183,6 +184,19 @@ public class RideRequestDAO extends GenericDAOImpl<RideRequestEntity, Long>{
 				.setProjection(Projections.property("status")).uniqueResult();
 		return status;
 	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public List<RideRequestEntity> getRideRequestsWithinSpecificDuration(UserEntity passenger, ZonedDateTime startDate, ZonedDateTime endDate){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass);
+		Set rideRequestEntities = new HashSet<>(criteria.add(Restrictions.eq("passenger", passenger))
+				.add(Restrictions.and(Restrictions.ge("pickupTime", startDate),Restrictions.le("pickupTime", endDate)))
+				.add(Restrictions.and(Restrictions.ne("status", RideRequestStatus.Cancelled)))
+				.list());
+		List<RideRequestEntity> rideRequestEntitiesList = new LinkedList<>(rideRequestEntities);
+		return rideRequestEntitiesList;	
+	}
+
 
 
 }

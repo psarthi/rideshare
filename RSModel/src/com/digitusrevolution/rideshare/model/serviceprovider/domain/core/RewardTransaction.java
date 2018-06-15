@@ -8,7 +8,7 @@ public class RewardTransaction implements Comparable<RewardTransaction>{
 
 	private int id;
 	private Offer offer;
-	private ZonedDateTime redemptionDateTime;
+	private ZonedDateTime rewardTransactionDateTime;
 	private User user;
 	
 	public int getId() {
@@ -22,12 +22,6 @@ public class RewardTransaction implements Comparable<RewardTransaction>{
 	}
 	public void setOffer(Offer offer) {
 		this.offer = offer;
-	}
-	public ZonedDateTime getRedemptionDateTime() {
-		return redemptionDateTime;
-	}
-	public void setRedemptionDateTime(ZonedDateTime redemptionDateTime) {
-		this.redemptionDateTime = redemptionDateTime;
 	}
 	public User getUser() {
 		return user;
@@ -44,6 +38,11 @@ public class RewardTransaction implements Comparable<RewardTransaction>{
 		//descending order
 		return Long.compare(rewardTransaction.id, this.id);
 	}
-	
+	public ZonedDateTime getRewardTransactionDateTime() {
+		return rewardTransactionDateTime;
+	}
+	public void setRewardTransactionDateTime(ZonedDateTime rewardTransactionDateTime) {
+		this.rewardTransactionDateTime = rewardTransactionDateTime;
+	}
 	
 }
