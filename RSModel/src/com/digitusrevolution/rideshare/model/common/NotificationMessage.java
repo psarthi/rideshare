@@ -7,7 +7,6 @@ import java.util.Map;
 public class NotificationMessage {
 
 	private String to;
-	private ArrayList<String> registration_ids = new ArrayList<String>();
 	private Notification notification = new Notification();
 	private Map<String, String> data = new HashMap<String, String>();
 	
@@ -33,14 +32,6 @@ public class NotificationMessage {
 
 	public void setData(Map<String, String> data) {
 		this.data = data;
-	}
-
-	public ArrayList<String> getRegistration_ids() {
-		return registration_ids;
-	}
-
-	public void setRegistration_ids(ArrayList<String> registration_ids) {
-		this.registration_ids = registration_ids;
 	}
 
 	public class Notification {

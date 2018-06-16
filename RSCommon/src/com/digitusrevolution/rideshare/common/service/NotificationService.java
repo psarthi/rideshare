@@ -12,6 +12,7 @@ import com.digitusrevolution.rideshare.common.util.RSUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Remark;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
 import com.digitusrevolution.rideshare.model.common.NotificationMessage;
+import com.digitusrevolution.rideshare.model.common.NotificationMessageForMultipleUsers;
 import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
@@ -175,7 +176,7 @@ public class NotificationService {
 	
 	//This function can be used to broadcast when new offers gets added
 	public static void sendNotificationToAllUsers(String title, String body, String imageUrl) {
-		NotificationMessage notificationMessage = new NotificationMessage();
+		NotificationMessageForMultipleUsers notificationMessage = new NotificationMessageForMultipleUsers();
 		Collection<User> allUsers = RESTClientUtil.getAllUsers();
 		for (User user: allUsers) {
 			notificationMessage.getRegistration_ids().add(user.getPushNotificationToken());
