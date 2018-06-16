@@ -37,7 +37,7 @@
 			update the schema. create: creates the schema, destroying previous data. 
 			create-drop: drop the schema when the SessionFactory is closed explicitly, 
 			typically when the application is stopped. -->
-		<property name="hbm2ddl.auto">validate</property>
+		<property name="hbm2ddl.auto">update</property>
 
 		<property name="current_session_context_class">thread</property>
 

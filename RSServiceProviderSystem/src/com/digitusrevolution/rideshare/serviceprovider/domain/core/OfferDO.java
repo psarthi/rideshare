@@ -248,7 +248,7 @@ public class OfferDO implements DomainObjectPKInteger<Offer>{
 	}
 	
 	//IMP - Don't move this function to Partner as updating partner would not associate partner with offers
-	//as mapping is by offer (mappedBy)
+	//as mapping is by offer (mappedBy)ild
 	public void addPartnerOffer(int partnerId, Offer offer) {
 		PartnerDO partnerDO = new PartnerDO();
 		Partner partner = partnerDO.getAllData(partnerId);
