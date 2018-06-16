@@ -16,6 +16,7 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.auth.AuthService;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.common.service.NotificationService;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.common.NotificationMessage;
@@ -83,6 +84,7 @@ public class UserSystemTest {
 	
 	public void test(){
 			
+		NotificationService.sendNotificationToAllUsers("title", "body", "https://s3.ap-south-1.amazonaws.com/com.parift.rideshare.test.photos/interest/startup.jpg");
 				
 /*		
 		UserDO userDO = new UserDO();

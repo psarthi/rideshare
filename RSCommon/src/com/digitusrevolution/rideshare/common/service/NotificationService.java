@@ -1,5 +1,7 @@
 package com.digitusrevolution.rideshare.common.service;
 
+import java.util.Collection;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
@@ -122,6 +124,8 @@ public class NotificationService {
 		notificationMessage.setTo(admin.getPushNotificationToken());
 		notificationMessage.getNotification().setTitle("Requested Ride - "+DateTimeUtil.getFormattedDateTimeString(rideRequest.getPickupTime()));
 		notificationMessage.getNotification().setBody("From:"+rideRequest.getPickupPointAddress()+"\n"+"To:"+rideRequest.getDropPointAddress());
+		//Sample reference here for setting the url for displaying image in notification
+		//notificationMessage.getData().put(NotificationMessage.DataKey.imageUrl.toString(), "https://s3.ap-south-1.amazonaws.com/com.parift.rideshare.test.photos/interest/startup.jpg");
 		logger.info("Sending Requested Ride Notification to Admin:"+jsonUtil.getJson(notificationMessage));
 		RESTClientUtil.sendNotification(notificationMessage);
 	}
@@ -169,6 +173,52 @@ public class NotificationService {
 		RESTClientUtil.sendNotification(notificationMessage);
 	}
 	
+	//This function can be used to broadcast when new offers gets added
+	public static void sendNotificationToAllUsers(String title, String body, String imageUrl) {
+		NotificationMessage notificationMessage = new NotificationMessage();
+		Collection<User> allUsers = RESTClientUtil.getAllUsers();
+		for (User user: allUsers) {
+			notificationMessage.getRegistration_ids().add(user.getPushNotificationToken());
+		}
+		//IMP - Its important to set the message value as true, as this is the key which 
+		//determines whether to use other data values or not in notification message
+		notificationMessage.getData().put(NotificationMessage.DataKey.message.toString(), "true");
+		
+		/*Note - We need to set the title and body inside the data map as this would be used for building notification with image
+		  when app is in bacjground. When app is in foreground, then only notification message with 
+		  image and standard title / body field would be used for displaying the noticiation with image
+		
+		Referece - https://stackoverflow.com/questions/37711082/how-to-handle-notification-when-app-in-background-in-firebase
+		There are two types of messages in FCM (Firebase Cloud Messaging):
 
+		Display Messages: These messages trigger the onMessageReceived() callback only when your app is in foreground
+		Data Messages: Theses messages trigger the onMessageReceived() callback even if your app is in foreground/background/killed
+		
+		Body using topics:
+			
+			{
+			    "to": "/topics/my_topic",
+			    "data": {
+			        "my_custom_key": "my_custom_value",
+			        "my_custom_key2": true
+			     }
+			}
+			Or if you want to send it to specific devices:
+			
+			{
+			    "data": {
+			        "my_custom_key": "my_custom_value",
+			        "my_custom_key2": true
+			     },
+			    "registration_ids": ["{device-token}","{device2-token}","{device3-token}"]
+			}
+		 */
+		
+		notificationMessage.getData().put("title", title);
+		notificationMessage.getData().put("body", body);
+		notificationMessage.getData().put(NotificationMessage.DataKey.imageUrl.toString(), imageUrl);
+		logger.info("Sending Notification to All User:"+jsonUtil.getJson(notificationMessage));
+		RESTClientUtil.sendNotification(notificationMessage);
+	}
 
 }

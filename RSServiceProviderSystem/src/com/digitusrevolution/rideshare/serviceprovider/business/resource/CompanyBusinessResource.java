@@ -14,11 +14,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.digitusrevolution.rideshare.common.auth.Secured;
+import com.digitusrevolution.rideshare.common.service.NotificationService;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
+import com.digitusrevolution.rideshare.model.common.NotificationMessage;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.HelpQuestionAnswer;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.AppInfo;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.CompanyAccount;
+import com.digitusrevolution.rideshare.model.serviceprovider.dto.NotificationData;
 import com.digitusrevolution.rideshare.serviceprovider.business.CompanyBusinessService;
 
 @Path("/serviceprovider")
@@ -74,5 +77,13 @@ public class CompanyBusinessResource {
 		appInfo.setAppUrl(PropertyReader.getInstance().getProperty("APP_URL"));
 		appInfo.setShareMsg(PropertyReader.getInstance().getProperty("APP_SHARE_MSG"));
 		return Response.ok(appInfo).build();
+	}
+	
+	@Secured
+	@POST
+	@Path("/sendnotificationtoall")
+	public Response sendNotificationToAll(NotificationData notificationData) {
+		NotificationService.sendNotificationToAllUsers(notificationData.getTitle(), notificationData.getBody(), notificationData.getImageUrl());
+		return Response.ok().build();
 	}
 }

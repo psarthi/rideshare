@@ -90,6 +90,18 @@ public class RESTClientUtil {
 		User user = response.readEntity(User.class);
 		return user;
 	}
+	
+	public static Collection<User> getAllUsers(){
+
+		RESTClientImpl<User> restClientUtil = new RESTClientImpl<>();
+		String url = PropertyReader.getInstance().getProperty("GET_ALL_USER_URL");
+		UriBuilder uriBuilder = UriBuilder.fromUri(url);
+		URI uri = uriBuilder.build();
+		Response response = restClientUtil.get(uri);		
+		Collection<User> users = response.readEntity(new GenericType<Collection<User>>() {});
+		return users;
+	}
+
 
 
 	public static Collection<Role> getRoles(long id){
