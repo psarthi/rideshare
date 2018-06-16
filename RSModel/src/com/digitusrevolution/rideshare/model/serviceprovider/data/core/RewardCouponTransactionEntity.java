@@ -19,6 +19,7 @@ public class RewardCouponTransactionEntity extends RewardTransactionEntity {
 	@Enumerated(EnumType.STRING)
 	private CouponStatus status;
 	private ZonedDateTime redemptionDateTime;
+	private ZonedDateTime expiryDateTime;
 	
 	public String getCouponCode() {
 		return couponCode;
@@ -37,6 +38,12 @@ public class RewardCouponTransactionEntity extends RewardTransactionEntity {
 	}
 	public void setRedemptionDateTime(ZonedDateTime redemptionDateTime) {
 		this.redemptionDateTime = redemptionDateTime;
+	}
+	public ZonedDateTime getExpiryDateTime() {
+		return expiryDateTime;
+	}
+	public void setExpiryDateTime(ZonedDateTime expiryDateTime) {
+		this.expiryDateTime = expiryDateTime;
 	}
 	
 	

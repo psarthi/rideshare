@@ -12,6 +12,7 @@ import com.digitusrevolution.rideshare.billing.domain.core.TransactionDO;
 import com.digitusrevolution.rideshare.billing.domain.core.VirtualAccountDO;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.FinancialTransaction;
+import com.digitusrevolution.rideshare.model.billing.dto.WalletInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.BasicRide;
 
 public class AccountBusinessService {
@@ -123,6 +124,35 @@ public class AccountBusinessService {
 			}
 		}
 		return walletTransaction;
+	}
+	
+	public WalletInfo getWalletInfo(long userId) {
+		
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		WalletInfo walletInfo = null;
+		try {
+			transaction = session.beginTransaction();
+
+			VirtualAccountDO virtualAccountDO = new VirtualAccountDO();	
+			walletInfo = virtualAccountDO.getWalletInfo(userId);
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return walletInfo;
+		
 	}
 }
 

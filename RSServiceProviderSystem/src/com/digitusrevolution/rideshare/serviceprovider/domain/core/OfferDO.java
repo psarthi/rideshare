@@ -170,6 +170,12 @@ public class OfferDO implements DomainObjectPKInteger<Offer>{
 		return false;
 	}
 	
+	public boolean isUserEligibleForOffer(long userId, int offerId) {
+		UserRidesStats ridesStats = getUserRidesStats(userId, DateTimeUtil.getCurrentTimeInUTC());
+		offer = get(offerId);
+		return isUserEligibleForOffer(ridesStats, offer);
+	}
+	
 	public OfferEligibilityResult getUserEligibilityForOffer(long userId, int offerId, ZonedDateTime dateTime) {
 		UserRidesStats ridesStats = getUserRidesStats(userId, dateTime);
 		offer = get(offerId);
@@ -198,31 +204,27 @@ public class OfferDO implements DomainObjectPKInteger<Offer>{
 	public UserRidesStats getUserRidesStats(long userId, ZonedDateTime dateTime) {
 		
 		UserRidesDurationInfo durationInfo = new UserRidesDurationInfo();
-		durationInfo.setDailyMaxLimit(Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_RIDE_DAILY_LIMIT")));
+		durationInfo.setDailyMaxLimit(Integer.parseInt(PropertyReader.getInstance().getProperty("MAX_COMBINED_RIDE_AND_RIDE_REQUEST_DAILY_LIMIT")));
 		durationInfo.setRidesDuration(RidesDuration.Week);
 		durationInfo.setUserId(userId);
 		durationInfo.setWeekDayDate(dateTime);
-		int currentWeekRideCount = RESTClientUtil.getRidesCount(durationInfo);
-		int currentWeekRideRequestCount = RESTClientUtil.getRideRequestsCount(durationInfo);
+		int currentWeekRideCount = RESTClientUtil.getRidesAndRidesRequestsCombinedCount(durationInfo);
 		
 		durationInfo.setWeekDayDate(dateTime.minusWeeks(1));
-		int lastWeekRideCount = RESTClientUtil.getRidesCount(durationInfo);
-		int lastWeekRideRequestCount = RESTClientUtil.getRideRequestsCount(durationInfo);
+		int lastWeekRideCount = RESTClientUtil.getRidesAndRidesRequestsCombinedCount(durationInfo);
 		
 		durationInfo.setRidesDuration(RidesDuration.Month);
 		durationInfo.setWeekDayDate(dateTime);
-		int currentMonthRideCount = RESTClientUtil.getRidesCount(durationInfo);
-		int currentMonthRideRequestCount = RESTClientUtil.getRideRequestsCount(durationInfo);
+		int currentMonthRideCount = RESTClientUtil.getRidesAndRidesRequestsCombinedCount(durationInfo);
 		
 		durationInfo.setWeekDayDate(dateTime.minusMonths(1));
-		int lastMonthRideCount = RESTClientUtil.getRidesCount(durationInfo);
-		int lastMonthRideRequestCount = RESTClientUtil.getRideRequestsCount(durationInfo);
+		int lastMonthRideCount = RESTClientUtil.getRidesAndRidesRequestsCombinedCount(durationInfo);
 		
 		UserRidesStats userRidesStats = new UserRidesStats();
-		userRidesStats.setThisWeekCount(currentWeekRideCount + currentWeekRideRequestCount);
-		userRidesStats.setLastWeekCount(lastWeekRideCount + lastWeekRideRequestCount);
-		userRidesStats.setThisMonthCount(currentMonthRideCount + currentMonthRideRequestCount);
-		userRidesStats.setLastMonthCount(lastMonthRideCount + lastMonthRideRequestCount);
+		userRidesStats.setThisWeekCount(currentWeekRideCount);
+		userRidesStats.setLastWeekCount(lastWeekRideCount);
+		userRidesStats.setThisMonthCount(currentMonthRideCount);
+		userRidesStats.setLastMonthCount(lastMonthRideCount);
 		
 		JSONUtil<UserRidesStats> jsonUtil = new JSONUtil<>(UserRidesStats.class);
 		logger.debug(jsonUtil.getJson(userRidesStats));

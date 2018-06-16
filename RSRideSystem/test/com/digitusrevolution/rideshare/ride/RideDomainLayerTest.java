@@ -84,7 +84,7 @@ public class RideDomainLayerTest {
 	public void test(){
 	
 		RideDO rideDO = new RideDO();
-		rideDO.getUserRidesCountInSpecificDuration(13, DateTimeUtil.getCurrentTimeInUTC().with(LocalDate.of(2018, 02, 10)), RidesDuration.Month, 2);
+		rideDO.getUserCombinedRidesAndRideRequestsCountInSpecificDuration(13, DateTimeUtil.getCurrentTimeInUTC().with(LocalDate.of(2018, 02, 10)), RidesDuration.Month, 2);
 		RideRequestDO requestDO = new RideRequestDO();
 		requestDO.getUserRideRequestsCountInSpecificDuration(13, DateTimeUtil.getCurrentTimeInUTC().with(LocalDate.of(2018, 02, 10)), RidesDuration.Week, 2);
 

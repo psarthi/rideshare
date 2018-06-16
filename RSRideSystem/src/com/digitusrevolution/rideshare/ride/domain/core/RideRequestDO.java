@@ -1141,7 +1141,8 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 		}
 
 		logger.debug("WeekDayDate:"+weekDayDate+"startDate:"+startDate+"endDate:"+endDate);
-		List<RideRequestEntity> rideRequestEntities = rideRequestDAO.getRideRequestsWithinSpecificDuration(userEntity, startDate, endDate);
+		List<RideRequestEntity> rideRequestEntities = getUserRideRequestsInSpecificDuration(userEntity, startDate,
+				endDate);
 		int rideRequestCount = 0;
 		
 		HashMap<ZonedDateTime, Integer> map = new HashMap<>();
@@ -1160,6 +1161,12 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 		}
 		
 		return rideRequestCount;
+	}
+
+	public List<RideRequestEntity> getUserRideRequestsInSpecificDuration(UserEntity userEntity,
+			ZonedDateTime startDate, ZonedDateTime endDate) {
+		List<RideRequestEntity> rideRequestEntities = rideRequestDAO.getRideRequestsWithinSpecificDuration(userEntity, startDate, endDate);
+		return rideRequestEntities;
 	}
 }
 

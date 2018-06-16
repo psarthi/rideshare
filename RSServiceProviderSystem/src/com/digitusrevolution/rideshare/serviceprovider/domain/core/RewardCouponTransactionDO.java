@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
@@ -11,8 +12,11 @@ import javax.ws.rs.NotFoundException;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.serviceprovider.core.RewardCouponTransactionMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
+import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.serviceprovider.data.core.RewardCouponTransactionEntity;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.CouponStatus;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RewardCouponTransaction;
 import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
@@ -112,6 +116,46 @@ public class RewardCouponTransactionDO implements DomainObjectPKInteger<RewardCo
 		couponTransactions = (List<RewardCouponTransaction>) rewardCouponTransactionMapper.getDomainModels(couponTransactions, couponTransactionEntities, false);
 		Collections.sort(couponTransactions);
 		return couponTransactions;
+	}
+	
+	public RewardCouponTransaction generateCoupon(long userId, int offerId) {
+		String couponCode = null;
+		//Check User Eligibility for offers
+		//If eligible, generate 6 digit coupon code
+		//TODO - For the time being lets not do this double check, if required we will do it later
+		OfferDO offerDO = new OfferDO();
+		couponCode = generateRandomChars(PropertyReader.getInstance().getProperty("ALPHABETS_NUMBER_STRING"), 
+				Integer.parseInt(PropertyReader.getInstance().getProperty("COUPON_CODE_LENGTH")));
+		//create coupon transaction in the system
+		RewardCouponTransaction couponTransaction = new RewardCouponTransaction();
+		couponTransaction.setCouponCode(couponCode);
+		couponTransaction.setOffer(offerDO.get(offerId));
+		couponTransaction.setUser(RESTClientUtil.getBasicUser(userId));
+		couponTransaction.setRewardTransactionDateTime(DateTimeUtil.getCurrentTimeInUTC());
+		couponTransaction.setStatus(CouponStatus.Active);
+		couponTransaction.setExpiryDateTime(DateTimeUtil.getCurrentTimeInUTC()
+				.plusDays(Long.parseLong(PropertyReader.getInstance().getProperty("COUPON_EXPIRY_DAYS"))));
+		int id = create(couponTransaction);
+		couponTransaction.setId(id);
+		return couponTransaction;
+	}
+	
+	public String generateRandomChars(String candidateChars, int length) {
+	    StringBuilder sb = new StringBuilder();
+	    Random	 random = new Random();
+	    for (int i = 0; i < length; i++) {
+	        sb.append(candidateChars.charAt(random.nextInt(candidateChars
+	                .length())));
+	    }
+
+	    return sb.toString();
+	}
+	
+	public void redeemCoupon(int id) {
+		rewardCouponTransaction = getAllData(id);
+		rewardCouponTransaction.setRedemptionDateTime(DateTimeUtil.getCurrentTimeInUTC());
+		rewardCouponTransaction.setStatus(CouponStatus.Redeemed);
+		update(rewardCouponTransaction);
 	}
 
 }

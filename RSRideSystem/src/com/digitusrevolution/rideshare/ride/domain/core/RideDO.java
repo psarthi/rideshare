@@ -40,6 +40,7 @@ import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
+import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePointProperty;
@@ -843,7 +844,7 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 		return rideAction.getPrice(rideRequest);
 	}
 	
-	public int getUserRidesCountInSpecificDuration(long userId, ZonedDateTime weekDayDate, RidesDuration ridesDuration, int dailyMaxLimit) {
+	public int getUserCombinedRidesAndRideRequestsCountInSpecificDuration(long userId, ZonedDateTime weekDayDate, RidesDuration ridesDuration, int dailyMaxLimit) {
 
 		User user = RESTClientUtil.getBasicUser(userId);
 		UserMapper userMapper = new UserMapper();
@@ -863,10 +864,22 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 		List<RideEntity> rideEntities = rideDAO.getRidesWithinSpecificDuration(userEntity, startDate, endDate);
 		int rideCount = 0;
 		
+		RideRequestDO requestDO = new RideRequestDO();
+		List<RideRequestEntity> rideRequestEntities = requestDO.getUserRideRequestsInSpecificDuration(userEntity, startDate, endDate);
+		
+		//This is for rides
 		HashMap<ZonedDateTime, Integer> map = new HashMap<>();
 		for (RideEntity entity: rideEntities) {
 			//MIDNIGHT Time is imp to ensure we has one key for each day and if you have different time then key would become different
 			ZonedDateTime key = entity.getStartTime().with(LocalTime.MIDNIGHT);
+			int count = map.containsKey(key) ? map.get(key) : 0;
+			if (count<dailyMaxLimit) map.put(key, count + 1);
+		}
+		
+		//This is for ride requests
+		for (RideRequestEntity entity: rideRequestEntities) {
+			//MIDNIGHT Time is imp to ensure we has one key for each day and if you have different time then key would become different
+			ZonedDateTime key = entity.getPickupTime().with(LocalTime.MIDNIGHT);
 			int count = map.containsKey(key) ? map.get(key) : 0;
 			if (count<dailyMaxLimit) map.put(key, count + 1);
 		}

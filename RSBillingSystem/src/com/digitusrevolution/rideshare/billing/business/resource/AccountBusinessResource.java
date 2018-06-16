@@ -19,6 +19,7 @@ import com.digitusrevolution.rideshare.billing.domain.service.AccountDomainServi
 import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
+import com.digitusrevolution.rideshare.model.billing.dto.WalletInfo;
 
 @Path("/users/{userId}/accounts")
 @Produces(MediaType.APPLICATION_JSON)
@@ -77,6 +78,15 @@ public class AccountBusinessResource {
 		AccountBusinessService accountBusinessService = new AccountBusinessService();
 		Transaction transaction = accountBusinessService.addRewardToWallet(userId, accountNumber, amount, rewardReimbursementTransactionId);
 		return Response.ok(transaction).build();
+	}
+
+	@Secured
+	@GET
+	@Path("/walletinfo")
+	public Response getWalletInfo(@PathParam("userId") long userId) {
+		AccountBusinessService accountBusinessService = new AccountBusinessService();
+		WalletInfo walletInfo = accountBusinessService.getWalletInfo(userId);
+		return Response.ok(walletInfo).build();
 	}
 
 }

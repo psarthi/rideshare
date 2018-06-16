@@ -237,6 +237,57 @@ public class RewardTransactionBusinessService {
 				session.close();				
 			}
 		}
-		
 	}
+	
+	public RewardCouponTransaction generateCoupon(long userId, int offerId) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		RewardCouponTransaction couponTransaction = null;
+		try {
+			transaction = session.beginTransaction();
+
+			RewardCouponTransactionDO rewardCouponTransactionDO = new RewardCouponTransactionDO();
+			couponTransaction = rewardCouponTransactionDO.generateCoupon(userId, offerId);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return couponTransaction;
+	}
+	
+	public void redeemCoupon(int id) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		try {
+			transaction = session.beginTransaction();
+			RewardCouponTransactionDO rewardCouponTransactionDO = new RewardCouponTransactionDO();
+			rewardCouponTransactionDO.redeemCoupon(id);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+	}
+	
 }

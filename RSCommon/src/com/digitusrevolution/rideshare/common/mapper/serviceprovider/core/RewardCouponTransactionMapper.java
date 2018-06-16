@@ -19,6 +19,7 @@ public class RewardCouponTransactionMapper implements Mapper<RewardCouponTransac
 		couponTransactionEntity.setCouponCode(couponTransaction.getCouponCode());
 		couponTransactionEntity.setStatus(couponTransaction.getStatus());
 		couponTransactionEntity.setRedemptionDateTime(couponTransaction.getRedemptionDateTime());
+		couponTransactionEntity.setExpiryDateTime(couponTransaction.getExpiryDateTime());
 		
 		if (fetchChild) {
 			couponTransactionEntity = getEntityChild(couponTransaction, couponTransactionEntity);
@@ -46,6 +47,7 @@ public class RewardCouponTransactionMapper implements Mapper<RewardCouponTransac
 		couponTransaction.setCouponCode(couponTransactionEntity.getCouponCode());
 		couponTransaction.setStatus(couponTransactionEntity.getStatus());
 		couponTransaction.setRedemptionDateTime(couponTransactionEntity.getRedemptionDateTime());
+		couponTransaction.setExpiryDateTime(couponTransactionEntity.getExpiryDateTime());
 		
 		if (fetchChild) {
 			couponTransaction = getDomainModelChild(couponTransaction, couponTransactionEntity);

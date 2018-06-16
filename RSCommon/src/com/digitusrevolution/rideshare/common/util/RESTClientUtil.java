@@ -530,9 +530,9 @@ public class RESTClientUtil {
 		return paytmGratificationStatusResponse;		
 	}
 	
-	public static int getRidesCount(UserRidesDurationInfo durationInfo){
+	public static int getRidesAndRidesRequestsCombinedCount(UserRidesDurationInfo durationInfo){
 		RESTClientImpl<UserRidesDurationInfo> restClientUtil = new RESTClientImpl<>();
-		String url = PropertyReader.getInstance().getProperty("GET_RIDE_COUNT");
+		String url = PropertyReader.getInstance().getProperty("GET_RIDE_AND_RIDE_REQUEST_COMBINED_COUNT");
 		UriBuilder uriBuilder = UriBuilder.fromUri(url);
 		//We are passing systemId as its an internal call and we need to pass the id in URL
 		URI uri = uriBuilder.build(Long.toString(systemId));

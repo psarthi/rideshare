@@ -210,10 +210,10 @@ public class RideOfferBusinessResource {
 	
 	@Secured
 	@POST
-	@Path("/count")
-	public Response getUserRidesCountInSpecificDuration(UserRidesDurationInfo ridesDurationInfo) {
+	@Path("/combinedcount")
+	public Response getUserCombinedRidesAndRideRequestsCountInSpecificDuration(UserRidesDurationInfo ridesDurationInfo) {
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
-		int count = rideOfferBusinessService.getUserRidesCountInSpecificDuration(ridesDurationInfo);
+		int count = rideOfferBusinessService.getUserCombinedRidesAndRideRequestsCountInSpecificDuration(ridesDurationInfo);
 		return Response.ok(count).build();
 	}
 }

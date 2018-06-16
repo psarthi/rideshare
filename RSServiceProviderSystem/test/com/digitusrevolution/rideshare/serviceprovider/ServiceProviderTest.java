@@ -70,6 +70,9 @@ public class ServiceProviderTest {
 	}
 	
 	public void test() {
+		RewardCouponTransactionDO couponTransactionDO = new RewardCouponTransactionDO();
+		couponTransactionDO.generateCoupon(1, 1);
+		
 		/*		
 		UserRidesDurationInfo durationInfo = new UserRidesDurationInfo();
 		durationInfo.setDailyMaxLimit(2);

@@ -6,6 +6,7 @@ public class RewardCouponTransaction extends RewardTransaction {
 
 	private String couponCode;
 	private CouponStatus status;
+	private ZonedDateTime expiryDateTime;
 	private ZonedDateTime redemptionDateTime;
 	
 	public String getCouponCode() {
@@ -25,6 +26,12 @@ public class RewardCouponTransaction extends RewardTransaction {
 	}
 	public void setRedemptionDateTime(ZonedDateTime redemptionDateTime) {
 		this.redemptionDateTime = redemptionDateTime;
+	}
+	public ZonedDateTime getExpiryDateTime() {
+		return expiryDateTime;
+	}
+	public void setExpiryDateTime(ZonedDateTime expiryDateTime) {
+		this.expiryDateTime = expiryDateTime;
 	}
 	
 	

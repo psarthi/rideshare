@@ -396,7 +396,7 @@ public class RideOfferBusinessService {
 		}
 	}
 	
-	public int getUserRidesCountInSpecificDuration(UserRidesDurationInfo ridesDurationInfo) {
+	public int getUserCombinedRidesAndRideRequestsCountInSpecificDuration(UserRidesDurationInfo ridesDurationInfo) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		int ridesCount=0;
@@ -404,7 +404,7 @@ public class RideOfferBusinessService {
 			transaction = session.beginTransaction();
 			
 			RideDO rideDO = new RideDO();
-			ridesCount = rideDO.getUserRidesCountInSpecificDuration(ridesDurationInfo.getUserId(), ridesDurationInfo.getWeekDayDate(),
+			ridesCount = rideDO.getUserCombinedRidesAndRideRequestsCountInSpecificDuration(ridesDurationInfo.getUserId(), ridesDurationInfo.getWeekDayDate(),
 					ridesDurationInfo.getRidesDuration(), ridesDurationInfo.getDailyMaxLimit());
 			
 			transaction.commit();

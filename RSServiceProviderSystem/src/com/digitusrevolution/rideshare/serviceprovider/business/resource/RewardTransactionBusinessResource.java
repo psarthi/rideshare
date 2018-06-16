@@ -105,4 +105,24 @@ public class RewardTransactionBusinessResource {
 		return Response.ok().build();
 	}
 	
+	@Secured
+	@GET
+	@Path("/coupon/generate/offer/{offerId}")
+	public Response generateCoupon(@PathParam("userId") long userId, @PathParam("offerId") int offerId) {
+		RewardTransactionBusinessService transactionBusinessService = new RewardTransactionBusinessService();
+		RewardCouponTransaction couponTransaction = transactionBusinessService.generateCoupon(userId, offerId);
+		return Response.ok(couponTransaction).build();
+	}
+	
+	@Secured
+	@GET
+	@Path("/coupon/redeem/{couponTransactionId}")
+	public Response redeemCoupon(@PathParam("couponTransactionId") int couponTransactionId) {
+		RewardTransactionBusinessService transactionBusinessService = new RewardTransactionBusinessService();
+		transactionBusinessService.redeemCoupon(couponTransactionId);
+		ResponseMessage message = new ResponseMessage();
+		message.setStatus(ResponseMessage.Code.OK);
+		return Response.ok(message).build();
+	}
+	
 }

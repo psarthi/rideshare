@@ -3,6 +3,7 @@ package com.digitusrevolution.rideshare.billing.domain.core;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,6 +35,7 @@ import com.digitusrevolution.rideshare.model.billing.domain.core.Remark;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Transaction;
 import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionStatus;
 import com.digitusrevolution.rideshare.model.billing.domain.core.TransactionType;
+import com.digitusrevolution.rideshare.model.billing.dto.WalletInfo;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 
@@ -222,7 +224,13 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 		for (Bill bill: pendingBills) {
 			pendingBillAmount = pendingBillAmount + bill.getAmount();
 		}
-		float maxRedemtionAmount = user.getAccount(AccountType.Virtual).getBalance() - pendingBillAmount;
+		
+		float totalRewardCreditMoney = getTotalRewardCredit(user);
+		float totalRideDebitMoney = getTotalRideDebit(user);
+		float balanceRewardMoney = totalRewardCreditMoney - totalRideDebitMoney;
+		if (balanceRewardMoney <= 0) balanceRewardMoney = 0;
+		
+		float maxRedemtionAmount = user.getAccount(AccountType.Virtual).getBalance() - pendingBillAmount - balanceRewardMoney;
 		if (Float.compare(amount, maxRedemtionAmount) <= 0) {
 		
 			Remark debitRemark = new Remark();
@@ -248,9 +256,33 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 		} else {
 			
 			throw new WebApplicationException("Maximum redemption available amount is: "
-			+ RSUtil.getCurrencySymbol(user.getCountry()) + maxRedemtionAmount + " excluding your pending bills");
+			+ RSUtil.getCurrencySymbol(user.getCountry()) + maxRedemtionAmount + " excluding your pending bills and rewards credit");
 			
 		}
+	}
+
+	private float getTotalRewardCredit(User user) {
+		account = getAllData(user.getAccount(AccountType.Virtual).getNumber());
+		Collection<Transaction> transactions = account.getTransactions();
+		float totalRewardMoney = 0;
+		for (Transaction transaction: transactions) {
+			if (transaction.getType().equals(TransactionType.Credit) && transaction.getRemark().getPurpose().equals(Purpose.Reward)) {
+				totalRewardMoney = totalRewardMoney + transaction.getAmount();
+			}
+		}
+		return totalRewardMoney;
+	}
+	
+	private float getTotalRideDebit(User user) {
+		account = getAllData(user.getAccount(AccountType.Virtual).getNumber());
+		Collection<Transaction> transactions = account.getTransactions();
+		float totalRideDebitMoney = 0;
+		for (Transaction transaction: transactions) {
+			if (transaction.getType().equals(TransactionType.Debit) && transaction.getRemark().getPurpose().equals(Purpose.Ride)) {
+				totalRideDebitMoney = totalRideDebitMoney + transaction.getAmount();
+			}
+		}
+		return totalRideDebitMoney;
 	}
 	
 	public Transaction rollbackRedemptionRequest(FinancialTransaction financialTransaction) {
@@ -283,6 +315,29 @@ public class VirtualAccountDO implements DomainObjectPKLong<Account>, AccountDO{
 		//this will sort the list further
 		Collections.sort(transactions);
 		return transactions;
+	}
+	
+	public WalletInfo getWalletInfo(long userId) {
+		User user = RESTClientUtil.getBasicUser(userId);
+
+		BillDO billDO = new BillDO();
+		List<Bill> pendingBills = billDO.getPendingBills(user);
+		
+		float pendingBillAmount = 0;
+		for (Bill bill: pendingBills) {
+			pendingBillAmount = pendingBillAmount + bill.getAmount();
+		}
+		
+		float totalRewardCreditMoney = getTotalRewardCredit(user);
+		float totalRideDebitMoney = getTotalRideDebit(user);
+		float balanceRewardMoney = totalRewardCreditMoney - totalRideDebitMoney;
+		if (balanceRewardMoney <= 0) balanceRewardMoney = 0;
+		
+		WalletInfo walletInfo = new WalletInfo();
+		walletInfo.setPendingBillsAmount(pendingBillAmount);
+		walletInfo.setRewardMoneyBalance(balanceRewardMoney);
+		
+		return walletInfo;
 	}
 }
 
