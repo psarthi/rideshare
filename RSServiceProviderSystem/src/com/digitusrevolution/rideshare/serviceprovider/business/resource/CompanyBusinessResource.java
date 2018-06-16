@@ -19,10 +19,12 @@ import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.common.NotificationMessage;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.HelpQuestionAnswer;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Partner;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.AppInfo;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.CompanyAccount;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.NotificationData;
 import com.digitusrevolution.rideshare.serviceprovider.business.CompanyBusinessService;
+import com.digitusrevolution.rideshare.serviceprovider.business.OfferBusinessService;
 
 @Path("/serviceprovider")
 @Produces(MediaType.APPLICATION_JSON)
@@ -86,4 +88,14 @@ public class CompanyBusinessResource {
 		NotificationService.sendNotificationToAllUsers(notificationData.getTitle(), notificationData.getBody(), notificationData.getImageUrl());
 		return Response.ok().build();
 	}
+	
+	@Secured
+	@POST
+	@Path("/partner/create")
+	public Response createPartner(Partner partner) {
+		CompanyBusinessService companyBusinessService = new CompanyBusinessService();
+		int id = companyBusinessService.createPartner(partner);
+		return Response.ok(id).build();
+	}
+
 }

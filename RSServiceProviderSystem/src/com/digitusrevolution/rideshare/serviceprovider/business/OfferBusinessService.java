@@ -11,9 +11,11 @@ import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Offer;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Partner;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.OfferEligibilityResult;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.UserOffer;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.OfferDO;
+import com.digitusrevolution.rideshare.serviceprovider.domain.core.PartnerDO;
 
 public class OfferBusinessService {
 
@@ -103,4 +105,32 @@ public class OfferBusinessService {
 		}
 		return offerEligibilityResult;	
 	}
+	
+	public int createOffer(Offer offer) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		int id = 0;
+		try {
+			transaction = session.beginTransaction();
+
+			OfferDO offerDO = new OfferDO();
+			id = offerDO.create(offer);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return id;	
+	}
+	
 }

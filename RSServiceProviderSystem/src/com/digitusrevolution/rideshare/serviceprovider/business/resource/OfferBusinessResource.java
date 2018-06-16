@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Offer;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Partner;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.OfferEligibilityInfo;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.OfferEligibilityResult;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.UserOffer;
@@ -52,6 +53,15 @@ public class OfferBusinessResource {
 		OfferBusinessService offerBusinessService = new OfferBusinessService();
 		OfferEligibilityResult eligibilityResult = offerBusinessService.getUserEligibilityForOffer(userId, offerId, offerEligibilityInfo.getDateTime());
 		return Response.ok(eligibilityResult).build();
+	}
+	
+	@Secured
+	@POST
+	@Path("/create")
+	public Response createOffer(Offer offer) {
+		OfferBusinessService offerBusinessService = new OfferBusinessService();
+		int id = offerBusinessService.createOffer(offer);
+		return Response.ok(id).build();
 	}
 
 }

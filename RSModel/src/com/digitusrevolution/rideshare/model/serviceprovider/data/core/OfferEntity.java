@@ -28,7 +28,9 @@ public class OfferEntity {
 	@OneToOne(cascade=CascadeType.ALL)
 	private PhotoEntity photo;
 	private String description;
+	@Column(columnDefinition="TEXT")
 	private String termsAndCondition;
+	@Column(columnDefinition="TEXT")
 	private String redemptionProcess;
 	@Column
 	@Enumerated(EnumType.STRING)

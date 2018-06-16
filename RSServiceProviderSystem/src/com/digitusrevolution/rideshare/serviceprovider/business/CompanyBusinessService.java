@@ -11,9 +11,11 @@ import org.hibernate.Transaction;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.HelpQuestionAnswer;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Partner;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.CompanyAccount;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.CompanyDO;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.HelpQuestionAnswerDO;
+import com.digitusrevolution.rideshare.serviceprovider.domain.core.PartnerDO;
 
 
 public class CompanyBusinessService {
@@ -102,4 +104,32 @@ public class CompanyBusinessService {
 		}
 		return helpQuestionAnswers;	
 	}
+	
+	public int createPartner(Partner partner) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		int id = 0;
+		try {
+			transaction = session.beginTransaction();
+
+			PartnerDO partnerDO = new PartnerDO();
+			id = partnerDO.create(partner);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return id;	
+	}
+	
 }

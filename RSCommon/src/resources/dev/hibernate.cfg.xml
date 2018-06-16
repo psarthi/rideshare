@@ -75,12 +75,22 @@
 			class="com.digitusrevolution.rideshare.model.user.data.UserFeedbackEntity" />
 		<mapping
 			class="com.digitusrevolution.rideshare.model.user.data.InterestEntity" />
-
+			
 		<!-- Service Provider System -->
 		<mapping
 			class="com.digitusrevolution.rideshare.model.serviceprovider.data.core.CompanyEntity" />
 		<mapping
 			class="com.digitusrevolution.rideshare.model.serviceprovider.data.core.HelpQuestionAnswerEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.serviceprovider.data.core.OfferEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.serviceprovider.data.core.PartnerEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.serviceprovider.data.core.RewardCouponTransactionEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.serviceprovider.data.core.RewardReimbursementTransactionEntity" />
+			
+			
 
 		<!-- Ride System -->
 		<mapping
