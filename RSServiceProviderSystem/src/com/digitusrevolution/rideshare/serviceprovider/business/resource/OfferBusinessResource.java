@@ -21,6 +21,7 @@ import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Partner
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.OfferEligibilityInfo;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.OfferEligibilityResult;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.UserOffer;
+import com.digitusrevolution.rideshare.serviceprovider.business.CompanyBusinessService;
 import com.digitusrevolution.rideshare.serviceprovider.business.OfferBusinessService;
 
 @Path("/users/{userId}/offers")
@@ -62,6 +63,15 @@ public class OfferBusinessResource {
 		OfferBusinessService offerBusinessService = new OfferBusinessService();
 		int id = offerBusinessService.createOffer(offer);
 		return Response.ok(id).build();
+	}
+	
+	@Secured
+	@POST
+	@Path("/partner/{id}/add")
+	public Response addPartnerOffer(@PathParam("id") int partnerId, Offer offer) {
+		OfferBusinessService offerBusinessService = new OfferBusinessService();
+		offerBusinessService.addPartnerOffer(partnerId, offer);
+		return Response.ok().build();
 	}
 
 }

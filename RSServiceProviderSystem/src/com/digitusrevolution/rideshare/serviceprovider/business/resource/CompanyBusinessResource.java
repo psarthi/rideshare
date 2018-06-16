@@ -19,6 +19,7 @@ import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.common.NotificationMessage;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.HelpQuestionAnswer;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Offer;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Partner;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.AppInfo;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.CompanyAccount;
@@ -97,5 +98,4 @@ public class CompanyBusinessResource {
 		int id = companyBusinessService.createPartner(partner);
 		return Response.ok(id).build();
 	}
-
 }

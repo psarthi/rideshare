@@ -22,7 +22,9 @@ import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.dto.UserRidesDurationInfo;
 import com.digitusrevolution.rideshare.model.serviceprovider.data.core.OfferEntity;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Offer;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Partner;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RewardCouponTransaction;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RidesDuration;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.OfferEligibilityResult;
@@ -232,6 +234,28 @@ public class OfferDO implements DomainObjectPKInteger<Offer>{
 		return userRidesStats;
 	}
 		
+	
+	public int createOffer(Offer offer) {
+		int id = create(offer);
+		offer = getAllData(id);
+		if (offer.isCompanyOffer()) {
+			CompanyDO companyDO = new CompanyDO();
+			Company company = companyDO.getAllData(1);
+			company.getOffers().add(offer);
+			companyDO.update(company);
+		}
+		return id;
+	}
+	
+	//IMP - Don't move this function to Partner as updating partner would not associate partner with offers
+	//as mapping is by offer (mappedBy)
+	public void addPartnerOffer(int partnerId, Offer offer) {
+		PartnerDO partnerDO = new PartnerDO();
+		Partner partner = partnerDO.getAllData(partnerId);
+		offer.setPartner(partner);
+		update(offer);
+	}
+
 
 }
 

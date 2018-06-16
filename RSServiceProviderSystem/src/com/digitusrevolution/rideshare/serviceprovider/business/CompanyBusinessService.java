@@ -11,6 +11,7 @@ import org.hibernate.Transaction;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.HelpQuestionAnswer;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Offer;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Partner;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.CompanyAccount;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.CompanyDO;
@@ -113,7 +114,7 @@ public class CompanyBusinessService {
 			transaction = session.beginTransaction();
 
 			PartnerDO partnerDO = new PartnerDO();
-			id = partnerDO.create(partner);
+			id = partnerDO.createPartner(partner);
 			
 			transaction.commit();
 		} catch (RuntimeException e) {

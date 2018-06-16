@@ -12,6 +12,8 @@ import org.apache.logging.log4j.Logger;
 import com.digitusrevolution.rideshare.common.inf.DomainObjectPKInteger;
 import com.digitusrevolution.rideshare.common.mapper.serviceprovider.core.PartnerMapper;
 import com.digitusrevolution.rideshare.model.serviceprovider.data.core.PartnerEntity;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Offer;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Partner;
 import com.digitusrevolution.rideshare.serviceprovider.data.PartnerDAO;
 
@@ -95,6 +97,16 @@ public class PartnerDO implements DomainObjectPKInteger<Partner>{
 		partner = get(id);
 		setPartner(partner);
 		partnerDAO.delete(partnerEntity);
+	}
+	
+	public int createPartner(Partner partner) {
+		int id = create(partner);
+		partner = getAllData(id);
+		CompanyDO companyDO = new CompanyDO();
+		Company company = companyDO.getAllData(1);
+		company.getPartners().add(partner);
+		companyDO.update(company);
+		return id;
 	}
 
 }
