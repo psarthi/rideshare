@@ -143,7 +143,7 @@ public class CompanyDataLoader {
 		AppInfo appInfo = new AppInfo();
 		appInfo.setAppUrl("https://play.google.com/store/apps/details?id=com.parift.rideshare");
 		appInfo.setShareMsg("Parift Ride (Share rides with trusted people of common interest and enjoy great company) ");
-		appInfo.setMinAppVersionCode(11);
+		appInfo.setMinAppVersionCode(12);
 		appInfo.setHomePageMsg("Free Parking across Bangalore by sharing 5 Rides in a week. Checkout Rewards for more details.");
 		AppInfoDO appInfoDO = new AppInfoDO();
 		appInfoDO.create(appInfo);
