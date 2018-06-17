@@ -17,11 +17,11 @@ import com.digitusrevolution.rideshare.common.auth.Secured;
 import com.digitusrevolution.rideshare.common.service.NotificationService;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.common.NotificationMessage;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.AppInfo;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.HelpQuestionAnswer;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Offer;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Partner;
-import com.digitusrevolution.rideshare.model.serviceprovider.dto.AppInfo;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.CompanyAccount;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.NotificationData;
 import com.digitusrevolution.rideshare.serviceprovider.business.CompanyBusinessService;
@@ -61,7 +61,7 @@ public class CompanyBusinessResource {
 		Company company = companyBusinessService.get(id, Boolean.valueOf(fetchChild));
 		return Response.ok(company).build();
 	}
-	
+		
 	@Secured
 	@GET
 	@Path("/help")
@@ -75,10 +75,8 @@ public class CompanyBusinessResource {
 	@GET
 	@Path("/appinfo")
 	public Response getAppInfo() {
-		AppInfo appInfo = new AppInfo();
-		appInfo.setMinAppVersionCode(Integer.parseInt(PropertyReader.getInstance().getProperty("MIN_APP_VERSION_CODE")));
-		appInfo.setAppUrl(PropertyReader.getInstance().getProperty("APP_URL"));
-		appInfo.setShareMsg(PropertyReader.getInstance().getProperty("APP_SHARE_MSG"));
+		CompanyBusinessService companyBusinessService = new CompanyBusinessService();
+		AppInfo appInfo = companyBusinessService.getAppInfo();
 		return Response.ok(appInfo).build();
 	}
 	

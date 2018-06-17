@@ -15,11 +15,13 @@ import org.hibernate.Transaction;
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Account;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.AppInfo;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.user.domain.City;
 import com.digitusrevolution.rideshare.model.user.domain.Country;
 import com.digitusrevolution.rideshare.model.user.domain.Currency;
 import com.digitusrevolution.rideshare.model.user.domain.State;
+import com.digitusrevolution.rideshare.serviceprovider.domain.core.AppInfoDO;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.CompanyDO;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.HelpQuestionAnswerDO;
 
@@ -38,7 +40,8 @@ public class CompanyDataLoader {
 			CompanyDataLoader dataLoader = new CompanyDataLoader();
 			//dataLoader.loadCompany();
 			//dataLoader.addAccount();
-			dataLoader.addOperaringCities();
+			//dataLoader.addOperaringCities();
+			dataLoader.updateAppInfo();
 			
 			transaction.commit();
 
@@ -134,6 +137,16 @@ public class CompanyDataLoader {
 
 		companyDO.update(company);
 		
+	}
+	
+	public void updateAppInfo() {
+		AppInfo appInfo = new AppInfo();
+		appInfo.setAppUrl("https://play.google.com/store/apps/details?id=com.parift.rideshare");
+		appInfo.setShareMsg("Parift Ride (Share rides with trusted people of common interest and enjoy great company) ");
+		appInfo.setMinAppVersionCode(11);
+		appInfo.setHomePageMsg("Free Parking across Bangalore by sharing 5 Rides in a week. Checkout Rewards for more details.");
+		AppInfoDO appInfoDO = new AppInfoDO();
+		appInfoDO.create(appInfo);
 	}
 
 }

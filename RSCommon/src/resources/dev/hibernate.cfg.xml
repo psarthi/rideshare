@@ -89,7 +89,8 @@
 			class="com.digitusrevolution.rideshare.model.serviceprovider.data.core.RewardCouponTransactionEntity" />
 		<mapping
 			class="com.digitusrevolution.rideshare.model.serviceprovider.data.core.RewardReimbursementTransactionEntity" />
-			
+		<mapping
+			class="com.digitusrevolution.rideshare.model.serviceprovider.data.core.AppInfoEntity" />			
 			
 
 		<!-- Ride System -->

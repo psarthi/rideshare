@@ -9,11 +9,13 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.AppInfo;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Company;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.HelpQuestionAnswer;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Offer;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.Partner;
 import com.digitusrevolution.rideshare.model.serviceprovider.dto.CompanyAccount;
+import com.digitusrevolution.rideshare.serviceprovider.domain.core.AppInfoDO;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.CompanyDO;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.HelpQuestionAnswerDO;
 import com.digitusrevolution.rideshare.serviceprovider.domain.core.PartnerDO;
@@ -131,6 +133,33 @@ public class CompanyBusinessService {
 			}
 		}
 		return id;	
+	}
+	
+	public AppInfo getAppInfo() {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;	
+		AppInfo appInfo = null;
+		try {
+			transaction = session.beginTransaction();
+
+			AppInfoDO appInfoDO = new AppInfoDO();
+			appInfo = appInfoDO.get(1);
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		return appInfo;	
 	}
 	
 }

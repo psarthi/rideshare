@@ -1,10 +1,12 @@
-package com.digitusrevolution.rideshare.model.serviceprovider.dto;
+package com.digitusrevolution.rideshare.model.serviceprovider.domain.core;
 
 public class AppInfo {
 	
+	private int id;
 	private int minAppVersionCode;
 	private String appUrl;
 	private String shareMsg;
+	private String homePageMsg;
 
 	public int getMinAppVersionCode() {
 		return minAppVersionCode;
@@ -28,6 +30,22 @@ public class AppInfo {
 
 	public void setShareMsg(String shareMsg) {
 		this.shareMsg = shareMsg;
+	}
+
+	public String getHomePageMsg() {
+		return homePageMsg;
+	}
+
+	public void setHomePageMsg(String homePageMsg) {
+		this.homePageMsg = homePageMsg;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	
