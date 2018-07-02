@@ -129,8 +129,16 @@ public class OfferDO implements DomainObjectPKInteger<Offer>{
 		List<UserOffer> userOffers = new LinkedList<>();
 		for (Offer offer: offers) {
 			UserOffer userOffer = JsonObjectMapper.getMapper().convertValue(offer, UserOffer.class);
-			userOffer.setUserEligible(isUserEligibleForOffer(ridesStats, offer));
-			userOffer.setBalanceRideRequirement(getRidesBalanceRequirement(ridesStats, userOffer));
+			boolean userEligible = isUserEligibleForOffer(ridesStats, offer);
+			userOffer.setUserEligible(userEligible);
+			if (!userEligible) {
+				userOffer.setBalanceRideRequirement(getRidesBalanceRequirement(ridesStats, userOffer));	
+			} else {
+				//No need to calculate the balance requirement if user is already eligible
+				//else it will set the wrong requirement as requirement is based on current month / week 
+				//but user can be eligible based on last week / month status
+				userOffer.setBalanceRideRequirement(0);
+			}
 			userOffers.add(userOffer);
 		}
 		return userOffers;
@@ -253,7 +261,7 @@ public class OfferDO implements DomainObjectPKInteger<Offer>{
 		PartnerDO partnerDO = new PartnerDO();
 		Partner partner = partnerDO.getAllData(partnerId);
 		offer.setPartner(partner);
-		update(offer);
+		create(offer);
 	}
 
 
