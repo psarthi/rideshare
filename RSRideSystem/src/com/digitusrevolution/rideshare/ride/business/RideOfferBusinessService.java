@@ -2,6 +2,7 @@ package com.digitusrevolution.rideshare.ride.business;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
@@ -12,9 +13,12 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import com.digitusrevolution.rideshare.common.db.HibernateUtil;
+import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
+import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.billing.dto.BillInfo;
+import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
 import com.digitusrevolution.rideshare.model.ride.domain.RideType;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
@@ -84,7 +88,8 @@ public class RideOfferBusinessService {
 
 		return rideId;
 	}
-
+	
+	
 
 	public RideOfferResult getRideOfferResult(long rideId){
 
@@ -423,6 +428,62 @@ public class RideOfferBusinessService {
 		}
 		return ridesCount;
 	}
+	
+	public List<Ride> getActiveParentRides() {
+		
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		List<Ride> parentRides = new LinkedList<>();
+		try {
+			transaction = session.beginTransaction();
+
+			RideDO rideDO = new RideDO();
+			parentRides = rideDO.getActiveParentRides();
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+		
+		return parentRides;
+	}
+
+	public void createRecurringRide(Ride parentRide) {
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		try {
+			transaction = session.beginTransaction();
+			
+			RideDO rideDO = new RideDO();
+			rideDO.createRecurringRide(parentRide);
+			
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+	}
+
+
+
 }
 
 

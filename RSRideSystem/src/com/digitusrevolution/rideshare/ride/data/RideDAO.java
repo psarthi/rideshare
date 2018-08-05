@@ -25,6 +25,7 @@ import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.model.billing.domain.core.InvoiceStatus;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.RecurringStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
@@ -206,6 +207,29 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Long>{
 		List<RideEntity> rideEntitiesList = new LinkedList<>(rideEntities);
 		return rideEntitiesList;	
 	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public List<RideEntity> getRecurringRides(RideEntity parentRide, ZonedDateTime startDate, ZonedDateTime endDate){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass);
+		Set rideEntities = new HashSet<>(criteria.add(Restrictions.eq("parentRide", parentRide))
+				.add(Restrictions.and(Restrictions.ge("startTime", startDate),Restrictions.le("startTime", endDate)))
+				.list());
+		List<RideEntity> rideEntitiesList = new LinkedList<>(rideEntities);
+		return rideEntitiesList;	
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public List<RideEntity> getParentRides(ZonedDateTime startDate){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass);
+		Set rideEntities = new HashSet<>(criteria.add(Restrictions.eq("recurringDetail.recurringStatus", RecurringStatus.Active))
+				.add(Restrictions.le("startTime", startDate))
+				.list());
+		List<RideEntity> rideEntitiesList = new LinkedList<>(rideEntities);
+		return rideEntitiesList;	
+	}
+
 	
 }
 

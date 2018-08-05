@@ -1,53 +1,43 @@
 package com.digitusrevolution.rideshare.model.ride.data;
 
-import java.time.ZonedDateTime;
+import java.util.LinkedList;
+import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
 
-@Entity
-@Table(name="recurring_detail")
+import com.digitusrevolution.rideshare.model.ride.domain.RecurringStatus;
+import com.digitusrevolution.rideshare.model.ride.domain.WeekDay;
+
+@Embeddable
 public class RecurringDetailEntity {
 	
-	@Id
-	@GeneratedValue
-	private long id;
-	private ZonedDateTime startDate;
-	private ZonedDateTime endDate;
-	private String repeatFrequency;
+	@Enumerated(EnumType.STRING)
+	private RecurringStatus recurringStatus;
+	@ElementCollection(targetClass=WeekDay.class)
+	@CollectionTable(name="recurring_days", joinColumns=@JoinColumn(name="ride_id"))
+	@Enumerated(EnumType.STRING)
+	List<WeekDay> weekDays = new LinkedList<WeekDay>();
+	
 
-	public ZonedDateTime getStartDate() {
-		return startDate;
+	public RecurringStatus getRecurringStatus() {
+		return recurringStatus;
 	}
 
-	public long getId() {
-		return id;
+	public void setRecurringStatus(RecurringStatus recurringStatus) {
+		this.recurringStatus = recurringStatus;
 	}
 
-	public void setId(long id) {
-		this.id = id;
+	public List<WeekDay> getWeekDays() {
+		return weekDays;
 	}
 
-	public void setStartDate(ZonedDateTime startDate) {
-		this.startDate = startDate;
+	public void setWeekDays(List<WeekDay> weekDays) {
+		this.weekDays = weekDays;
 	}
-
-	public ZonedDateTime getEndDate() {
-		return endDate;
-	}
-
-	public void setEndDate(ZonedDateTime endDate) {
-		this.endDate = endDate;
-	}
-
-	public String getRepeatFrequency() {
-		return repeatFrequency;
-	}
-
-	public void setRepeatFrequency(String repeatFrequency) {
-		this.repeatFrequency = repeatFrequency;
-	}
-
+	
 }

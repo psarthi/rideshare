@@ -6,6 +6,7 @@ import java.util.HashSet;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -27,6 +28,7 @@ import com.digitusrevolution.rideshare.model.billing.data.core.InvoiceEntity;
 import com.digitusrevolution.rideshare.model.billing.domain.core.Invoice;
 import com.digitusrevolution.rideshare.model.ride.data.RecurringDetailEntity;
 import com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
@@ -55,7 +57,7 @@ public class RideEntity {
 	@OneToOne
 	private TrustNetworkEntity trustNetwork;
 	private boolean recur;
-	@OneToOne(cascade=CascadeType.ALL)
+	@Embedded
 	private RecurringDetailEntity recurringDetail;
 	@Column (name="status")
 	@Enumerated(EnumType.STRING)
@@ -91,16 +93,18 @@ public class RideEntity {
 	private RideMode rideMode;
 	@OneToOne(cascade=CascadeType.MERGE)
 	private InvoiceEntity invoice;
+	@OneToOne
+	private RideEntity parentRide;
 	
 
-	public RideMode getRideMode() {
-		return rideMode;
-	}
 	public long getId() {
 		return id;
 	}
 	public void setId(long id) {
 		this.id = id;
+	}
+	public RideMode getRideMode() {
+		return rideMode;
 	}
 	public void setRideMode(RideMode rideMode) {
 		this.rideMode = rideMode;
@@ -255,6 +259,12 @@ public class RideEntity {
 	public void setInvoice(InvoiceEntity invoice) {
 		this.invoice = invoice;
 	}
-	
+	public RideEntity getParentRide() {
+		return parentRide;
+	}
+	public void setParentRide(RideEntity parentRide) {
+		this.parentRide = parentRide;
+	}
+
 
 }

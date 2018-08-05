@@ -6,7 +6,9 @@ import java.util.HashSet;
 
 import com.digitusrevolution.rideshare.model.billing.domain.core.Invoice;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
+import com.digitusrevolution.rideshare.model.ride.domain.RecurringDetail;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
+import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
@@ -38,6 +40,9 @@ public class BasicRide {
 	private int travelDistance;
 	private RideMode rideMode;
 	private Invoice invoice;
+	private boolean recur;
+	private RecurringDetail recurringDetail;
+	private BasicRide parentRide;
 	
 	public long getId() {
 		return id;
@@ -147,4 +152,24 @@ public class BasicRide {
 	public void setInvoice(Invoice invoice) {
 		this.invoice = invoice;
 	}	
+	public boolean isRecur() {
+		return recur;
+	}
+	public void setRecur(boolean recur) {
+		this.recur = recur;
+	}
+	public RecurringDetail getRecurringDetail() {
+		return recurringDetail;
+	}
+	public void setRecurringDetail(RecurringDetail recurringDetail) {
+		this.recurringDetail = recurringDetail;
+	}
+	public BasicRide getParentRide() {
+		return parentRide;
+	}
+	public void setParentRide(BasicRide parentRide) {
+		this.parentRide = parentRide;
+	}
+	
+	
 }

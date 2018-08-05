@@ -10,8 +10,6 @@ import com.digitusrevolution.rideshare.model.ride.domain.Route;
 public class FullRide extends BasicRide{
 
 	private Route route;
-	private boolean recur;
-	private RecurringDetail recurringDetail;
 	
 	private Collection<BasicRidePassenger> ridePassengers = new HashSet<BasicRidePassenger>();
 	private Collection<FullRideRequest> acceptedRideRequests = new HashSet<FullRideRequest>();
@@ -23,18 +21,6 @@ public class FullRide extends BasicRide{
 	}
 	public void setRoute(Route route) {
 		this.route = route;
-	}
-	public boolean isRecur() {
-		return recur;
-	}
-	public void setRecur(boolean recur) {
-		this.recur = recur;
-	}
-	public RecurringDetail getRecurringDetail() {
-		return recurringDetail;
-	}
-	public void setRecurringDetail(RecurringDetail recurringDetail) {
-		this.recurringDetail = recurringDetail;
 	}
 	public Collection<BasicRidePassenger> getRidePassengers() {
 		return ridePassengers;

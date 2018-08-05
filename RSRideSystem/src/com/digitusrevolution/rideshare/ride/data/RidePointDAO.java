@@ -102,6 +102,17 @@ public class RidePointDAO{
 		 */
 		collection.replaceOne(eq("_id", _id), Document.parse(json));
 	}
+	
+	public void updateAll(Collection<RidePoint> ridePoints) {
+		for (RidePoint ridePoint : ridePoints) {
+			String json = jsonUtil.getJson(ridePoint);
+			String _id = ridePoint.get_id();
+			//Not using updateMany as we need to update each points with different data
+			collection.replaceOne(eq("_id", _id), Document.parse(json));
+			logger.trace(json);
+		}
+		
+	}
 
 	public void delete(String _id) {
 		collection.deleteOne(eq("_id", _id));
@@ -125,6 +136,14 @@ public class RidePointDAO{
 		logger.exit();
 		return getAllSpecificRidePointFromDocuments(cursor, rideId);
 	}
+	
+	public List<RidePoint> getAllRidePointsWithRecurringRides(long parentRideId) {
+		logger.entry();
+		MongoCursor<Document> cursor = collection.find(eq("rides.id", parentRideId)).iterator();
+		logger.exit();
+		return getAllRidePointFromDocuments(cursor);
+	}
+
 
 	public List<RidePoint> getAllRidePointWithinGivenGeometry(Geometry geometry){
 		MongoCursor<Document> cursor = collection.find(geoWithin("point", geometry)).iterator();

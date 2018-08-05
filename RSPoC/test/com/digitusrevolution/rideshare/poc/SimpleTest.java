@@ -1,20 +1,19 @@
 package com.digitusrevolution.rideshare.poc;
 
+import java.util.ArrayList;
+
 public class SimpleTest {
 
-	public static void main(String[] args) {
-		
-		float f1 = 1;
-	    float f2 = 2;
-	    int i1 = Float.compare(f1,f2);
-	   
-	    if(i1 > 0){
-	      System.out.println("First is grater");
-	    }else if(i1 < 0){
-	      System.out.println("Second is grater");
-	    }else{
-	      System.out.println("Both are equal");
+	    public static void main(String[] args) {
+	        ArrayList<ArrayList<Integer>> array =
+	            new ArrayList<ArrayList<Integer>>();
+	        for(int i=0; i<10000; i++) {
+	            try {
+	                array.add(new ArrayList<Integer>(1000000));
+	            } catch (OutOfMemoryError e) {
+	                System.out.println(i);
+	                break;
+	            }
+	        }
 	    }
-		
 	}
-}

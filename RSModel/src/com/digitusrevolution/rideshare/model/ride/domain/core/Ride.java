@@ -49,6 +49,7 @@ public class Ride implements Comparable<Ride>{
 	private int travelDistance;
 	private RideMode rideMode;
 	private Invoice invoice;
+	private Ride parentRide;
 	
 	public long getId() {
 		return id;
@@ -85,12 +86,6 @@ public class Ride implements Comparable<Ride>{
 	}
 	public void setRecur(boolean recur) {
 		this.recur = recur;
-	}
-	public RecurringDetail getRecurringDetail() {
-		return recurringDetail;
-	}
-	public void setRecurringDetail(RecurringDetail recurringDetail) {
-		this.recurringDetail = recurringDetail;
 	}
 	public RideStatus getStatus() {
 		return status;
@@ -247,6 +242,17 @@ public class Ride implements Comparable<Ride>{
 	public void setInvoice(Invoice invoice) {
 		this.invoice = invoice;
 	}
-
+	public RecurringDetail getRecurringDetail() {
+		return recurringDetail;
+	}
+	public void setRecurringDetail(RecurringDetail recurringDetail) {
+		this.recurringDetail = recurringDetail;
+	}
+	public Ride getParentRide() {
+		return parentRide;
+	}
+	public void setParentRide(Ride parentRide) {
+		this.parentRide = parentRide;
+	}
 	
 }

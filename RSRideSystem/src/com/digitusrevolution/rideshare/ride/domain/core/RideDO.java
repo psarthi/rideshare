@@ -1,10 +1,10 @@
 package com.digitusrevolution.rideshare.ride.domain.core;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.management.openmbean.InvalidKeyException;
 import javax.ws.rs.NotFoundException;
@@ -36,18 +37,21 @@ import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.service.NotificationService;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
+import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
+import com.digitusrevolution.rideshare.model.ride.domain.RecurringDetail;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePointProperty;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategory;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustCategoryName;
 import com.digitusrevolution.rideshare.model.ride.domain.TrustNetwork;
+import com.digitusrevolution.rideshare.model.ride.domain.WeekDay;
 import com.digitusrevolution.rideshare.model.ride.domain.core.Ride;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideMode;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideRequest;
@@ -55,7 +59,6 @@ import com.digitusrevolution.rideshare.model.ride.domain.core.RideSeatStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.core.RideStatus;
 import com.digitusrevolution.rideshare.model.ride.dto.MatchedTripInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.RidePointInfo;
-import com.digitusrevolution.rideshare.model.ride.dto.RidesInfo;
 import com.digitusrevolution.rideshare.model.ride.dto.google.GoogleDirection;
 import com.digitusrevolution.rideshare.model.ride.dto.google.Leg;
 import com.digitusrevolution.rideshare.model.serviceprovider.domain.core.RidesDuration;
@@ -63,7 +66,6 @@ import com.digitusrevolution.rideshare.model.user.data.core.UserEntity;
 import com.digitusrevolution.rideshare.model.user.domain.Interest;
 import com.digitusrevolution.rideshare.model.user.domain.Role;
 import com.digitusrevolution.rideshare.model.user.domain.RoleName;
-import com.digitusrevolution.rideshare.model.user.domain.VehicleSubCategory;
 import com.digitusrevolution.rideshare.model.user.domain.core.User;
 import com.digitusrevolution.rideshare.model.user.dto.GroupDetail;
 import com.digitusrevolution.rideshare.ride.data.RideDAO;
@@ -247,6 +249,8 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 	 * 
 	 */
 	public List<Long> offerRide(Ride ride, GoogleDirection direction){
+		//This will ensure we are using the same ride everywhere
+		this.ride = ride;
 		long userId = ride.getDriver().getId();
 		Collection<Role> roles = RESTClientUtil.getRoles(userId);
 		long id = 0;
@@ -289,6 +293,7 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 				TrustNetwork trustNetworkWithId = trustNetworkDO.get(trustNetworkId);
 				ride.setTrustNetwork(trustNetworkWithId);
 
+				/*For reference purpose only
 				//Check if ride is recurring, then create multiple rides as per the recurring details
 				//**TBD - Recurring code needs to be written later
 				if (ride.getRecur()){
@@ -304,17 +309,19 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 						logger.info("Ride has been created with id:" + id);						
 					}
 				}
+				 */
 
-				if (!ride.getRecur()){
-					id = create(ride);	
-					rideIds.add(id);
-					//Below is imp, else it won't be able to update the ride which has been just created
-					ride.setId(id);
-					logger.info("Ride has been created with id:" + id);
-				}
+				//Master Ride Creation i.e. master ride would be created irrespective of recurring or not
+				id = create(ride);	
+				rideIds.add(id);
+				//Below is imp, else it won't be able to update the ride which has been just created
+				ride.setId(id);
+				logger.info("Ride has been created with id:" + id);
 
 				RouteDO routeDO = new RouteDO();
 				List<RidePointProperty> ridePointProperties = new ArrayList<>();
+
+				/* For reference purpose only
 				//In case its a recurring ride, then create multiple rides and add all of them below
 				//**TBD - Recurring scenarios has to be written later
 				if(ride.getRecur()){
@@ -325,13 +332,15 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 						ridePointProperty.setDateTime(startTimeUTC.plusDays(i));
 						ridePointProperties.add(ridePointProperty);
 					}					
-				}			
-				if(!ride.getRecur()){
-					RidePointProperty ridePointProperty = new RidePointProperty();
-					ridePointProperty.setId(id);
-					ridePointProperty.setDateTime(startTimeUTC);
-					ridePointProperties.add(ridePointProperty);					
 				}
+				 */
+
+				//Master Ride added to ridepoint property i.e. master ride would be added irrespective of recurring or not
+				RidePointProperty ridePointProperty = new RidePointProperty();
+				ridePointProperty.setId(id);
+				ridePointProperty.setDateTime(startTimeUTC);
+				ridePointProperties.add(ridePointProperty);					
+
 				Route route = routeDO.getRoute(direction, ridePointProperties);
 				Collection<RidePoint> ridePoints = route.getRidePoints();
 				//Insert primary key here itself, so that we can update the start and end location in the ride table
@@ -349,10 +358,13 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 				ridePointDAO.createBulk(ridePoints);
 				ride.getStartPoint().set_id(startPointId);
 				ride.getEndPoint().set_id(endPointId);
-				if (!ride.getRecur()){
-					update(ride);
-					logger.debug("Ride has been updated with id:"+ride.getId());					
-				}
+
+				//Master Ride updated i.e. master ride would be update irrespective of recurring or not
+				update(ride);
+				logger.debug("Ride has been updated with id:"+ride.getId());					
+
+
+				/*For reference purpose only
 				//**TBD - Recurring scenarios has to be written later
 				if (ride.getRecur()){
 					//For testing purpose, needs to be written properly
@@ -371,6 +383,7 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 						logger.debug("Ride has been updated with id:"+rideIds.get(i));
 					}
 				}
+				 */
 			} 
 		}
 		if (!driverStatus) {
@@ -379,6 +392,143 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 			NotificationService.sendRideOfferAdminNotification(ride);
 			return rideIds;
 		}
+	}
+	
+	public List<Ride> getActiveParentRides() {
+		ZonedDateTime currentDateTime = DateTimeUtil.getCurrentTimeInUTC();
+		List<Ride> rides = new LinkedList<>();
+
+		List<RideEntity> parentRides = rideDAO.getParentRides(currentDateTime);
+		
+		for (RideEntity rideEntity: parentRides) {
+			Ride parentRide = rideMapper.getDomainModel(rideEntity, true);
+			rides.add(parentRide);
+		}
+		return rides;
+	}
+
+	/*
+	 * High Level Logic -
+	 * 
+	 * 1. Get list of dates for recurring rides within a specific start and end date
+	 * 2. Get list of existing recurring rides within the same duration for that parentRide
+	 * 3. Compare and find out for which dates rides doesn't exist
+	 * 4. Create recurring ride for those dates
+	 * 5. Route needs to be updated with new rides properties only
+	 * 6. Auto match for all the newly created rides
+	 * 
+	 */
+	public void createRecurringRide(Ride parentRide) {
+
+		long upcomingRecurringDuration = Long.parseLong(PropertyReader.getInstance().getProperty("UPCOMING_RECURRING_RIDES_DURATION"));
+		ZonedDateTime currentDateTime = DateTimeUtil.getCurrentTimeInUTC();
+		ZonedDateTime endDateTime = currentDateTime.plusDays(upcomingRecurringDuration);
+		Set<ZonedDateTime> recurringRideDates = new HashSet<>();
+		ZonedDateTime startDateTime = currentDateTime;
+		List<Long> rideIds = new ArrayList<>();
+		HashMap<Long, Long> newRecurringRidesIncrementalDays = new HashMap<>();
+
+		while (startDateTime.isBefore(endDateTime)) {			
+			for (WeekDay weekDay : parentRide.getRecurringDetail().getWeekDays()) {
+				if (startDateTime.getDayOfWeek().toString().equals(weekDay.toString()))	{
+					recurringRideDates.add(startDateTime.with(LocalTime.MIDNIGHT));
+				}
+			}
+			startDateTime = startDateTime.plusDays(1);
+		}
+		RideEntity parentRideEntity = rideMapper.getEntity(parentRide, false);
+		List<RideEntity> recurringRides = rideDAO.getRecurringRides(parentRideEntity, currentDateTime, endDateTime);
+
+		Set<ZonedDateTime> existingRecurringRidesDates = new HashSet<>();
+
+		for (RideEntity rideEntity: recurringRides) {
+			//IMP - We need to convert the zone to UTC format "Z" instead of default +5:30 otherwise set would not remove the dates due to mismatch of zone information
+			existingRecurringRidesDates.add(rideEntity.getStartTime().withZoneSameInstant(ZoneOffset.UTC).with(LocalTime.MIDNIGHT));
+		}
+
+		logger.info("Recurring Ride Dates for parent Ride Id:"+parentRide.getId()+"-"+recurringRideDates.toString());
+		logger.info("Existing Recurring Ride Dates for parent Ride Id:"+parentRide.getId()+"-"+existingRecurringRidesDates.toString());
+		recurringRideDates.removeAll(existingRecurringRidesDates);
+		logger.info("Recurring Ride Dates for which rides doesn't exist for parent Ride Id:"+parentRide.getId()+"-"+recurringRideDates.toString());
+
+
+		for (ZonedDateTime date: recurringRideDates) {
+
+			long diff = date.toEpochSecond() - parentRide.getStartTime().with(LocalTime.MIDNIGHT).toEpochSecond();
+			logger.debug("Difference in Days from Parent Ride: " + TimeUnit.DAYS.convert(diff, TimeUnit.SECONDS));
+			long incrementalDays = TimeUnit.DAYS.convert(diff, TimeUnit.SECONDS);
+
+			Ride recurringRide = getSkeletonRecurringRide(parentRide, incrementalDays);
+			long id = create(recurringRide);
+			logger.info("Recurring Ride has been created with id:" + id);
+			rideIds.add(id);
+			newRecurringRidesIncrementalDays.put(id, incrementalDays);
+
+		}
+		
+		if (newRecurringRidesIncrementalDays.size()>0) {
+			
+			List<RidePoint> masterRidePoints = ridePointDAO.getAllRidePointsWithRecurringRides(parentRide.getId());
+
+			for (RidePoint ridePoint: masterRidePoints) {
+
+				ZonedDateTime masterRidePointDateTime = null;
+				List<RidePointProperty> ridePointProperties = ridePoint.getRidePointProperties();
+				Iterator<RidePointProperty> iterator = ridePointProperties.iterator();
+
+				while(iterator.hasNext()){
+					RidePointProperty ridePointProperty = iterator.next();
+					if (ridePointProperty.getId() == parentRide.getId()){
+						masterRidePointDateTime = ridePointProperty.getDateTime();
+						break;
+					}
+				}
+
+				for (Map.Entry<Long, Long> entry: newRecurringRidesIncrementalDays.entrySet()) {
+					RidePointProperty ridePointProperty = new RidePointProperty();
+					ridePointProperty.setId(entry.getKey());
+					ridePointProperty.setDateTime(masterRidePointDateTime.plusDays(entry.getValue()));
+					//This will update the master ride points as its by reference, so no need to have another list to hold updated ride point
+					ridePoint.getRidePointProperties().add(ridePointProperty);					
+				}
+				
+			}
+			
+			//This will take care of updating routes for recurring rides
+			ridePointDAO.updateAll(masterRidePoints);
+			logger.info("Route has been updated for all recurring rides for parent Ride Id:"+parentRide.getId());
+			
+			for (long id: rideIds) {
+				RideRequestDO rideRequestDO = new RideRequestDO();
+				rideRequestDO.autoMatchRideRequest(id);
+			}
+		}		
+
+	}
+
+	public Ride getSkeletonRecurringRide(Ride parentRide, long incrementalDays) {
+
+		//VERY IMP - Don't use JsonObjectMapper to convert as its copy be reference and not deep copy, so it tampers the parentRide itself
+		Ride recurringRide = new Ride();
+		recurringRide.setId(0);
+		recurringRide.setStartTime(parentRide.getStartTime().plusDays(incrementalDays));
+		recurringRide.setEndTime(parentRide.getEndTime().plusDays(incrementalDays));
+		recurringRide.setStartPoint(parentRide.getStartPoint());
+		recurringRide.setEndPoint(parentRide.getEndPoint());
+		recurringRide.setStartPointAddress(parentRide.getStartPointAddress());
+		recurringRide.setEndPointAddress(parentRide.getEndPointAddress());
+		recurringRide.setSeatOffered(parentRide.getSeatOffered());
+		recurringRide.setLuggageCapacityOffered(parentRide.getLuggageCapacityOffered());
+		recurringRide.setTrustNetwork(parentRide.getTrustNetwork());
+		recurringRide.setStatus(RideStatus.Planned);
+		recurringRide.setSeatStatus(RideSeatStatus.Available);
+		recurringRide.setParentRide(parentRide);
+		recurringRide.setVehicle(parentRide.getVehicle());
+		recurringRide.setRideMode(parentRide.getRideMode());
+		recurringRide.setDriver(parentRide.getDriver());
+		recurringRide.setTravelDistance(parentRide.getTravelDistance());
+
+		return recurringRide;
 	}
 
 	/*
@@ -592,7 +742,7 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 		//Case 3 - If Ride Trust category is Groups 
 		//Then check ride driver groups and see if there is any common groups
 		//If there is common group, then its valid 
-		
+
 		List<GroupDetail> passengerGroups = null;
 		//Get groups of passenger
 		passengerGroups = RESTClientUtil.getGroups(passenger.getId());
@@ -684,7 +834,7 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 
 		return matchedTripInfos;
 	}
-	
+
 	//This will sort the matched list based on pickup time in asc order
 	public List<MatchedTripInfo> getSortedMatchedListByPickupTime(List<MatchedTripInfo> matchedTripInfos) {
 
@@ -715,7 +865,7 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 
 		return matchedTripInfos;
 	}
-	
+
 	//This will sort the matched list based on matched interest, so that we get the most compatible people matched 
 	public List<MatchedTripInfo> getSortedMatchedListByMatchedInterest(List<MatchedTripInfo> matchedTripInfos) {
 
@@ -743,20 +893,20 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 
 		return matchedTripInfos;
 	}
-	
+
 	private int getCommonInterestCount(MatchedTripInfo matchedTripInfo) {
 		User u1 = get(matchedTripInfo.getRideId()).getDriver();
 		RideRequestDO rideRequestDO = new RideRequestDO();
 		User u2 = rideRequestDO.get(matchedTripInfo.getRideRequestId()).getPassenger();
-		
+
 		Collection<Interest> u1Interests = u1.getInterests();
 		Collection<Interest> u2Interests = u2.getInterests();
 		u1Interests.retainAll(u2Interests);
 		int matchedInterestCount = u1Interests.size();
 		return matchedInterestCount;
 	}
-	
-	
+
+
 	public void processAllPendingInvoicePayment() {
 		List<RideEntity> ridesWithPendingInvoice = rideDAO.getRidesWithPendingInvoice();
 		for (RideEntity rideEntity: ridesWithPendingInvoice) {
@@ -843,7 +993,7 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 		RideAction rideAction = new RideAction(this);
 		return rideAction.getPrice(rideRequest);
 	}
-	
+
 	public int getUserCombinedRidesAndRideRequestsCountInSpecificDuration(long userId, ZonedDateTime weekDayDate, RidesDuration ridesDuration, int dailyMaxLimit) {
 
 		User user = RESTClientUtil.getBasicUser(userId);
@@ -859,14 +1009,14 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 			startDate = DateTimeUtil.getStartDateOfTheMonth(weekDayDate);
 			endDate = DateTimeUtil.getStartDateOfNextMonth(weekDayDate);					
 		}
-		
+
 		logger.debug("WeekDayDate:"+weekDayDate+"startDate:"+startDate+"endDate:"+endDate);
 		List<RideEntity> rideEntities = rideDAO.getRidesWithinSpecificDuration(userEntity, startDate, endDate);
 		int rideCount = 0;
-		
+
 		RideRequestDO requestDO = new RideRequestDO();
 		List<RideRequestEntity> rideRequestEntities = requestDO.getUserRideRequestsInSpecificDuration(userEntity, startDate, endDate);
-		
+
 		//This is for rides
 		HashMap<ZonedDateTime, Integer> map = new HashMap<>();
 		for (RideEntity entity: rideEntities) {
@@ -875,7 +1025,7 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 			int count = map.containsKey(key) ? map.get(key) : 0;
 			if (count<dailyMaxLimit) map.put(key, count + 1);
 		}
-		
+
 		//This is for ride requests
 		for (RideRequestEntity entity: rideRequestEntities) {
 			//MIDNIGHT Time is imp to ensure we has one key for each day and if you have different time then key would become different
@@ -883,14 +1033,14 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 			int count = map.containsKey(key) ? map.get(key) : 0;
 			if (count<dailyMaxLimit) map.put(key, count + 1);
 		}
-	
+
 		Iterator<Entry<ZonedDateTime, Integer>> it = map.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<ZonedDateTime, Integer> entry = (Map.Entry<ZonedDateTime, Integer>)it.next();
 			logger.debug("Key:Value-"+entry.getKey()+"/"+entry.getValue());
 			rideCount = rideCount + entry.getValue();
 		}
-		
+
 		return rideCount;
 	}
 }

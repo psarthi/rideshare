@@ -216,6 +216,19 @@ public class RideOfferBusinessResource {
 		int count = rideOfferBusinessService.getUserCombinedRidesAndRideRequestsCountInSpecificDuration(ridesDurationInfo);
 		return Response.ok(count).build();
 	}
+		
+	@Secured
+	@GET	
+	@Path("/createrecurringrides")
+	public Response createRecurringRides() {
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		List<Ride> activeParentRides = rideOfferBusinessService.getActiveParentRides();
+		for (Ride ride: activeParentRides) {
+			rideOfferBusinessService.createRecurringRide(ride);
+		}
+		return Response.ok().build();
+	}
+
 }
 
 

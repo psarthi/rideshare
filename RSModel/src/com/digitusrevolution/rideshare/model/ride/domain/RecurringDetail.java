@@ -1,44 +1,26 @@
 package com.digitusrevolution.rideshare.model.ride.domain;
 
-import java.time.ZonedDateTime;
+import java.util.LinkedList;
+import java.util.List;
 
 public class RecurringDetail {
 	
-	private long id;
-	private ZonedDateTime startDate;
-	private ZonedDateTime endDate;
-	private String repeatFrequency;
+	private RecurringStatus recurringStatus;
+	List<WeekDay> weekDays = new LinkedList<WeekDay>();
 
-	public long getId() {
-		return id;
+	public RecurringStatus getRecurringStatus() {
+		return recurringStatus;
 	}
 
-	public void setId(long id) {
-		this.id = id;
+	public void setRecurringStatus(RecurringStatus recurringStatus) {
+		this.recurringStatus = recurringStatus;
 	}
 
-	public ZonedDateTime getStartDate() {
-		return startDate;
+	public List<WeekDay> getWeekDays() {
+		return weekDays;
 	}
 
-	public void setStartDate(ZonedDateTime startDate) {
-		this.startDate = startDate;
-	}
-
-	public ZonedDateTime getEndDate() {
-		return endDate;
-	}
-
-	public void setEndDate(ZonedDateTime endDate) {
-		this.endDate = endDate;
-	}
-
-	public String getRepeatFrequency() {
-		return repeatFrequency;
-	}
-
-	public void setRepeatFrequency(String repeatFrequency) {
-		this.repeatFrequency = repeatFrequency;
-	}
-
+	public void setWeekDays(List<WeekDay> weekDays) {
+		this.weekDays = weekDays;
+	}	
 }

@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import com.digitusrevolution.rideshare.common.inf.Mapper;
 import com.digitusrevolution.rideshare.common.mapper.billing.core.InvoiceMapper;
+import com.digitusrevolution.rideshare.common.mapper.ride.RecurringDetailMapper;
 import com.digitusrevolution.rideshare.common.mapper.ride.TrustNetworkMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.mapper.user.core.VehicleMapper;
@@ -61,16 +62,14 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		InvoiceMapper invoiceMapper = new InvoiceMapper();
 		if (ride.getInvoice()!=null) rideEntity.setInvoice(invoiceMapper.getEntity(ride.getInvoice(), fetchChild));
 		
+		RecurringDetailMapper recurringDetailMapper = new RecurringDetailMapper();
+		if (ride.getRecur()) rideEntity.setRecurringDetail(recurringDetailMapper.getEntity(ride.getRecurringDetail(), fetchChild));
+		
+		if (ride.getParentRide()!=null) rideEntity.setParentRide(this.getEntity(ride.getParentRide(),fetchChild));
+		
 		if (fetchChild){
 			rideEntity = getEntityChild(ride, rideEntity);
 		}
-
-		/*
-		 * Pending -
-		 * 
-		 * - RecurringDetail
-		 * 
-		 */
 
 		return rideEntity;
 	}
@@ -141,6 +140,11 @@ public class RideMapper implements Mapper<Ride, RideEntity>{
 		
 		InvoiceMapper invoiceMapper = new InvoiceMapper();
 		if (rideEntity.getInvoice()!=null) ride.setInvoice(invoiceMapper.getDomainModel(rideEntity.getInvoice(), fetchChild));
+		
+		RecurringDetailMapper recurringDetailMapper = new RecurringDetailMapper();
+		if (rideEntity.getRecur()) ride.setRecurringDetail(recurringDetailMapper.getDomainModel(rideEntity.getRecurringDetail(), fetchChild));
+		
+		if (rideEntity.getParentRide()!=null) ride.setParentRide(this.getDomainModel(rideEntity.getParentRide(),fetchChild));
 						
 		if (fetchChild){
 			ride = getDomainModelChild(ride, rideEntity);
