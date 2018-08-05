@@ -219,12 +219,12 @@ public class RideOfferBusinessResource {
 		
 	@Secured
 	@GET	
-	@Path("/createrecurringrides")
-	public Response createRecurringRides() {
+	@Path("/createrecurringrides/upcomingdays/{upcomingdays}")
+	public Response createRecurringRides(@PathParam("upcomingdays") int upcomingdays) {
 		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
 		List<Ride> activeParentRides = rideOfferBusinessService.getActiveParentRides();
 		for (Ride ride: activeParentRides) {
-			rideOfferBusinessService.createRecurringRide(ride);
+			rideOfferBusinessService.createRecurringRide(ride, upcomingdays);
 		}
 		return Response.ok().build();
 	}

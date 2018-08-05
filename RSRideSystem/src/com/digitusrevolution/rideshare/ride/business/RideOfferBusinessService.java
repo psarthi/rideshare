@@ -457,14 +457,14 @@ public class RideOfferBusinessService {
 		return parentRides;
 	}
 
-	public void createRecurringRide(Ride parentRide) {
+	public void createRecurringRide(Ride parentRide, int upcomingDays) {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		Transaction transaction = null;
 		try {
 			transaction = session.beginTransaction();
 			
 			RideDO rideDO = new RideDO();
-			rideDO.createRecurringRide(parentRide);
+			rideDO.createRecurringRide(parentRide, upcomingDays);
 			
 			transaction.commit();
 		} catch (RuntimeException e) {

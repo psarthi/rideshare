@@ -293,24 +293,6 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 				TrustNetwork trustNetworkWithId = trustNetworkDO.get(trustNetworkId);
 				ride.setTrustNetwork(trustNetworkWithId);
 
-				/*For reference purpose only
-				//Check if ride is recurring, then create multiple rides as per the recurring details
-				//**TBD - Recurring code needs to be written later
-				if (ride.getRecur()){
-					//For testing purpose, needs to be written properly
-					for (int i = 0; i<recurringDays; i++){
-						//No need to create multiple ride object as the change is only time
-						//This time needs to updated again while updating at later part else all rides would get
-						//last ride date and time
-						ride.setStartTime(startTimeUTC.plusDays(i));
-						ride.setEndTime(endTimeUTC.plusDays(i));
-						id = create(ride);	
-						rideIds.add(id);
-						logger.info("Ride has been created with id:" + id);						
-					}
-				}
-				 */
-
 				//Master Ride Creation i.e. master ride would be created irrespective of recurring or not
 				id = create(ride);	
 				rideIds.add(id);
@@ -320,20 +302,6 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 
 				RouteDO routeDO = new RouteDO();
 				List<RidePointProperty> ridePointProperties = new ArrayList<>();
-
-				/* For reference purpose only
-				//In case its a recurring ride, then create multiple rides and add all of them below
-				//**TBD - Recurring scenarios has to be written later
-				if(ride.getRecur()){
-					//For testing purpose, needs to be written properly
-					for (int i = 0; i<recurringDays; i++){
-						RidePointProperty ridePointProperty = new RidePointProperty();
-						ridePointProperty.setId(rideIds.get(i));
-						ridePointProperty.setDateTime(startTimeUTC.plusDays(i));
-						ridePointProperties.add(ridePointProperty);
-					}					
-				}
-				 */
 
 				//Master Ride added to ridepoint property i.e. master ride would be added irrespective of recurring or not
 				RidePointProperty ridePointProperty = new RidePointProperty();
@@ -362,28 +330,6 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 				//Master Ride updated i.e. master ride would be update irrespective of recurring or not
 				update(ride);
 				logger.debug("Ride has been updated with id:"+ride.getId());					
-
-
-				/*For reference purpose only
-				//**TBD - Recurring scenarios has to be written later
-				if (ride.getRecur()){
-					//For testing purpose, needs to be written properly
-					for (int i = 0; i<recurringDays; i++){
-						//Here we need to update start and end point reference
-						//Apart from ride start and end point reference, which is same for all rides, 
-						//We also need to update ride start time again else all rides would get the last ride start time
-						//While creating multiple rides, we used the same ride object and only changed the start time
-						//so current ride object is having last ride date and time
-						//Other option is to deep copy ride object and create multiple rides while creating
-						//This option can be relooked later but for now, we can just update the starttime again while updating
-						ride.setId(rideIds.get(i));
-						ride.setStartTime(startTimeUTC.plusDays(i));
-						ride.setEndTime(endTimeUTC.plusDays(i));
-						update(ride);
-						logger.debug("Ride has been updated with id:"+rideIds.get(i));
-					}
-				}
-				 */
 			} 
 		}
 		if (!driverStatus) {
@@ -418,17 +364,16 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 	 * 6. Auto match for all the newly created rides
 	 * 
 	 */
-	public void createRecurringRide(Ride parentRide) {
+	public void createRecurringRide(Ride parentRide, int upcomingDays) {
 
-		long upcomingRecurringDuration = Long.parseLong(PropertyReader.getInstance().getProperty("UPCOMING_RECURRING_RIDES_DURATION"));
 		ZonedDateTime currentDateTime = DateTimeUtil.getCurrentTimeInUTC();
-		ZonedDateTime endDateTime = currentDateTime.plusDays(upcomingRecurringDuration);
+		ZonedDateTime endDateTime = currentDateTime.plusDays(upcomingDays);
 		Set<ZonedDateTime> recurringRideDates = new HashSet<>();
 		ZonedDateTime startDateTime = currentDateTime;
 		List<Long> rideIds = new ArrayList<>();
 		HashMap<Long, Long> newRecurringRidesIncrementalDays = new HashMap<>();
 
-		while (startDateTime.isBefore(endDateTime)) {			
+		while (startDateTime.isBefore(endDateTime) || startDateTime.isEqual(endDateTime)) {			
 			for (WeekDay weekDay : parentRide.getRecurringDetail().getWeekDays()) {
 				if (startDateTime.getDayOfWeek().toString().equals(weekDay.toString()))	{
 					recurringRideDates.add(startDateTime.with(LocalTime.MIDNIGHT));
@@ -446,10 +391,10 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 			existingRecurringRidesDates.add(rideEntity.getStartTime().withZoneSameInstant(ZoneOffset.UTC).with(LocalTime.MIDNIGHT));
 		}
 
-		logger.info("Recurring Ride Dates for parent Ride Id:"+parentRide.getId()+"-"+recurringRideDates.toString());
+		logger.info("Upcoming Recurring Ride Dates for parent Ride Id:"+parentRide.getId()+"-"+recurringRideDates.toString());
 		logger.info("Existing Recurring Ride Dates for parent Ride Id:"+parentRide.getId()+"-"+existingRecurringRidesDates.toString());
 		recurringRideDates.removeAll(existingRecurringRidesDates);
-		logger.info("Recurring Ride Dates for which rides doesn't exist for parent Ride Id:"+parentRide.getId()+"-"+recurringRideDates.toString());
+		logger.info("New Recurring Ride Dates for which rides doesn't exist having parent Ride Id:"+parentRide.getId()+"-"+recurringRideDates.toString());
 
 
 		for (ZonedDateTime date: recurringRideDates) {
@@ -496,7 +441,7 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 			
 			//This will take care of updating routes for recurring rides
 			ridePointDAO.updateAll(masterRidePoints);
-			logger.info("Route has been updated for all recurring rides for parent Ride Id:"+parentRide.getId());
+			logger.info("Route has been updated for all recurring rides with parent Ride Id:"+parentRide.getId());
 			
 			for (long id: rideIds) {
 				RideRequestDO rideRequestDO = new RideRequestDO();

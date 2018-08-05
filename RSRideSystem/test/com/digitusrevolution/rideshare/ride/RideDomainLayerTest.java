@@ -86,7 +86,7 @@ public class RideDomainLayerTest {
 	
 		RideDO rideDO = new RideDO();
 		Ride ride = rideDO.get(178);
-		rideDO.createRecurringRide(ride);
+		rideDO.createRecurringRide(ride,7);
 		//RidePointDAO ridePointDAO = new RidePointDAO();
 		//List<RidePoint> allRidePointsWithRecurringRides = ridePointDAO.getAllRidePointsWithRecurringRides(179);
 		
