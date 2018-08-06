@@ -108,6 +108,9 @@
 			class="com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity" />
 		<mapping
 			class="com.digitusrevolution.rideshare.model.ride.data.TrustNetworkEntity" />
+		<mapping
+			class="com.digitusrevolution.rideshare.model.ride.data.LatLngEntity" />
+			
 
 		<!-- Billing System -->
 		<mapping
