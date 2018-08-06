@@ -18,6 +18,7 @@ public class AppInfoMapper implements Mapper<AppInfo, AppInfoEntity>{
 		appInfoEntity.setHomePageMsg(appInfo.getHomePageMsg());
 		appInfoEntity.setMinAppVersionCode(appInfo.getMinAppVersionCode());
 		appInfoEntity.setShareMsg(appInfo.getShareMsg());
+		appInfoEntity.setDefaultRecurringRideOption(appInfo.isDefaultRecurringRideOption());
 		return appInfoEntity;
 	}
 
@@ -35,6 +36,7 @@ public class AppInfoMapper implements Mapper<AppInfo, AppInfoEntity>{
 		appInfo.setHomePageMsg(appInfoEntity.getHomePageMsg());
 		appInfo.setMinAppVersionCode(appInfoEntity.getMinAppVersionCode());
 		appInfo.setShareMsg(appInfoEntity.getShareMsg());
+		appInfo.setDefaultRecurringRideOption(appInfoEntity.isDefaultRecurringRideOption());
 		return appInfo;	
 	}
 

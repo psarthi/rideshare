@@ -230,6 +230,17 @@ public class RideDAO extends GenericDAOImpl<RideEntity, Long>{
 		return rideEntitiesList;	
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public List<RideEntity> getAllUpcomingRecurringRides(RideEntity parentRide, ZonedDateTime startDateTime){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Criteria criteria = session.createCriteria(entityClass);
+		Set rideEntities = new HashSet<>(criteria.add(Restrictions.eq("parentRide", parentRide))
+				.add(Restrictions.and(Restrictions.ge("startTime", startDateTime)))
+				.list());
+		List<RideEntity> rideEntitiesList = new LinkedList<>(rideEntities);
+		return rideEntitiesList;	
+	}
+
 	
 }
 

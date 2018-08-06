@@ -144,6 +144,24 @@ public class RideOfferBusinessResource {
 		return Response.ok(ride).build();				
 	}
 
+	
+	/**
+	 * 
+	 * @param rideId Ride Id
+	 * @return updated Ride
+	 */
+	@Secured
+	@GET
+	@Path("/cancelallupcoming/{rideId}")
+	public Response cancelAllUpcomingRide(@PathParam("rideId") long rideId){
+		RideOfferBusinessService rideOfferBusinessService = new RideOfferBusinessService();
+		rideOfferBusinessService.cancelAllUpcomingRide(rideId);
+		//This will ensure that we are getting fully updated data once transaction is committed
+		RideDomainService rideDomainService = new RideDomainService();
+		FullRide ride = JsonObjectMapper.getMapper().convertValue(rideDomainService.get(rideId, true), FullRide.class);
+		return Response.ok(ride).build();				
+	}
+
 	/**
 	 * 
 	 * @param rideId Ride Id

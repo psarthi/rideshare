@@ -1,6 +1,5 @@
 package com.digitusrevolution.rideshare.ride.domain.core;
 
-import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -8,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -37,14 +35,13 @@ import com.digitusrevolution.rideshare.common.mapper.user.core.UserMapper;
 import com.digitusrevolution.rideshare.common.service.NotificationService;
 import com.digitusrevolution.rideshare.common.util.DateTimeUtil;
 import com.digitusrevolution.rideshare.common.util.JSONUtil;
-import com.digitusrevolution.rideshare.common.util.JsonObjectMapper;
 import com.digitusrevolution.rideshare.common.util.PropertyReader;
 import com.digitusrevolution.rideshare.common.util.RESTClientUtil;
 import com.digitusrevolution.rideshare.model.ride.data.TrustCategoryEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideEntity;
 import com.digitusrevolution.rideshare.model.ride.data.core.RideRequestEntity;
 import com.digitusrevolution.rideshare.model.ride.domain.CancellationType;
-import com.digitusrevolution.rideshare.model.ride.domain.RecurringDetail;
+import com.digitusrevolution.rideshare.model.ride.domain.RecurringStatus;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePoint;
 import com.digitusrevolution.rideshare.model.ride.domain.RidePointProperty;
 import com.digitusrevolution.rideshare.model.ride.domain.Route;
@@ -366,23 +363,26 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 	 */
 	public void createRecurringRide(Ride parentRide, int upcomingDays) {
 
-		ZonedDateTime currentDateTime = DateTimeUtil.getCurrentTimeInUTC();
-		ZonedDateTime endDateTime = currentDateTime.plusDays(upcomingDays);
+		ZonedDateTime currentDate = DateTimeUtil.getCurrentTimeInUTC().with(LocalTime.MIDNIGHT);
+		//IMP - We need to convert the zone to UTC format "Z" instead of default +5:30 otherwise set would not remove the dates due to mismatch of zone information
+		ZonedDateTime parentDate = parentRide.getStartTime().withZoneSameInstant(ZoneOffset.UTC).with(LocalTime.MIDNIGHT);
+		ZonedDateTime endDate = currentDate.plusDays(upcomingDays);
 		Set<ZonedDateTime> recurringRideDates = new HashSet<>();
-		ZonedDateTime startDateTime = currentDateTime;
+		ZonedDateTime startDate = currentDate;
 		List<Long> rideIds = new ArrayList<>();
 		HashMap<Long, Long> newRecurringRidesIncrementalDays = new HashMap<>();
 
-		while (startDateTime.isBefore(endDateTime) || startDateTime.isEqual(endDateTime)) {			
+		while (startDate.isBefore(endDate)) {			
 			for (WeekDay weekDay : parentRide.getRecurringDetail().getWeekDays()) {
-				if (startDateTime.getDayOfWeek().toString().equals(weekDay.toString()))	{
-					recurringRideDates.add(startDateTime.with(LocalTime.MIDNIGHT));
+				if (startDate.getDayOfWeek().toString().equals(weekDay.toString()))	{
+					//Imp. This will ensure we don't recreate the parent date ride which was already created as master
+					if (!startDate.isEqual(parentDate)) recurringRideDates.add(startDate);
 				}
 			}
-			startDateTime = startDateTime.plusDays(1);
+			startDate = startDate.plusDays(1);
 		}
 		RideEntity parentRideEntity = rideMapper.getEntity(parentRide, false);
-		List<RideEntity> recurringRides = rideDAO.getRecurringRides(parentRideEntity, currentDateTime, endDateTime);
+		List<RideEntity> recurringRides = rideDAO.getRecurringRides(parentRideEntity, currentDate, endDate);
 
 		Set<ZonedDateTime> existingRecurringRidesDates = new HashSet<>();
 
@@ -533,7 +533,16 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 			rides.add(ride);
 		}
 		//This will sort the element as per the comparator written in Ride class
-		Collections.sort(rides);
+		//Collections.sort(rides);
+		//VERY IMP - Need to implement comparator here as we don't have access to Java Library in Model as its a Jar
+		//What it means starttime.compareto function is not available in Ride domain model but here its available
+		//Note - Logically we should remove the comparator from Ride domain model for the time being let it be where it compares by id
+		Collections.sort(rides, new Comparator<Ride>() {
+			@Override
+			public int compare(Ride o1, Ride o2) {
+				return o2.getStartTime().compareTo(o1.getStartTime());
+			}
+		});
 		return rides;
 	}
 
@@ -987,6 +996,49 @@ public class RideDO implements DomainObjectPKLong<Ride>{
 		}
 
 		return rideCount;
+	}
+	
+	/*
+	 * HLD -
+	 * 
+	 * 1. Get all upcoming recurring rides greater than equal to current ride
+	 * 2. Cancel all upcoming rides including current ride
+	 * 3. Update Recurring Status as Cancelled for Parent Ride
+	 * 
+	 */
+	public void cancelAllUpcomingRides(long rideId) {
+		
+		Ride ride = getAllData(rideId);
+		//This is the case for when ride is parent ride itself
+		if (ride.getRecur()) {
+			//This will cancel parent ride
+			cancelRide(rideId);
+			List<RideEntity> allUpcomingRecurringRides = rideDAO.getAllUpcomingRecurringRides(rideMapper.getEntity(ride,false), ride.getStartTime());
+			for (RideEntity entity: allUpcomingRecurringRides) {
+				//This will cancel recurring rides
+				cancelRide(entity.getId());
+			}
+			//VERY IMP - This will ensure we get updated ride with cancelled status for parent ride
+			//otherwise it will overwrite the status of cancelled with earlier status
+			ride = getAllData(rideId);
+			ride.getRecurringDetail().setRecurringStatus(RecurringStatus.Cancelled);
+			update(ride);
+		}
+		//This is the case for when ride is recurring ride
+		if (ride.getParentRide()!=null) {
+			List<RideEntity> allUpcomingRecurringRides = rideDAO.getAllUpcomingRecurringRides(rideMapper.getEntity(ride.getParentRide(),false), ride.getStartTime());
+			for (RideEntity entity: allUpcomingRecurringRides) {
+				//This will cancel recurring rides
+				cancelRide(entity.getId());
+			}
+			ride.getParentRide().getRecurringDetail().setRecurringStatus(RecurringStatus.Cancelled);
+			update(ride.getParentRide());			
+		} 
+		//This is the case when its not a recurring ride or parent ride
+		if (!ride.getRecur() && ride.getParentRide()==null) {
+			throw new WebApplicationException("Its not a recurring ride. Ride Id:"+rideId);
+		}
+		
 	}
 }
 

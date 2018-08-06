@@ -6,6 +6,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1059,7 +1060,16 @@ public class RideRequestDO implements DomainObjectPKLong<RideRequest>{
 			rideRequests.add(rideRequest);
 		}
 		//This will sort the element as per the comparator written in Ride Request class
-		Collections.sort(rideRequests);
+		//Collections.sort(rideRequests);
+		//VERY IMP - Need to implement comparator here as we don't have access to Java Library in Model as its a Jar
+		//What it means starttime.compareto function is not available in RideRequest domain model but here its available
+		//Note - Logically we should remove the comparator from RideRequest domain model for the time being let it be where it compares by id
+		Collections.sort(rideRequests, new Comparator<RideRequest>() {
+			@Override
+			public int compare(RideRequest o1, RideRequest o2) {
+				return o2.getPickupTime().compareTo(o1.getPickupTime());
+			}
+		});
 		return rideRequests;
 	}
 

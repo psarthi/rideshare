@@ -341,6 +341,31 @@ public class RideOfferBusinessService {
 			}
 		}
 	}
+	
+	public void cancelAllUpcomingRide(long rideId){
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		Transaction transaction = null;
+		try {
+			transaction = session.beginTransaction();
+
+			RideDO rideDO = new RideDO();
+			rideDO.cancelAllUpcomingRides(rideId);
+
+			transaction.commit();
+		} catch (RuntimeException e) {
+			if (transaction!=null){
+				logger.error("Transaction Failed, Rolling Back");
+				transaction.rollback();
+				throw e;
+			}
+		}
+		finally {
+			if (session.isOpen()){
+				logger.info("Closing Session");
+				session.close();				
+			}
+		}
+	}
 
 	public void cancelPassenger(long rideId, long rideRequestId, float rating){
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();

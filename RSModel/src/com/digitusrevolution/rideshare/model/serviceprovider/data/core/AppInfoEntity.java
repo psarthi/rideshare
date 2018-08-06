@@ -17,6 +17,7 @@ public class AppInfoEntity {
 	private String appUrl;
 	private String shareMsg;
 	private String homePageMsg;
+	private boolean defaultRecurringRideOption;
 
 	
 	public int getId() {
@@ -57,6 +58,14 @@ public class AppInfoEntity {
 
 	public void setHomePageMsg(String homePageMsg) {
 		this.homePageMsg = homePageMsg;
+	}
+
+	public boolean isDefaultRecurringRideOption() {
+		return defaultRecurringRideOption;
+	}
+
+	public void setDefaultRecurringRideOption(boolean defaultRecurringRideOption) {
+		this.defaultRecurringRideOption = defaultRecurringRideOption;
 	}
 	
 	

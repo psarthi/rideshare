@@ -7,6 +7,7 @@ public class AppInfo {
 	private String appUrl;
 	private String shareMsg;
 	private String homePageMsg;
+	private boolean defaultRecurringRideOption;
 
 	public int getMinAppVersionCode() {
 		return minAppVersionCode;
@@ -46,6 +47,14 @@ public class AppInfo {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public boolean isDefaultRecurringRideOption() {
+		return defaultRecurringRideOption;
+	}
+
+	public void setDefaultRecurringRideOption(boolean defaultRecurringRideOption) {
+		this.defaultRecurringRideOption = defaultRecurringRideOption;
 	}
 	
 	
