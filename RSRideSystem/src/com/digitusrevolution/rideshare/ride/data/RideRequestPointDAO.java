@@ -117,16 +117,18 @@ public class RideRequestPointDAO{
 		logger.trace(pointJson);
 
 		Document geoNear = new Document("$geoNear",new Document("spherical",true)
-				.append("limit", PropertyReader.getInstance().getProperty("RIDE_REQUEST_POINT_SEARCH_RESULT_LIMIT"))
 				.append("maxDistance", maxDistance)
 				.append("minDistance", minDistance)
 				.append("near", Document.parse(pointJson))
 				.append("distanceField", "distance"));
+		
+		Document limit = new Document("$limit", Integer.parseInt(PropertyReader.getInstance().getProperty("RIDE_REQUEST_POINT_SEARCH_RESULT_LIMIT")));
 
 		logger.trace(geoNear.toJson());
 		
 		List<Document> pipeline = new ArrayList<>();
 		pipeline.add(geoNear);
+		pipeline.add(limit);
 
 		MongoCursor<Document> cursor = collection.aggregate(pipeline).iterator();
 

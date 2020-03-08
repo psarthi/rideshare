@@ -6,7 +6,7 @@ public class Auth {
 	
 	public static void main(String[] args) {
 		AuthService authService = new AuthService();
-		System.out.println("Token is:  "+authService.getToken(1));
+		System.out.println("Token is:  "+authService.getToken(-1));
 		
 	}
 	

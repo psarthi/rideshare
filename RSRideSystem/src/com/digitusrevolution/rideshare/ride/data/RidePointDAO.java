@@ -226,12 +226,13 @@ public class RidePointDAO{
 		//This will get all the ride points based on max distance from ride request point 
 		//i.e circle with center as ride request point and radius as max distance 
 		Document geoNear = new Document("$geoNear",new Document("spherical",true)
-				.append("limit", PropertyReader.getInstance().getProperty("RIDE_POINT_SEARCH_RESULT_LIMIT"))
 				.append("maxDistance", maxDistance)
 				.append("minDistance", minDistance)
 				.append("query", query)
 				.append("near", Document.parse(pointJson))
 				.append("distanceField", "distance"));
+		
+		Document limit = new Document("$limit", Integer.parseInt(PropertyReader.getInstance().getProperty("RIDE_POINT_SEARCH_RESULT_LIMIT")));
 
 		//This will create individual ride points by ride id
 		//Unwind command, create multiple document for each array item i.e. array item would be different but rest of the property would be same
@@ -253,6 +254,7 @@ public class RidePointDAO{
 
 		logger.trace(query.toJson());
 		logger.trace(geoNear.toJson());
+		logger.trace(limit.toJson());
 		logger.trace(unwind.toJson());
 		logger.trace(match.toJson());
 		logger.trace(group.toJson());
@@ -260,6 +262,7 @@ public class RidePointDAO{
 
 		List<Document> pipeline = new ArrayList<>();
 		pipeline.add(geoNear);
+		pipeline.add(limit);
 		pipeline.add(unwind);
 		pipeline.add(match);
 		pipeline.add(group);

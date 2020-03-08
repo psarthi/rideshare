@@ -33,7 +33,7 @@ import com.mongodb.client.model.geojson.Geometry;
 import com.mongodb.client.model.geojson.Point;
 import com.mongodb.client.model.geojson.Polygon;
 import com.mongodb.client.model.geojson.Position;
-import com.mongodb.util.JSON;
+//import com.mongodb.util.JSON;
 
 import static com.mongodb.client.model.Filters.*;
 import static com.mongodb.client.model.Sorts.*;
@@ -103,7 +103,7 @@ public class MongoDBBasics {
 
 	document = collection.find().first();
 	System.out.println(document.toJson());
-	System.out.println(collection.count());
+	System.out.println(collection.countDocuments());
 
 	List<Document> documents = new ArrayList<Document>();
 	for (int i = 0; i < 100; i++) {
@@ -133,7 +133,7 @@ public class MongoDBBasics {
 		}
 	};
 
-	collection.find(gt("i", 50)).forEach(block);
+	//collection.find(gt("i", 50)).forEach(block);
 	
 	document = collection.find(gt("i", 75)).sort(ascending("i")).first();
 	System.out.println(document.toJson());
@@ -164,7 +164,7 @@ public class MongoDBBasics {
 	System.out.println("RidePoint" + json);
 	
 	Document documentRidePoint = new Document();
-	documentRidePoint.append("point", JSON.parse(json));
+	//documentRidePoint.append("point", JSON.parse(json));
 	System.out.println("-----------------");
 	collectionPoint.insertOne(documentRidePoint);
 	

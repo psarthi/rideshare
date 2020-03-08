@@ -138,8 +138,8 @@
 		<!-- MongoDB Start -->
 		<dependency>
 			<groupId>org.mongodb</groupId>
-			<artifactId>mongodb-driver</artifactId>
-			<version>3.5.0</version>
+			<artifactId>mongodb-driver-legacy</artifactId>
+			<version>4.0.0</version>
 		</dependency>
 		<!-- MongoDB End -->
 		<!-- Log4J Start -->
