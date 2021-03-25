@@ -13,9 +13,10 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-public class test{
+public class TestA{
 	public static void main (String[] args) {
 		try {
+			System.out.print("Hellow World");
 			System.exit(0);
 		} catch (Exception e) {
 			System.out.println("Inside Catch");

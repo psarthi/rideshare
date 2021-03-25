@@ -13,6 +13,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.digitusrevolution.rideshare.poc.B;
+
 @Entity
 @Table(name="A")
 public class A {
