@@ -4,7 +4,7 @@ This is a backend source code which would help you to build any ride sharing app
 
 MobileApp Screenshots - https://photos.app.goo.gl/UuyEcvhL5ow752HH8
 
-Mobile App Sourcecode - https://github.com/psarthi/rideshareApp
+MobileApp Sourcecode - https://github.com/psarthi/rideshareApp
 
 # About me
 
