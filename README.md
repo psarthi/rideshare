@@ -2,7 +2,7 @@
 
 This is a backend source code which would help you to build any ride sharing app something similar to Uber for car pooling, where you can match trusted car owners based on their common interest
 
-Google Playstore link - https://play.google.com/store/apps/details?id=com.parift.rideshare
+MobileApp Screenshots - https://photos.app.goo.gl/UuyEcvhL5ow752HH8
 
 # About me
 
